@@ -52,6 +52,18 @@ article {
   border-bottom: 1px solid var(--rule);
 }
 article p:last-child { margin-bottom: 0; }
+/* Contain the floated image so it can't spill into the next post. */
+article::after { content: ""; display: block; clear: both; }
+article h2 { font-size: 1.25rem; line-height: 1.25; margin: 0.2rem 0 0.4rem; }
+a.shot { float: left; width: 50%; margin: 0.3rem 1rem 0.4rem 0; }
+a.shot img { width: 100%; height: auto; }
+p.more { margin-top: 0.75rem; }
+p.footer-line { clear: both; padding-top: 0.75rem; }
+.yours { color: var(--muted); }
+/* A 50% float on a phone leaves ~170px of text per line; stack instead. */
+@media (max-width: 34rem) {
+  a.shot { float: none; width: 100%; margin: 0 0 0.75rem; }
+}
 img { max-width: 100%; height: auto; display: block; }
 svg { max-width: 100%; height: auto; }
 blockquote { margin: 0 0 1rem; padding-left: 1rem; border-left: 3px solid var(--rule); }
@@ -116,9 +128,34 @@ button { cursor: pointer; color: var(--link); }
 <p><strong>Wyoming</strong>: <a href="orgs/wyofile.html">WyoFile</a> (Wyoming, statewide)</p>
 <p><strong>Everywhere</strong>: <a href="orgs/404-media.html">404 Media</a>, <a href="orgs/aftermath.html">Aftermath</a>, <a href="orgs/bolts.html">Bolts</a>, <a href="orgs/chalkbeat.html">Chalkbeat</a>, <a href="orgs/defector.html">Defector</a>, <a href="orgs/floodlight.html">Floodlight</a>, <a href="orgs/grist.html">Grist</a>, <a href="orgs/hearing-things.html">Hearing Things</a>, <a href="orgs/inside-climate-news.html">Inside Climate News</a>, <a href="orgs/popular-information.html">Popular Information</a>, <a href="orgs/prism.html">Prism</a>, <a href="orgs/the-appeal.html">The Appeal</a>, <a href="orgs/the-handbasket.html">The Handbasket</a>, <a href="orgs/hechinger-report.html">The Hechinger Report</a>, <a href="orgs/marshall-project.html">The Marshall Project</a>, <a href="orgs/the-trace.html">The Trace</a>, <a href="orgs/the-war-horse.html">The War Horse</a>, <a href="orgs/wick-communications.html">Wick Communications</a></p>
 <hr>
-<p><small>Generated 2026-08-25 05:24 UTC. About text quoted from each newsroom's own
+<p><small>Generated 2026-08-25 11:20 UTC. About text quoted from each newsroom's own
 About page; headlines, summaries and images from their public feeds, linking to
 the original. <a href="https://github.com/ftrain/givemesomegoodnews">ftrain/givemesomegoodnews</a></small></p>
+<script>
+/* Each dateline is the newsroom's own local time. Where the reader sits in
+   a different zone, append theirs. Nothing here is required to read the
+   page — with JS off you still get the publication's time. */
+window.localizeTimes = function (root) {
+  var nodes = (root || document).querySelectorAll("time[data-pub]:not([data-done])");
+  for (var i = 0; i < nodes.length; i++) {
+    var el = nodes[i];
+    el.setAttribute("data-done", "1");
+    var when = new Date(el.getAttribute("datetime"));
+    if (isNaN(when.getTime())) continue;
+    try {
+      var mine = new Intl.DateTimeFormat(undefined, {
+        hour: "numeric", minute: "2-digit", timeZoneName: "short"
+      }).format(when);
+      if (!mine || mine === el.getAttribute("data-pub")) continue;
+      var span = document.createElement("span");
+      span.className = "yours";
+      span.textContent = " · " + mine + " your time";
+      el.parentNode.insertBefore(span, el.nextSibling);
+    } catch (e) { /* no Intl: the publication's time stands on its own */ }
+  }
+};
+window.localizeTimes(document);
+</script>
 
 </body>
 </html>

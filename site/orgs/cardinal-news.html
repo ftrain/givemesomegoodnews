@@ -52,6 +52,18 @@ article {
   border-bottom: 1px solid var(--rule);
 }
 article p:last-child { margin-bottom: 0; }
+/* Contain the floated image so it can't spill into the next post. */
+article::after { content: ""; display: block; clear: both; }
+article h2 { font-size: 1.25rem; line-height: 1.25; margin: 0.2rem 0 0.4rem; }
+a.shot { float: left; width: 50%; margin: 0.3rem 1rem 0.4rem 0; }
+a.shot img { width: 100%; height: auto; }
+p.more { margin-top: 0.75rem; }
+p.footer-line { clear: both; padding-top: 0.75rem; }
+.yours { color: var(--muted); }
+/* A 50% float on a phone leaves ~170px of text per line; stack instead. */
+@media (max-width: 34rem) {
+  a.shot { float: none; width: 100%; margin: 0 0 0.75rem; }
+}
 img { max-width: 100%; height: auto; display: block; }
 svg { max-width: 100%; height: auto; }
 blockquote { margin: 0 0 1rem; padding-left: 1rem; border-left: 3px solid var(--rule); }
@@ -89,6 +101,13 @@ button { cursor: pointer; color: var(--link); }
 </blockquote>
 <p><small>— from <a href="https://cardinalnews.org/about/">their About page</a>, fetched 2026-08-25.</small></p>
 <h2>Recent stories</h2><ul>
+<li>Aug 25 — <a href="https://cardinalnews.org/2026/08/25/virginians-will-weigh-in-on-3-changes-to-their-state-constitution-this-fall-heres-a-look-at-the-proposed-amendments/">Virginians will weigh in on 3 changes to their state constitution this fall. Here’s a look at the proposed amendments.</a></li>
+<li>Aug 25 — <a href="https://cardinalnews.org/2026/08/25/american-consumers-will-pay-for-the-collapse-of-u-s-canada-trade-talks-here-are-the-virginia-congressional-districts-with-the-most-jobs-at-risk/">American consumers will pay for the collapse of U.S.-Canada trade talks in ways hard to see. Here are the Virginia congressional districts with the most jobs at risk.</a></li>
+<li>Aug 25 — <a href="https://cardinalnews.org/2026/08/25/virginia-tech-sale-of-hotel-roanoke-conference-center-best-positioned-with-current-use/">Virginia Tech: Sale of Hotel Roanoke &amp; Conference Center ‘best positioned’ with current use</a></li>
+<li>Aug 25 — <a href="https://cardinalnews.org/2026/08/25/cardinal-commerce-notes-framatomes-lynchburg-hq-building-listed-for-sale/">Cardinal Commerce Notes: Framatome’s Lynchburg HQ building listed for sale</a></li>
+<li>Aug 25 — <a href="https://cardinalnews.org/2026/08/25/edmunds-virginia-shouldnt-make-hunters-and-anglers-pay-more-for-fewer-services/">Edmunds: Virginia shouldn’t make hunters and anglers pay more for fewer services</a></li>
+<li>Aug 25 — <a href="https://cardinalnews.org/2026/08/25/washington-county-courthouse-temporarily-closed-after-air-quality-study-raises-concerns/">Washington County Courthouse temporarily closed after air quality study raises concerns</a></li>
+<li>Aug 25 — <a href="https://cardinalnews.org/2026/08/25/headlines-from-across-the-state-virginia-loses-almost-48000-jobs-in-year-unemployment-at-3-7-more/">Headlines from across the state: Virginia loses almost 48,000 jobs in year; unemployment at 3.7%; more …</a></li>
 <li>Aug 24 — <a href="https://cardinalnews.org/2026/08/24/veterans-with-vision-loss-find-new-eyes-through-ai-glasses/">Veterans with vision loss find new ‘eyes’ through AI glasses</a></li>
 <li>Aug 24 — <a href="https://cardinalnews.org/2026/08/24/data-centers-are-drinking-more-water-but-overall-water-use-in-virginia-has-gone-down-anyway-here-are-the-numbers/">Data centers are drinking more water, but overall water use in Virginia has gone down anyway. Here are the numbers.</a></li>
 <li>Aug 24 — <a href="https://cardinalnews.org/2026/08/24/former-wallens-ridge-correctional-officer-sentenced-to-prison-for-assaulting-inmate/">Former Wallens Ridge correctional officer sentenced to prison for assaulting inmate</a></li>
@@ -101,9 +120,34 @@ button { cursor: pointer; color: var(--link); }
 <li>Aug 21 — <a href="https://cardinalnews.org/2026/08/21/special-prosecutor-martinsville-investigation-is-trudging-along-as-interviews-bring-more-details/">Special prosecutor: Martinsville investigation is ‘trudging along’ as interviews bring more details</a></li>
 </ul>
 <hr>
-<p><small>Generated 2026-08-25 05:25 UTC. About text quoted from each newsroom's own
+<p><small>Generated 2026-08-25 11:21 UTC. About text quoted from each newsroom's own
 About page; headlines, summaries and images from their public feeds, linking to
 the original. <a href="https://github.com/ftrain/givemesomegoodnews">ftrain/givemesomegoodnews</a></small></p>
+<script>
+/* Each dateline is the newsroom's own local time. Where the reader sits in
+   a different zone, append theirs. Nothing here is required to read the
+   page — with JS off you still get the publication's time. */
+window.localizeTimes = function (root) {
+  var nodes = (root || document).querySelectorAll("time[data-pub]:not([data-done])");
+  for (var i = 0; i < nodes.length; i++) {
+    var el = nodes[i];
+    el.setAttribute("data-done", "1");
+    var when = new Date(el.getAttribute("datetime"));
+    if (isNaN(when.getTime())) continue;
+    try {
+      var mine = new Intl.DateTimeFormat(undefined, {
+        hour: "numeric", minute: "2-digit", timeZoneName: "short"
+      }).format(when);
+      if (!mine || mine === el.getAttribute("data-pub")) continue;
+      var span = document.createElement("span");
+      span.className = "yours";
+      span.textContent = " · " + mine + " your time";
+      el.parentNode.insertBefore(span, el.nextSibling);
+    } catch (e) { /* no Intl: the publication's time stands on its own */ }
+  }
+};
+window.localizeTimes(document);
+</script>
 
 </body>
 </html>

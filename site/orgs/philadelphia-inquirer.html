@@ -52,6 +52,18 @@ article {
   border-bottom: 1px solid var(--rule);
 }
 article p:last-child { margin-bottom: 0; }
+/* Contain the floated image so it can't spill into the next post. */
+article::after { content: ""; display: block; clear: both; }
+article h2 { font-size: 1.25rem; line-height: 1.25; margin: 0.2rem 0 0.4rem; }
+a.shot { float: left; width: 50%; margin: 0.3rem 1rem 0.4rem 0; }
+a.shot img { width: 100%; height: auto; }
+p.more { margin-top: 0.75rem; }
+p.footer-line { clear: both; padding-top: 0.75rem; }
+.yours { color: var(--muted); }
+/* A 50% float on a phone leaves ~170px of text per line; stack instead. */
+@media (max-width: 34rem) {
+  a.shot { float: none; width: 100%; margin: 0 0 0.75rem; }
+}
 img { max-width: 100%; height: auto; display: block; }
 svg { max-width: 100%; height: auto; }
 blockquote { margin: 0 0 1rem; padding-left: 1rem; border-left: 3px solid var(--rule); }
@@ -116,15 +128,52 @@ button { cursor: pointer; color: var(--link); }
 </blockquote>
 <p><small>— from <a href="https://about.inquirer.com/">their About page</a>, fetched 2026-08-25.</small></p>
 <h2>Recent stories</h2><ul>
-<li>Aug 25 — <a href="https://www.inquirer.com/life/dear-abby-advice-column-20260825.html">Dear Abby | Bitter ex cut fff Dad from his daughters</a></li>
+<li>Aug 25 — <a href="https://www.inquirer.com/south-jersey/gcit-gloucester-school-cuts-layoffs-principal-lawsuit-20260825.html">A principal who lost her job is suing a Deptford tech school. So is the principal who replaced her.</a></li>
+<li>Aug 25 — <a href="https://www.inquirer.com/politics/election/trump-poll-approval-rating-pennsylvania-2026-midterms-20260825.html">Most of Pa.’s likely voters disapprove of Donald Trump and his policies, new poll shows</a></li>
+<li>Aug 25 — <a href="https://www.inquirer.com/eagles/2026-training-camp-cornerback-riq-woolen-contract-20260825.html">Riq Woolen feels like ‘a rookie again’ with the Eagles. His prove-it year is big for him and the Birds.</a></li>
+<li>Aug 25 — <a href="https://www.inquirer.com/politics/election/josh-shapiro-stacy-garrity-governors-race-20260825.html">Josh Shapiro has a 16-point lead in the governor’s race — and most Pa. Democrats would support him for president</a></li>
+<li>Aug 25 — <a href="https://www.inquirer.com/politics/election/john-fetterman-donald-trump-israel-pennsylvania-poll-20260825.html">Pa. Democrats say John Fetterman is siding with Donald Trump too much, new poll shows</a></li>
+<li>Aug 25 — <a href="https://www.inquirer.com/sports/phildelphia-cycling-classic-route-start-time-field-fan-fest-tickets-20260825.html">The Philadelphia Cycling Classic — and famed Manayunk Wall — returns this weekend. Here’s everything you need to know.</a></li>
+<li>Aug 25 — <a href="https://www.inquirer.com/newsletters/sports/sports-daily-newsletter-phillies-eagles-cycling-20260825.html">⚾ Still in shock | Sports Daily Newsletter</a></li>
+<li>Aug 25 — <a href="https://www.inquirer.com/food/restaurants/too-many-bagel-shops-philadelphia-20260825.html">A bagel boom or a bagel bubble: How many shops does Philadelphia really need?</a></li>
+<li>Aug 25 — <a href="https://www.inquirer.com/health/plasma-donation-centers-philadelphia-economy-20260825.html">Selling blood plasma for money is becoming a side hustle as more Philadelphia-area residents try to make ends meet</a></li>
+<li>Aug 25 — <a href="https://www.inquirer.com/health/blood-plasma-donors-help-rare-diseases-demand-20260825.html">A rare disease weakened his muscles. Plasma donors came to the rescue</a></li>
+<li>Aug 25 — <a href="https://www.inquirer.com/news/sheriff-philadelphia-rochelle-bilal-auction-court-hearing-20260825.html">After six years of chaos in Philly Sheriff&#x27;s Office, Rochelle Bilal must answer to judges</a></li>
+<li>Aug 25 — <a href="https://www.inquirer.com/opinion/letters/letters-editor-august-25-2026-20260825.html">Letters to the Editor | Aug. 25, 2026</a></li>
 <li>Aug 25 — <a href="https://www.inquirer.com/entertainment/horoscopes/daily-horoscopes-20260825.html">Horoscopes: Tuesday, Aug. 25, 2026</a></li>
+<li>Aug 25 — <a href="https://www.inquirer.com/life/dear-abby-advice-column-20260825.html">Dear Abby | Bitter ex cut fff Dad from his daughters</a></li>
 <li>Aug 25 — <a href="https://www.inquirer.com/phillies/phillies-zack-wheeler-mariners-surgery-thoracic-outlet-syndrome-20260825.html">What’s going on with Zack Wheeler? The Phillies could be wondering after he struggles in a 9-2 loss.</a></li>
 <li>Aug 25 — <a href="https://www.inquirer.com/sports/east-side-chester-little-league-world-series-williamsport-20260824.html">East Side Little League falls 6-5 to Phenix City, ending their run in Williamsport</a></li>
 </ul>
 <hr>
-<p><small>Generated 2026-08-25 05:25 UTC. About text quoted from each newsroom's own
+<p><small>Generated 2026-08-25 11:21 UTC. About text quoted from each newsroom's own
 About page; headlines, summaries and images from their public feeds, linking to
 the original. <a href="https://github.com/ftrain/givemesomegoodnews">ftrain/givemesomegoodnews</a></small></p>
+<script>
+/* Each dateline is the newsroom's own local time. Where the reader sits in
+   a different zone, append theirs. Nothing here is required to read the
+   page — with JS off you still get the publication's time. */
+window.localizeTimes = function (root) {
+  var nodes = (root || document).querySelectorAll("time[data-pub]:not([data-done])");
+  for (var i = 0; i < nodes.length; i++) {
+    var el = nodes[i];
+    el.setAttribute("data-done", "1");
+    var when = new Date(el.getAttribute("datetime"));
+    if (isNaN(when.getTime())) continue;
+    try {
+      var mine = new Intl.DateTimeFormat(undefined, {
+        hour: "numeric", minute: "2-digit", timeZoneName: "short"
+      }).format(when);
+      if (!mine || mine === el.getAttribute("data-pub")) continue;
+      var span = document.createElement("span");
+      span.className = "yours";
+      span.textContent = " · " + mine + " your time";
+      el.parentNode.insertBefore(span, el.nextSibling);
+    } catch (e) { /* no Intl: the publication's time stands on its own */ }
+  }
+};
+window.localizeTimes(document);
+</script>
 
 </body>
 </html>

@@ -52,6 +52,18 @@ article {
   border-bottom: 1px solid var(--rule);
 }
 article p:last-child { margin-bottom: 0; }
+/* Contain the floated image so it can't spill into the next post. */
+article::after { content: ""; display: block; clear: both; }
+article h2 { font-size: 1.25rem; line-height: 1.25; margin: 0.2rem 0 0.4rem; }
+a.shot { float: left; width: 50%; margin: 0.3rem 1rem 0.4rem 0; }
+a.shot img { width: 100%; height: auto; }
+p.more { margin-top: 0.75rem; }
+p.footer-line { clear: both; padding-top: 0.75rem; }
+.yours { color: var(--muted); }
+/* A 50% float on a phone leaves ~170px of text per line; stack instead. */
+@media (max-width: 34rem) {
+  a.shot { float: none; width: 100%; margin: 0 0 0.75rem; }
+}
 img { max-width: 100%; height: auto; display: block; }
 svg { max-width: 100%; height: auto; }
 blockquote { margin: 0 0 1rem; padding-left: 1rem; border-left: 3px solid var(--rule); }
@@ -96,6 +108,7 @@ button { cursor: pointer; color: var(--link); }
 </blockquote>
 <p><small>— from <a href="https://www.spotlightpa.org/about/">their About page</a>, fetched 2026-08-25.</small></p>
 <h2>Recent stories</h2><ul>
+<li>Aug 25 — <a href="https://www.spotlightpa.org/news/2026/08/josh-shapiro-donald-trump-advisor-remain-in-mexico/">Shapiro hires ex-Trump admin official to help counter president’s ‘attacks’</a></li>
 <li>Aug 24 — <a href="https://www.spotlightpa.org/news/2026/08/pennsylvania-environmental-rights-act-franklin-kury-obit/">Remembering the ‘visionary’ author of Pennsylvania’s Environmental Rights Amendment</a></li>
 <li>Aug 21 — <a href="https://www.spotlightpa.org/news/2026/08/rob-bresnahan-ethics-complaint-campaign-video-federal-government/">Constituent says a Rob Bresnahan video broke House rules. The lawmaker blames a ‘clerical error.’</a></li>
 <li>Aug 21 — <a href="https://www.spotlightpa.org/berks/2026/08/sencit-housing-elevator-broken/">As elevator repairs drag on, older residents of subsidized Berks County apartment building endure outages, injury</a></li>
@@ -115,12 +128,36 @@ button { cursor: pointer; color: var(--link); }
 <li>Aug 18 — <a href="https://www.spotlightpa.org/statecollege/2026/08/penn-state-fraternity-cocaine-trafficking-charges-justice-system/">Penn State cocaine trafficking ring involved 2 fraternities, authorities say</a></li>
 <li>Aug 18 — <a href="https://www.spotlightpa.org/news/2026/08/restaurant-inspections-food-safety-centre-county-aug-10-16-centre-inspections/">Dirty knives, uncovered meat, and other Centre County restaurant inspections for Aug. 10-16</a></li>
 <li>Aug 18 — <a href="https://www.spotlightpa.org/news/2026/08/restaurant-inspections-food-safety-berks-county-aug-10-16-berks-inspections/">Grimy floors, dirty ice machine, and other Berks County restaurant inspections for Aug. 10-16</a></li>
-<li>Aug 18 — <a href="https://www.spotlightpa.org/statecollege/2026/08/penn-state-trustees-bylaws-first-amendment-lawsuit-preliminary-injunction/">Penn State trustees lift ‘gag policy’ on emeriti members amid First Amendment lawsuit</a></li>
 </ul>
 <hr>
-<p><small>Generated 2026-08-25 05:25 UTC. About text quoted from each newsroom's own
+<p><small>Generated 2026-08-25 11:21 UTC. About text quoted from each newsroom's own
 About page; headlines, summaries and images from their public feeds, linking to
 the original. <a href="https://github.com/ftrain/givemesomegoodnews">ftrain/givemesomegoodnews</a></small></p>
+<script>
+/* Each dateline is the newsroom's own local time. Where the reader sits in
+   a different zone, append theirs. Nothing here is required to read the
+   page — with JS off you still get the publication's time. */
+window.localizeTimes = function (root) {
+  var nodes = (root || document).querySelectorAll("time[data-pub]:not([data-done])");
+  for (var i = 0; i < nodes.length; i++) {
+    var el = nodes[i];
+    el.setAttribute("data-done", "1");
+    var when = new Date(el.getAttribute("datetime"));
+    if (isNaN(when.getTime())) continue;
+    try {
+      var mine = new Intl.DateTimeFormat(undefined, {
+        hour: "numeric", minute: "2-digit", timeZoneName: "short"
+      }).format(when);
+      if (!mine || mine === el.getAttribute("data-pub")) continue;
+      var span = document.createElement("span");
+      span.className = "yours";
+      span.textContent = " · " + mine + " your time";
+      el.parentNode.insertBefore(span, el.nextSibling);
+    } catch (e) { /* no Intl: the publication's time stands on its own */ }
+  }
+};
+window.localizeTimes(document);
+</script>
 
 </body>
 </html>

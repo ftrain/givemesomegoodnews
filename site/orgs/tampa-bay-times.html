@@ -52,6 +52,18 @@ article {
   border-bottom: 1px solid var(--rule);
 }
 article p:last-child { margin-bottom: 0; }
+/* Contain the floated image so it can't spill into the next post. */
+article::after { content: ""; display: block; clear: both; }
+article h2 { font-size: 1.25rem; line-height: 1.25; margin: 0.2rem 0 0.4rem; }
+a.shot { float: left; width: 50%; margin: 0.3rem 1rem 0.4rem 0; }
+a.shot img { width: 100%; height: auto; }
+p.more { margin-top: 0.75rem; }
+p.footer-line { clear: both; padding-top: 0.75rem; }
+.yours { color: var(--muted); }
+/* A 50% float on a phone leaves ~170px of text per line; stack instead. */
+@media (max-width: 34rem) {
+  a.shot { float: none; width: 100%; margin: 0 0 0.75rem; }
+}
 img { max-width: 100%; height: auto; display: block; }
 svg { max-width: 100%; height: auto; }
 blockquote { margin: 0 0 1rem; padding-left: 1rem; border-left: 3px solid var(--rule); }
@@ -84,6 +96,8 @@ button { cursor: pointer; color: var(--link); }
 </blockquote>
 <p><small>— from <a href="https://www.tampabay.com/about/">their About page</a>, fetched 2026-08-25.</small></p>
 <h2>Recent stories</h2><ul>
+<li>Aug 25 — <a href="https://www.tampabay.com/news/florida/2026/08/25/club-at-brickell-bay-animal-house-miami-florida/">Party rocks on at Florida ‘animal house’ condo tower — despite city’s order to ‘cease immediately’</a></li>
+<li>Aug 25 — <a href="https://www.tampabay.com/news/crime/2026/08/25/florida-shootings-children-gun-violence-zip-codes/">Where Florida’s gun violence exacts its biggest toll on Black and Latino children</a></li>
 <li>Aug 24 — <a href="https://www.tampabay.com/news/florida-politics/2026/08/24/cattle-ranchers-beef-import-trump-tariffs-prices-consumers/">Florida cattle ranchers push back on Trump’s beef import plan</a></li>
 <li>Aug 24 — <a href="https://www.tampabay.com/news/florida-politics/elections/2026/08/24/byron-donalds-miami-running-mate-governor-election-2026/">Donalds expected to name running mate Tuesday</a></li>
 <li>Aug 24 — <a href="https://www.tampabay.com/news/crime/2026/08/24/jennifer-odom-murder-trial-pasco-hernando-jeffrey-crum-death-penalty/">As jury weighs death for Jennifer Odom’s killer, her family recounts her life</a></li>
@@ -102,13 +116,36 @@ button { cursor: pointer; color: var(--link); }
 <li>Aug 24 — <a href="https://www.tampabay.com/viewpoints/2026/08/24/florida-liberal-arts-degrees-economic-value/">Liberal arts degrees: The data-driven case for their economic value | Column</a></li>
 <li>Aug 24 — <a href="https://www.tampabay.com/news/florida/2026/08/24/florida-most-popular-dog-breeds-2026/">What’s the most popular dog breed in Florida?</a></li>
 <li>Aug 24 — <a href="https://www.tampabay.com/news/education/2026/08/24/florida-schools-lose-thousands-more-students-more-closures-possible/">Florida schools lose thousands more students. More closures possible.</a></li>
-<li>Aug 24 — <a href="https://www.tampabay.com/news/real-estate/2026/08/24/tampa-waterfront-homes-sale-debartolo-georgetown-apartments/">South Tampa real estate is booming. Why is this waterfront lot still empty?</a></li>
-<li>Aug 24 — <a href="https://www.tampabay.com/news/education/2026/08/24/florida-college-university-back-to-school/">College is back in Florida. Here are 3 things to know</a></li>
 </ul>
 <hr>
-<p><small>Generated 2026-08-25 05:25 UTC. About text quoted from each newsroom's own
+<p><small>Generated 2026-08-25 11:21 UTC. About text quoted from each newsroom's own
 About page; headlines, summaries and images from their public feeds, linking to
 the original. <a href="https://github.com/ftrain/givemesomegoodnews">ftrain/givemesomegoodnews</a></small></p>
+<script>
+/* Each dateline is the newsroom's own local time. Where the reader sits in
+   a different zone, append theirs. Nothing here is required to read the
+   page — with JS off you still get the publication's time. */
+window.localizeTimes = function (root) {
+  var nodes = (root || document).querySelectorAll("time[data-pub]:not([data-done])");
+  for (var i = 0; i < nodes.length; i++) {
+    var el = nodes[i];
+    el.setAttribute("data-done", "1");
+    var when = new Date(el.getAttribute("datetime"));
+    if (isNaN(when.getTime())) continue;
+    try {
+      var mine = new Intl.DateTimeFormat(undefined, {
+        hour: "numeric", minute: "2-digit", timeZoneName: "short"
+      }).format(when);
+      if (!mine || mine === el.getAttribute("data-pub")) continue;
+      var span = document.createElement("span");
+      span.className = "yours";
+      span.textContent = " · " + mine + " your time";
+      el.parentNode.insertBefore(span, el.nextSibling);
+    } catch (e) { /* no Intl: the publication's time stands on its own */ }
+  }
+};
+window.localizeTimes(document);
+</script>
 
 </body>
 </html>
