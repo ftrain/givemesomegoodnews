@@ -108,6 +108,11 @@ def _collect_candidates(node, out):
         _collect_candidates(child, out)
 
 
+def _strip_nul(text):
+    """Postgres text columns cannot hold NUL, and some pages emit them."""
+    return text.replace("\x00", "") if text else text
+
+
 def paragraphs_from_html(html):
     builder = _TreeBuilder()
     try:
@@ -126,6 +131,7 @@ def paragraphs_from_html(html):
     paras = []
     for raw in text.split("\n"):
         p = re.sub(r"\s+", " ", raw).strip()
+        p = _strip_nul(p)
         if len(p) >= 25 and p not in paras:
             paras.append(p)
     return paras
@@ -152,7 +158,7 @@ def text_from_html_fragment(html):
             pass
         pieces = []
         _walk_text(builder.root, pieces)
-        flat = re.sub(r"\s+", " ", unescape("".join(pieces))).strip()
+        flat = _strip_nul(re.sub(r"\s+", " ", unescape("".join(pieces))).strip())
         if not _TAGISH.search(flat):
             return flat
         text = flat

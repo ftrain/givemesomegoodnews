@@ -16,7 +16,7 @@ from html import escape as esc
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlencode, urlparse
 
-from . import config
+from . import config, syndicate
 from .build_site import (MENU_FEEDS, MENU_SUBJECTS, page, render_feed_item,
                           render_result_map, search_form)
 from .db import connect
@@ -124,6 +124,29 @@ def facet_bar(query, tags, region, language):
     return "".join(out)
 
 
+def feed_link(query, tags, region, language):
+    """The RSS equivalent of whatever the reader is currently looking at."""
+    params = {k: v for k, v in
+              (("q", query), ("tag", list(tags)), ("region", region), ("lang", language)) if v}
+    return "search.xml?" + urlencode(params, doseq=True)
+
+
+def run_search(cur, query, tags, region, language, subject):
+    sql, params = build_query(query, tags, region, language, subject)
+    cur.execute(sql, params)
+    return [dict(zip(COLS, r)) for r in cur.fetchall()]
+
+
+def render_search_rss(query, tags, region, language, subject):
+    label = query.strip() or " + ".join(list(tags) + [x for x in (region, language) if x]) or "everything"
+    with connect() as conn, conn.cursor() as cur:
+        rows = run_search(cur, query, tags, region, language, subject)
+    return syndicate.render_rss(
+        rows, f"{config.SITE_NAME} — {label}",
+        f"Search results for {label}, newest first.",
+        feed_link(query, tags, region, language), config.SITE_URL.rstrip("/"))
+
+
 def render(query, tags=(), region="", language="", subject=""):
     tags = list(tags)
     active = [t for t in tags]
@@ -143,9 +166,7 @@ def render(query, tags=(), region="", language="", subject=""):
             parts.append(facet_bar(query, tags, region, language))
             return page(f"{config.SITE_NAME} — Search", "\n".join(parts))
 
-        sql, params = build_query(query, tags, region, language, subject)
-        cur.execute(sql, params)
-        rows = [dict(zip(COLS, r)) for r in cur.fetchall()]
+        rows = run_search(cur, query, tags, region, language, subject)
         parts.append(facet_bar(query, tags, region, language))
 
         if not rows:
@@ -155,7 +176,9 @@ def render(query, tags=(), region="", language="", subject=""):
             noun = "story" if len(rows) == 1 else "stories"
             capped = " (strongest matches)" if len(rows) == MAX_RESULTS else ""
             label = esc(query) if query.strip() else esc(" + ".join(active))
-            parts.append(f"<p>{len(rows)} {noun} matching <strong>{label}</strong>{capped}.</p>")
+            rss = feed_link(query, tags, region, language)
+            parts.append(f"<p>{len(rows)} {noun} matching <strong>{label}</strong>{capped}. "
+                         f'<a href="{esc(rss)}">Subscribe to this search</a>.</p>')
 
             seen, result_orgs = set(), []
             for row in rows:
@@ -175,7 +198,9 @@ def render(query, tags=(), region="", language="", subject=""):
             for row in rows:
                 parts.append(render_feed_item(cur, row, with_related=False))
             parts.append("</div>")
-        return page(f"{config.SITE_NAME} — {heading}", "\n".join(parts))
+        return page(f"{config.SITE_NAME} — {heading}", "\n".join(parts),
+                    feed_href=feed_link(query, tags, region, language),
+                    feed_title=f"{config.SITE_NAME} — {heading}")
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -183,7 +208,8 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         parsed = urlparse(self.path)
-        if parsed.path.rstrip("/") not in ("/search", ""):
+        wants_rss = parsed.path.rstrip("/") == "/search.xml"
+        if not wants_rss and parsed.path.rstrip("/") not in ("/search", ""):
             self.send_error(404)
             return
         params = parse_qs(parsed.query)
@@ -193,12 +219,17 @@ class Handler(BaseHTTPRequestHandler):
         language = (params.get("lang") or [""])[0][:20]
         subject = (params.get("subject") or [""])[0][:30]
         try:
-            body = render(query, tags, region, language, subject).encode("utf-8")
+            if wants_rss:
+                body = render_search_rss(query, tags, region, language, subject).encode("utf-8")
+            else:
+                body = render(query, tags, region, language, subject).encode("utf-8")
         except Exception:
             self.send_error(500)
             raise
         self.send_response(200)
-        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header(
+            "Content-Type",
+            "application/rss+xml; charset=utf-8" if wants_rss else "text/html; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
         self.send_header("Cache-Control", "public, max-age=300")
         self.end_headers()

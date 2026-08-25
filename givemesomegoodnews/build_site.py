@@ -57,16 +57,19 @@ STATE_NAMES = {
     "WV": "West Virginia", "WI": "Wisconsin", "WY": "Wyoming",
 }
 
+# Ordered by what someone opening the site actually wants: the news, then
+# more of the news, then the ways of navigating it, then the meta pages.
 NAV = [
-    ("index.html", "Feed"),
-    ("catalog.html", "Catalog"),
-    ("map.html", "Map"),
-    ("connections.html", "Connections"),
+    ("index.html", "Today's news"),
     ("everything.html", "Every newsroom"),
-    ("resources.html", "Resources"),
+    ("connections.html", "Same story, many places"),
+    ("map.html", "Map"),
+    ("catalog.html", "Catalog"),
     ("/search", "Search"),
+    ("feeds.html", "RSS feeds"),
+    ("resources.html", "Resources"),
+    ("text/", "Plain text edition"),
     ("onepage.html", "Everything on one page"),
-    ("text/", "Plain text version"),
 ]
 
 
@@ -136,6 +139,9 @@ display:flex;gap:.6rem;align-items:center}}
 .panel{{padding:.4rem 0 1rem}}
 .panel h3{{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
 margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}}
+.panel>nav:first-of-type ul{{display:block}}
+.panel>nav:first-of-type li{{margin:0 0 .45rem}}
+.panel>nav:first-of-type a{{font-size:1.05rem;font-weight:600}}
 .panel ul{{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:.3rem .9rem}}
 .panel li{{margin:0}}
 </style>"""
@@ -153,27 +159,24 @@ def menu(prefix="", site_name=""):
         f'<li><a href="{prefix}subjects/{slug}.html">{esc(name)}</a></li>'
         for name, slug in MENU_SUBJECTS
     )
-    feeds = "".join(
-        f'<li><a href="{prefix}{path}">{esc(label)}</a></li>' for path, label in MENU_FEEDS
-    )
     return f"""<details class="menu">
 <summary><img class="masthead" src="{prefix}masthead.svg" alt="{esc(site_name)}"
  width="440" height="44"></summary>
 <div class="panel">
+<nav aria-label="Sections"><ul>{sections}</ul></nav>
+<h3>Subjects</h3><nav aria-label="Subjects"><ul>{subjects}</ul></nav>
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
 <button type="submit">Search</button></p>
 </form>
-<h3>Sections</h3><nav aria-label="Sections"><ul>{sections}</ul></nav>
-<h3>Subjects</h3><nav aria-label="Subjects"><ul>{subjects}</ul></nav>
-<h3>Feeds</h3><nav aria-label="RSS feeds"><ul>{feeds}</ul></nav>
 <p class="meta"><a href="/admin" rel="nofollow" title="Feed management">&#9881; Manage feeds</a></p>
 </div>
 </details>"""
 
 
-def page(title, body, prefix="", nav_html=None, scripts="", description=""):
+def page(title, body, prefix="", nav_html=None, scripts="", description="",
+         feed_href="feed.xml", feed_title=None):
     meta_desc = (
         f'<meta name="description" content="{esc(description)}">\n' if description else ""
     )
@@ -185,8 +188,8 @@ def page(title, body, prefix="", nav_html=None, scripts="", description=""):
 <meta name="color-scheme" content="light dark">
 <title>{esc(title)}</title>
 {meta_desc}<link rel="icon" href="{prefix}favicon.svg" type="image/svg+xml">
-<link rel="alternate" type="application/rss+xml" title="{esc(config.SITE_NAME)}"
- href="{prefix}feed.xml">
+<link rel="alternate" type="application/rss+xml"
+ title="{esc(feed_title or config.SITE_NAME)}" href="{prefix}{feed_href}">
 {stylesheet(prefix)}
 </head>
 <body>
@@ -576,7 +579,8 @@ def feed_page_name(stem, index):
 
 def write_feed_pages(site, cur, articles, stem, title, heading, prefix="",
                      subject_nav=None, skip_images=(), subdir=None,
-                     first_name=None, intro="", with_related=True):
+                     first_name=None, intro="", with_related=True,
+                     feed_href="feed.xml", feed_title=None):
     """Split a feed into pages so no single page carries the whole crawl."""
     target = (site / subdir) if subdir else site
     target.mkdir(parents=True, exist_ok=True)
@@ -590,7 +594,8 @@ def write_feed_pages(site, cur, articles, stem, title, heading, prefix="",
         head = title if index == 0 else f"{title} — page {index + 1}"
         name = first_name if (index == 0 and first_name) else feed_page_name(stem, index)
         target.joinpath(name).write_text(
-            page(head, body, prefix=prefix, scripts=FEED_SCRIPT)
+            page(head, body, prefix=prefix, scripts=FEED_SCRIPT,
+                 feed_href=feed_href, feed_title=feed_title)
         )
     return len(chunks)
 
@@ -907,6 +912,30 @@ def feature_links(org, prefix=""):
     return " · ".join(
         f'<a href="{feature_href(f, prefix)}">{esc(f)}</a>' for f in (org.get("features") or [])
     )
+
+
+def render_feeds_page(subject_counts, tags):
+    """Every feed on offer, in one place rather than buried in a menu."""
+    parts = [
+        "<h1>RSS feeds</h1>",
+        "<p>Every feed carries the full item: headline, summary, byline, the "
+        "newsroom that reported it, and the link that lets you pay them. "
+        "Nothing here asks you to come back to this site.</p>",
+        '<h2>Everything</h2><ul><li><a href="feed.xml">All newsrooms</a></li></ul>',
+    ]
+    if subject_counts:
+        parts.append("<h2>By subject</h2><ul>")
+        for name, count in subject_counts:
+            slug = re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
+            parts.append(f'<li><a href="subjects/{slug}.xml">{esc(name)}</a> '
+                         f'<span class="meta">{count} stories</span></li>')
+        parts.append("</ul>")
+    if tags:
+        parts.append("<h2>By tag</h2><ul>")
+        for tag in tags:
+            parts.append(f'<li><a href="tags/{tag_slug(tag)}.xml">{esc(tag)}</a></li>')
+        parts.append("</ul>")
+    return "\n".join(parts)
 
 
 def render_catalog_index(orgs, prefix=""):
@@ -1382,6 +1411,8 @@ def main():
                     site, cur, tag_articles, tag_slug(tag),
                     f"{config.SITE_NAME} — {tag}", tag, prefix="../",
                     skip_images=house_images, subdir="tags", with_related=False,
+                    feed_href=f"tags/{tag_slug(tag)}.xml",
+                    feed_title=f"{config.SITE_NAME} — {tag}",
                     intro=f'<p class="meta">{n_rooms} newsrooms tagged {esc(tag)}. '
                           f'<a href="../catalog.html">All tags</a></p>',
                 )
@@ -1395,6 +1426,8 @@ def main():
                 f"{config.SITE_NAME} — {name}", name, prefix="../",
                 subject_nav=subject_nav(prefix="../", current=name),
                 skip_images=house_images, subdir="subjects",
+                feed_href=f"subjects/{re.sub(r'[^a-z0-9]+', '-', name.lower()).strip('-')}.xml",
+                feed_title=f"{config.SITE_NAME} — {name}",
                 # One pgvector lookup per item is affordable on the main feed;
                 # repeating it for every subject page is what made the build
                 # take a quarter of an hour.
@@ -1439,6 +1472,24 @@ def main():
                 subject_articles, f"{config.SITE_NAME} — {name}",
                 f"{name} reporting from local newsrooms across the United States.",
                 f"subjects/{slug}.xml", site_url))
+
+        # One RSS per tag as well as per subject.
+        emitted_tags = []
+        for _group, group_tags in TAG_GROUPS:
+            for tag in group_tags:
+                tag_articles = load_articles(cur, syndicate.RSS_ITEMS, feature=tag)
+                if not tag_articles:
+                    continue
+                emitted_tags.append(tag)
+                (site / "tags" / f"{tag_slug(tag)}.xml").write_text(syndicate.render_rss(
+                    tag_articles, f"{config.SITE_NAME} — {tag}",
+                    f"Stories from newsrooms tagged {tag}.",
+                    f"tags/{tag_slug(tag)}.xml", site_url))
+
+        (site / "feeds.html").write_text(page(
+            f"{config.SITE_NAME} — RSS feeds",
+            render_feeds_page(subject_counts, emitted_tags),
+            description="Every RSS feed this site publishes, by subject and by tag."))
 
         # --- the small files a site is expected to have ------------------
         (site / "favicon.svg").write_text(syndicate.FAVICON)
