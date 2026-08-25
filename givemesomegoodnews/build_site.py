@@ -36,6 +36,8 @@ FEED_PAGE_ARTICLES = 600
 FEED_PAGE_SIZE = 30
 # An image on this many articles is house art, not story art.
 HOUSE_IMAGE_USES = 4
+# How many recent stories to look for cross-state echoes from.
+CONNECTION_ANCHORS = int(os.environ.get("CONNECTION_ANCHORS", "400"))
 ONEPAGE_ARTICLES = 80
 
 STATE_NAMES = {
@@ -708,27 +710,38 @@ def render_feed(cur, articles, mode="site", prefix="", with_related=True, headin
 def gather_connections(cur):
     """Cross-state neighbor pairs, split into same-story clusters and
     kindred (distinct-story) pairs."""
+    # Anchor on a bounded set of the newest stories and let the HNSW index
+    # find each one's neighbours in the articles table. The earlier version
+    # put both sides in a CTE, which no index can serve: at a thousand feeds
+    # that became roughly 225 million distance computations per build.
     cur.execute(
         """
-        WITH recent AS (
+        WITH anchors AS (
             SELECT a.id, a.title, a.url, a.embedding, a.published_at,
                    o.name AS org_name, o.slug, o.url AS org_url, o.state
             FROM articles a JOIN orgs o ON o.id = a.org_id
             WHERE a.embedding IS NOT NULL
-              AND coalesce(a.published_at, a.fetched_at) > now() - interval '60 days'
+              AND coalesce(a.published_at, a.fetched_at) > now() - interval '14 days'
+            ORDER BY coalesce(a.published_at, a.fetched_at) DESC
+            LIMIT %s
         )
         SELECT a.id, a.title, a.url, a.org_name, a.slug, a.org_url, a.state, a.published_at,
                m.id, m.title, m.url, m.org_name, m.slug, m.org_url, m.state, m.published_at, m.sim
-        FROM recent a
+        FROM anchors a
         JOIN LATERAL (
-            SELECT b.*, 1 - (a.embedding <=> b.embedding) AS sim
-            FROM recent b
-            WHERE b.state IS DISTINCT FROM a.state
+            SELECT b.id, b.title, b.url, o2.name AS org_name, o2.slug,
+                   o2.url AS org_url, o2.state, b.published_at,
+                   1 - (a.embedding <=> b.embedding) AS sim
+            FROM articles b JOIN orgs o2 ON o2.id = b.org_id
+            WHERE b.embedding IS NOT NULL
+              AND b.id <> a.id
+              AND o2.state IS DISTINCT FROM a.state
             ORDER BY a.embedding <=> b.embedding
             LIMIT 3
         ) m ON true
         WHERE m.sim >= 0.28
-        """
+        """,
+        (CONNECTION_ANCHORS,),
     )
     cols = ("id", "title", "url", "org_name", "slug", "org_url", "state", "published_at")
     articles, pairs = {}, {}
