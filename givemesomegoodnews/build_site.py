@@ -1126,10 +1126,12 @@ def write_text_edition(site, cur, articles, orgs):
     body += [render_text_item(a) for a in articles[:60]]
     (out / "index.html").write_text(text_page(f"{config.SITE_NAME} — plain text", "\n".join(body)))
 
+    # One page per state: 1,924 newsrooms in a single document is a quarter
+    # of a megabyte, which is exactly what a plain edition should not be.
     groups, national = group_orgs_by_state(orgs)
-    rows = [f"<h1>Newsrooms</h1><p>{len(orgs)} newsrooms, grouped by state.</p>"]
-    for state_name, group in groups.items():
-        rows.append(f"<h2>{esc(state_name)}</h2><ul>")
+
+    def rows_for(group):
+        rows = ["<ul>"]
         for org in group:
             support = org.get("support_url")
             tail = (f' · <a href="{esc(support)}">{esc(org.get("support_label") or "Support")}</a>'
@@ -1139,13 +1141,21 @@ def write_text_edition(site, cur, articles, orgs):
                 f' — {esc(org["coverage"] or place_label(org))}{tail}</li>'
             )
         rows.append("</ul>")
+        return "".join(rows)
+
+    index = [f"<h1>Newsrooms</h1><p>{len(orgs)} newsrooms. Choose a state.</p><ul>"]
+    for state_name, group in groups.items():
+        slug = re.sub(r"[^a-z0-9]+", "-", state_name.lower()).strip("-")
+        index.append(f'<li><a href="{slug}.html">{esc(state_name)}</a> ({len(group)})</li>')
+        (out / f"{slug}.html").write_text(text_page(
+            f"{config.SITE_NAME} — {state_name}, plain text",
+            f"<h1>{esc(state_name)}</h1><p>{len(group)} newsrooms. "
+            f'<a href="catalog.html">All states</a></p>' + rows_for(group)))
+    index.append("</ul>")
     if national:
-        rows.append("<h2>Everywhere</h2><ul>")
-        for org in national:
-            rows.append(f'<li><a href="../orgs/{esc(org["slug"])}.html">{esc(org["name"])}</a></li>')
-        rows.append("</ul>")
+        index.append("<h2>Everywhere</h2>" + rows_for(national))
     (out / "catalog.html").write_text(
-        text_page(f"{config.SITE_NAME} — newsrooms, plain text", "\n".join(rows))
+        text_page(f"{config.SITE_NAME} — newsrooms, plain text", "".join(index))
     )
 
 
@@ -1402,7 +1412,7 @@ def main():
         onepage = "\n<hr>\n".join(
             [
                 f"<h1>{esc(config.SITE_NAME)}</h1>\n{intro}",
-                '<div id="catalog">' + render_catalog(orgs, mode="onepage") + "</div>",
+                '<div id="catalog">' + render_catalog_index(orgs) + "</div>",
                 '<div id="map">' + render_map(orgs, mode="onepage", recent=recent) + "</div>",
                 '<div id="feed">' + render_feed(cur, onepage_articles, mode="onepage",
                                                  skip_images=house_images,
