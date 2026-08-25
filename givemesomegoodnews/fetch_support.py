@@ -119,10 +119,14 @@ def discover(org):
         # unrelated domain with no processor signature is probably an ad.
         if host != home_host and not PROCESSORS.search(url):
             points -= 3
-        # A bare homepage with a tracking query is a redirect at best; a real
-        # /donate path should win whenever the site has one.
+        # A payment processor at its domain root — memberful, kindful,
+        # networkforgood — is a real destination. A bare homepage that is not
+        # one is not: refuse it outright rather than label a front page
+        # "Donate", and let the fallback send readers to the newsroom.
         if urlparse(url).path.strip("/") == "":
-            points -= 4
+            if not PROCESSORS.search(url):
+                continue
+            points -= 1
         if points > best[0]:
             best = (points, url, label)
 
