@@ -750,7 +750,7 @@ def feed_page_name(stem, index):
 
 
 def write_feed_pages(site, cur, articles, stem, title, heading, prefix="",
-                     subject_nav=None, skip_images=(), subdir=None,
+                     skip_images=(), subdir=None,
                      first_name=None, intro="", with_related=True,
                      feed_href="feed.xml", feed_title=None, show_heading=True):
     """Split a feed into pages so no single page carries the whole crawl."""
@@ -758,9 +758,8 @@ def write_feed_pages(site, cur, articles, stem, title, heading, prefix="",
     target.mkdir(parents=True, exist_ok=True)
     chunks = [articles[i:i + FEED_PAGE_SIZE] for i in range(0, len(articles), FEED_PAGE_SIZE)] or [[]]
     for index, chunk in enumerate(chunks):
-        nav = subject_nav if index == 0 else None
         body = render_feed(cur, chunk, prefix=prefix, heading=heading,
-                           subject_nav=nav, skip_images=skip_images,
+                           skip_images=skip_images,
                            page_index=index, page_count=len(chunks), stem=stem,
                            intro=intro, with_related=with_related,
                            show_heading=show_heading)
@@ -905,7 +904,7 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
 
 
 def render_feed(cur, articles, mode="site", prefix="", with_related=True, heading="Feed",
-                subject_nav=None, skip_images=(), page_index=0, page_count=1, stem=None,
+                skip_images=(), page_index=0, page_count=1, stem=None,
                 intro="", show_heading=True):
     parts = []
     if page_index == 0:
@@ -913,8 +912,6 @@ def render_feed(cur, articles, mode="site", prefix="", with_related=True, headin
             parts.append(f"<h1>{esc(heading)}</h1>")
         if intro:
             parts.append(intro)
-        if subject_nav:
-            parts.append(subject_nav)
     parts.append('<div id="feed-items">')
     for a in articles:
         parts.append(render_feed_item(cur, a, mode, prefix, with_related, skip_images))
@@ -1636,15 +1633,6 @@ def main():
         )
         subject_counts = cur.fetchall()
 
-        def subject_nav(prefix="", current=None):
-            links = [
-                (f'{esc(name)} ({n})' if name == current
-                 else f'<a href="{subject_href(name, prefix)}">{esc(name)}</a> ({n})')
-                for name, n in subject_counts
-            ]
-            all_link = "All" if current is None else '<a href="/">All</a>'
-            return f"<p>{all_link} · " + " · ".join(links) + "</p>"
-
         MENU_SUBJECTS[:] = [
             (name, re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-"))
             for name, _n in subject_counts
@@ -1703,7 +1691,6 @@ def main():
             write_feed_pages(
                 site, cur, subject_articles, name.lower().replace(" ", "-"),
                 f"{config.SITE_NAME} — {name}", name, prefix="../",
-                subject_nav=subject_nav(prefix="../", current=name),
                 skip_images=house_images, subdir="subjects",
                 feed_href=f"subjects/{re.sub(r'[^a-z0-9]+', '-', name.lower()).strip('-')}.xml",
                 feed_title=f"{config.SITE_NAME} — {name}",
