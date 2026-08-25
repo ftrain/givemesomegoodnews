@@ -1374,7 +1374,7 @@ def load_articles(cur, limit, subject=None, feature=None, default_only=False,
         FROM articles a JOIN orgs o ON o.id = a.org_id
         WHERE (%s::text IS NULL OR a.subject = %s)
           AND (%s::text IS NULL OR %s = ANY(o.features))
-          AND (NOT %s OR (o.in_default AND o.language = 'English'))
+          AND (NOT %s OR (o.in_default AND coalesce(a.language, 'English') = 'English'))
           {extra}
         ORDER BY coalesce(a.published_at, a.fetched_at) DESC, a.id DESC
         LIMIT %s

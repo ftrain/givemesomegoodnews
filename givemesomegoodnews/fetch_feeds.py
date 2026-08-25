@@ -20,6 +20,7 @@ from . import config
 from .db import connect, log_fetch, vec_literal
 from .embedder import get_embedder
 from .images import cache_image
+from .language import detect as detect_language
 from .subjects import classify
 from .extract import clean_summary, text_from_html_fragment
 from .fetchutil import FEED_CANDIDATE_PATHS, canonical_url, feed_links_in_html, get, looks_like_feed
@@ -168,6 +169,7 @@ def crawl_one(org):
                 "categories": categories,
                 "subject": subject,
                 "subject_source": subject_source,
+                "language": detect_language(title, summary),
             }
         )
     return org, feed_url, items
@@ -236,14 +238,14 @@ def main():
                     cur.execute(
                         """INSERT INTO articles (org_id, url, title, summary, author, published_at,
                                                  image_url, image_alt, image_file, image_w, image_h,
-                                                 categories, subject, subject_source, embedding)
-                           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                                 categories, subject, subject_source, language, embedding)
+                           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                            ON CONFLICT (url) DO NOTHING""",
                         (org["id"], item["url"], item["title"], item["summary"],
                          item["author"], item["published_at"], item["image_url"], item["image_alt"],
                          item["image_file"], item["image_w"], item["image_h"],
                          item["categories"], item["subject"],
-                         item["subject_source"], vec_literal(vec)),
+                         item["subject_source"], item["language"], vec_literal(vec)),
                     )
             cur.execute("UPDATE orgs SET last_crawled_at = now() WHERE id = %s", (org["id"],))
             log_fetch(cur, org["slug"], "feed", feed_url, True, f"{len(new_items)} new / {len(items)} in feed")

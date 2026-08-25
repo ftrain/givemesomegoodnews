@@ -24,6 +24,14 @@ DEFAULTS = [
     ("title", r"\yfuneral (home|notice|arrangements)", "funeral notices"),
     ("title", r"\yhoroscopes?\y", "horoscopes"),
     ("title", r"\ylottery (numbers|results)\y", "lottery results"),
+    ("title", r"\yrecipes?\y|\yhow to make\y", "recipes"),
+    ("title", r"\ythings to do\y|\yweekend guide\y|\yevents? (calendar|listing)", "listings"),
+    ("title", r"\ytraffic (report|alert)\y|\yroad (closures?|work) (report|week)|"
+              r"\yongoing traffic\y", "traffic notices"),
+    ("title", r"\ynews quiz\y|\ycrossword\y|\ysudoku\y", "puzzles"),
+    ("title", r"\y(certification|training) course\y|\yevent announcement\y|"
+              r"\yregistration (is )?open\y", "event announcements"),
+    ("url", r"/events?/|/calendar/|/classifieds?/|/recipes?/", "events and classifieds"),
 ]
 
 

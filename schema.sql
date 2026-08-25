@@ -181,3 +181,8 @@ CREATE INDEX IF NOT EXISTS feed_filters_enabled_idx ON feed_filters (enabled);
 ALTER TABLE orgs ADD COLUMN IF NOT EXISTS last_crawled_at TIMESTAMPTZ;
 CREATE INDEX IF NOT EXISTS orgs_rotation_idx ON orgs (last_crawled_at NULLS FIRST)
     WHERE crawl_feed;
+
+-- Language of the story itself, not of the masthead: bilingual outlets
+-- publish in both under one name.
+ALTER TABLE articles ADD COLUMN IF NOT EXISTS language TEXT;
+CREATE INDEX IF NOT EXISTS articles_language_idx ON articles (language);
