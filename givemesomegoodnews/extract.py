@@ -168,6 +168,13 @@ _BOILERPLATE = [
     re.compile(r"\s*Continue reading\s*[\u2192>\u00bb]*\s*$", re.IGNORECASE),
     re.compile(r"\s*(\[\s*(\u2026|\.\.\.)\s*\]|\u2026|\.\.\.)\s*$"),
     re.compile(r"\s*Read more\s*$", re.IGNORECASE),
+    # "Read the story on VTDigger here: <headline>", and the syndication
+    # footers that read "This article first appeared on ...".
+    re.compile(r"(?<=.{40})\s*Read (?:the|this)(?: full)?(?: story| article)?"
+               r"(?: on| at| from)\s+\S.*$", re.IGNORECASE | re.DOTALL),
+    re.compile(r"(?<=.{40})\s*This (?:article|story|post)(?: first| originally)?"
+               r" appeared\s+\S.*$", re.IGNORECASE | re.DOTALL),
+    re.compile(r"(?<=.{40})\s*Originally published\s+\S.*$", re.IGNORECASE | re.DOTALL),
     # Publishers often truncate mid-footer, leaving "[\u2026] The post Akron teens"
     # with no "appeared first on" to anchor on. Drop from "The post" to the
     # end, but only once there is real summary text ahead of it.
