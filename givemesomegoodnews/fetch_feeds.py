@@ -178,10 +178,10 @@ def main():
     embedder = get_embedder()
 
     with connect() as conn, conn.cursor() as cur:
-        query = "SELECT id, slug, url, feed_url FROM orgs"
+        query = "SELECT id, slug, url, feed_url FROM orgs WHERE crawl_feed"
         params = []
         if slugs:
-            query += " WHERE slug = ANY(%s)"
+            query += " AND slug = ANY(%s)"
             params.append(slugs)
         cur.execute(query + " ORDER BY slug", params)
         orgs = [dict(zip(("id", "slug", "url", "feed_url"), r)) for r in cur.fetchall()]

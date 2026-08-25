@@ -168,6 +168,7 @@ def menu(prefix="", site_name=""):
 <h3>Sections</h3><nav aria-label="Sections"><ul>{sections}</ul></nav>
 <h3>Subjects</h3><nav aria-label="Subjects"><ul>{subjects}</ul></nav>
 <h3>Feeds</h3><nav aria-label="RSS feeds"><ul>{feeds}</ul></nav>
+<p class="meta"><a href="/admin" rel="nofollow" title="Feed management">&#9881; Manage feeds</a></p>
 </div>
 </details>"""
 

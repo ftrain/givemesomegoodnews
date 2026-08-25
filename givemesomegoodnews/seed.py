@@ -46,6 +46,31 @@ def load_orgs():
     return curated + fresh
 
 
+# Fields the admin tool is allowed to change. Anything else in an override
+# row is ignored, so a bad write can't reshape the schema.
+OVERRIDABLE = {
+    "name", "url", "feed_url", "support_url", "support_label", "model", "beat",
+    "city", "state", "coverage", "coverage_type", "features", "tagline",
+    "in_default", "crawl_feed", "language", "timezone",
+}
+
+
+def apply_overrides(cur):
+    """Re-apply admin edits on top of whatever the yaml just wrote."""
+    cur.execute("SELECT slug, fields FROM org_overrides")
+    rows = cur.fetchall()
+    applied = 0
+    for slug, fields in rows:
+        edits = {k: v for k, v in (fields or {}).items() if k in OVERRIDABLE}
+        if not edits:
+            continue
+        assignments = ", ".join(f"{k} = %({k})s" for k in edits)
+        edits["slug"] = slug
+        cur.execute(f"UPDATE orgs SET {assignments} WHERE slug = %(slug)s", edits)
+        applied += cur.rowcount
+    return applied
+
+
 def main():
     orgs = load_orgs()
     seen = set()
@@ -98,8 +123,10 @@ def main():
                 """,
                 row,
             )
+        applied = apply_overrides(cur)
         cur.execute("SELECT count(*) FROM orgs")
-        print(f"seeded {len(orgs)} orgs; {cur.fetchone()[0]} in database")
+        print(f"seeded {len(orgs)} orgs; {cur.fetchone()[0]} in database"
+              + (f"; {applied} admin overrides re-applied" if applied else ""))
 
 
 if __name__ == "__main__":

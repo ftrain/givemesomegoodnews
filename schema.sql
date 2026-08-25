@@ -136,3 +136,31 @@ CREATE INDEX IF NOT EXISTS orgs_state_idx        ON orgs (state);
 CREATE INDEX IF NOT EXISTS orgs_source_idx       ON orgs (source);
 CREATE INDEX IF NOT EXISTS orgs_support_idx      ON orgs (support_url) WHERE support_url IS NOT NULL;
 CREATE INDEX IF NOT EXISTS fetch_log_slug_idx    ON fetch_log (org_slug, fetched_at DESC);
+
+-- Admin: one operator, passwordless, tokens issued over SSH rather than email
+-- (DigitalOcean blocks outbound port 25, and a relay is one more thing to leak).
+CREATE TABLE IF NOT EXISTS admin_tokens (
+    token_hash  TEXT PRIMARY KEY,
+    email       TEXT NOT NULL,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+    expires_at  TIMESTAMPTZ NOT NULL,
+    used_at     TIMESTAMPTZ
+);
+CREATE TABLE IF NOT EXISTS admin_sessions (
+    session_hash TEXT PRIMARY KEY,
+    email        TEXT NOT NULL,
+    created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+    expires_at   TIMESTAMPTZ NOT NULL
+);
+CREATE INDEX IF NOT EXISTS admin_sessions_exp_idx ON admin_sessions (expires_at);
+
+-- Edits made in the admin tool, kept apart from the yaml so that re-seeding
+-- or re-importing the directory never silently undoes them.
+CREATE TABLE IF NOT EXISTS org_overrides (
+    slug        TEXT PRIMARY KEY,
+    fields      JSONB NOT NULL DEFAULT '{}'::jsonb,
+    updated_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_by  TEXT
+);
+
+ALTER TABLE orgs ADD COLUMN IF NOT EXISTS crawl_feed BOOLEAN NOT NULL DEFAULT true;
