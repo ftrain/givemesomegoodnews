@@ -141,6 +141,20 @@ color:var(--dim);text-decoration:none}}
 .lozenge:hover,.lozenge:focus{{border-color:var(--link);color:var(--link);text-decoration:none}}
 .lozenge[aria-current=page],.lozenge.on{{border-color:var(--link);color:var(--bg);background:var(--link)}}
 .chips{{margin:.75rem 0 1.25rem}}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}}
+.tagcol .lozenge{{margin:0}}
+.tagcol .section{{border-color:var(--fg);color:var(--fg);font-weight:600}}
+.lozenge.give{{border-color:var(--link);color:var(--link);font-weight:600}}
+.lozenge.give:hover,.lozenge.give:focus{{background:var(--link);color:var(--bg)}}
+a.lozenge.more{{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}}
+a.lozenge.more:hover,a.lozenge.more:focus{{background:var(--fg);color:var(--bg)}}
+.source{{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .25rem}}
+.whenwhere{{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);margin:0 0 .15rem}}
+.byline{{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);margin:0 0 .6rem}}
+@media(max-width:34rem){{.tagcol{{width:38%;max-width:8.5rem}}}}
 svg{{max-width:100%;height:auto}}
 blockquote{{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}}
 hr{{border:0;border-top:1px solid var(--rule);margin:2rem 0}}
