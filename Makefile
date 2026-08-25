@@ -28,6 +28,9 @@ support:
 feeds:
 	$(PY) -m givemesomegoodnews.fetch_feeds
 
+prune:
+	$(PY) -m givemesomegoodnews.prune
+
 classify:
 	$(PY) -m givemesomegoodnews.classify
 
@@ -38,9 +41,9 @@ build:
 	$(PY) -m givemesomegoodnews.build_site
 
 # What a cron job should run: pull new stories, regenerate the site.
-refresh: feeds classify build
+refresh: feeds classify prune build
 
 serve:
 	$(PY) -m http.server 8000 --directory site
 
-.PHONY: all db seed about taglines institutions support feeds classify embed build refresh serve
+.PHONY: all db seed about taglines institutions support feeds classify prune embed build refresh serve

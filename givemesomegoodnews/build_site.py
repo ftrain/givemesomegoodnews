@@ -113,13 +113,17 @@ input,button{{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}}
 input[type=search]{{width:min(20rem,68%)}}
 button{{cursor:pointer;color:var(--link)}}
-/* The menu is the whole navigation: sections, subjects, feeds, search. */
+/* The menu is the whole navigation: sections, subjects, feeds, search.
+   Pinned to the top so it is reachable anywhere down an endless feed. */
+header{{position:sticky;top:0;z-index:10;background:var(--bg)}}
 .menu{{border-bottom:2px solid var(--fg);margin-bottom:1rem}}
-.menu>summary{{cursor:pointer;list-style:none;padding:.6rem 0;
-font-weight:700;font-size:1.15rem;display:flex;gap:.5rem;align-items:baseline}}
+.menu>summary{{cursor:pointer;list-style:none;padding:.55rem 0;
+display:flex;gap:.6rem;align-items:center}}
 .menu>summary::-webkit-details-marker{{display:none}}
-.menu>summary::before{{content:"\2630";color:var(--dim);font-weight:400}}
+.menu>summary::before{{content:"\2630";color:var(--dim);font-size:1.3rem;line-height:1}}
 .menu[open]>summary::before{{content:"\00d7"}}
+.masthead{{width:min(24rem,72%);height:auto}}
+.menu[open]>.panel{{max-height:70vh;overflow-y:auto}}
 .panel{{padding:.4rem 0 1rem}}
 .panel h3{{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
 margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}}
@@ -144,7 +148,8 @@ def menu(prefix="", site_name=""):
         f'<li><a href="{prefix}{path}">{esc(label)}</a></li>' for path, label in MENU_FEEDS
     )
     return f"""<details class="menu">
-<summary>{esc(site_name)}</summary>
+<summary><img class="masthead" src="{prefix}masthead.svg" alt="{esc(site_name)}"
+ width="440" height="44"></summary>
 <div class="panel">
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
@@ -1222,6 +1227,9 @@ def main():
         fonts_dst.mkdir(parents=True, exist_ok=True)
         for font in fonts_src.glob("*.woff2"):
             shutil.copyfile(font, fonts_dst / font.name)
+    masthead = config.ASSETS_DIR / "masthead.svg"
+    if masthead.is_file():
+        shutil.copyfile(masthead, site / "masthead.svg")
 
     with connect() as conn, conn.cursor() as cur:
         orgs = load_orgs(cur)

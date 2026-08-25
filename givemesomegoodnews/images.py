@@ -21,6 +21,10 @@ from .fetchutil import get
 MIN_SOURCE_WIDTH = 200
 MAX_BYTES = 8 * 1024 * 1024
 THUMB_WIDTH = 480
+# WebP at this quality lands roughly a third smaller than JPEG q80 at the
+# same width, which matters at a thousand feeds. Files already cached as
+# .jpg stay valid and are never re-fetched.
+WEBP_QUALITY = 78
 JPEG_QUALITY = 80
 
 
@@ -30,8 +34,8 @@ def cache_dir():
     return d
 
 
-def cached_name(url):
-    return hashlib.sha1(url.encode("utf-8")).hexdigest() + ".jpg"
+def cached_name(url, ext=".webp"):
+    return hashlib.sha1(url.encode("utf-8")).hexdigest() + ext
 
 
 def dimensions(name):
@@ -57,6 +61,11 @@ def cache_image(url):
     if path.exists():
         w, h = dimensions(name)
         return name, w, h
+    # Anything cached before the switch to WebP is still good.
+    legacy = cached_name(url, ".jpg")
+    if (cache_dir() / legacy).exists():
+        w, h = dimensions(legacy)
+        return legacy, w, h
 
     try:
         resp = get(url, retries=0)
@@ -84,7 +93,13 @@ def cache_image(url):
         if img.width > THUMB_WIDTH:
             height = round(img.height * THUMB_WIDTH / img.width)
             img = img.resize((THUMB_WIDTH, height), Image.LANCZOS)
-        img.save(path, "JPEG", quality=JPEG_QUALITY, optimize=True, progressive=True)
+        try:
+            img.save(path, "WEBP", quality=WEBP_QUALITY, method=6)
+        except (KeyError, OSError, ValueError):
+            # No WebP support in this Pillow build; JPEG is a fine fallback.
+            name = cached_name(url, ".jpg")
+            path = cache_dir() / name
+            img.save(path, "JPEG", quality=JPEG_QUALITY, optimize=True, progressive=True)
         return name, img.width, img.height
     except Exception:
         # Bad bytes, refused connection, decompression bomb — one bad
