@@ -47,7 +47,13 @@ _AMBIGUOUS = STOPWORDS["Spanish"] & STOPWORDS["French"] | \
              STOPWORDS["Spanish"] & STOPWORDS["Portuguese"]
 
 MIN_WORDS = 6
-MIN_SHARE = 0.12
+# Decided by comparison, not by an absolute floor. A longer Spanish story
+# dilutes its own stopword ratio below any fixed threshold, and falling back
+# to English then is exactly wrong when the text contains no English
+# function words at all. What settles it is one language clearly out-scoring
+# English.
+MIN_MARGIN = 0.05
+MIN_EVIDENCE = 0.055
 
 
 def detect(*texts, default="English"):
@@ -71,14 +77,12 @@ def detect(*texts, default="English"):
     scores = {}
     for name, stops in STOPWORDS.items():
         hits = sum(1 for w in words if w in stops)
-        # Words every Romance language shares carry half weight.
-        shared = sum(0.5 for w in words if w in _AMBIGUOUS and w in stops)
+        # Words every Romance language shares carry reduced weight.
+        shared = sum(0.4 for w in words if w in _AMBIGUOUS and w in stops)
         scores[name] = (hits - shared) / total
-    best = max(scores, key=scores.get)
-    if scores[best] < MIN_SHARE:
-        return default
-    # English wins ties: most of this catalog is English, and a short
-    # headline with one or two Romance stopwords is usually a name.
-    if scores["English"] >= scores[best] - 0.01:
-        return "English"
-    return best
+    english = scores.get("English", 0.0)
+    others = {n: v for n, v in scores.items() if n != "English"}
+    best = max(others, key=others.get)
+    if others[best] >= MIN_EVIDENCE and others[best] - english >= MIN_MARGIN:
+        return best
+    return default
