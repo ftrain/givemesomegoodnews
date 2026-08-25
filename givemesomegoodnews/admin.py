@@ -26,6 +26,7 @@ from urllib.parse import parse_qs, urlparse
 
 from . import config
 from .db import connect
+from .filters import FIELDS as FILTER_FIELDS, load as load_filters
 from .tags import COMMUNITY_TAGS, OWNERSHIP_TAGS, PRACTICE_TAGS
 
 ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "ford@ftrain.com")
@@ -132,7 +133,8 @@ def shell(title, body):
             f"<meta name=viewport content='width=device-width,initial-scale=1'>"
             f"<meta name=robots content='noindex,nofollow'>"
             f"<title>{esc(title)}</title>{CSS}</head><body>"
-            f"<p class=note><a href='/admin'>Feed management</a> &middot; "
+            f"<p class=note><a href='/admin'>Newsrooms</a> &middot; "
+            f"<a href='/admin/filters'>Front-page filters</a> &middot; "
             f"<a href='/'>Back to the site</a></p>{body}</body></html>")
 
 
@@ -281,6 +283,87 @@ def reset(email, form):
     return "Reset. The next seed restores the catalog values."
 
 
+def filters_view(email, message=""):
+    """What the front page leaves out, and a way to change it."""
+    with connect() as conn, conn.cursor() as cur:
+        rules = load_filters(cur)
+        counts = {}
+        for rule in rules:
+            cur.execute(
+                f"SELECT count(*) FROM articles WHERE coalesce({rule['field']}, '') ~* %s",
+                (rule["pattern"],),
+            )
+            counts[rule["id"]] = cur.fetchone()[0]
+
+    rows = []
+    for rule in rules:
+        state = "on" if rule["enabled"] else "off"
+        rows.append(
+            f"<tr><td>{esc(rule['field'])}</td>"
+            f"<td><code>{esc(rule['pattern'])}</code><br>"
+            f"<span class=note>{esc(rule['note'] or '')}</span></td>"
+            f"<td>{counts.get(rule['id'], 0)}</td>"
+            f"<td>{state}</td>"
+            f"<td><form method=post action='/admin/filter' style='display:inline'>"
+            f"<input type=hidden name=csrf value='{csrf_for(email)}'>"
+            f"<input type=hidden name=id value='{rule['id']}'>"
+            f"<button class=quiet name=action value='toggle'>"
+            f"{'disable' if rule['enabled'] else 'enable'}</button>"
+            f"<button class=quiet name=action value='delete'>delete</button>"
+            f"</form></td></tr>")
+
+    options = "".join(f"<option value='{esc(f)}'>{esc(f)}</option>" for f in FILTER_FIELDS)
+    body = [
+        "<h1>Front-page filters</h1>",
+        "<p class=note>Stories matching an enabled rule are kept off the feed "
+        "pages. They stay in the database and stay searchable. Patterns are "
+        "case-insensitive POSIX regexes; <code>\\y</code> is a word boundary. "
+        "The count is how many stories in the archive each rule matches.</p>",
+        f"<p class=note>{esc(message)}</p>" if message else "",
+        "<table><tr><th>Field</th><th>Pattern</th><th>Matches</th>"
+        "<th>State</th><th></th></tr>" + "".join(rows) + "</table>",
+        "<h2>Add a rule</h2>",
+        "<form method=post action='/admin/filter'>",
+        f"<input type=hidden name=csrf value='{csrf_for(email)}'>",
+        "<input type=hidden name=action value='add'>",
+        f"<label for=field>Field</label><select id=field name=field>{options}</select>",
+        "<label for=pattern>Pattern</label>"
+        "<input type=text id=pattern name=pattern placeholder='\\yobituar'>",
+        "<label for=note>Note</label><input type=text id=note name=note>",
+        "<p><button type=submit>Add</button></p></form>",
+    ]
+    return shell("Front-page filters", "".join(body))
+
+
+def filter_action(email, form):
+    action = (form.get("action") or [""])[0]
+    with connect() as conn, conn.cursor() as cur:
+        if action == "add":
+            field = (form.get("field") or [""])[0]
+            pattern = (form.get("pattern") or [""])[0].strip()
+            if field not in FILTER_FIELDS or not pattern:
+                return "Need a valid field and a pattern."
+            try:  # reject a regex Postgres cannot compile, before storing it
+                cur.execute("SELECT %s ~* %s", ("test", pattern))
+            except Exception:
+                return "That is not a valid regular expression."
+            cur.execute(
+                "INSERT INTO feed_filters (field, pattern, note) VALUES (%s, %s, %s)",
+                (field, pattern, (form.get("note") or [""])[0].strip() or None),
+            )
+            return "Rule added."
+        rule_id = (form.get("id") or [""])[0]
+        if not rule_id.isdigit():
+            return "No rule given."
+        if action == "toggle":
+            cur.execute("UPDATE feed_filters SET enabled = NOT enabled WHERE id = %s", (rule_id,))
+            return "Rule toggled."
+        if action == "delete":
+            cur.execute("DELETE FROM feed_filters WHERE id = %s", (rule_id,))
+            return "Rule deleted."
+    return "Nothing to do."
+
+
 # ------------------------------------------------------------------ handler
 class Handler(BaseHTTPRequestHandler):
     server_version = "givemesomegoodnews-admin"
@@ -324,6 +407,8 @@ class Handler(BaseHTTPRequestHandler):
             return self._deny()
         if parsed.path in ("/admin", "/admin/"):
             return self._send(list_view(email, (params.get("q") or [""])[0][:80]))
+        if parsed.path in ("/admin/filters", "/admin/filters/"):
+            return self._send(filters_view(email, (params.get("m") or [""])[0][:120]))
         if parsed.path == "/admin/org":
             view = org_view(email, (params.get("slug") or [""])[0][:80],
                             (params.get("m") or [""])[0][:120])
@@ -343,6 +428,12 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(shell("Rejected", "<h1>Stale form</h1><p>Reload and try again.</p>"),
                               status=403)
         parsed = urlparse(self.path)
+        if parsed.path == "/admin/filter":
+            message = filter_action(email, form)
+            self.send_response(303)
+            self.send_header("Location", f"/admin/filters?m={message.replace(' ', '+')}")
+            self.end_headers()
+            return
         if parsed.path == "/admin/save":
             message = save(email, form)
         elif parsed.path == "/admin/reset":

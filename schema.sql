@@ -164,3 +164,15 @@ CREATE TABLE IF NOT EXISTS org_overrides (
 );
 
 ALTER TABLE orgs ADD COLUMN IF NOT EXISTS crawl_feed BOOLEAN NOT NULL DEFAULT true;
+
+-- What the front page leaves out. Editable in the admin tool rather than
+-- compiled in, because "that kind of thing" is a moving target.
+CREATE TABLE IF NOT EXISTS feed_filters (
+    id          SERIAL PRIMARY KEY,
+    field       TEXT NOT NULL,          -- title | summary | url | subject
+    pattern     TEXT NOT NULL,          -- case-insensitive POSIX regex
+    note        TEXT,
+    enabled     BOOLEAN NOT NULL DEFAULT true,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS feed_filters_enabled_idx ON feed_filters (enabled);

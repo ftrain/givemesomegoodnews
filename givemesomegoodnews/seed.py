@@ -6,6 +6,7 @@ import yaml
 
 from . import config
 from .db import connect
+from .filters import seed_defaults
 from .tags import in_default_feed, language_of
 
 FIELDS = [
@@ -123,6 +124,9 @@ def main():
                 """,
                 row,
             )
+        seeded_filters = seed_defaults(cur)
+        if seeded_filters:
+            print(f"seeded {seeded_filters} default feed filters")
         applied = apply_overrides(cur)
         cur.execute("SELECT count(*) FROM orgs")
         print(f"seeded {len(orgs)} orgs; {cur.fetchone()[0]} in database"

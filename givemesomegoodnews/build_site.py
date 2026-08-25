@@ -23,7 +23,7 @@ from html import escape as esc
 from . import config
 from .albers import MapProjection
 from .timezones import local_dateline, local_time
-from . import syndicate
+from . import filters, syndicate
 from .tags import TAG_GROUPS, region_of, tag_slug
 from .db import connect
 
@@ -57,20 +57,25 @@ STATE_NAMES = {
     "WV": "West Virginia", "WI": "Wisconsin", "WY": "Wyoming",
 }
 
-# Ordered by what someone opening the site actually wants: the news, then
-# more of the news, then the ways of navigating it, then the meta pages.
-NAV = [
-    ("index.html", "Today's news"),
-    ("everything.html", "Every newsroom"),
-    ("connections.html", "Same story, many places"),
+# Subjects come first because they are what a reader is actually choosing
+# between; then the ways of navigating the whole thing; then the meta pages.
+SUBJECT_ORDER = [
+    "News", "Politics", "Opinion", "Health", "Environment", "Education",
+    "Business", "Housing", "Sports", "Food", "Arts",
+]
+NAV_BROWSE = [
     ("map.html", "Map"),
-    ("catalog.html", "Catalog"),
-    ("/search", "Search"),
-    ("feeds.html", "RSS feeds"),
+    ("catalog.html", "Newsrooms"),
+    ("big-stories.html", "Big Stories"),
+    ("story-links.html", "Story Links"),
+]
+NAV_META = [
     ("resources.html", "Resources"),
     ("text/", "Plain text edition"),
-    ("onepage.html", "Everything on one page"),
+    ("feeds.html", "RSS Feeds"),
+    ("about.html", "About This Site"),
 ]
+NAV = NAV_BROWSE + NAV_META
 
 
 # Everything the menu offers, filled in by main() before anything renders.
@@ -127,8 +132,10 @@ input[type=search]{{width:min(20rem,68%)}}
 button{{cursor:pointer;color:var(--link)}}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{{position:sticky;top:0;z-index:10;background:var(--bg)}}
-.menu{{border-bottom:2px solid var(--fg);margin-bottom:1rem}}
+header{{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
+align-items:center;justify-content:space-between;gap:.75rem;
+border-bottom:2px solid var(--fg);margin-bottom:1.25rem}}
+.home{{display:block;padding:.5rem 0;min-width:0}}
 .menu>summary{{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}}
 .menu>summary::-webkit-details-marker{{display:none}}
@@ -137,8 +144,12 @@ display:flex;gap:.6rem;align-items:center}}
 .burger .cross{{display:none}}
 .menu[open] .burger .bars{{display:none}}
 .menu[open] .burger .cross{{display:inline}}
-.masthead{{width:min(24rem,72%);height:auto}}
-.menu[open]>.panel{{max-height:70vh;overflow-y:auto}}
+.masthead{{width:min(22rem,100%);height:auto;display:block}}
+.panel{{position:absolute;left:0;right:0;top:100%;background:var(--bg);
+border-bottom:2px solid var(--fg);padding:.5rem 1rem 1.25rem;max-height:75vh;
+overflow-y:auto;z-index:20}}
+.panel hr{{margin:.9rem 0}}
+.panel ul.cols{{display:grid;grid-template-columns:repeat(auto-fill,minmax(7rem,1fr));gap:.4rem}}
 .panel{{padding:.4rem 0 1rem}}
 .panel h3{{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
 margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}}
@@ -151,34 +162,49 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}}
 
 
 def menu(prefix="", site_name=""):
-    """One disclosure holding every route into the site."""
+    """The masthead links home; the burger opens everything else.
+
+    The masthead sits outside the <summary> deliberately — a link inside a
+    disclosure summary toggles the disclosure instead of following the link
+    in several browsers, which is exactly the wrong thing for the way home.
+    """
     def href(target):
         return target if target.startswith("/") else prefix + target
 
-    sections = "".join(
-        f'<li><a href="{href(t)}">{esc(label)}</a></li>' for t, label in NAV
-    )
+    ordered = [(name, slug) for name in SUBJECT_ORDER
+               for n, slug in MENU_SUBJECTS if n == name]
+    ordered += [(n, slug) for n, slug in MENU_SUBJECTS if n not in SUBJECT_ORDER]
     subjects = "".join(
         f'<li><a href="{prefix}subjects/{slug}.html">{esc(name)}</a></li>'
-        for name, slug in MENU_SUBJECTS
+        for name, slug in ordered
     )
-    return f"""<details class="menu">
-<summary><svg class="burger" viewBox="0 0 24 24" width="24" height="24"
- aria-hidden="true" focusable="false"><g class="bars"><rect x="1" y="4" width="22" height="2.5"
- rx="1.25"/><rect x="1" y="10.75" width="22" height="2.5" rx="1.25"/><rect x="1" y="17.5"
- width="22" height="2.5" rx="1.25"/></g><g class="cross"><rect x="1" y="10.75" width="22"
- height="2.5" rx="1.25" transform="rotate(45 12 12)"/><rect x="1" y="10.75" width="22"
- height="2.5" rx="1.25" transform="rotate(-45 12 12)"/></g></svg><img class="masthead"
- src="{prefix}masthead.svg" alt="{esc(site_name)}" width="440" height="44"></summary>
+    browse = "".join(f'<li><a href="{href(t)}">{esc(label)}</a></li>'
+                     for t, label in NAV_BROWSE)
+    meta = "".join(f'<li><a href="{href(t)}">{esc(label)}</a></li>'
+                   for t, label in NAV_META)
+
+    return f"""<a class="home" href="{prefix}index.html"><img class="masthead"
+ src="{prefix}masthead.svg" alt="{esc(site_name)}" width="440" height="44"></a>
+<details class="menu">
+<summary title="Menu"><span class="skip">Menu</span><svg class="burger" viewBox="0 0 24 24"
+ width="24" height="24" aria-hidden="true" focusable="false"><g class="bars"><rect x="1" y="4"
+ width="22" height="2.5" rx="1.25"/><rect x="1" y="10.75" width="22" height="2.5" rx="1.25"/><rect
+ x="1" y="17.5" width="22" height="2.5" rx="1.25"/></g><g class="cross"><rect x="1" y="10.75"
+ width="22" height="2.5" rx="1.25" transform="rotate(45 12 12)"/><rect x="1" y="10.75" width="22"
+ height="2.5" rx="1.25" transform="rotate(-45 12 12)"/></g></svg></summary>
 <div class="panel">
-<nav aria-label="Sections"><ul>{sections}</ul></nav>
-<h3>Subjects</h3><nav aria-label="Subjects"><ul>{subjects}</ul></nav>
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
 <button type="submit">Search</button></p>
 </form>
-<p class="meta"><a href="/admin" rel="nofollow" title="Feed management">&#9881; Manage feeds</a></p>
+<hr>
+<nav aria-label="Subjects"><ul class="cols">{subjects}</ul></nav>
+<hr>
+<nav aria-label="Browse"><ul>{browse}</ul></nav>
+<hr>
+<nav aria-label="About"><ul>{meta}</ul></nav>
+<p class="meta"><a href="/admin" rel="nofollow">Manage feeds</a></p>
 </div>
 </details>"""
 
@@ -588,7 +614,7 @@ def feed_page_name(stem, index):
 def write_feed_pages(site, cur, articles, stem, title, heading, prefix="",
                      subject_nav=None, skip_images=(), subdir=None,
                      first_name=None, intro="", with_related=True,
-                     feed_href="feed.xml", feed_title=None):
+                     feed_href="feed.xml", feed_title=None, show_heading=True):
     """Split a feed into pages so no single page carries the whole crawl."""
     target = (site / subdir) if subdir else site
     target.mkdir(parents=True, exist_ok=True)
@@ -598,7 +624,8 @@ def write_feed_pages(site, cur, articles, stem, title, heading, prefix="",
         body = render_feed(cur, chunk, prefix=prefix, heading=heading,
                            subject_nav=nav, skip_images=skip_images,
                            page_index=index, page_count=len(chunks), stem=stem,
-                           intro=intro, with_related=with_related)
+                           intro=intro, with_related=with_related,
+                           show_heading=show_heading)
         head = title if index == 0 else f"{title} — page {index + 1}"
         name = first_name if (index == 0 and first_name) else feed_page_name(stem, index)
         target.joinpath(name).write_text(
@@ -708,10 +735,11 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
 
 def render_feed(cur, articles, mode="site", prefix="", with_related=True, heading="Feed",
                 subject_nav=None, skip_images=(), page_index=0, page_count=1, stem=None,
-                intro=""):
+                intro="", show_heading=True):
     parts = []
     if page_index == 0:
-        parts.append(f"<h1>{esc(heading)}</h1>")
+        if show_heading:
+            parts.append(f"<h1>{esc(heading)}</h1>")
         if intro:
             parts.append(intro)
         if subject_nav:
@@ -822,48 +850,48 @@ def _org_line(art, mode, prefix):
     return f'<a href="{esc(href)}">{esc(art["org_name"])}</a> ({esc(loc)})'
 
 
-def render_connections(cur, mode="site", prefix="", limit=20):
-    clusters, kindred, articles = gather_connections(cur)
+def render_big_stories(cur, mode="site", prefix="", limit=40):
+    """One story carried by many newsrooms — the day's biggest, measured by
+    how many newsrooms independently ran it."""
+    clusters, _kindred, _articles = gather_connections(cur)
+    parts = ["<h1>Big stories</h1>",
+             "<p>Stories running in several newsrooms at once, most-carried first.</p>"]
+    if not clusters:
+        parts.append("<p>Nothing shared across newsrooms in this crawl yet.</p>")
+        return "\n".join(parts)
+    parts.append("<ul>")
+    for members in sorted(clusters, key=len, reverse=True)[:limit]:
+        rep = members[0]
+        outlets = " &middot; ".join(
+            f'<a href="{esc(m["url"])}">{esc(m["org_name"])}</a>' for m in members
+        )
+        parts.append(
+            f'<li><a href="{esc(rep["url"])}">{esc(rep["title"])}</a>'
+            f'<br><span class="meta">in {len(members)} newsrooms: {outlets}</span></li>'
+        )
+    parts.append("</ul>")
+    return "\n".join(parts)
 
-    parts = [
-        "<h1>Connections across regions</h1>",
-        "<p>Nearest neighbours across state lines, by cosine distance.</p>",
-        "<h2>Same story, several outlets</h2>",
-    ]
-    if clusters:
-        parts.append("<ul>")
-        for members in clusters[:limit]:
-            rep = members[0]
-            outlets = " · ".join(
-                f'<a href="{esc(m["url"])}">{esc(m["org_name"])}</a>' for m in members
-            )
-            parts.append(
-                f'<li><p><a href="{esc(rep["url"])}">{esc(rep["title"])}</a><br>'
-                f"<small>running in {len(members)} outlets: {outlets}</small></p></li>"
-            )
-        parts.append("</ul>")
-    else:
-        parts.append("<p><em>No shared stories detected in this crawl.</em></p>")
 
-    parts += [
-        "<h2>Kindred stories, different places</h2>",
-        "<p>Distinct stories — separate newsrooms, separate "
-        "reporting — that the vector index says rhyme. The same pressures land "
-        "on every town: housing, schools, water, fire, policing, money.</p>",
-    ]
-    if kindred:
-        parts.append("<ol>")
-        for sim, ia, ib in kindred[:limit]:
-            a, b = articles[ia], articles[ib]
-            parts.append(
-                "<li><p>"
-                f'<a href="{esc(a["url"])}">{esc(a["title"])}</a><br><small>{_org_line(a, mode, prefix)}</small><br>'
-                f'↔ <a href="{esc(b["url"])}">{esc(b["title"])}</a><br><small>{_org_line(b, mode, prefix)} '
-                f"· similarity {sim:.2f}</small></p></li>"
-            )
-        parts.append("</ol>")
-    else:
-        parts.append("<p><em>No strong cross-region pairs yet — run the feed crawler a few more times.</em></p>")
+def render_story_links(cur, mode="site", prefix="", limit=40):
+    """Separate reporting, in different places, on the same pressure."""
+    _clusters, kindred, articles = gather_connections(cur)
+    parts = ["<h1>Story links</h1>",
+             "<p>Separate newsrooms, separate reporting, the same pressure landing "
+             "in two places. Paired by the vector index.</p>"]
+    if not kindred:
+        parts.append("<p>No strong cross-region pairs yet.</p>")
+        return "\n".join(parts)
+    parts.append("<ul>")
+    for sim, ia, ib in kindred[:limit]:
+        a, b = articles[ia], articles[ib]
+        parts.append(
+            f'<li><a href="{esc(a["url"])}">{esc(a["title"])}</a>'
+            f'<br><span class="meta">{_org_line(a, mode, prefix)}</span>'
+            f'<br><a href="{esc(b["url"])}">{esc(b["title"])}</a>'
+            f'<br><span class="meta">{_org_line(b, mode, prefix)}</span></li>'
+        )
+    parts.append("</ul>")
     return "\n".join(parts)
 
 
@@ -920,6 +948,56 @@ def feature_links(org, prefix=""):
     return " · ".join(
         f'<a href="{feature_href(f, prefix)}">{esc(f)}</a>' for f in (org.get("features") or [])
     )
+
+
+def render_about(cur, orgs):
+    """What this is, where the data came from, and who deserves the credit."""
+    cur.execute("SELECT count(*) FROM articles")
+    n_articles = cur.fetchone()[0]
+    n_states = len({o["state"] for o in orgs if o["state"]})
+    cur.execute("SELECT count(*) FROM orgs WHERE support_url IS NOT NULL")
+    n_support = cur.fetchone()[0]
+    return f"""<h1>About this site</h1>
+<p>A reading list of local newsrooms that are built to last, and a feed of
+what they published. {len(orgs)} newsrooms across {n_states} states and
+territories; {n_articles} stories; {n_support} of them with a link that lets
+you pay them directly.</p>
+
+<h2>What is here and what is not</h2>
+<p>Nonprofits, co-ops, family and community papers, Native-owned outlets,
+the Black-owned and Spanish-language press, college newsrooms, and small
+literary and arts magazines. No chains, no hedge-fund papers, no metro
+dailies. Obituaries, death notices and horoscopes are kept off the front
+page; they are still in the archive and still searchable.</p>
+
+<h2>How it works</h2>
+<p>Each newsroom's own RSS feed is read every three hours. Headlines,
+summaries and pictures come from those feeds and link back to the original.
+Subjects are assigned from the publisher's own categories, then from URL
+paths, then by nearest neighbour over article embeddings — no language model
+is involved anywhere. Pictures are downloaded and served from here rather
+than hotlinked, so a publisher's server is hit once per image instead of
+once per reader.</p>
+
+<h2>Credit</h2>
+<p>Every story belongs to the newsroom that reported it. Nothing here is
+this site's journalism, and nothing in the feeds claims otherwise.</p>
+<p>The newsroom directory was compiled by the
+<a href="https://www.mediaanddemocracyproject.org/journalism-directory">Media
+and Democracy Project</a>. Coordinates come from the U.S. Census Bureau
+gazetteer. Catalog descriptions are quoted from each newsroom's own About
+page. The funders, networks and associations that keep this sector alive are
+listed under <a href="resources.html">Resources</a>.</p>
+
+<h2>Reading it elsewhere</h2>
+<p><a href="feeds.html">RSS feeds</a> for everything, for each subject and
+for each tag; a <a href="text/index.html">plain text edition</a> with no
+images or scripts; and any <a href="/search">search</a> can be subscribed to
+as a feed.</p>
+
+<h2>Robots</h2>
+<p>Automated bulk collection of these stories is refused. They are not this
+site's to give away.</p>"""
 
 
 def render_feeds_page(subject_counts, tags):
@@ -1074,6 +1152,9 @@ h1{font-size:1.6rem}h2{font-size:1.25rem;margin:2rem 0 .3rem}
 dl{margin:.2rem 0 .6rem}dt{font-weight:700}dd{margin:0 0 .3rem}
 :focus-visible{outline:3px solid currentColor;outline-offset:2px}
 .skip{position:absolute;left:-9999px}.skip:focus{position:static;display:block}
+article{margin:0 0 2rem;padding-bottom:1rem;border-bottom:1px solid currentColor}
+summary{cursor:pointer;font-size:.95rem}
+details[open] dl{margin-top:.5rem}
 </style>"""
 
 
@@ -1098,10 +1179,10 @@ def text_page(title, body, prefix=""):
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
 <nav aria-label="Sections">
-<p><a href="{prefix}text/index.html">Stories</a> ·
-<a href="{prefix}text/catalog.html">Newsrooms</a> ·
-<a href="/search">Search</a> ·
-<a href="{prefix}index.html">Full version</a></p>
+<p><a href="index.html">Stories</a> &middot;
+<a href="catalog.html">Newsrooms</a> &middot;
+<a href="/search">Search</a> &middot;
+<a href="../index.html">Full version</a></p>
 </nav>
 </header>
 <main id="main">
@@ -1117,37 +1198,46 @@ and pay them if you can.</p>
 
 
 def render_text_item(a, prefix="../"):
-    """One story, written out as a definition list a screen reader can scan."""
+    """Source and headline, and nothing else until it is asked for.
+
+    A screen reader going down a feed wants the newsroom and the headline —
+    not a byline, a timestamp, a subject and a list of tags before every
+    single item. The rest goes in a <details>, which reads as a collapsed
+    "Details" button and stays out of the way until opened.
+    """
+    org_link = f'<a href="{prefix}orgs/{esc(a["slug"])}.html">{esc(a["org_name"])}</a>'
+    out = [
+        "<article>",
+        f'<h2><a href="{esc(a["url"])}">{esc(a["title"])}</a></h2>',
+        f"<p>{org_link} &middot; "
+        f'<a href="{esc(a["url"])}">Read at {esc(a["org_name"])}</a></p>',
+        "<details><summary>Details</summary><dl>",
+    ]
     when = local_dateline(a["published_at"] or a["fetched_at"], a.get("state"), a.get("timezone"))
     where = a.get("beat") or a.get("city") or a.get("coverage") or ""
-    support_url = a.get("support_url") or a["org_url"]
-    support_label = a.get("support_label") or "Support"
-    rows = [
-        f'<h2><a href="{esc(a["url"])}">{esc(a["title"])}</a></h2>',
-        "<dl>",
-        f'<dt>Newsroom</dt><dd><a href="{prefix}orgs/{esc(a["slug"])}.html">'
-        f'{esc(a["org_name"])}</a>{f", {esc(where)}" if where else ""}</dd>',
-    ]
     if a.get("author"):
-        rows.append(f"<dt>Reported by</dt><dd>{esc(a['author'])}</dd>")
+        out.append(f"<dt>Reported by</dt><dd>{esc(a['author'])}</dd>")
     if when:
-        rows.append(f"<dt>Published</dt><dd>{esc(when)}</dd>")
+        out.append(f"<dt>Published</dt><dd>{esc(when)}</dd>")
+    if where:
+        out.append(f"<dt>Covers</dt><dd>{esc(where)}</dd>")
     if a.get("subject"):
-        rows.append(f"<dt>Subject</dt><dd>{esc(a['subject'])}</dd>")
+        out.append(f"<dt>Subject</dt><dd>{esc(a['subject'])}</dd>")
     tags = ", ".join(ownership_tags(a))
     if tags:
-        rows.append(f"<dt>Newsroom type</dt><dd>{esc(tags)}</dd>")
+        out.append(f"<dt>Newsroom type</dt><dd>{esc(tags)}</dd>")
     if a.get("image_alt"):
-        rows.append(f"<dt>Picture</dt><dd>{esc(a['image_alt'])}</dd>")
-    rows.append("</dl>")
+        out.append(f"<dt>Picture</dt><dd>{esc(a['image_alt'])}</dd>")
     if a.get("summary"):
-        rows.append(f"<p>{esc(a['summary'][:600])}</p>")
-    rows.append(
-        f'<p><a href="{esc(a["url"])}">Read the full story at '
-        f'{esc(a["org_name"])}</a> · '
-        f'<a href="{esc(support_url)}">{esc(support_label)} {esc(a["org_name"])}</a></p>'
+        out.append(f"<dt>Summary</dt><dd>{esc(a['summary'][:600])}</dd>")
+    support_url = a.get("support_url") or a["org_url"]
+    support_label = a.get("support_label") or "Support"
+    out.append(
+        f'<dt>Support</dt><dd><a href="{esc(support_url)}">'
+        f'{esc(support_label)} {esc(a["org_name"])}</a></dd>'
     )
-    return "<article>" + "\n".join(rows) + "</article>"
+    out.append("</dl></details></article>")
+    return "\n".join(out)
 
 
 def write_text_edition(site, cur, articles, orgs):
@@ -1156,9 +1246,9 @@ def write_text_edition(site, cur, articles, orgs):
     out.mkdir(parents=True, exist_ok=True)
     body = [
         f"<h1>{esc(config.SITE_NAME)}</h1>",
-        f"<p>The latest {min(len(articles), 60)} stories from "
-        f"{len(orgs)} local newsrooms, newest first. "
-        "No images, no scripts, one column.</p>",
+        f"<p>The latest {min(len(articles), 60)} stories, newest first. Each is a "
+        "newsroom and a headline; open Details for the byline, date and how to "
+        "support them. No images, no scripts, one column.</p>",
     ]
     body += [render_text_item(a) for a in articles[:60]]
     (out / "index.html").write_text(text_page(f"{config.SITE_NAME} — plain text", "\n".join(body)))
@@ -1242,7 +1332,9 @@ def load_orgs(cur):
     return [dict(zip(ORG_COLUMNS, row)) for row in cur.fetchall()]
 
 
-def load_articles(cur, limit, subject=None, feature=None, default_only=False):
+def load_articles(cur, limit, subject=None, feature=None, default_only=False,
+                  apply_filters=True):
+    filter_sql, filter_params = filters.where_clause(cur) if apply_filters else ("", [])
     cur.execute(
         """
         SELECT a.id, a.url, a.title, a.summary, a.author, a.published_at, a.fetched_at,
@@ -1255,10 +1347,11 @@ def load_articles(cur, limit, subject=None, feature=None, default_only=False):
         WHERE (%s::text IS NULL OR a.subject = %s)
           AND (%s::text IS NULL OR %s = ANY(o.features))
           AND (NOT %s OR o.in_default)
+          {extra}
         ORDER BY coalesce(a.published_at, a.fetched_at) DESC, a.id DESC
         LIMIT %s
-        """,
-        (subject, subject, feature, feature, default_only, limit),
+        """.format(extra=("AND " + filter_sql) if filter_sql else ""),
+        [subject, subject, feature, feature, default_only, *filter_params, limit],
     )
     cols = ("id", "url", "title", "summary", "author", "published_at", "fetched_at",
             "image_file", "image_w", "image_h", "image_alt", "subject", "org_name", "slug", "org_url",
@@ -1298,7 +1391,8 @@ def main():
         orgs = load_orgs(cur)
         articles = collapse_duplicates(
             load_articles(cur, FEED_PAGE_ARTICLES, default_only=True))
-        all_articles = collapse_duplicates(load_articles(cur, FEED_PAGE_ARTICLES))
+        all_articles = collapse_duplicates(
+            load_articles(cur, FEED_PAGE_ARTICLES, apply_filters=False))
 
         # An image reused across many stories is the newsroom's house art or
         # a category placeholder, not this story's picture. Don't repeat it.
@@ -1384,10 +1478,12 @@ def main():
             (f"subjects/{slug}.xml", name) for name, slug in MENU_SUBJECTS
         ]
 
+        # No headline, no counts, no subject bar: the front page opens on
+        # the first story and everything else lives behind the menu.
         n_feed_pages = write_feed_pages(
             site, cur, articles, "feed", config.SITE_NAME, "Feed",
-            subject_nav=subject_nav(), skip_images=house_images,
-            first_name="index.html", intro=intro,
+            skip_images=house_images, first_name="index.html",
+            show_heading=False,
         )
 
         # Everything, including the ordinary commercial weeklies the default
@@ -1441,7 +1537,15 @@ def main():
                 # take a quarter of an hour.
                 with_related=False,
             )
-        (site / "connections.html").write_text(page(f"{config.SITE_NAME} — Connections", render_connections(cur)))
+        (site / "big-stories.html").write_text(page(
+            f"{config.SITE_NAME} — Big stories", render_big_stories(cur),
+            description="Stories running in several newsrooms at once."))
+        (site / "story-links.html").write_text(page(
+            f"{config.SITE_NAME} — Story links", render_story_links(cur),
+            description="Separate newsrooms reporting the same pressure."))
+        (site / "about.html").write_text(page(
+            f"{config.SITE_NAME} — About", render_about(cur, orgs),
+            description="What this is, where the data comes from, and who to credit."))
 
         for org in orgs:
             body = render_org_page(cur, org)
@@ -1458,12 +1562,12 @@ def main():
                 '<div id="feed">' + render_feed(cur, onepage_articles, mode="onepage",
                                                  skip_images=house_images,
                                                  with_related=False) + "</div>",
-                '<div id="connections">' + render_connections(cur, mode="onepage") + "</div>",
+                '<div id="connections">' + render_big_stories(cur, mode="onepage") + "</div>",
             ]
         )
         onepage_nav = (
             f'<a href="#feed">Feed</a>\n<a href="#catalog">Catalog</a>\n'
-            f'<a href="#map">Map</a>\n<a href="#connections">Connections</a>'
+            f'<a href="#map">Map</a>\n<a href="#connections">Big stories</a>'
         )
         (site / "onepage.html").write_text(page(config.SITE_NAME, onepage, nav_html=onepage_nav))
 
@@ -1507,7 +1611,8 @@ def main():
             "<p>That page has moved or never existed. The menu above has "
             'everything, or start from <a href="/">the feed</a>.</p>'))
         (site / "robots.txt").write_text(syndicate.ROBOTS.format(site_url=site_url))
-        sitemap_paths = ["", "catalog.html", "map.html", "resources.html", "connections.html"]
+        sitemap_paths = ["", "catalog.html", "map.html", "resources.html",
+                 "big-stories.html", "story-links.html", "about.html", "feeds.html"]
         sitemap_paths += [f"catalog/{re.sub(r'[^a-z0-9]+', '-', n.lower()).strip('-')}.html"
                           for n in state_groups]
         sitemap_paths += [f"features/{re.sub(r'[^a-z0-9]+', '-', f.lower()).strip('-')}.html"
