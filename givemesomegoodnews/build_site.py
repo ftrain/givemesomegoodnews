@@ -728,18 +728,21 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
     then the story."""
     out = ["<article>"]
 
-    # 1. source, bold and linked, then the section
-    source = f'<a href="{esc(a["org_url"])}"><strong>{esc(a["org_name"])}</strong></a>'
-    line = [source]
+    # 1. a column down the right: section first, then what kind of newsroom
+    #    this is, then the ask.
+    column = []
     if a.get("subject"):
         label = esc(a["subject"])
-        line.append(label if mode == "onepage" else
-                    f'<a href="{subject_href(a["subject"], prefix)}">{label}</a>')
-    out.append(f'<p class="source">{" | ".join(line)}</p>')
+        column.append(f'<span class="lozenge section">{label}</span>' if mode == "onepage"
+                      else f'<a class="lozenge section" '
+                           f'href="{subject_href(a["subject"], prefix)}">{label}</a>')
+    column.append(tag_links(a, prefix if mode != "onepage" else ""))
+    column.append(support_link(a))
+    out.append(f'<aside class="tagcol">{"".join(column)}</aside>')
 
-    # 2. tags, then the ask
-    tags = tag_links(a, prefix if mode != "onepage" else "")
-    out.append(f'<p class="tagrow">{tags}{support_link(a)}</p>')
+    # 2. source, bold and linked
+    source = f'<a href="{esc(a["org_url"])}"><strong>{esc(a["org_name"])}</strong></a>'
+    out.append(f'<p class="source">{source}</p>')
 
     # 3. when and where
     moment = a["published_at"] or a["fetched_at"]
@@ -773,7 +776,7 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
 
     # 6. the text, with Read more running on from the end of it
     summary = esc(tighten(a["summary"][:400])) if a.get("summary") else ""
-    more = (f'<a class="more" href="{esc(a["url"])}">Read more '
+    more = (f'<a class="lozenge more" href="{esc(a["url"])}">Read more '
             f'<span aria-hidden="true">&rarr;</span></a>')
     out.append(f"<p>{summary} {more}</p>" if summary else f"<p>{more}</p>")
 

@@ -24,7 +24,9 @@ import collections
 
 from .tags import REGIONS, STATE_REGION as REGIONS_BY_STATE, tag_slug
 
-MAX_RESULTS = 60
+PAGE_SIZE = 30
+# A hard ceiling so a pathological query cannot walk the whole archive.
+MAX_PAGES = 40
 
 SELECT_COLS = """
 SELECT a.id, a.url, a.title, a.summary, a.author, a.published_at, a.fetched_at,
@@ -36,7 +38,8 @@ FROM articles a JOIN orgs o ON o.id = a.org_id
 """
 
 
-def build_query(query, tags, region, language, subject):
+def build_query(query, tags, region, language, subject, limit=PAGE_SIZE, offset=0,
+                count_only=False):
     """Text search and facets are independent: either alone is a valid ask.
 
     Browsing by tag with no words typed is the common case for "show me the
@@ -44,13 +47,15 @@ def build_query(query, tags, region, language, subject):
     date instead of relevance.
     """
     where, params = [], []
+    head = "SELECT count(*)\nFROM articles a JOIN orgs o ON o.id = a.org_id\n" if count_only \
+        else SELECT_COLS
     if query.strip():
-        sql = SELECT_COLS + ", websearch_to_tsquery('english', %s) AS q\n"
+        sql = head + ", websearch_to_tsquery('english', %s) AS q\n"
         params.append(query)
         where.append("a.search_tsv @@ q")
         order = "coalesce(a.published_at, a.fetched_at) DESC, ts_rank(a.search_tsv, q) DESC"
     else:
-        sql = SELECT_COLS
+        sql = head
         order = "coalesce(a.published_at, a.fetched_at) DESC"
     for tag in tags:
         where.append("%s = ANY(o.features)")
@@ -66,8 +71,10 @@ def build_query(query, tags, region, language, subject):
         params.append(subject)
     if where:
         sql += " WHERE " + " AND ".join(where)
-    sql += f" ORDER BY {order} LIMIT %s"
-    params.append(MAX_RESULTS)
+    if count_only:
+        return sql, params
+    sql += f" ORDER BY {order} LIMIT %s OFFSET %s"
+    params.extend([limit, offset])
     return sql, params
 
 COLS = ("id", "url", "title", "summary", "author", "published_at", "fetched_at",
@@ -151,10 +158,15 @@ def feed_link(query, tags, region, language):
     return "search.xml?" + urlencode(params, doseq=True)
 
 
-def run_search(cur, query, tags, region, language, subject):
-    sql, params = build_query(query, tags, region, language, subject)
+def run_search(cur, query, tags, region, language, subject, page=1):
+    offset = (page - 1) * PAGE_SIZE
+    sql, params = build_query(query, tags, region, language, subject,
+                              limit=PAGE_SIZE, offset=offset)
     cur.execute(sql, params)
-    return [dict(zip(COLS, r)) for r in cur.fetchall()]
+    rows = [dict(zip(COLS, r)) for r in cur.fetchall()]
+    csql, cparams = build_query(query, tags, region, language, subject, count_only=True)
+    cur.execute(csql, cparams)
+    return rows, cur.fetchone()[0]
 
 
 def render_search_rss(query, tags, region, language, subject):
@@ -162,14 +174,32 @@ def render_search_rss(query, tags, region, language, subject):
              or " + ".join(list(tags) + [x for x in (region, language) if x])
              or "everything")
     with connect() as conn, conn.cursor() as cur:
-        rows = run_search(cur, query, tags, region, language, subject)
+        rows, _total = run_search(cur, query, tags, region, language, subject)
     return syndicate.render_rss(
         rows, f"{config.SITE_NAME} — {label}",
         f"Search results for {label}, newest first.",
         feed_link(query, tags, region, language), config.SITE_URL.rstrip("/"))
 
 
-def render(query, tags=(), region="", language="", subject=""):
+def pager(query, tags, region, language, page, pages):
+    """Previous and next, and nothing clever."""
+    if pages <= 1:
+        return ""
+    def link(n, label):
+        params = {k: v for k, v in
+                  (("q", query), ("tag", list(tags)), ("region", region), ("lang", language)) if v}
+        if n > 1:
+            params["page"] = n
+        return f'<a class="lozenge" href="/search?{urlencode(params, doseq=True)}">{label}</a>'
+    out = []
+    if page > 1:
+        out.append(link(page - 1, "&larr; Newer"))
+    if page < pages:
+        out.append(link(page + 1, "Older &rarr;"))
+    return '<p class="chips">' + "".join(out) + "</p>"
+
+
+def render(query, tags=(), region="", language="", subject="", page=1):
     tags = list(tags)
     active = [t for t in tags]
     if region:
@@ -187,17 +217,18 @@ def render(query, tags=(), region="", language="", subject=""):
                          'from a subject or tag in the menu.</p>')
             return page(f"{config.SITE_NAME} — Search", "\n".join(parts))
 
-        rows = run_search(cur, query, tags, region, language, subject)
+        rows, total = run_search(cur, query, tags, region, language, subject, page)
 
         if not rows:
             shown = esc(query) if query.strip() else esc(" + ".join(active))
             parts.append(f"<p>Nothing matches <strong>{shown}</strong>.</p>")
         else:
-            noun = "story" if len(rows) == 1 else "stories"
-            capped = " (most recent)" if len(rows) == MAX_RESULTS else ""
+            noun = "story" if total == 1 else "stories"
             label = esc(query) if query.strip() else esc(" + ".join(active))
             rss = feed_link(query, tags, region, language)
-            parts.append(f"<p>{len(rows)} {noun} matching <strong>{label}</strong>{capped}. "
+            pages = max(1, min(MAX_PAGES, -(-total // PAGE_SIZE)))
+            shown = f", page {page} of {pages}" if pages > 1 else ""
+            parts.append(f"<p>{total} {noun} matching <strong>{label}</strong>{shown}. "
                          f'<a href="{esc(rss)}">Subscribe to this search</a>.</p>')
 
             # Map first, then the tags in this result set, then the stories.
@@ -220,6 +251,7 @@ def render(query, tags=(), region="", language="", subject=""):
             for row in rows:
                 parts.append(render_feed_item(cur, row, with_related=False))
             parts.append("</div>")
+            parts.append(pager(query, tags, region, language, page, pages))
         return page(f"{config.SITE_NAME} — {heading}", "\n".join(parts),
                     feed_href=feed_link(query, tags, region, language),
                     feed_title=f"{config.SITE_NAME} — {heading}")
@@ -240,11 +272,13 @@ class Handler(BaseHTTPRequestHandler):
         region = (params.get("region") or [""])[0][:20]
         language = (params.get("lang") or [""])[0][:20]
         subject = (params.get("subject") or [""])[0][:30]
+        raw_page = (params.get("page") or ["1"])[0]
+        page = int(raw_page) if raw_page.isdigit() and 1 <= int(raw_page) <= MAX_PAGES else 1
         try:
             if wants_rss:
                 body = render_search_rss(query, tags, region, language, subject).encode("utf-8")
             else:
-                body = render(query, tags, region, language, subject).encode("utf-8")
+                body = render(query, tags, region, language, subject, page).encode("utf-8")
         except Exception:
             self.send_error(500)
             raise
