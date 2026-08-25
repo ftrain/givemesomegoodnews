@@ -54,3 +54,12 @@ def local_time(when, state=None, override=None):
         return ""
     local = when.astimezone(zone_for(state, override))
     return local.strftime("%-I:%M %p %Z").strip()
+
+
+def local_dateline(when, state=None, override=None):
+    """Full dateline in the newsroom's own zone:
+    'Tuesday, August 25, 2026 at 9:15 AM CDT'."""
+    if not when:
+        return ""
+    local = when.astimezone(zone_for(state, override))
+    return local.strftime("%A, %B %-d, %Y at %-I:%M %p %Z").strip()

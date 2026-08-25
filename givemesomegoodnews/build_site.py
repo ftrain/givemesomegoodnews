@@ -22,7 +22,7 @@ from html import escape as esc
 
 from . import config
 from .albers import MapProjection
-from .timezones import local_time
+from .timezones import local_dateline, local_time
 from .db import connect
 
 MIN_RELATED_SIM = float(os.environ.get("MIN_RELATED_SIM", "0.30"))
@@ -123,6 +123,7 @@ a.shot {{ float: left; width: 50%; margin: 0.3rem 1rem 0.4rem 0; }}
 a.shot img {{ width: 100%; height: auto; }}
 p.more {{ margin-top: 0.75rem; }}
 p.footer-line {{ clear: both; padding-top: 0.75rem; }}
+.yours {{ color: var(--muted); }}
 /* A 50% float on a phone leaves ~170px of text per line; stack instead. */
 @media (max-width: 34rem) {{
   a.shot {{ float: none; width: 100%; margin: 0 0 0.75rem; }}
@@ -164,6 +165,7 @@ def page(title, body, prefix="", nav_html=None, scripts=""):
 <p><small>Generated {generated}. About text quoted from each newsroom's own
 About page; headlines, summaries and images from their public feeds, linking to
 the original. <a href="{config.REPO_URL}">{config.REPO_LABEL}</a></small></p>
+{LOCAL_TIME_SCRIPT}
 {scripts}
 </body>
 </html>
@@ -328,11 +330,6 @@ def render_map(orgs, mode="site", prefix=""):
     )
 
 
-def day_of(article):
-    dt = article["published_at"] or article["fetched_at"]
-    return dt.astimezone(timezone.utc).strftime("%A, %B %-d, %Y")
-
-
 def title_tokens(title):
     from .embedder import _STOPWORDS, _WORD_RE
 
@@ -427,6 +424,32 @@ def collapse_duplicates(articles):
     return kept
 
 
+LOCAL_TIME_SCRIPT = """<script>
+/* Each dateline is the newsroom's own local time. Where the reader sits in
+   a different zone, append theirs. Nothing here is required to read the
+   page — with JS off you still get the publication's time. */
+window.localizeTimes = function (root) {
+  var nodes = (root || document).querySelectorAll("time[data-pub]:not([data-done])");
+  for (var i = 0; i < nodes.length; i++) {
+    var el = nodes[i];
+    el.setAttribute("data-done", "1");
+    var when = new Date(el.getAttribute("datetime"));
+    if (isNaN(when.getTime())) continue;
+    try {
+      var mine = new Intl.DateTimeFormat(undefined, {
+        hour: "numeric", minute: "2-digit", timeZoneName: "short"
+      }).format(when);
+      if (!mine || mine === el.getAttribute("data-pub")) continue;
+      var span = document.createElement("span");
+      span.className = "yours";
+      span.textContent = " \u00b7 " + mine + " your time";
+      el.parentNode.insertBefore(span, el.nextSibling);
+    } catch (e) { /* no Intl: the publication's time stands on its own */ }
+  }
+};
+window.localizeTimes(document);
+</script>"""
+
 FEED_SCRIPT = """<script>
 /* Progressive enhancement only: without JS the More link is an ordinary
    link to the next page, and every page stands on its own. */
@@ -443,6 +466,7 @@ FEED_SCRIPT = """<script>
       var incoming = doc.getElementById("feed-items");
       if (incoming) {
         while (incoming.firstChild) items.appendChild(incoming.firstChild);
+        if (window.localizeTimes) window.localizeTimes(items);
       }
       var next = doc.getElementById("more");
       if (next) { link.href = next.getAttribute("href"); busy = false; }
@@ -520,8 +544,15 @@ def about_excerpt(text, limit=170):
 
 
 def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_images=()):
-    when = local_time(a["published_at"] or a["fetched_at"], a.get("state"), a.get("timezone"))
-    stamp = [when] if when else []
+    moment = a["published_at"] or a["fetched_at"]
+    dateline = local_dateline(moment, a.get("state"), a.get("timezone"))
+    pub_time = local_time(moment, a.get("state"), a.get("timezone"))
+    stamp = []
+    if dateline:
+        stamp.append(
+            f'<time datetime="{moment.astimezone(timezone.utc).isoformat()}" '
+            f'data-pub="{esc(pub_time)}">{esc(dateline)}</time>'
+        )
     if a.get("subject"):
         label = esc(a["subject"])
         stamp.append(label if mode == "onepage" else
@@ -587,12 +618,7 @@ def render_feed(cur, articles, mode="site", prefix="", with_related=True, headin
         if subject_nav:
             parts.append(subject_nav)
     parts.append('<div id="feed-items">')
-    current_day = None
     for a in articles:
-        day = day_of(a)
-        if day != current_day:
-            parts.append(f"<h2>{esc(day)}</h2>")
-            current_day = day
         parts.append(render_feed_item(cur, a, mode, prefix, with_related, skip_images))
     parts.append("</div>")
     if stem and page_index + 1 < page_count:
