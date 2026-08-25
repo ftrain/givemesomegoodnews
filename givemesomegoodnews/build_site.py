@@ -91,22 +91,27 @@ def stylesheet(prefix=""):
 font-weight:100 700;font-display:swap}}
 @font-face{{font-family:PlexMono;src:url({prefix}fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}}
-@font-face{{font-family:PlexSerif;src:url({prefix}fonts/ibm-plex-serif.woff2) format('woff2');
+@font-face{{font-family:Text;src:url({prefix}fonts/source-serif-400.woff2) format('woff2');
 font-weight:400;font-display:swap}}
-@font-face{{font-family:PlexSerif;src:url({prefix}fonts/ibm-plex-serif-600.woff2) format('woff2');
+@font-face{{font-family:Text;src:url({prefix}fonts/source-serif-600.woff2) format('woff2');
 font-weight:600;font-display:swap}}
+@font-face{{font-family:Display;src:url({prefix}fonts/zilla-slab-400.woff2) format('woff2');
+font-weight:400;font-display:swap}}
+@font-face{{font-family:Display;src:url({prefix}fonts/zilla-slab-700.woff2) format('woff2');
+font-weight:700;font-display:swap}}
 :root{{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
 --band:#f6f6f4}}
 @media(prefers-color-scheme:dark){{
 :root{{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
 --band:#181818}}}}
 html{{-webkit-text-size-adjust:100%}}
-body{{font:400 1.0625rem/1.6 PlexSerif,Georgia,serif;color:var(--fg);background:var(--bg);
+body{{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
 max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}}
 header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
 main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
 {{padding-left:1rem;padding-right:1rem}}
-h1,h2,h3,.sans{{font-family:Plex,system-ui,sans-serif}}
+h1,h2,h3{{font-family:Display,Georgia,serif;letter-spacing:-.005em}}
+.sans{{font-family:Plex,system-ui,sans-serif}}
 a{{color:var(--link);text-decoration:none}}
 a:visited{{color:var(--seen)}}
 a:hover,a:focus{{text-decoration:underline}}
@@ -115,7 +120,7 @@ a:hover,a:focus{{text-decoration:underline}}
 .skip:focus{{position:static;display:block;padding:.5rem 0}}
 h1{{font-size:1.5rem;line-height:1.2;margin:1rem 0}}
 h2{{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}}
-article h2{{font-family:PlexSerif,Georgia,serif;font-size:1.7rem;font-weight:400;
+article h2{{font-family:Display,Georgia,serif;font-size:1.62rem;font-weight:700;
 line-height:1.2;margin:.35rem 0 .4rem;max-width:75%}}
 @media(max-width:34rem){{article h2{{max-width:100%;font-size:1.5rem}}}}
 h3{{font-size:1rem;margin:1.2rem 0 .4rem}}
@@ -235,7 +240,7 @@ def menu(prefix="", site_name=""):
     meta = " \u00b7 ".join(f'<a href="{href(t)}">{esc(label)}</a>'
                            for t, label in NAV_META)
 
-    return f"""<a class="home" href="{prefix}index.html"><img class="masthead"
+    return f"""<a class="home" href="/"><img class="masthead"
  src="{prefix}masthead.svg" alt="{esc(site_name)}" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -265,7 +270,7 @@ def footer_links(prefix=""):
     """The same routes the menu offers, laid flat at the foot of the page."""
     def href(target):
         return target if target.startswith("/") else prefix + target
-    items = [(prefix + "index.html", "Today's news")] + NAV_BROWSE + NAV_META
+    items = [("/", "Today's news")] + NAV_BROWSE + NAV_META
     return " \u00b7 ".join(
         f'<a href="{href(t) if not t.startswith(prefix) else t}">{esc(label)}</a>'
         for t, label in items
@@ -1152,7 +1157,7 @@ listed under <a href="resources.html">Resources</a>.</p>
 
 <h2>Reading it elsewhere</h2>
 <p><a href="feeds.html">RSS feeds</a> for everything, for each subject and
-for each tag; a <a href="text/index.html">plain text edition</a> with no
+for each tag; a <a href="/text/">plain text edition</a> with no
 images or scripts; and any <a href="/search">search</a> can be subscribed to
 as a feed.</p>
 
@@ -1343,7 +1348,7 @@ def text_page(title, body, prefix=""):
 <p><a href="index.html">Stories</a> &middot;
 <a href="catalog.html">Newsrooms</a> &middot;
 <a href="/search">Search</a> &middot;
-<a href="../index.html">Full version</a></p>
+<a href="/">Full version</a></p>
 </nav>
 </header>
 <main id="main">
@@ -1626,7 +1631,7 @@ def main():
                  else f'<a href="{subject_href(name, prefix)}">{esc(name)}</a> ({n})')
                 for name, n in subject_counts
             ]
-            all_link = "All" if current is None else f'<a href="{prefix}index.html">All</a>'
+            all_link = "All" if current is None else '<a href="/">All</a>'
             return f"<p>{all_link} · " + " · ".join(links) + "</p>"
 
         MENU_SUBJECTS[:] = [
@@ -1653,7 +1658,7 @@ def main():
             skip_images=house_images, with_related=False,
             intro='<p class="meta">Every newsroom in the catalog, including the '
                   'commercial weeklies the front page leaves out. '
-                  '<a href="index.html">Back to the default feed</a>.</p>',
+                  '<a href="/">Back to the default feed</a>.</p>',
         )
 
         # One feed per tag, so a lozenge is a real destination.
