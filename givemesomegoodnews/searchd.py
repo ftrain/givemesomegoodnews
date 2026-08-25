@@ -48,7 +48,7 @@ def build_query(query, tags, region, language, subject):
         sql = SELECT_COLS + ", websearch_to_tsquery('english', %s) AS q\n"
         params.append(query)
         where.append("a.search_tsv @@ q")
-        order = "ts_rank(a.search_tsv, q) DESC, coalesce(a.published_at, a.fetched_at) DESC"
+        order = "coalesce(a.published_at, a.fetched_at) DESC, ts_rank(a.search_tsv, q) DESC"
     else:
         sql = SELECT_COLS
         order = "coalesce(a.published_at, a.fetched_at) DESC"
@@ -194,7 +194,7 @@ def render(query, tags=(), region="", language="", subject=""):
             parts.append(f"<p>Nothing matches <strong>{shown}</strong>.</p>")
         else:
             noun = "story" if len(rows) == 1 else "stories"
-            capped = " (strongest matches)" if len(rows) == MAX_RESULTS else ""
+            capped = " (most recent)" if len(rows) == MAX_RESULTS else ""
             label = esc(query) if query.strip() else esc(" + ".join(active))
             rss = feed_link(query, tags, region, language)
             parts.append(f"<p>{len(rows)} {noun} matching <strong>{label}</strong>{capped}. "

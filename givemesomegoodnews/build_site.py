@@ -138,7 +138,7 @@ hr{{border:0;border-top:1px solid var(--rule);margin:2rem 0}}
 input,button{{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}}
 input[type=search]{{width:min(20rem,68%)}}
-button{{cursor:pointer;color:var(--link)}}
+button{{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
 header{{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
@@ -213,7 +213,7 @@ def menu(prefix="", site_name=""):
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols">{subjects}</ul></nav>
@@ -544,7 +544,7 @@ def search_form(query=""):
         '<form action="/search" method="get" role="search">'
         f'<p><input type="search" name="q" value="{esc(query)}" '
         'placeholder="Search headlines and summaries" aria-label="Search"> '
-        '<button type="submit">Search</button></p></form>'
+        '<button type="submit" aria-label="Search">&rarr;</button></p></form>'
     )
 
 
