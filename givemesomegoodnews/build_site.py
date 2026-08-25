@@ -141,6 +141,14 @@ color:var(--dim);text-decoration:none}}
 .lozenge:hover,.lozenge:focus{{border-color:var(--link);color:var(--link);text-decoration:none}}
 .lozenge[aria-current=page],.lozenge.on{{border-color:var(--link);color:var(--bg);background:var(--link)}}
 .chips{{margin:.75rem 0 1.25rem}}
+.mapwrap{{position:relative;margin:0 0 1rem}}
+.mapwrap a[data-slug]{{cursor:pointer}}
+.preview{{position:absolute;left:0;right:0;bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}}
+.preview ul{{list-style:none;padding:0;margin:.4rem 0}}
+.preview li{{margin:0 0 .55rem}}
+.preview-close{{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}}
 /* Section, then what kind of newsroom this is, then the ask — a column
    down the right of each story. */
 .tagcol{{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
@@ -290,6 +298,7 @@ def page(title, body, prefix="", nav_html=None, scripts="", description="",
 <nav aria-label="Site"><p class="meta">{footer_links(prefix)}</p></nav>
 </footer>
 {MENU_SCRIPT}
+{MAP_SCRIPT}
 {LOCAL_TIME_SCRIPT}
 {scripts}
 </body>
@@ -392,7 +401,7 @@ def render_catalog(orgs, mode="site", prefix=""):
     return "\n".join(parts)
 
 
-def render_result_map(orgs, prefix="", caption="Where these newsrooms are"):
+def render_result_map(orgs, prefix="", caption="Where these newsrooms are", stories=None):
     """A compact map of one subset of newsrooms — used above search results."""
     proj = MapProjection(config.STATES_GEOJSON)
     mappable = [o for o in orgs if o.get("lat") and o.get("lon") and o.get("state")]
@@ -408,9 +417,12 @@ def render_result_map(orgs, prefix="", caption="Where these newsrooms are"):
             angle = 2 * math.pi * i / max(len(cluster), 1)
             x = cx + (0 if len(cluster) == 1 else 9 * math.cos(angle))
             y = cy + (0 if len(cluster) == 1 else 9 * math.sin(angle))
+            # Without JavaScript the dot is still a link to the newsroom;
+            # with it, the click opens a preview over the map instead.
             dots.append(
-                f'<a href="{prefix}orgs/{esc(org["slug"])}.html">'
-                f'<circle cx="{x:.1f}" cy="{y:.1f}" r="5" fill="#c8102e" fill-opacity="0.9">'
+                f'<a href="{prefix}orgs/{esc(org["slug"])}.html" '
+                f'data-slug="{esc(org["slug"])}">'
+                f'<circle cx="{x:.1f}" cy="{y:.1f}" r="5.5" fill="#c8102e" fill-opacity="0.9">'
                 f'<title>{esc(org["name"])}</title></circle></a>'
             )
     states = "".join(
@@ -418,12 +430,19 @@ def render_result_map(orgs, prefix="", caption="Where these newsrooms are"):
         for _name, d in proj.state_paths()
     )
     names = ", ".join(sorted({o["name"] for o in mappable}))
+    payload = ""
+    if stories:
+        payload = ('<script type="application/json" id="map-stories">'
+                   + json.dumps(stories) + "</script>")
     return (
-        f'<figure>'
+        f'<figure class="mapwrap">'
         f'<svg viewBox="0 0 {proj.width} {proj.height}" width="100%" role="img" '
         f'aria-label="{esc(caption)}: {esc(names[:600])}">{states}{"".join(dots)}</svg>'
-        f'<figcaption class="meta">{esc(caption)} — {len(mappable)} newsrooms</figcaption>'
-        f"</figure>"
+        f'<div class="preview" hidden><button type="button" class="preview-close" '
+        f'aria-label="Close">&times;</button><div class="preview-body"></div></div>'
+        f'<figcaption class="meta">{esc(caption)} &mdash; {len(mappable)} newsrooms. '
+        f'Tap a dot for its stories.</figcaption>'
+        f"{payload}</figure>"
     )
 
 
@@ -602,6 +621,48 @@ def collapse_duplicates(articles):
             kept.append(entry)
     return kept
 
+
+MAP_SCRIPT = """<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
+})();
+</script>"""
 
 MENU_SCRIPT = """<script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */

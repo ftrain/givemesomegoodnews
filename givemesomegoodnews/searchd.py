@@ -19,6 +19,7 @@ from urllib.parse import parse_qs, urlencode, urlparse
 from . import config, syndicate
 from .build_site import (MENU_FEEDS, MENU_SUBJECTS, page, render_feed_item,
                           render_result_map, search_form)
+from .timezones import local_dateline
 from .db import connect
 import collections
 
@@ -243,7 +244,23 @@ def render(query, tags=(), region="", language="", subject="", page_num=1):
                 got = cur.fetchone()
                 if got:
                     result_orgs.append(dict(zip(ORG_COLS, got)))
-            map_svg = render_result_map(result_orgs, caption="Newsrooms in these results")
+            # Give the map the stories behind each dot, so a tap can show them.
+            by_slug = {}
+            for row in rows:
+                entry = by_slug.setdefault(row["slug"], {
+                    "name": row["org_name"], "site": row["org_url"],
+                    "support": row.get("support_url") or "",
+                    "supportLabel": row.get("support_label") or "Support",
+                    "items": [],
+                })
+                if len(entry["items"]) < 8:
+                    when = local_dateline(row["published_at"] or row["fetched_at"],
+                                          row.get("state"), row.get("timezone"))
+                    entry["items"].append(
+                        {"title": row["title"][:140], "url": row["url"], "when": when}
+                    )
+            map_svg = render_result_map(result_orgs, caption="Newsrooms in these results",
+                                        stories=by_slug)
             if map_svg:
                 parts.append(map_svg)
             parts.append(facet_bar(query, tags, region, language, rows))
