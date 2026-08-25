@@ -14,7 +14,8 @@ FIELDS = [
 ]
 
 
-DIRECTORY_FILE = config.DATA_DIR / "orgs_directory.yaml"
+# Hand-curated first; the rest are generated or bulk-added and never win.
+EXTRA_FILES = ["orgs_literary.yaml", "orgs_directory.yaml"]
 
 
 def load_orgs():
@@ -28,9 +29,11 @@ def load_orgs():
     for org in curated:
         org.setdefault("source", "curated")
     imported = []
-    if DIRECTORY_FILE.exists():
-        with open(DIRECTORY_FILE) as f:
-            imported = yaml.safe_load(f) or []
+    for name in EXTRA_FILES:
+        path = config.DATA_DIR / name
+        if path.exists():
+            with open(path) as f:
+                imported.extend(yaml.safe_load(f) or [])
     curated_slugs = {o["slug"] for o in curated}
     curated_urls = {(o.get("url") or "").rstrip("/") for o in curated}
     fresh = [
