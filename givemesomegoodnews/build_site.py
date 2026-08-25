@@ -90,12 +90,17 @@ def stylesheet(prefix=""):
 font-weight:100 700;font-display:swap}}
 @font-face{{font-family:PlexMono;src:url({prefix}fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}}
+@font-face{{font-family:PlexSerif;src:url({prefix}fonts/ibm-plex-serif.woff2) format('woff2');
+font-weight:400;font-display:swap}}
+@font-face{{font-family:PlexSerif;src:url({prefix}fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}}
 :root{{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}}
 @media(prefers-color-scheme:dark){{
 :root{{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}}}
 html{{-webkit-text-size-adjust:100%}}
-body{{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
+body{{font:400 1.0625rem/1.6 PlexSerif,Georgia,serif;color:var(--fg);background:var(--bg);
 max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}}
+h1,h2,h3,.sans{{font-family:Plex,system-ui,sans-serif}}
 a{{color:var(--link);text-decoration:none}}
 a:visited{{color:var(--seen)}}
 a:hover,a:focus{{text-decoration:underline}}
@@ -104,9 +109,9 @@ a:hover,a:focus{{text-decoration:underline}}
 .skip:focus{{position:static;display:block;padding:.5rem 0}}
 h1{{font-size:1.5rem;line-height:1.2;margin:1rem 0}}
 h2{{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}}
-article h2{{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}}
-.stamp{{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}}
-.stamp .lozenge{{margin:0;flex:none}}
+article h2{{font-family:PlexSerif,Georgia,serif;font-size:1.7rem;font-weight:400;
+line-height:1.2;margin:.35rem 0 .4rem;max-width:75%}}
+@media(max-width:34rem){{article h2{{max-width:100%;font-size:1.5rem}}}}
 h3{{font-size:1rem;margin:1.2rem 0 .4rem}}
 p{{margin:0 0 .7rem}}
 ul{{padding-left:1.1rem}}
@@ -116,9 +121,9 @@ li{{margin-bottom:.4rem}}
 article{{padding:1.75rem 0;border-bottom:1px solid var(--rule)}}
 article::after{{content:"";display:block;clear:both}}
 img{{max-width:100%;height:auto;display:block}}
-.shot{{float:left;width:50%;margin:.3rem 1rem .4rem 0}}
+.shot{{float:left;width:33%;margin:.35rem 1rem .3rem 0}}
 .shot img{{width:100%}}
-@media(max-width:34rem){{.shot{{float:none;width:100%;margin:0 0 .7rem}}}}
+@media(max-width:34rem){{.shot{{width:40%}}}}
 time[data-pub]{{cursor:pointer;border-bottom:1px dotted var(--rule)}}
 .yours{{color:var(--dim)}}
 .lozenge{{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
@@ -136,10 +141,14 @@ input[type=search]{{width:min(20rem,68%)}}
 button{{cursor:pointer;color:var(--link)}}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}}
-.home{{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}}
+.home{{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}}
+.menu{{grid-column:1;grid-row:1;justify-self:start}}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{{content:"";grid-column:3;width:28px}}
 .menu>summary{{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}}
 .menu>summary::-webkit-details-marker{{display:none}}
@@ -152,7 +161,7 @@ display:flex;gap:.6rem;align-items:center}}
 .menu[open] .burger .bars{{display:none}}
 .menu[open] .burger .cross{{display:inline}}
 .masthead{{width:100%;height:auto;display:block}}
-.panel{{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}}
 .panel hr{{border:0;border-top:1px solid var(--rule);margin:.85rem 0}}
@@ -684,6 +693,19 @@ def support_link(article):
     return f'<a class="lozenge give" href="{esc(url)}">{esc(label)}</a>'
 
 
+_EM_SPACES = re.compile(r"\s*\u2014\s*")
+
+
+def tighten(text):
+    """Close the gaps around em dashes.
+
+    ' \u2014 ' gives the browser two break opportunities and a wide gap that
+    reads as a hole in a headline. Closed up, the dash stays with the words
+    on either side of it.
+    """
+    return _EM_SPACES.sub("\u2014", text or "")
+
+
 def place_line(a, mode="site", prefix=""):
     """State / region / publication — or National / beat / publication for
     the outlets organised around a subject rather than a place."""
@@ -702,30 +724,41 @@ def place_line(a, mode="site", prefix=""):
 
 
 def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_images=()):
+    """Source and section, then how to support them, then when and where,
+    then the story."""
+    out = ["<article>"]
+
+    # 1. source, bold and linked, then the section
+    source = f'<a href="{esc(a["org_url"])}"><strong>{esc(a["org_name"])}</strong></a>'
+    line = [source]
+    if a.get("subject"):
+        label = esc(a["subject"])
+        line.append(label if mode == "onepage" else
+                    f'<a href="{subject_href(a["subject"], prefix)}">{label}</a>')
+    out.append(f'<p class="source">{" | ".join(line)}</p>')
+
+    # 2. tags, then the ask
+    tags = tag_links(a, prefix if mode != "onepage" else "")
+    out.append(f'<p class="tagrow">{tags}{support_link(a)}</p>')
+
+    # 3. when and where
     moment = a["published_at"] or a["fetched_at"]
     dateline = local_dateline(moment, a.get("state"), a.get("timezone"))
     pub_time = local_time(moment, a.get("state"), a.get("timezone"))
-    stamp = ""
-    if dateline:
-        stamp = (f'<time datetime="{moment.astimezone(timezone.utc).isoformat()}" '
-                 f'data-pub="{esc(pub_time)}">{esc(dateline)}</time>')
-    subject = ""
-    if a.get("subject"):
-        label = esc(a["subject"])
-        subject = (f'<span class="lozenge">{label}</span>' if mode == "onepage" else
-                   f'<a class="lozenge" href="{subject_href(a["subject"], prefix)}">{label}</a>')
+    where = a.get("beat") or a.get("city")
+    state_name = STATE_NAMES.get((a.get("state") or "").upper())
+    if (a.get("coverage_type") or "") == "national":
+        place = "National" + (f"/{where}" if where else "")
+    else:
+        place = "/".join(p for p in (state_name, where) if p) or "National"
+    when = (f'<time datetime="{moment.astimezone(timezone.utc).isoformat()}" '
+            f'data-pub="{esc(pub_time)}">{esc(dateline)}</time>') if dateline else ""
+    out.append(f'<p class="whenwhere">{when}{" &middot; " if when else ""}{esc(place)}</p>')
 
-    out = ["<article>"]
-    if stamp or subject:
-        out.append(f'<p class="stamp"><small>{stamp}</small>{subject}</p>')
-    out.append(f"<p><small>{place_line(a, mode, prefix)}</small></p>")
-    out.append(f'<h2><a href="{esc(a["url"])}">{esc(a["title"])}</a></h2>')
-    tags = tag_links(a, prefix if mode != "onepage" else "")
-    byline = f'<small>By {esc(a["author"])}</small>' if a.get("author") else "<small></small>"
-    out.append(
-        f'<p class="byline">{byline}'
-        f'<span class="aside">{tags}{support_link(a)}</span></p>'
-    )
+    # 4. headline, 5. byline
+    out.append(f'<h2><a href="{esc(a["url"])}">{esc(tighten(a["title"]))}</a></h2>')
+    if a.get("author"):
+        out.append(f'<p class="byline">By {esc(a["author"])}</p>')
 
     if a.get("image_file") and a["image_file"] not in skip_images:
         size = ""
@@ -737,27 +770,25 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
             f'<img src="{prefix}img/{esc(a["image_file"])}" alt="{alt}"{size} '
             f'loading="lazy" decoding="async"></a>'
         )
-    if a.get("summary"):
-        out.append(f"<p>{esc(a['summary'][:400])}</p>")
 
-    out.append(
-        f'<p class="more"><a href="{esc(a["url"])}">Read more '
-        f'<span aria-hidden="true">\u2192</span></a></p>'
-    )
+    # 6. the text, with Read more running on from the end of it
+    summary = esc(tighten(a["summary"][:400])) if a.get("summary") else ""
+    more = (f'<a class="more" href="{esc(a["url"])}">Read more '
+            f'<span aria-hidden="true">&rarr;</span></a>')
+    out.append(f"<p>{summary} {more}</p>" if summary else f"<p>{more}</p>")
 
     if a.get("_also"):
-        others = " \u00b7 ".join(
+        others = " &middot; ".join(
             f'<a href="{esc(d["url"])}">{esc(d["org_name"])}</a>' for d in a["_also"]
         )
-        out.append(f"<p><small>Also in {others}</small></p>")
-
+        out.append(f'<p class="meta">Also in {others}</p>')
     if with_related:
         echoes = []
         for r_title, r_url, r_org, r_slug, r_org_url, r_sim in related_to(cur, a["id"]):
             if classify_pair(r_sim, a["title"], r_title) == "kindred" and len(echoes) < 2:
-                echoes.append(f'<a href="{esc(r_url)}">{esc(r_org)}: {esc(r_title)}</a>')
+                echoes.append(f'<a href="{esc(r_url)}">{esc(r_org)}: {esc(tighten(r_title))}</a>')
         if echoes:
-            out.append(f"<p><small>Echo: {' \u00b7 '.join(echoes)}</small></p>")
+            out.append(f'<p class="meta">Echo: {" &middot; ".join(echoes)}</p>')
 
     out.append("</article>")
     return "\n".join(out)
@@ -1511,7 +1542,7 @@ def main():
         n_feed_pages = write_feed_pages(
             site, cur, articles, "feed", config.SITE_NAME, "Feed",
             skip_images=house_images, first_name="index.html",
-            show_heading=False,
+            show_heading=False, intro=search_form(),
         )
 
         # Everything, including the ordinary commercial weeklies the default
