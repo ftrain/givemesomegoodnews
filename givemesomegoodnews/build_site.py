@@ -24,6 +24,7 @@ from . import config
 from .albers import MapProjection
 from .timezones import local_dateline, local_time
 from . import syndicate
+from .tags import TAG_GROUPS, region_of, tag_slug
 from .db import connect
 
 MIN_RELATED_SIM = float(os.environ.get("MIN_RELATED_SIM", "0.30"))
@@ -61,6 +62,7 @@ NAV = [
     ("catalog.html", "Catalog"),
     ("map.html", "Map"),
     ("connections.html", "Connections"),
+    ("everything.html", "Every newsroom"),
     ("resources.html", "Resources"),
     ("/search", "Search"),
     ("onepage.html", "Everything on one page"),
@@ -108,6 +110,11 @@ img{{max-width:100%;height:auto;display:block}}
 @media(max-width:34rem){{.shot{{float:none;width:100%;margin:0 0 .7rem}}}}
 time[data-pub]{{cursor:pointer;border-bottom:1px dotted var(--rule)}}
 .yours{{color:var(--dim)}}
+.lozenge{{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
+padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
+color:var(--dim);text-decoration:none}}
+.lozenge:hover,.lozenge:focus{{border-color:var(--link);color:var(--link);text-decoration:none}}
+.lozenge[aria-current=page]{{border-color:var(--link);color:var(--bg);background:var(--link)}}
 svg{{max-width:100%;height:auto}}
 blockquote{{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}}
 hr{{border:0;border-top:1px solid var(--rule);margin:2rem 0}}
@@ -879,15 +886,12 @@ def ownership_tags(org):
 
 
 def tag_links(org, prefix=""):
-    """Tags, linked where a page exists for them."""
-    known = set(org.get("features") or [])
-    out = []
-    for tag in ownership_tags(org):
-        if tag in known:
-            out.append(f'<a href="{feature_href(tag, prefix)}">{esc(tag)}</a>')
-        else:
-            out.append(esc(tag))
-    return " · ".join(out)
+    """Tags as tappable lozenges, each leading to that tag's own feed."""
+    out = [
+        f'<a class="lozenge" href="{prefix}tags/{tag_slug(tag)}.html">{esc(tag)}</a>'
+        for tag in ownership_tags(org)
+    ]
+    return "".join(out)
 
 
 def feature_href(feature, prefix=""):
@@ -907,16 +911,11 @@ def feature_links(org, prefix=""):
 def render_catalog_index(orgs, prefix=""):
     """Counts, feature facets, and a way into each state."""
     groups, national = group_orgs_by_state(orgs)
-    feature_counts = collections.Counter(f for o in orgs for f in (o.get("features") or []))
+    feature_counts = collections.Counter(t for o in orgs for t in ownership_tags(o))
     parts = [
         "<h1>Catalog</h1>",
         f"<p>{len(orgs)} newsrooms.</p>",
     ]
-    if feature_counts:
-        parts.append("<h2>By ownership and community</h2><p>" + " · ".join(
-            f'<a href="{feature_href(f, prefix)}">{esc(f)}</a> ({n})'
-            for f, n in sorted(feature_counts.items(), key=lambda kv: (-kv[1], kv[0]))
-        ) + "</p>")
     parts.append("<h2>By state</h2><p>" + " · ".join(
         f'<a href="{state_href(name, prefix)}">{esc(name)}</a> ({len(group)})'
         for name, group in groups.items()
@@ -1195,7 +1194,7 @@ def load_orgs(cur):
     return [dict(zip(ORG_COLUMNS, row)) for row in cur.fetchall()]
 
 
-def load_articles(cur, limit, subject=None):
+def load_articles(cur, limit, subject=None, feature=None, default_only=False):
     cur.execute(
         """
         SELECT a.id, a.url, a.title, a.summary, a.author, a.published_at, a.fetched_at,
@@ -1203,18 +1202,21 @@ def load_articles(cur, limit, subject=None):
                o.name AS org_name, o.slug, o.url AS org_url,
                o.support_url, o.support_label,
                o.state, o.city, o.beat, o.coverage, o.coverage_type,
-               o.timezone, o.model, o.features, o.feed_url
+               o.timezone, o.model, o.features, o.feed_url, o.in_default, o.language
         FROM articles a JOIN orgs o ON o.id = a.org_id
         WHERE (%s::text IS NULL OR a.subject = %s)
+          AND (%s::text IS NULL OR %s = ANY(o.features))
+          AND (NOT %s OR o.in_default)
         ORDER BY coalesce(a.published_at, a.fetched_at) DESC, a.id DESC
         LIMIT %s
         """,
-        (subject, subject, limit),
+        (subject, subject, feature, feature, default_only, limit),
     )
     cols = ("id", "url", "title", "summary", "author", "published_at", "fetched_at",
             "image_file", "image_w", "image_h", "image_alt", "subject", "org_name", "slug", "org_url",
             "support_url", "support_label", "state", "city", "beat", "coverage",
-            "coverage_type", "timezone", "model", "features", "org_feed")
+            "coverage_type", "timezone", "model", "features", "org_feed",
+            "in_default", "language")
     return [dict(zip(cols, row)) for row in cur.fetchall()]
 
 
@@ -1246,7 +1248,9 @@ def main():
 
     with connect() as conn, conn.cursor() as cur:
         orgs = load_orgs(cur)
-        articles = collapse_duplicates(load_articles(cur, FEED_PAGE_ARTICLES))
+        articles = collapse_duplicates(
+            load_articles(cur, FEED_PAGE_ARTICLES, default_only=True))
+        all_articles = collapse_duplicates(load_articles(cur, FEED_PAGE_ARTICLES))
 
         # An image reused across many stories is the newsroom's house art or
         # a category placeholder, not this story's picture. Don't repeat it.
@@ -1337,6 +1341,39 @@ def main():
             subject_nav=subject_nav(), skip_images=house_images,
             first_name="index.html", intro=intro,
         )
+
+        # Everything, including the ordinary commercial weeklies the default
+        # view leaves out.
+        write_feed_pages(
+            site, cur, all_articles, "everything",
+            f"{config.SITE_NAME} — Everything", "Every newsroom",
+            skip_images=house_images, with_related=False,
+            intro='<p class="meta">Every newsroom in the catalog, including the '
+                  'commercial weeklies the front page leaves out. '
+                  '<a href="index.html">Back to the default feed</a>.</p>',
+        )
+
+        # One feed per tag, so a lozenge is a real destination.
+        (site / "tags").mkdir(parents=True, exist_ok=True)
+        cur.execute(
+            "SELECT unnest(features) AS f, count(*) FROM orgs GROUP BY 1 ORDER BY 2 DESC"
+        )
+        tag_counts = dict(cur.fetchall())
+        for _group, group_tags in TAG_GROUPS:
+            for tag in group_tags:
+                tag_articles = collapse_duplicates(
+                    load_articles(cur, FEED_PAGE_ARTICLES, feature=tag)
+                )
+                if not tag_articles:
+                    continue
+                n_rooms = tag_counts.get(tag, 0)
+                write_feed_pages(
+                    site, cur, tag_articles, tag_slug(tag),
+                    f"{config.SITE_NAME} — {tag}", tag, prefix="../",
+                    skip_images=house_images, subdir="tags", with_related=False,
+                    intro=f'<p class="meta">{n_rooms} newsrooms tagged {esc(tag)}. '
+                          f'<a href="../catalog.html">All tags</a></p>',
+                )
 
         for name, _n in subject_counts:
             subject_articles = collapse_duplicates(

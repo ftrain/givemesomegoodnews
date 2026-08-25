@@ -6,11 +6,12 @@ import yaml
 
 from . import config
 from .db import connect
+from .tags import in_default_feed, language_of
 
 FIELDS = [
     "slug", "name", "url", "about_url", "feed_url", "city", "state", "lat",
     "lon", "coverage", "coverage_type", "model", "affiliations", "founded",
-    "support_url", "support_label", "beat", "timezone", "tagline", "features", "source", "geo_precision",
+    "support_url", "support_label", "beat", "timezone", "tagline", "features", "source", "geo_precision", "in_default", "language",
 ]
 
 
@@ -58,17 +59,19 @@ def main():
             row = {k: org.get(k) for k in FIELDS}
             row["affiliations"] = org.get("affiliations") or []
             row["features"] = org.get("features") or []
+            row["in_default"] = in_default_feed(org.get("model"), row["features"])
+            row["language"] = language_of(row["features"])
             cur.execute(
                 """
                 INSERT INTO orgs (slug, name, url, about_url, feed_url, city, state,
                                   lat, lon, coverage, coverage_type, model, affiliations, founded,
                                   support_url, support_label, beat, timezone, tagline,
-                                  features, source, geo_precision)
+                                  features, source, geo_precision, in_default, language)
                 VALUES (%(slug)s, %(name)s, %(url)s, %(about_url)s, %(feed_url)s, %(city)s,
                         %(state)s, %(lat)s, %(lon)s, %(coverage)s, %(coverage_type)s,
                         %(model)s, %(affiliations)s, %(founded)s,
                         %(support_url)s, %(support_label)s, %(beat)s, %(timezone)s, %(tagline)s,
-                        %(features)s, %(source)s, %(geo_precision)s)
+                        %(features)s, %(source)s, %(geo_precision)s, %(in_default)s, %(language)s)
                 ON CONFLICT (slug) DO UPDATE SET
                     name = EXCLUDED.name, url = EXCLUDED.url,
                     about_url = EXCLUDED.about_url,
@@ -89,7 +92,9 @@ def main():
                     tagline = COALESCE(EXCLUDED.tagline, orgs.tagline),
                     features = EXCLUDED.features,
                     source = EXCLUDED.source,
-                    geo_precision = EXCLUDED.geo_precision
+                    geo_precision = EXCLUDED.geo_precision,
+                    in_default = EXCLUDED.in_default,
+                    language = EXCLUDED.language
                 """,
                 row,
             )
