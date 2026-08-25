@@ -23,6 +23,7 @@ from .timezones import local_dateline
 from .db import connect
 import collections
 
+from .build_site import STATE_NAMES as STATE_NAMES_BY_CODE
 from .tags import REGIONS, STATE_REGION as REGIONS_BY_STATE, tag_slug
 
 PAGE_SIZE = 30
@@ -40,7 +41,7 @@ FROM articles a JOIN orgs o ON o.id = a.org_id
 
 
 def build_query(query, tags, region, language, subject, limit=PAGE_SIZE, offset=0,
-                count_only=False):
+                count_only=False, state="", place="", national=False):
     """Text search and facets are independent: either alone is a valid ask.
 
     Browsing by tag with no words typed is the common case for "show me the
@@ -70,6 +71,17 @@ def build_query(query, tags, region, language, subject, limit=PAGE_SIZE, offset=
     if subject:
         where.append("a.subject = %s")
         params.append(subject)
+    if state:
+        where.append("o.state = %s")
+        params.append(state.upper())
+    if place:
+        # The line reads "Maryland/Baltimore" or "National/Criminal justice",
+        # so the second half is a city for a local paper and a beat for a
+        # topic-driven one. Match either.
+        where.append("(o.city ILIKE %s OR o.beat ILIKE %s)")
+        params.extend([place, place])
+    if national:
+        where.append("o.coverage_type = 'national'")
     if where:
         sql += " WHERE " + " AND ".join(where)
     if count_only:
@@ -152,34 +164,48 @@ def facet_bar(query, tags, region, language, rows):
     return '<p class="chips">' + "".join(chips) + "</p>"
 
 
-def feed_link(query, tags, region, language):
-    """The RSS equivalent of whatever the reader is currently looking at."""
+def filter_params(query, tags, region, language, state="", place="", national=False):
     params = {k: v for k, v in
-              (("q", query), ("tag", list(tags)), ("region", region), ("lang", language)) if v}
-    return "search.xml?" + urlencode(params, doseq=True)
+              (("q", query), ("tag", list(tags)), ("region", region), ("lang", language),
+               ("state", state), ("place", place)) if v}
+    if national:
+        params["national"] = "1"
+    return params
 
 
-def run_search(cur, query, tags, region, language, subject, page_num=1):
+def feed_link(query, tags, region, language, state="", place="", national=False):
+    """The RSS equivalent of whatever the reader is currently looking at."""
+    return "search.xml?" + urlencode(
+        filter_params(query, tags, region, language, state, place, national), doseq=True)
+
+
+def run_search(cur, query, tags, region, language, subject, page_num=1,
+               state="", place="", national=False):
     offset = (page_num - 1) * PAGE_SIZE
     sql, params = build_query(query, tags, region, language, subject,
-                              limit=PAGE_SIZE, offset=offset)
+                              limit=PAGE_SIZE, offset=offset,
+                              state=state, place=place, national=national)
     cur.execute(sql, params)
     rows = [dict(zip(COLS, r)) for r in cur.fetchall()]
-    csql, cparams = build_query(query, tags, region, language, subject, count_only=True)
+    csql, cparams = build_query(query, tags, region, language, subject, count_only=True,
+                                state=state, place=place, national=national)
     cur.execute(csql, cparams)
     return rows, cur.fetchone()[0]
 
 
-def render_search_rss(query, tags, region, language, subject):
+def render_search_rss(query, tags, region, language, subject,
+                      state="", place="", national=False):
     label = (query.strip()
              or " + ".join(list(tags) + [x for x in (region, language) if x])
              or "everything")
     with connect() as conn, conn.cursor() as cur:
-        rows, _total = run_search(cur, query, tags, region, language, subject)
+        rows, _total = run_search(cur, query, tags, region, language, subject,
+                                  state=state, place=place, national=national)
     return syndicate.render_rss(
         rows, f"{config.SITE_NAME} — {label}",
         f"Search results for {label}, newest first.",
-        feed_link(query, tags, region, language), config.SITE_URL.rstrip("/"))
+        feed_link(query, tags, region, language, state, place, national),
+        config.SITE_URL.rstrip("/"))
 
 
 def pager(query, tags, region, language, page_num, pages):
@@ -200,25 +226,32 @@ def pager(query, tags, region, language, page_num, pages):
     return '<p class="chips">' + "".join(out) + "</p>"
 
 
-def render(query, tags=(), region="", language="", subject="", page_num=1):
+def render(query, tags=(), region="", language="", subject="", page_num=1,
+           state="", place="", national=False):
     tags = list(tags)
     active = [t for t in tags]
     if region:
         active.append(region)
     if language:
         active.append(language)
+    for extra in (place, STATE_NAMES_BY_CODE.get(state.upper()) if state else None,
+                  "National" if national else None):
+        if extra:
+            active.append(extra)
     heading = "Search"
     if active:
         heading = "Search — " + " + ".join(active)
 
     with connect() as conn, conn.cursor() as cur:
         parts = [search_form(query)]
-        if not query.strip() and not tags and not region and not language:
+        if not query.strip() and not tags and not region and not language \
+                and not state and not place and not national:
             parts.append('<p class="meta">Search headlines and summaries, or start '
                          'from a subject or tag in the menu.</p>')
             return page(f"{config.SITE_NAME} — Search", "\n".join(parts))
 
-        rows, total = run_search(cur, query, tags, region, language, subject, page_num)
+        rows, total = run_search(cur, query, tags, region, language, subject, page_num,
+                                 state=state, place=place, national=national)
 
         if not rows:
             shown = esc(query) if query.strip() else esc(" + ".join(active))
@@ -289,13 +322,18 @@ class Handler(BaseHTTPRequestHandler):
         region = (params.get("region") or [""])[0][:20]
         language = (params.get("lang") or [""])[0][:20]
         subject = (params.get("subject") or [""])[0][:30]
+        state = (params.get("state") or [""])[0][:2]
+        place = (params.get("place") or [""])[0][:60]
+        national = bool(params.get("national"))
         raw_page = (params.get("page") or ["1"])[0]
         page_num = int(raw_page) if raw_page.isdigit() and 1 <= int(raw_page) <= MAX_PAGES else 1
         try:
             if wants_rss:
-                body = render_search_rss(query, tags, region, language, subject).encode("utf-8")
+                body = render_search_rss(query, tags, region, language, subject,
+                                         state, place, national).encode("utf-8")
             else:
-                body = render(query, tags, region, language, subject, page_num).encode("utf-8")
+                body = render(query, tags, region, language, subject, page_num,
+                              state, place, national).encode("utf-8")
         except Exception:
             self.send_error(500)
             raise

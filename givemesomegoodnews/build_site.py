@@ -14,6 +14,7 @@ Pages:
 import collections
 import json
 import shutil
+from urllib.parse import quote, urlencode
 import math
 import os
 import re
@@ -837,13 +838,22 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
     pub_time = local_time(moment, a.get("state"), a.get("timezone"))
     where = a.get("beat") or a.get("city")
     state_name = STATE_NAMES.get((a.get("state") or "").upper())
-    if (a.get("coverage_type") or "") == "national":
-        place = "National" + (f"/{where}" if where else "")
-    else:
-        place = "/".join(p for p in (state_name, where) if p) or "National"
+    national = (a.get("coverage_type") or "") == "national"
+
+    # Both halves lead to a feed of everything from that state or that beat.
+    bits = []
+    if national:
+        bits.append('<a href="/search?national=1">National</a>')
+    elif state_name:
+        bits.append(f'<a href="/search?state={quote(a["state"])}">{esc(state_name)}</a>')
+    if where:
+        query = urlencode({"place": where, **({"state": a["state"]} if a.get("state") else {})})
+        bits.append(f'<a href="/search?{query}">{esc(where)}</a>')
+    place = "/".join(bits) or "National"
+
     when = (f'<time datetime="{moment.astimezone(timezone.utc).isoformat()}" '
             f'data-pub="{esc(pub_time)}">{esc(dateline)}</time>') if dateline else ""
-    out.append(f'<p class="whenwhere">{when}{" &middot; " if when else ""}{esc(place)}</p>')
+    out.append(f'<p class="whenwhere">{when}{" &middot; " if when else ""}{place}</p>')
 
     # 4. headline, 5. byline
     out.append(f'<h2><a href="{esc(a["url"])}">{esc(tighten(a["title"]))}</a></h2>')

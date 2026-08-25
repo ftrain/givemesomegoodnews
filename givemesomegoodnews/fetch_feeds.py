@@ -130,6 +130,13 @@ def _entry_categories(entry):
     return out[:12]
 
 
+# Some CMSes stamp a story in local time but label it UTC, which lands it
+# hours in the future — and a future date pins a story to the top of a
+# reverse-chronological feed indefinitely. Anything beyond this much grace
+# is treated as unusable, and the fetch time stands in for it.
+FUTURE_GRACE = timedelta(hours=2)
+
+
 def crawl_one(org):
     feed_url, parsed = resolve_feed(org)
     if not parsed:
@@ -151,6 +158,8 @@ def crawl_one(org):
         published = _entry_time(entry)
         if published and published < cutoff:
             continue
+        if published and published > datetime.now(timezone.utc) + FUTURE_GRACE:
+            published = None
         summary = clean_summary(text_from_html_fragment(entry.get("summary", "") or ""))[:1500]
         author = (entry.get("author") or "").strip()[:200] or None
         categories = _entry_categories(entry)
