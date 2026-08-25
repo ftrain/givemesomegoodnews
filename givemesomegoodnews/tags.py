@@ -31,7 +31,7 @@ OWNERSHIP_TAGS = [
 # Who a newsroom serves, and how it works.
 COMMUNITY_TAGS = [
     "Black-owned", "Black audience", "Latino", "LGBTQ+", "Street paper",
-    "Rural", "Literary", "Arts",
+    "Rural", "Literary", "Arts", "Small press",
 ] + LANGUAGE_TAGS
 
 # Professional associations and practices.
