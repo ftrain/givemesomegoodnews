@@ -94,12 +94,17 @@ font-weight:400;font-display:swap}}
 font-weight:400;font-display:swap}}
 @font-face{{font-family:PlexSerif;src:url({prefix}fonts/ibm-plex-serif-600.woff2) format('woff2');
 font-weight:600;font-display:swap}}
-:root{{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}}
+:root{{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}}
 @media(prefers-color-scheme:dark){{
-:root{{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}}}
+:root{{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}}}
 html{{-webkit-text-size-adjust:100%}}
 body{{font:400 1.0625rem/1.6 PlexSerif,Georgia,serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}}
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{{padding-left:1rem;padding-right:1rem}}
 h1,h2,h3,.sans{{font-family:Plex,system-ui,sans-serif}}
 a{{color:var(--link);text-decoration:none}}
 a:visited{{color:var(--seen)}}
@@ -118,7 +123,11 @@ ul{{padding-left:1.1rem}}
 li{{margin-bottom:.4rem}}
 .meta{{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}}
 .meta a{{color:var(--link)}}
-article{{padding:1.75rem 0;border-bottom:1px solid var(--rule)}}
+article{{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){{background:var(--band)}}
+@media(max-width:34rem){{article{{padding:1.5rem .75rem}}}}
 article::after{{content:"";display:block;clear:both}}
 img{{max-width:100%;height:auto;display:block}}
 .shot{{float:left;width:33%;margin:.35rem 1rem .3rem 0}}

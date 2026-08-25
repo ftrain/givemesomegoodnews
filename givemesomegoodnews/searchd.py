@@ -158,8 +158,8 @@ def feed_link(query, tags, region, language):
     return "search.xml?" + urlencode(params, doseq=True)
 
 
-def run_search(cur, query, tags, region, language, subject, page=1):
-    offset = (page - 1) * PAGE_SIZE
+def run_search(cur, query, tags, region, language, subject, page_num=1):
+    offset = (page_num - 1) * PAGE_SIZE
     sql, params = build_query(query, tags, region, language, subject,
                               limit=PAGE_SIZE, offset=offset)
     cur.execute(sql, params)
@@ -181,7 +181,7 @@ def render_search_rss(query, tags, region, language, subject):
         feed_link(query, tags, region, language), config.SITE_URL.rstrip("/"))
 
 
-def pager(query, tags, region, language, page, pages):
+def pager(query, tags, region, language, page_num, pages):
     """Previous and next, and nothing clever."""
     if pages <= 1:
         return ""
@@ -192,14 +192,14 @@ def pager(query, tags, region, language, page, pages):
             params["page"] = n
         return f'<a class="lozenge" href="/search?{urlencode(params, doseq=True)}">{label}</a>'
     out = []
-    if page > 1:
-        out.append(link(page - 1, "&larr; Newer"))
-    if page < pages:
-        out.append(link(page + 1, "Older &rarr;"))
+    if page_num > 1:
+        out.append(link(page_num - 1, "&larr; Newer"))
+    if page_num < pages:
+        out.append(link(page_num + 1, "Older &rarr;"))
     return '<p class="chips">' + "".join(out) + "</p>"
 
 
-def render(query, tags=(), region="", language="", subject="", page=1):
+def render(query, tags=(), region="", language="", subject="", page_num=1):
     tags = list(tags)
     active = [t for t in tags]
     if region:
@@ -217,7 +217,7 @@ def render(query, tags=(), region="", language="", subject="", page=1):
                          'from a subject or tag in the menu.</p>')
             return page(f"{config.SITE_NAME} — Search", "\n".join(parts))
 
-        rows, total = run_search(cur, query, tags, region, language, subject, page)
+        rows, total = run_search(cur, query, tags, region, language, subject, page_num)
 
         if not rows:
             shown = esc(query) if query.strip() else esc(" + ".join(active))
@@ -227,7 +227,7 @@ def render(query, tags=(), region="", language="", subject="", page=1):
             label = esc(query) if query.strip() else esc(" + ".join(active))
             rss = feed_link(query, tags, region, language)
             pages = max(1, min(MAX_PAGES, -(-total // PAGE_SIZE)))
-            shown = f", page {page} of {pages}" if pages > 1 else ""
+            shown = f", page {page_num} of {pages}" if pages > 1 else ""
             parts.append(f"<p>{total} {noun} matching <strong>{label}</strong>{shown}. "
                          f'<a href="{esc(rss)}">Subscribe to this search</a>.</p>')
 
@@ -251,7 +251,7 @@ def render(query, tags=(), region="", language="", subject="", page=1):
             for row in rows:
                 parts.append(render_feed_item(cur, row, with_related=False))
             parts.append("</div>")
-            parts.append(pager(query, tags, region, language, page, pages))
+            parts.append(pager(query, tags, region, language, page_num, pages))
         return page(f"{config.SITE_NAME} — {heading}", "\n".join(parts),
                     feed_href=feed_link(query, tags, region, language),
                     feed_title=f"{config.SITE_NAME} — {heading}")
@@ -273,12 +273,12 @@ class Handler(BaseHTTPRequestHandler):
         language = (params.get("lang") or [""])[0][:20]
         subject = (params.get("subject") or [""])[0][:30]
         raw_page = (params.get("page") or ["1"])[0]
-        page = int(raw_page) if raw_page.isdigit() and 1 <= int(raw_page) <= MAX_PAGES else 1
+        page_num = int(raw_page) if raw_page.isdigit() and 1 <= int(raw_page) <= MAX_PAGES else 1
         try:
             if wants_rss:
                 body = render_search_rss(query, tags, region, language, subject).encode("utf-8")
             else:
-                body = render(query, tags, region, language, subject, page).encode("utf-8")
+                body = render(query, tags, region, language, subject, page_num).encode("utf-8")
         except Exception:
             self.send_error(500)
             raise
