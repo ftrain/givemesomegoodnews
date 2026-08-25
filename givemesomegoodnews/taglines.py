@@ -60,6 +60,8 @@ CHROME = [
     # Quoted speech means we are reading a story, not a description.
     (r"\bsaid\b|\bsays\b|[\u201c\u201d]", 10),
     (r"^\s*learn about\b", 10),
+    # "About Knight - Knight Foundation" is a page title, not a sentence.
+    (r"^\s*about\b[^.]{0,40}[-|\u2013\u2014]", 12),
     (r"\bartificial intelligence\b|\bAI-driven\b|\bvendors\b", 6),
     # Past-tense news narration, as opposed to describing an organisation.
     (r"\b(voted|marooned|arrested|testified|announced yesterday)\b", 8),
