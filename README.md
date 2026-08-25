@@ -20,7 +20,7 @@ is reading. Everything links back to the newsrooms.
 ## What's here
 
 ```
-data/orgs.yaml          the catalog: 77 newsrooms (slug, url, place, model,
+data/orgs.yaml          the catalog: 97 newsrooms (slug, url, place, model,
                         affiliations, feed hints). Add a newsroom here.
 data/about_overrides/   hand-collected About text for sites whose firewalls
                         block scripted fetches (with source URLs)
@@ -92,6 +92,18 @@ sports stories is dense in the vocabulary sports stories actually use.
 Matching against the bare *word* "Sports" would not work at all — it is one
 hashed bucket that most sports articles never contain. Thresholds are
 `MIN_SUBJECT_SIM`, `MIN_SUBJECT_MARGIN`, and `MIN_SUBJECT_SEEDS`.
+
+### Search
+
+`/search` is the one page that isn't a static file: it runs
+`givemesomegoodnews.searchd`, a small local HTTP service behind nginx that
+queries Postgres full-text search (`websearch_to_tsquery`, so quotes, `OR`
+and `-word` all work). Titles are weighted above summaries. It is a plain
+GET form, so it works without JavaScript, and the rest of the site keeps
+serving if the service is down.
+
+Not a client-side index on purpose: shipping every headline and summary to
+every reader would cost more bandwidth than the whole feed does.
 
 ### The vector part
 

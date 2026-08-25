@@ -58,6 +58,7 @@ NAV = [
     ("map.html", "Map"),
     ("feed.html", "Feed"),
     ("connections.html", "Connections"),
+    ("/search", "Search"),
 ]
 
 
@@ -96,8 +97,11 @@ body {{
   max-width: 40rem; margin: 0 auto; padding: 1rem 1rem 4rem;
   overflow-wrap: break-word;
 }}
-a {{ color: var(--link); }}
+/* No underline at rest; colour carries the link, underline on hover so
+   there is still a non-colour cue when you reach for one. */
+a {{ color: var(--link); text-decoration: none; }}
 a:visited {{ color: var(--visited); }}
+a:hover, a:focus {{ text-decoration: underline; }}
 h1 {{ font-size: 1.8rem; line-height: 1.2; font-weight: 700; margin: 1.5rem 0 1rem; }}
 h2 {{ font-size: 1.25rem; font-weight: 600; margin: 2.5rem 0 0.5rem; }}
 p {{ margin: 0 0 0.75rem; }}
@@ -115,11 +119,21 @@ img {{ max-width: 100%; height: auto; display: block; }}
 svg {{ max-width: 100%; height: auto; }}
 blockquote {{ margin: 0 0 1rem; padding-left: 1rem; border-left: 3px solid var(--rule); }}
 hr {{ border: 0; border-top: 1px solid var(--rule); margin: 2.5rem 0; }}
+input, button {{
+  font: inherit; font-size: 1rem; padding: 0.4rem 0.6rem;
+  border: 1px solid var(--rule); border-radius: 3px;
+  background: var(--bg); color: var(--fg);
+}}
+input[type=search] {{ width: min(22rem, 70%); }}
+button {{ cursor: pointer; color: var(--link); }}
 </style>"""
 
 
 def page(title, body, prefix="", nav_html=None, scripts=""):
-    nav = nav_html or " ·\n".join(f'<a href="{prefix}{href}">{esc(label)}</a>' for href, label in NAV)
+    nav = nav_html or " ·\n".join(
+        f'<a href="{href if href.startswith("/") else prefix + href}">{esc(label)}</a>'
+        for href, label in NAV
+    )
     generated = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -359,6 +373,16 @@ def related_to(cur, article_id, limit=4):
     return [r for r in cur.fetchall() if r[5] >= 0.28]
 
 
+def search_form(query=""):
+    """Plain GET form — search works with JavaScript switched off."""
+    return (
+        '<form action="/search" method="get" role="search">'
+        f'<p><input type="search" name="q" value="{esc(query)}" '
+        'placeholder="Search headlines and summaries" aria-label="Search"> '
+        '<button type="submit">Search</button></p></form>'
+    )
+
+
 def collapse_duplicates(articles):
     """Fold reprints of one story into a single feed entry.
 
@@ -513,6 +537,7 @@ def render_feed(cur, articles, mode="site", prefix="", with_related=True, headin
     parts = []
     if page_index == 0:
         parts.append(f"<h1>{esc(heading)}</h1>")
+        parts.append(search_form())
         if subject_nav:
             parts.append(subject_nav)
     parts.append('<div id="feed-items">')
@@ -668,6 +693,7 @@ def render_index(cur, orgs, articles, mode="site"):
     parts = [
         f"<h1>{esc(config.SITE_NAME)}</h1>",
         f"<p>{len(orgs)} newsrooms · {n_states} states and D.C. · {n_articles} stories</p>",
+        search_form(),
         f'<ul><li><a href="{"#feed" if one else "feed.html"}">Feed</a></li>'
         f'<li><a href="{"#catalog" if one else "catalog.html"}">Catalog</a></li>'
         f'<li><a href="{"#map" if one else "map.html"}">Map</a></li>'

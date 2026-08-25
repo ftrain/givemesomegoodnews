@@ -81,3 +81,13 @@ ALTER TABLE orgs ADD COLUMN IF NOT EXISTS support_url        TEXT;
 ALTER TABLE orgs ADD COLUMN IF NOT EXISTS support_label      TEXT;
 ALTER TABLE orgs ADD COLUMN IF NOT EXISTS support_source     TEXT;
 ALTER TABLE orgs ADD COLUMN IF NOT EXISTS support_checked_at TIMESTAMPTZ;
+
+-- Full-text search. A generated column keeps the index in step with the row
+-- automatically; two-argument to_tsvector with a literal config is immutable,
+-- which is what lets it be GENERATED ... STORED.
+ALTER TABLE articles ADD COLUMN IF NOT EXISTS search_tsv tsvector
+    GENERATED ALWAYS AS (
+        setweight(to_tsvector('english', coalesce(title, '')), 'A') ||
+        setweight(to_tsvector('english', coalesce(summary, '')), 'B')
+    ) STORED;
+CREATE INDEX IF NOT EXISTS articles_search_idx ON articles USING gin (search_tsv);

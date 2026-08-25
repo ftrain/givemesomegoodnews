@@ -131,16 +131,33 @@ def paragraphs_from_html(html):
     return paras
 
 
+_TAGISH = re.compile(r"<[a-zA-Z/][^>]*>")
+
+
 def text_from_html_fragment(html):
-    """Flatten an HTML fragment (e.g. an RSS summary) to plain text."""
-    builder = _TreeBuilder()
-    try:
-        builder.feed(html)
-    except Exception:
-        pass
-    pieces = []
-    _walk_text(builder.root, pieces)
-    return re.sub(r"\s+", " ", unescape("".join(pieces))).strip()
+    """Flatten an HTML fragment (e.g. an RSS summary) to plain text.
+
+    Some publishers double-escape their markup, so the feed carries
+    `&lt;p&gt;` where it means a paragraph. One pass turns that back into a
+    literal "<p>" sitting in what is supposed to be plain text — which is
+    how raw tags ended up in stored summaries. Flatten repeatedly until
+    nothing tag-shaped survives.
+    """
+    text = html or ""
+    for _ in range(3):
+        builder = _TreeBuilder()
+        try:
+            builder.feed(text)
+        except Exception:
+            pass
+        pieces = []
+        _walk_text(builder.root, pieces)
+        flat = re.sub(r"\s+", " ", unescape("".join(pieces))).strip()
+        if not _TAGISH.search(flat):
+            return flat
+        text = flat
+    # Pathological nesting: strip anything tag-shaped outright.
+    return re.sub(r"\s+", " ", _TAGISH.sub(" ", text)).strip()
 
 
 # Feed summaries arrive with the CMS's own furniture attached. WordPress
