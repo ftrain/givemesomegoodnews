@@ -32,19 +32,32 @@ _VIETNAMESE_WORDS = {"của", "và", "các", "người", "trong", "không", "đ�
 STOPWORDS = {
     "English": {"the", "of", "and", "to", "in", "for", "on", "with", "that", "is",
                 "at", "by", "from", "as", "it", "was", "are", "this", "his", "has",
-                "but", "not", "you", "have", "they", "will", "what", "about"},
+                "but", "not", "you", "have", "they", "will", "what", "about",
+                "a", "an", "or", "if", "all", "be", "been", "said", "says", "after",
+                "before", "over", "into", "than", "when", "who", "which", "its",
+                "their", "more", "out", "up", "her", "him", "she", "he", "we",
+                "can", "could", "would", "should", "there", "how", "were", "may"},
     "Spanish": {"de", "la", "el", "que", "en", "los", "para", "con", "por", "una",
                 "del", "las", "un", "se", "al", "su", "es", "lo", "más", "como",
-                "pero", "sus", "sobre", "está", "son", "también", "años"},
+                "pero", "sus", "sobre", "está", "son", "también", "años",
+                "y", "o", "muy", "ya", "sin", "entre", "hasta", "desde", "cuando",
+                "donde", "porque", "tras", "ha", "han", "fue", "ser", "este",
+                "esta", "estos", "estas", "no", "le", "les", "nos", "hay"},
     "French": {"de", "le", "la", "les", "des", "et", "en", "un", "une", "du",
                 "pour", "que", "dans", "qui", "sur", "au", "aux", "est", "pas",
                 "plus", "avec", "sont", "ses"},
     "Portuguese": {"de", "da", "do", "que", "em", "para", "com", "uma", "os", "as",
                    "no", "na", "dos", "por", "mais", "foi", "são", "seu"},
 }
-# Shared between the Romance languages, so they decide nothing on their own.
-_AMBIGUOUS = STOPWORDS["Spanish"] & STOPWORDS["French"] | \
-             STOPWORDS["Spanish"] & STOPWORDS["Portuguese"]
+# Any word appearing in more than one list decides little on its own — "de"
+# across the Romance languages, and "a", which is an English article and a
+# Spanish preposition.
+_ALL = [w for stops in STOPWORDS.values() for w in stops]
+_AMBIGUOUS = {w for w in set(_ALL) if _ALL.count(w) > 1}
+
+# Accented letters are strong corroboration that a short headline really is
+# in another language rather than carrying one foreign proper noun.
+_ACCENTS = re.compile(r"[áéíóúñàèìòùâêîôûçãõü¿¡]", re.IGNORECASE)
 
 MIN_WORDS = 6
 # Decided by comparison, not by an absolute floor. A longer Spanish story
@@ -89,7 +102,9 @@ def detect(*texts, default="English"):
     english = scores.get("English", 0.0)
     others = {n: v for n, v in scores.items() if n != "English"}
     best = max(others, key=others.get)
-    if (distinct[best] >= MIN_DISTINCT
+    # A headline with accents needs less corroboration from function words.
+    needed = MIN_DISTINCT - 1 if _ACCENTS.search(joined) else MIN_DISTINCT
+    if (distinct[best] >= needed
             and others[best] >= MIN_EVIDENCE
             and others[best] > english * MIN_RATIO):
         return best
