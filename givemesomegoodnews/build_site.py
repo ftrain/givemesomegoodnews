@@ -143,7 +143,10 @@ color:var(--dim);text-decoration:none}}
 .chips{{margin:.75rem 0 1.25rem}}
 .mapwrap{{position:relative;margin:0 0 1rem}}
 .mapwrap a[data-slug]{{cursor:pointer}}
-.preview{{position:absolute;left:0;right:0;bottom:1.6rem;background:var(--bg);
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
 border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}}
 .preview ul{{list-style:none;padding:0;margin:.4rem 0}}
 .preview li{{margin:0 0 .55rem}}
