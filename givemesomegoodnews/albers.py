@@ -157,7 +157,8 @@ class MapProjection:
         fit = self.fits[code] if code else self.fits[None]
         parts = []
         for ring in _iter_rings(feat["geometry"]):
-            pts = [f"{x:.1f},{y:.1f}" for x, y in (fit(lon, lat) for lon, lat in ring)]
+            # Whole pixels are plenty at this scale, and halve the path data.
+            pts = [f"{round(x)},{round(y)}" for x, y in (fit(lon, lat) for lon, lat in ring)]
             parts.append("M" + "L".join(pts) + "Z")
         return "".join(parts)
 
