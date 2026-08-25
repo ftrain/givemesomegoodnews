@@ -566,7 +566,7 @@ def feed_page_name(stem, index):
 
 def write_feed_pages(site, cur, articles, stem, title, heading, prefix="",
                      subject_nav=None, skip_images=(), subdir=None,
-                     first_name=None, intro=""):
+                     first_name=None, intro="", with_related=True):
     """Split a feed into pages so no single page carries the whole crawl."""
     target = (site / subdir) if subdir else site
     target.mkdir(parents=True, exist_ok=True)
@@ -576,7 +576,7 @@ def write_feed_pages(site, cur, articles, stem, title, heading, prefix="",
         body = render_feed(cur, chunk, prefix=prefix, heading=heading,
                            subject_nav=nav, skip_images=skip_images,
                            page_index=index, page_count=len(chunks), stem=stem,
-                           intro=intro)
+                           intro=intro, with_related=with_related)
         head = title if index == 0 else f"{title} — page {index + 1}"
         name = first_name if (index == 0 and first_name) else feed_page_name(stem, index)
         target.joinpath(name).write_text(
@@ -1334,6 +1334,10 @@ def main():
                 f"{config.SITE_NAME} — {name}", name, prefix="../",
                 subject_nav=subject_nav(prefix="../", current=name),
                 skip_images=house_images, subdir="subjects",
+                # One pgvector lookup per item is affordable on the main feed;
+                # repeating it for every subject page is what made the build
+                # take a quarter of an hour.
+                with_related=False,
             )
         (site / "connections.html").write_text(page(f"{config.SITE_NAME} — Connections", render_connections(cur)))
 
@@ -1350,7 +1354,8 @@ def main():
                 '<div id="catalog">' + render_catalog(orgs, mode="onepage") + "</div>",
                 '<div id="map">' + render_map(orgs, mode="onepage", recent=recent) + "</div>",
                 '<div id="feed">' + render_feed(cur, onepage_articles, mode="onepage",
-                                                 skip_images=house_images) + "</div>",
+                                                 skip_images=house_images,
+                                                 with_related=False) + "</div>",
                 '<div id="connections">' + render_connections(cur, mode="onepage") + "</div>",
             ]
         )
