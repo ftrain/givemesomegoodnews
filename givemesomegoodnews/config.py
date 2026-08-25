@@ -11,6 +11,7 @@ SITE_DIR = ROOT / "site"
 ORGS_FILE = DATA_DIR / "orgs.yaml"
 STATES_GEOJSON = DATA_DIR / "us_states.geojson"
 ABOUT_OVERRIDES_DIR = DATA_DIR / "about_overrides"
+ASSETS_DIR = ROOT / "assets"
 
 SITE_NAME = "Give Me Some Good News"
 SITE_URL = "https://givemesomegood.news"

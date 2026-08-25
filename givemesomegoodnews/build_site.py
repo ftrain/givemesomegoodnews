@@ -13,6 +13,7 @@ Pages:
 
 import collections
 import json
+import shutil
 import math
 import os
 import re
@@ -29,6 +30,8 @@ MIN_RELATED_SIM = float(os.environ.get("MIN_RELATED_SIM", "0.30"))
 # co-publish), not two newsrooms independently circling one topic.
 SAME_STORY_SIM = float(os.environ.get("SAME_STORY_SIM", "0.80"))
 FEED_PAGE_ARTICLES = 250
+# An image on this many articles is house art, not story art.
+HOUSE_IMAGE_USES = 4
 ONEPAGE_ARTICLES = 80
 
 STATE_NAMES = {
@@ -56,6 +59,63 @@ NAV = [
 ]
 
 
+def stylesheet(prefix=""):
+    """One inline stylesheet, so every page stays a single self-contained file.
+
+    IBM Plex is served from this site, not a font CDN — same reasoning as the
+    image cache: no third party needs to see who is reading.
+    """
+    return f"""<style>
+@font-face {{
+  font-family: 'IBM Plex Sans';
+  src: url({prefix}fonts/ibm-plex-sans.woff2) format('woff2');
+  font-weight: 100 700; font-style: normal; font-display: swap;
+}}
+@font-face {{
+  font-family: 'IBM Plex Mono';
+  src: url({prefix}fonts/ibm-plex-mono.woff2) format('woff2');
+  font-weight: 400; font-style: normal; font-display: swap;
+}}
+:root {{
+  --fg: #1a1a1a; --bg: #fff; --muted: #5c5c5c;
+  --rule: #d8d8d8; --link: #c8102e; --visited: #8c0b20;
+}}
+@media (prefers-color-scheme: dark) {{
+  :root {{
+    --fg: #e9e9e9; --bg: #121212; --muted: #a2a2a2;
+    --rule: #343434; --link: #ff6b6b; --visited: #cf8f8f;
+  }}
+}}
+html {{ -webkit-text-size-adjust: 100%; }}
+body {{
+  font-family: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+  font-size: 1.125rem; line-height: 1.55;
+  color: var(--fg); background: var(--bg);
+  max-width: 40rem; margin: 0 auto; padding: 1rem 1rem 4rem;
+  overflow-wrap: break-word;
+}}
+a {{ color: var(--link); }}
+a:visited {{ color: var(--visited); }}
+h1 {{ font-size: 1.8rem; line-height: 1.2; font-weight: 700; margin: 1.5rem 0 1rem; }}
+h2 {{ font-size: 1.25rem; font-weight: 600; margin: 2.5rem 0 0.5rem; }}
+p {{ margin: 0 0 0.75rem; }}
+ul {{ padding-left: 1.25rem; }}
+li {{ margin-bottom: 0.5rem; }}
+small, small a {{ font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 0.8rem; }}
+small {{ color: var(--muted); }}
+/* One post per block: breathing room, then a rule to the next. */
+article {{
+  padding: 2rem 0;
+  border-bottom: 1px solid var(--rule);
+}}
+article p:last-child {{ margin-bottom: 0; }}
+img {{ max-width: 100%; height: auto; display: block; }}
+svg {{ max-width: 100%; height: auto; }}
+blockquote {{ margin: 0 0 1rem; padding-left: 1rem; border-left: 3px solid var(--rule); }}
+hr {{ border: 0; border-top: 1px solid var(--rule); margin: 2.5rem 0; }}
+</style>"""
+
+
 def page(title, body, prefix="", nav_html=None):
     nav = nav_html or " ·\n".join(f'<a href="{prefix}{href}">{esc(label)}</a>' for href, label in NAV)
     generated = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
@@ -66,6 +126,7 @@ def page(title, body, prefix="", nav_html=None):
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
 <title>{esc(title)}</title>
+{stylesheet(prefix)}
 </head>
 <body>
 <p>{nav}</p>
@@ -311,7 +372,7 @@ def support_link(article):
     return f'<a href="{esc(url)}"><strong>{esc(label)}</strong></a>'
 
 
-def render_feed_item(cur, a, mode="site", prefix="", with_related=True):
+def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_images=()):
     org_page = a["org_url"] if mode == "onepage" else f"{prefix}orgs/{a['slug']}.html"
     when = (a["published_at"] or a["fetched_at"]).astimezone(timezone.utc).strftime("%H:%M UTC")
 
@@ -325,7 +386,7 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True):
     meta.append(support_link(a))
 
     out = ["<article>", f"<p><small>{' · '.join(meta)}</small></p>"]
-    if a.get("image_file"):
+    if a.get("image_file") and a["image_file"] not in skip_images:
         out.append(
             f'<p><a href="{esc(a["url"])}">'
             f'<img src="{prefix}img/{esc(a["image_file"])}" alt="" width="480" loading="lazy"></a></p>'
@@ -350,7 +411,8 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True):
     return "\n".join(out)
 
 
-def render_feed(cur, articles, mode="site", prefix="", with_related=True, heading="Feed", subject_nav=None):
+def render_feed(cur, articles, mode="site", prefix="", with_related=True, heading="Feed",
+                subject_nav=None, skip_images=()):
     parts = [f"<h1>{esc(heading)}</h1>"]
     if subject_nav:
         parts.append(subject_nav)
@@ -360,7 +422,7 @@ def render_feed(cur, articles, mode="site", prefix="", with_related=True, headin
         if day != current_day:
             parts.append(f"<h2>{esc(day)}</h2>")
             current_day = day
-        parts.append(render_feed_item(cur, a, mode, prefix, with_related))
+        parts.append(render_feed_item(cur, a, mode, prefix, with_related, skip_images))
     return "\n".join(parts)
 
 
@@ -599,9 +661,25 @@ def main():
     site = config.SITE_DIR
     (site / "orgs").mkdir(parents=True, exist_ok=True)
 
+    fonts_src = config.ASSETS_DIR / "fonts"
+    if fonts_src.is_dir():
+        fonts_dst = site / "fonts"
+        fonts_dst.mkdir(parents=True, exist_ok=True)
+        for font in fonts_src.glob("*.woff2"):
+            shutil.copyfile(font, fonts_dst / font.name)
+
     with connect() as conn, conn.cursor() as cur:
         orgs = load_orgs(cur)
         articles = load_articles(cur, FEED_PAGE_ARTICLES)
+
+        # An image reused across many stories is the newsroom's house art or
+        # a category placeholder, not this story's picture. Don't repeat it.
+        cur.execute(
+            "SELECT image_file FROM articles WHERE image_file IS NOT NULL "
+            "GROUP BY image_file HAVING count(*) >= %s",
+            (HOUSE_IMAGE_USES,),
+        )
+        house_images = {r[0] for r in cur.fetchall()}
 
         (site / "index.html").write_text(page(config.SITE_NAME, render_index(cur, orgs, articles)))
         (site / "catalog.html").write_text(page(f"{config.SITE_NAME} — Catalog", render_catalog(orgs)))
@@ -623,7 +701,7 @@ def main():
 
         (site / "feed.html").write_text(
             page(f"{config.SITE_NAME} — Feed",
-                 render_feed(cur, articles, subject_nav=subject_nav()))
+                 render_feed(cur, articles, subject_nav=subject_nav(), skip_images=house_images))
         )
 
         (site / "subjects").mkdir(parents=True, exist_ok=True)
@@ -649,7 +727,8 @@ def main():
                 render_index(cur, orgs, onepage_articles, mode="onepage"),
                 '<div id="catalog">' + render_catalog(orgs, mode="onepage") + "</div>",
                 '<div id="map">' + render_map(orgs, mode="onepage") + "</div>",
-                '<div id="feed">' + render_feed(cur, onepage_articles, mode="onepage") + "</div>",
+                '<div id="feed">' + render_feed(cur, onepage_articles, mode="onepage",
+                                                 skip_images=house_images) + "</div>",
                 '<div id="connections">' + render_connections(cur, mode="onepage") + "</div>",
             ]
         )
