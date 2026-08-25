@@ -20,7 +20,9 @@ from . import config, syndicate
 from .build_site import (MENU_FEEDS, MENU_SUBJECTS, page, render_feed_item,
                           render_result_map, search_form)
 from .db import connect
-from .tags import REGIONS, TAG_GROUPS, all_tags, tag_slug
+import collections
+
+from .tags import REGIONS, STATE_REGION as REGIONS_BY_STATE, tag_slug
 
 MAX_RESULTS = 60
 
@@ -89,62 +91,57 @@ def load_menu():
     ]
 
 
-def facet_bar(query, tags, region, language):
-    """Every tag as a lozenge that toggles itself in or out of the query."""
-    def link(params, label, active):
-        qs = urlencode(params, doseq=True)
-        current = ' aria-current="page"' if active else ""
-        return f'<a class="lozenge" href="/search?{qs}"{current}>{esc(label)}</a>'
+def facet_bar(query, tags, region, language, rows):
+    """Only the tags actually present in these results, each one a toggle.
 
-    out = []
-    for group, group_tags in all_tags():
-        lozenges = []
-        for tag in group_tags:
-            if group == "Region":
-                active = region == tag
-                params = {"q": query}
-                if tags:
-                    params["tag"] = tags
-                if language:
-                    params["lang"] = language
-                if not active:
-                    params["region"] = tag
-            else:
-                active = tag in tags
-                remaining = [t for t in tags if t != tag] if active else tags + [tag]
-                params = {"q": query}
-                if remaining:
-                    params["tag"] = remaining
-                if region:
-                    params["region"] = region
-                if language:
-                    params["lang"] = language
-            lozenges.append(link({k: v for k, v in params.items() if v}, tag, active))
-        out.append(f"<h3>{esc(group)}</h3><p>" + "".join(lozenges) + "</p>")
-    return "".join(out)
+    Showing the whole taxonomy meant most of it led nowhere from wherever
+    you happened to be. What is useful is: here is what this set contains,
+    and here is how to drop any of it.
+    """
+    present = collections.Counter()
+    for row in rows:
+        for tag in row.get("features") or []:
+            present[tag] += 1
+        if row.get("state"):
+            r = REGIONS_BY_STATE.get(row["state"])
+            if r:
+                present[r] += 1
 
+    def url_for(drop=None, add=None, drop_region=False, drop_lang=False):
+        keep = [t for t in tags if t != drop]
+        if add and add not in keep:
+            keep = keep + [add]
+        params = {"q": query} if query else {}
+        if keep:
+            params["tag"] = keep
+        if region and not drop_region and add not in REGIONS:
+            params["region"] = region
+        if region and add in REGIONS:
+            params["region"] = add
+        if language and not drop_lang:
+            params["lang"] = language
+        return "/search?" + urlencode(params, doseq=True)
 
-def feed_link(query, tags, region, language):
-    """The RSS equivalent of whatever the reader is currently looking at."""
-    params = {k: v for k, v in
-              (("q", query), ("tag", list(tags)), ("region", region), ("lang", language)) if v}
-    return "search.xml?" + urlencode(params, doseq=True)
-
-
-def run_search(cur, query, tags, region, language, subject):
-    sql, params = build_query(query, tags, region, language, subject)
-    cur.execute(sql, params)
-    return [dict(zip(COLS, r)) for r in cur.fetchall()]
-
-
-def render_search_rss(query, tags, region, language, subject):
-    label = query.strip() or " + ".join(list(tags) + [x for x in (region, language) if x]) or "everything"
-    with connect() as conn, conn.cursor() as cur:
-        rows = run_search(cur, query, tags, region, language, subject)
-    return syndicate.render_rss(
-        rows, f"{config.SITE_NAME} — {label}",
-        f"Search results for {label}, newest first.",
-        feed_link(query, tags, region, language), config.SITE_URL.rstrip("/"))
+    chips = []
+    # Active filters first, marked, and clicking one turns it off.
+    for tag in tags:
+        chips.append(f'<a class="lozenge on" href="{esc(url_for(drop=tag))}" '
+                     f'aria-current="page" title="Remove this filter">{esc(tag)} &times;</a>')
+    if region:
+        chips.append(f'<a class="lozenge on" href="{esc(url_for(drop_region=True))}" '
+                     f'aria-current="page" title="Remove this filter">{esc(region)} &times;</a>')
+    if language:
+        chips.append(f'<a class="lozenge on" href="{esc(url_for(drop_lang=True))}" '
+                     f'aria-current="page" title="Remove this filter">{esc(language)} &times;</a>')
+    # Then what is left in the results, to narrow further.
+    for tag, count in present.most_common(24):
+        if tag in tags or tag == region:
+            continue
+        chips.append(f'<a class="lozenge" href="{esc(url_for(add=tag))}">'
+                     f'{esc(tag)} {count}</a>')
+    if not chips:
+        return ""
+    return '<p class="chips">' + "".join(chips) + "</p>"
 
 
 def render(query, tags=(), region="", language="", subject=""):
@@ -159,15 +156,13 @@ def render(query, tags=(), region="", language="", subject=""):
         heading = "Search — " + " + ".join(active)
 
     with connect() as conn, conn.cursor() as cur:
-        parts = ["<h1>Search</h1>", search_form(query)]
+        parts = [search_form(query)]
         if not query.strip() and not tags and not region and not language:
-            parts.append("<p class=\"meta\">Type something, or tap a tag to browse. "
-                         "Tags combine: Rural plus South, or Black-owned plus Nonprofit.</p>")
-            parts.append(facet_bar(query, tags, region, language))
+            parts.append('<p class="meta">Search headlines and summaries, or start '
+                         'from a subject or tag in the menu.</p>')
             return page(f"{config.SITE_NAME} — Search", "\n".join(parts))
 
         rows = run_search(cur, query, tags, region, language, subject)
-        parts.append(facet_bar(query, tags, region, language))
 
         if not rows:
             shown = esc(query) if query.strip() else esc(" + ".join(active))
@@ -180,6 +175,7 @@ def render(query, tags=(), region="", language="", subject=""):
             parts.append(f"<p>{len(rows)} {noun} matching <strong>{label}</strong>{capped}. "
                          f'<a href="{esc(rss)}">Subscribe to this search</a>.</p>')
 
+            # Map first, then the tags in this result set, then the stories.
             seen, result_orgs = set(), []
             for row in rows:
                 if row["slug"] in seen:
@@ -194,6 +190,7 @@ def render(query, tags=(), region="", language="", subject=""):
             map_svg = render_result_map(result_orgs, caption="Newsrooms in these results")
             if map_svg:
                 parts.append(map_svg)
+            parts.append(facet_bar(query, tags, region, language, rows))
             parts.append('<div id="feed-items">')
             for row in rows:
                 parts.append(render_feed_item(cur, row, with_related=False))

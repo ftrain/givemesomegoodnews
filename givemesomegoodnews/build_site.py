@@ -122,7 +122,8 @@ time[data-pub]{{cursor:pointer;border-bottom:1px dotted var(--rule)}}
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
 color:var(--dim);text-decoration:none}}
 .lozenge:hover,.lozenge:focus{{border-color:var(--link);color:var(--link);text-decoration:none}}
-.lozenge[aria-current=page]{{border-color:var(--link);color:var(--bg);background:var(--link)}}
+.lozenge[aria-current=page],.lozenge.on{{border-color:var(--link);color:var(--bg);background:var(--link)}}
+.chips{{margin:.75rem 0 1.25rem}}
 svg{{max-width:100%;height:auto}}
 blockquote{{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}}
 hr{{border:0;border-top:1px solid var(--rule);margin:2rem 0}}
@@ -143,18 +144,17 @@ display:flex;gap:.6rem;align-items:center}}
 .burger{{width:28px;height:28px;flex:none;fill:currentColor;display:block}}
 .menu>summary{{color:var(--fg)}}
 .menu>summary:hover,.menu>summary:focus{{color:var(--link)}}
-.menu-label{{font:600 .78rem/1 PlexMono,ui-monospace,monospace;
-text-transform:uppercase;letter-spacing:.08em}}
+
 .burger .cross{{display:none}}
 .menu[open] .burger .bars{{display:none}}
 .menu[open] .burger .cross{{display:inline}}
 .masthead{{width:100%;height:auto;display:block}}
-.panel{{position:absolute;left:0;right:0;top:100%;background:var(--bg);
-border-bottom:2px solid var(--fg);padding:.5rem 1rem 1.25rem;max-height:75vh;
-overflow-y:auto;z-index:20}}
-.panel hr{{margin:.9rem 0}}
+.panel{{position:absolute;top:100%;right:0;width:50%;min-width:min(20rem,100%);
+background:var(--bg);border:2px solid var(--fg);border-top:0;
+padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}}
+.panel hr{{border:0;border-top:1px solid var(--rule);margin:.85rem 0}}
+.panel p{{margin:0}}
 .panel ul.cols{{display:grid;grid-template-columns:repeat(auto-fill,minmax(7rem,1fr));gap:.4rem}}
-.panel{{padding:.4rem 0 1rem}}
 .panel h3{{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
 margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}}
 .panel>nav:first-of-type ul{{display:block}}
@@ -182,20 +182,21 @@ def menu(prefix="", site_name=""):
         f'<li><a href="{prefix}subjects/{slug}.html">{esc(name)}</a></li>'
         for name, slug in ordered
     )
-    browse = "".join(f'<li><a href="{href(t)}">{esc(label)}</a></li>'
-                     for t, label in NAV_BROWSE)
-    meta = "".join(f'<li><a href="{href(t)}">{esc(label)}</a></li>'
-                   for t, label in NAV_META)
+    # Horizontal rows read better separated by middots than by whitespace.
+    browse = " \u00b7 ".join(f'<a href="{href(t)}">{esc(label)}</a>'
+                             for t, label in NAV_BROWSE)
+    meta = " \u00b7 ".join(f'<a href="{href(t)}">{esc(label)}</a>'
+                           for t, label in NAV_META)
 
     return f"""<a class="home" href="{prefix}index.html"><img class="masthead"
  src="{prefix}masthead.svg" alt="{esc(site_name)}" width="440" height="44"></a>
 <details class="menu">
-<summary title="Menu"><svg class="burger" viewBox="0 0 24 24"
+<summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
  width="24" height="24" aria-hidden="true" focusable="false"><g class="bars"><rect x="1" y="4"
  width="22" height="2.5" rx="1.25"/><rect x="1" y="10.75" width="22" height="2.5" rx="1.25"/><rect
  x="1" y="17.5" width="22" height="2.5" rx="1.25"/></g><g class="cross"><rect x="1" y="10.75"
  width="22" height="2.5" rx="1.25" transform="rotate(45 12 12)"/><rect x="1" y="10.75" width="22"
- height="2.5" rx="1.25" transform="rotate(-45 12 12)"/></g></svg><span class="menu-label">Menu</span></summary>
+ height="2.5" rx="1.25" transform="rotate(-45 12 12)"/></g></svg></summary>
 <div class="panel">
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
@@ -205,9 +206,9 @@ def menu(prefix="", site_name=""):
 <hr>
 <nav aria-label="Subjects"><ul class="cols">{subjects}</ul></nav>
 <hr>
-<nav aria-label="Browse"><ul>{browse}</ul></nav>
+<nav aria-label="Browse"><p>{browse}</p></nav>
 <hr>
-<nav aria-label="About"><ul>{meta}</ul></nav>
+<nav aria-label="About"><p>{meta}</p></nav>
 <p class="meta"><a href="/admin" rel="nofollow">Manage feeds</a></p>
 </div>
 </details>"""
@@ -246,6 +247,7 @@ quoted from each newsroom's own About page. Newsroom directory compiled by the
 <a href="https://www.mediaanddemocracyproject.org/journalism-directory">Media and
 Democracy Project</a>; coordinates from the U.S. Census Bureau gazetteer.</p>
 </footer>
+{MENU_SCRIPT}
 {LOCAL_TIME_SCRIPT}
 {scripts}
 </body>
@@ -559,6 +561,23 @@ def collapse_duplicates(articles):
     return kept
 
 
+MENU_SCRIPT = """<script>
+/* A disclosure stays open until it is told otherwise; a menu should not. */
+(function () {
+  function close(e) {
+    var open = document.querySelector("details.menu[open]");
+    if (!open) return;
+    if (e.type === "keydown") {
+      if (e.key === "Escape") { open.removeAttribute("open"); }
+      return;
+    }
+    if (!open.contains(e.target)) { open.removeAttribute("open"); }
+  }
+  document.addEventListener("click", close);
+  document.addEventListener("keydown", close);
+})();
+</script>"""
+
 LOCAL_TIME_SCRIPT = """<script>
 /* Datelines are the newsroom's own local time. Tap one to see that moment
    in your time zone; tap again to put it away. Delegated from the document
@@ -652,7 +671,7 @@ def support_link(article):
         # No payment page found — send them to the newsroom itself rather
         # than label a homepage as something it is not.
         url, label = article["org_url"], "Support"
-    return f'<a href="{esc(url)}"><strong>{esc(label)}</strong></a>'
+    return f'<a class="lozenge give" href="{esc(url)}">{esc(label)}</a>'
 
 
 def place_line(a, mode="site", prefix=""):
@@ -666,8 +685,9 @@ def place_line(a, mode="site", prefix=""):
     middle = a.get("beat") or a.get("city")
     if not middle:
         middle = "Statewide" if (a.get("coverage_type") or "") == "state" else None
-    org_page = a["org_url"] if mode == "onepage" else f"{prefix}orgs/{a['slug']}.html"
-    pub = f'<a href="{esc(org_page)}">{esc(a["org_name"])}</a>'
+    # Straight to the newsroom. Our own page about them is reachable from
+    # the catalog; from the feed, a reader wants the publication itself.
+    pub = f'<a href="{esc(a["org_url"])}">{esc(a["org_name"])}</a>'
     return " / ".join(esc(part) for part in (first, middle) if part) + " / " + pub
 
 
@@ -691,8 +711,12 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
         out.append(f"<p><small>{' \u00b7 '.join(stamp)}</small></p>")
     out.append(f"<p><small>{place_line(a, mode, prefix)}</small></p>")
     out.append(f'<h2><a href="{esc(a["url"])}">{esc(a["title"])}</a></h2>')
-    if a.get("author"):
-        out.append(f'<p><small>By {esc(a["author"])}</small></p>')
+    tags = tag_links(a, prefix if mode != "onepage" else "")
+    byline = f'<small>By {esc(a["author"])}</small>' if a.get("author") else "<small></small>"
+    out.append(
+        f'<p class="byline">{byline}'
+        f'<span class="aside">{tags}{support_link(a)}</span></p>'
+    )
 
     if a.get("image_file") and a["image_file"] not in skip_images:
         size = ""
@@ -726,13 +750,6 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
         if echoes:
             out.append(f"<p><small>Echo: {' \u00b7 '.join(echoes)}</small></p>")
 
-    # What kind of newsroom this is, then the ask.
-    tail = []
-    tags = tag_links(a, prefix if mode != "onepage" else "")
-    if tags:
-        tail.append(tags)
-    tail.append(support_link(a))
-    out.append(f'<p class="footer-line"><small>{" | ".join(tail)}</small></p>')
     out.append("</article>")
     return "\n".join(out)
 
@@ -1250,9 +1267,7 @@ def write_text_edition(site, cur, articles, orgs):
     out.mkdir(parents=True, exist_ok=True)
     body = [
         f"<h1>{esc(config.SITE_NAME)}</h1>",
-        f"<p>The latest {min(len(articles), 60)} stories, newest first. Each is a "
-        "newsroom and a headline; open Details for the byline, date and how to "
-        "support them. No images, no scripts, one column.</p>",
+
     ]
     body += [render_text_item(a) for a in articles[:60]]
     (out / "index.html").write_text(text_page(f"{config.SITE_NAME} — plain text", "\n".join(body)))
@@ -1350,7 +1365,7 @@ def load_articles(cur, limit, subject=None, feature=None, default_only=False,
         FROM articles a JOIN orgs o ON o.id = a.org_id
         WHERE (%s::text IS NULL OR a.subject = %s)
           AND (%s::text IS NULL OR %s = ANY(o.features))
-          AND (NOT %s OR o.in_default)
+          AND (NOT %s OR (o.in_default AND o.language = 'English'))
           {extra}
         ORDER BY coalesce(a.published_at, a.fetched_at) DESC, a.id DESC
         LIMIT %s
@@ -1608,7 +1623,9 @@ def main():
             description="Every RSS feed this site publishes, by subject and by tag."))
 
         # --- the small files a site is expected to have ------------------
-        (site / "favicon.svg").write_text(syndicate.FAVICON)
+        drawn_icon = config.ASSETS_DIR / "favicon.svg"
+        (site / "favicon.svg").write_text(
+            drawn_icon.read_text() if drawn_icon.is_file() else syndicate.FAVICON)
         (site / "404.html").write_text(page(
             f"{config.SITE_NAME} — not found",
             "<h1>Not here</h1>"

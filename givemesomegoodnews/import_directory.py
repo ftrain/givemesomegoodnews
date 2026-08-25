@@ -29,6 +29,7 @@ import yaml
 
 from . import config
 from .geocode import clean, lookup
+from .tags import in_default_feed
 
 KEEP_FUNDING = {"Nonprofit", "Native", "College-based", "Independent"}
 DROP_HOSTS = {
@@ -176,6 +177,12 @@ def main():
         features = normalize_features(row.get("Features"))
         if (row["Funding"] or "").strip() == "Native" and "Native-owned" not in features:
             features.append("Native-owned")
+        # A plainly commercial local paper with no community or mission tag is
+        # not what this catalog is for. Dropped at import so a re-run cannot
+        # quietly put it back.
+        if not in_default_feed(entry["model"], features):
+            stats["skip:commercial, no community tag"] += 1
+            continue
         if features:
             entry["features"] = features
         out.append(entry)
