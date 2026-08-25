@@ -52,8 +52,13 @@ MIN_WORDS = 6
 # to English then is exactly wrong when the text contains no English
 # function words at all. What settles it is one language clearly out-scoring
 # English.
-MIN_MARGIN = 0.05
+MIN_RATIO = 1.2
 MIN_EVIDENCE = 0.055
+# A Spanish place or organisation name inside an English sentence — "Casa de
+# Esperanza opens a shelter" — contributes one or two function words. Real
+# prose in a language uses several different ones, so a verdict needs this
+# many *distinct* stopwords, not just a high ratio.
+MIN_DISTINCT = 3
 
 
 def detect(*texts, default="English"):
@@ -74,15 +79,18 @@ def detect(*texts, default="English"):
     if len(words) < MIN_WORDS:
         return default
     total = len(words)
-    scores = {}
+    scores, distinct = {}, {}
     for name, stops in STOPWORDS.items():
-        hits = sum(1 for w in words if w in stops)
+        present = [w for w in words if w in stops]
         # Words every Romance language shares carry reduced weight.
-        shared = sum(0.4 for w in words if w in _AMBIGUOUS and w in stops)
-        scores[name] = (hits - shared) / total
+        shared = sum(0.4 for w in present if w in _AMBIGUOUS)
+        scores[name] = (len(present) - shared) / total
+        distinct[name] = len(set(present))
     english = scores.get("English", 0.0)
     others = {n: v for n, v in scores.items() if n != "English"}
     best = max(others, key=others.get)
-    if others[best] >= MIN_EVIDENCE and others[best] - english >= MIN_MARGIN:
+    if (distinct[best] >= MIN_DISTINCT
+            and others[best] >= MIN_EVIDENCE
+            and others[best] > english * MIN_RATIO):
         return best
     return default
