@@ -119,3 +119,17 @@ CREATE TABLE IF NOT EXISTS institutions (
     tagline         TEXT,
     about_fetched_at TIMESTAMPTZ
 );
+
+-- Alt text as the publisher wrote it, so screen readers get their words.
+ALTER TABLE articles ADD COLUMN IF NOT EXISTS image_alt TEXT;
+
+-- Indices for the queries the build and the search service actually run.
+CREATE INDEX IF NOT EXISTS articles_org_pub_idx  ON articles (org_id, published_at DESC);
+CREATE INDEX IF NOT EXISTS articles_subject_pub_idx ON articles (subject, published_at DESC)
+    WHERE subject IS NOT NULL;
+CREATE INDEX IF NOT EXISTS articles_recent_idx   ON articles (coalesce(published_at, fetched_at) DESC);
+CREATE INDEX IF NOT EXISTS articles_image_idx    ON articles (image_file) WHERE image_file IS NOT NULL;
+CREATE INDEX IF NOT EXISTS orgs_state_idx        ON orgs (state);
+CREATE INDEX IF NOT EXISTS orgs_source_idx       ON orgs (source);
+CREATE INDEX IF NOT EXISTS orgs_support_idx      ON orgs (support_url) WHERE support_url IS NOT NULL;
+CREATE INDEX IF NOT EXISTS fetch_log_slug_idx    ON fetch_log (org_slug, fetched_at DESC);

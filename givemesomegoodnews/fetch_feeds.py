@@ -8,6 +8,7 @@ direct. Articles are keyed by canonical URL, so re-running is idempotent.
 
 import re
 import sys
+from html import unescape
 import time
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
@@ -81,27 +82,39 @@ def _entry_time(entry):
 _IMG_SRC_RE = re.compile(r"""<img\b[^>]*\bsrc\s*=\s*("([^"]*)"|'([^']*)'|([^\s>]+))""", re.IGNORECASE)
 
 
+_IMG_TAG_RE = re.compile(r"<img\b[^>]*>", re.IGNORECASE)
+_ALT_RE = re.compile(r"""\balt\s*=\s*("([^"]*)"|'([^']*)'|([^\s>]+))""", re.IGNORECASE)
+
+
 def _entry_image(entry, link):
-    """Best image URL a feed entry offers, in order of how deliberate it is."""
+    """(url, alt) for the best image a feed entry offers.
+
+    Alt text is kept as the publisher wrote it — a screen reader should hear
+    their caption, not our guess. Returns (None, None) when there is none.
+    """
     for mc in entry.get("media_content") or []:
         url = mc.get("url")
         if url and str(mc.get("medium") or "image") == "image":
-            return urljoin(link, url)
+            return urljoin(link, url), None
     for mt in entry.get("media_thumbnail") or []:
         if mt.get("url"):
-            return urljoin(link, mt["url"])
+            return urljoin(link, mt["url"]), None
     for enc in entry.get("enclosures") or []:
         if str(enc.get("type") or "").startswith("image/") and enc.get("href"):
-            return urljoin(link, enc["href"])
-    # Otherwise take the first image out of the entry body.
+            return urljoin(link, enc["href"]), None
+    # Otherwise take the first image out of the entry body, with its alt.
     html = "".join((c.get("value") or "") for c in (entry.get("content") or []))
     html += entry.get("summary") or ""
-    m = _IMG_SRC_RE.search(html)
-    if m:
-        src = (m.group(2) or m.group(3) or m.group(4) or "").strip()
+    tag = _IMG_TAG_RE.search(html)
+    if tag:
+        src = _IMG_SRC_RE.search(tag.group(0))
         if src:
-            return urljoin(link, src)
-    return None
+            url = (src.group(2) or src.group(3) or src.group(4) or "").strip()
+            alt_m = _ALT_RE.search(tag.group(0))
+            alt = (alt_m.group(2) or alt_m.group(3) or alt_m.group(4) or "").strip() if alt_m else None
+            if url:
+                return urljoin(link, url), (unescape(alt)[:300] if alt else None)
+    return None, None
 
 
 def _entry_categories(entry):
@@ -140,6 +153,7 @@ def crawl_one(org):
         summary = clean_summary(text_from_html_fragment(entry.get("summary", "") or ""))[:1500]
         author = (entry.get("author") or "").strip()[:200] or None
         categories = _entry_categories(entry)
+        image_url, image_alt = _entry_image(entry, link)
         url = canonical_url(link)
         subject, subject_source = classify(categories, url)
         items.append(
@@ -149,7 +163,8 @@ def crawl_one(org):
                 "summary": summary,
                 "author": author,
                 "published_at": published,
-                "image_url": _entry_image(entry, link),
+                "image_url": image_url,
+                "image_alt": image_alt,
                 "categories": categories,
                 "subject": subject,
                 "subject_source": subject_source,
@@ -202,12 +217,12 @@ def main():
                 for item, vec in zip(new_items, vecs):
                     cur.execute(
                         """INSERT INTO articles (org_id, url, title, summary, author, published_at,
-                                                 image_url, image_file, image_w, image_h,
+                                                 image_url, image_alt, image_file, image_w, image_h,
                                                  categories, subject, subject_source, embedding)
-                           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                            ON CONFLICT (url) DO NOTHING""",
                         (org["id"], item["url"], item["title"], item["summary"],
-                         item["author"], item["published_at"], item["image_url"],
+                         item["author"], item["published_at"], item["image_url"], item["image_alt"],
                          item["image_file"], item["image_w"], item["image_h"],
                          item["categories"], item["subject"],
                          item["subject_source"], vec_literal(vec)),

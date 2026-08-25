@@ -10,21 +10,25 @@ every reader would cost more bandwidth than the whole feed does.
 Run: python3 -m givemesomegoodnews.searchd [port]
 """
 
+import re
 import sys
 from html import escape as esc
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
 
 from . import config
-from .build_site import page, render_feed_item, search_form
+from .build_site import (MENU_FEEDS, MENU_SUBJECTS, page, render_feed_item,
+                          render_result_map, search_form)
 from .db import connect
 
 MAX_RESULTS = 60
 
 QUERY = """
 SELECT a.id, a.url, a.title, a.summary, a.author, a.published_at, a.fetched_at,
-       a.image_file, a.image_w, a.image_h, a.subject,
-       o.name, o.slug, o.url, o.support_url, o.support_label
+       a.image_file, a.image_w, a.image_h, a.image_alt, a.subject,
+       o.name, o.slug, o.url, o.support_url, o.support_label,
+       o.state, o.city, o.beat, o.coverage, o.coverage_type, o.timezone,
+       o.model, o.features, o.feed_url
 FROM articles a
 JOIN orgs o ON o.id = a.org_id,
      websearch_to_tsquery('english', %s) AS q
@@ -35,8 +39,23 @@ LIMIT %s
 """
 
 COLS = ("id", "url", "title", "summary", "author", "published_at", "fetched_at",
-        "image_file", "image_w", "image_h", "subject", "org_name", "slug",
-        "org_url", "support_url", "support_label")
+        "image_file", "image_w", "image_h", "image_alt", "subject", "org_name", "slug",
+        "org_url", "support_url", "support_label", "state", "city", "beat",
+        "coverage", "coverage_type", "timezone", "model", "features", "org_feed")
+
+ORG_COLS = ("slug", "name", "lat", "lon", "state")
+
+
+def load_menu():
+    """The menu is built at build time; the service has to look it up."""
+    with connect() as conn, conn.cursor() as cur:
+        cur.execute("SELECT DISTINCT subject FROM articles WHERE subject IS NOT NULL ORDER BY 1")
+        subjects = [(r[0], re.sub(r"[^a-z0-9]+", "-", r[0].lower()).strip("-"))
+                    for r in cur.fetchall()]
+    MENU_SUBJECTS[:] = subjects
+    MENU_FEEDS[:] = [("feed.xml", "Everything")] + [
+        (f"subjects/{slug}.xml", name) for name, slug in subjects
+    ]
 
 
 def render(query):
@@ -54,6 +73,22 @@ def render(query):
             capped = " (showing the strongest matches)" if len(rows) == MAX_RESULTS else ""
             parts.append(f"<p>{len(rows)} {noun} matching "
                          f"<strong>{esc(query)}</strong>{capped}.</p>")
+            # The map goes above the results and the list below it, so the
+            # same answer is available spatially and in reading order.
+            seen, result_orgs = set(), []
+            for row in rows:
+                if row["slug"] in seen:
+                    continue
+                seen.add(row["slug"])
+                cur.execute(
+                    "SELECT slug, name, lat, lon, state FROM orgs WHERE slug = %s", (row["slug"],)
+                )
+                got = cur.fetchone()
+                if got:
+                    result_orgs.append(dict(zip(ORG_COLS, got)))
+            map_svg = render_result_map(result_orgs, caption="Newsrooms in these results")
+            if map_svg:
+                parts.append(map_svg)
             parts.append('<div id="feed-items">')
             for row in rows:
                 parts.append(render_feed_item(cur, row, with_related=False))
@@ -87,6 +122,7 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def main():
+    load_menu()
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 8081
     ThreadingHTTPServer(("127.0.0.1", port), Handler).serve_forever()
 

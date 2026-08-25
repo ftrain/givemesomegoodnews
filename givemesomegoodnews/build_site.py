@@ -23,6 +23,7 @@ from html import escape as esc
 from . import config
 from .albers import MapProjection
 from .timezones import local_dateline, local_time
+from . import syndicate
 from .db import connect
 
 MIN_RELATED_SIM = float(os.environ.get("MIN_RELATED_SIM", "0.30"))
@@ -58,117 +59,109 @@ NAV = [
     ("catalog.html", "Catalog"),
     ("map.html", "Map"),
     ("connections.html", "Connections"),
-    ("institutions.html", "Who funds this"),
+    ("resources.html", "Resources"),
     ("/search", "Search"),
     ("onepage.html", "Everything on one page"),
+    ("text/", "Plain text version"),
 ]
 
 
-def stylesheet(prefix=""):
-    """One inline stylesheet, so every page stays a single self-contained file.
+# Everything the menu offers, filled in by main() before anything renders.
+MENU_SUBJECTS = []
+MENU_FEEDS = []
 
-    IBM Plex is served from this site, not a font CDN — same reasoning as the
-    image cache: no third party needs to see who is reading.
-    """
+
+def stylesheet(prefix=""):
+    """One small stylesheet. Type does the work; there is almost no chrome."""
     return f"""<style>
-@font-face {{
-  font-family: 'IBM Plex Sans';
-  src: url({prefix}fonts/ibm-plex-sans.woff2) format('woff2');
-  font-weight: 100 700; font-style: normal; font-display: swap;
-}}
-@font-face {{
-  font-family: 'IBM Plex Mono';
-  src: url({prefix}fonts/ibm-plex-mono.woff2) format('woff2');
-  font-weight: 400; font-style: normal; font-display: swap;
-}}
-:root {{
-  --fg: #1a1a1a; --bg: #fff; --muted: #5c5c5c;
-  --rule: #d8d8d8; --link: #c8102e; --visited: #8c0b20;
-}}
-@media (prefers-color-scheme: dark) {{
-  :root {{
-    --fg: #e9e9e9; --bg: #121212; --muted: #a2a2a2;
-    --rule: #343434; --link: #ff6b6b; --visited: #cf8f8f;
-  }}
-}}
-html {{ -webkit-text-size-adjust: 100%; }}
-body {{
-  font-family: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
-  font-size: 1.125rem; line-height: 1.55;
-  color: var(--fg); background: var(--bg);
-  max-width: 40rem; margin: 0 auto; padding: 1rem 1rem 4rem;
-  overflow-wrap: break-word;
-}}
-/* No underline at rest; colour carries the link, underline on hover so
-   there is still a non-colour cue when you reach for one. */
-a {{ color: var(--link); text-decoration: none; }}
-a:visited {{ color: var(--visited); }}
-a:hover, a:focus {{ text-decoration: underline; }}
-h1 {{ font-size: 1.8rem; line-height: 1.2; font-weight: 700; margin: 1.5rem 0 1rem; }}
-h2 {{ font-size: 1.25rem; font-weight: 600; margin: 2.5rem 0 0.5rem; }}
-p {{ margin: 0 0 0.75rem; }}
-ul {{ padding-left: 1.25rem; }}
-li {{ margin-bottom: 0.5rem; }}
-small, small a {{ font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 0.8rem; }}
-small {{ color: var(--muted); }}
-/* One post per block: breathing room, then a rule to the next. */
-article {{
-  padding: 2rem 0;
-  border-bottom: 1px solid var(--rule);
-}}
-article p:last-child {{ margin-bottom: 0; }}
-/* Contain the floated image so it can't spill into the next post. */
-article::after {{ content: ""; display: block; clear: both; }}
-article h2 {{ font-size: 1.25rem; line-height: 1.25; margin: 0.2rem 0 0.4rem; }}
-a.shot {{ float: left; width: 50%; margin: 0.3rem 1rem 0.4rem 0; }}
-a.shot img {{ width: 100%; height: auto; }}
-p.more {{ margin-top: 0.75rem; }}
-p.footer-line {{ clear: both; padding-top: 0.75rem; }}
-.yours {{ color: var(--muted); }}
-time[data-pub] {{ cursor: pointer; border-bottom: 1px dotted var(--rule); }}
-/* A 50% float on a phone leaves ~170px of text per line; stack instead. */
-@media (max-width: 34rem) {{
-  a.shot {{ float: none; width: 100%; margin: 0 0 0.75rem; }}
-}}
-img {{ max-width: 100%; height: auto; display: block; }}
-svg {{ max-width: 100%; height: auto; }}
-blockquote {{ margin: 0 0 1rem; padding-left: 1rem; border-left: 3px solid var(--rule); }}
-hr {{ border: 0; border-top: 1px solid var(--rule); margin: 2.5rem 0; }}
-details.menu {{ margin: 0 0 0.5rem; }}
-details.menu > summary {{
-  list-style: none; cursor: pointer; padding: 0.4rem 0;
-  font-weight: 600; font-size: 1.05rem;
-}}
-details.menu > summary::-webkit-details-marker {{ display: none; }}
-details.menu .bars {{ color: var(--muted); margin-right: 0.35rem; }}
-details.menu .wordmark a {{ color: var(--fg); text-decoration: none; }}
-details.menu nav {{
-  display: flex; flex-direction: column; gap: 0.5rem;
-  padding: 0.6rem 0 0.4rem 1.6rem; border-top: 1px solid var(--rule); margin-top: 0.4rem;
-}}
-input, button {{
-  font: inherit; font-size: 1rem; padding: 0.4rem 0.6rem;
-  border: 1px solid var(--rule); border-radius: 3px;
-  background: var(--bg); color: var(--fg);
-}}
-input[type=search] {{ width: min(22rem, 70%); }}
-button {{ cursor: pointer; color: var(--link); }}
+@font-face{{font-family:Plex;src:url({prefix}fonts/ibm-plex-sans.woff2) format('woff2');
+font-weight:100 700;font-display:swap}}
+@font-face{{font-family:PlexMono;src:url({prefix}fonts/ibm-plex-mono.woff2) format('woff2');
+font-weight:400;font-display:swap}}
+:root{{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}}
+@media(prefers-color-scheme:dark){{
+:root{{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}}}
+html{{-webkit-text-size-adjust:100%}}
+body{{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
+max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}}
+a{{color:var(--link);text-decoration:none}}
+a:visited{{color:var(--seen)}}
+a:hover,a:focus{{text-decoration:underline}}
+:focus-visible{{outline:3px solid var(--link);outline-offset:2px}}
+.skip{{position:absolute;left:-9999px}}
+.skip:focus{{position:static;display:block;padding:.5rem 0}}
+h1{{font-size:1.5rem;line-height:1.2;margin:1rem 0}}
+h2{{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}}
+h3{{font-size:1rem;margin:1.2rem 0 .4rem}}
+p{{margin:0 0 .7rem}}
+ul{{padding-left:1.1rem}}
+li{{margin-bottom:.4rem}}
+.meta{{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}}
+.meta a{{color:var(--link)}}
+article{{padding:1.75rem 0;border-bottom:1px solid var(--rule)}}
+article::after{{content:"";display:block;clear:both}}
+img{{max-width:100%;height:auto;display:block}}
+.shot{{float:left;width:50%;margin:.3rem 1rem .4rem 0}}
+.shot img{{width:100%}}
+@media(max-width:34rem){{.shot{{float:none;width:100%;margin:0 0 .7rem}}}}
+time[data-pub]{{cursor:pointer;border-bottom:1px dotted var(--rule)}}
+.yours{{color:var(--dim)}}
+svg{{max-width:100%;height:auto}}
+blockquote{{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}}
+hr{{border:0;border-top:1px solid var(--rule);margin:2rem 0}}
+input,button{{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
+background:var(--bg);border:1px solid var(--rule)}}
+input[type=search]{{width:min(20rem,68%)}}
+button{{cursor:pointer;color:var(--link)}}
+/* The menu is the whole navigation: sections, subjects, feeds, search. */
+.menu{{border-bottom:2px solid var(--fg);margin-bottom:1rem}}
+.menu>summary{{cursor:pointer;list-style:none;padding:.6rem 0;
+font-weight:700;font-size:1.15rem;display:flex;gap:.5rem;align-items:baseline}}
+.menu>summary::-webkit-details-marker{{display:none}}
+.menu>summary::before{{content:"\2630";color:var(--dim);font-weight:400}}
+.menu[open]>summary::before{{content:"\00d7"}}
+.panel{{padding:.4rem 0 1rem}}
+.panel h3{{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}}
+.panel ul{{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:.3rem .9rem}}
+.panel li{{margin:0}}
 </style>"""
 
 
-def page(title, body, prefix="", nav_html=None, scripts=""):
-    links = nav_html or "\n".join(
-        f'<a href="{href if href.startswith("/") else prefix + href}">{esc(label)}</a>'
-        for href, label in NAV
+def menu(prefix="", site_name=""):
+    """One disclosure holding every route into the site."""
+    def href(target):
+        return target if target.startswith("/") else prefix + target
+
+    sections = "".join(
+        f'<li><a href="{href(t)}">{esc(label)}</a></li>' for t, label in NAV
     )
-    # <details> gives a hamburger that works with JavaScript switched off.
-    home = prefix + "index.html"
-    nav = (
-        f'<details class="menu"><summary><span class="bars" aria-hidden="true">\u2630</span> '
-        f'<span class="wordmark"><a href="{home}">{esc(config.SITE_NAME)}</a></span></summary>'
-        f'<nav>{links}</nav></details>'
+    subjects = "".join(
+        f'<li><a href="{prefix}subjects/{slug}.html">{esc(name)}</a></li>'
+        for name, slug in MENU_SUBJECTS
     )
-    generated = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    feeds = "".join(
+        f'<li><a href="{prefix}{path}">{esc(label)}</a></li>' for path, label in MENU_FEEDS
+    )
+    return f"""<details class="menu">
+<summary>{esc(site_name)}</summary>
+<div class="panel">
+<form role="search" action="/search" method="get">
+<p><label class="skip" for="q">Search</label>
+<input type="search" id="q" name="q" placeholder="Search headlines and summaries">
+<button type="submit">Search</button></p>
+</form>
+<h3>Sections</h3><nav aria-label="Sections"><ul>{sections}</ul></nav>
+<h3>Subjects</h3><nav aria-label="Subjects"><ul>{subjects}</ul></nav>
+<h3>Feeds</h3><nav aria-label="RSS feeds"><ul>{feeds}</ul></nav>
+</div>
+</details>"""
+
+
+def page(title, body, prefix="", nav_html=None, scripts="", description=""):
+    meta_desc = (
+        f'<meta name="description" content="{esc(description)}">\n' if description else ""
+    )
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -176,16 +169,27 @@ def page(title, body, prefix="", nav_html=None, scripts=""):
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
 <title>{esc(title)}</title>
+{meta_desc}<link rel="icon" href="{prefix}favicon.svg" type="image/svg+xml">
+<link rel="alternate" type="application/rss+xml" title="{esc(config.SITE_NAME)}"
+ href="{prefix}feed.xml">
 {stylesheet(prefix)}
 </head>
 <body>
-{nav}
-<hr>
+<a class="skip" href="#main">Skip to the stories</a>
+<header>
+{nav_html or menu(prefix, config.SITE_NAME)}
+</header>
+<main id="main">
 {body}
+</main>
+<footer>
 <hr>
-<p><small>Generated {generated}. About text quoted from each newsroom's own
-About page; headlines, summaries and images from their public feeds, linking to
-the original. <a href="{config.REPO_URL}">{config.REPO_LABEL}</a></small></p>
+<p class="meta">Every story here belongs to the newsroom that reported it —
+follow the links, read them there, and pay them if you can. Catalog entries are
+quoted from each newsroom's own About page. Newsroom directory compiled by the
+<a href="https://www.mediaanddemocracyproject.org/journalism-directory">Media and
+Democracy Project</a>; coordinates from the U.S. Census Bureau gazetteer.</p>
+</footer>
 {LOCAL_TIME_SCRIPT}
 {scripts}
 </body>
@@ -286,6 +290,41 @@ def render_catalog(orgs, mode="site", prefix=""):
         parts.append("<h2>Everywhere (no fixed geography)</h2>")
         parts.extend(catalog_entry(o, mode, prefix) for o in national)
     return "\n".join(parts)
+
+
+def render_result_map(orgs, prefix="", caption="Where these newsrooms are"):
+    """A compact map of one subset of newsrooms — used above search results."""
+    proj = MapProjection(config.STATES_GEOJSON)
+    mappable = [o for o in orgs if o.get("lat") and o.get("lon") and o.get("state")]
+    if not mappable:
+        return ""
+    clusters = collections.defaultdict(list)
+    for org in mappable:
+        clusters[(org["state"], round(org["lat"], 1), round(org["lon"], 1))].append(org)
+    dots = []
+    for (state, _la, _lo), cluster in clusters.items():
+        cx, cy = proj.to_svg_coords(cluster[0]["lon"], cluster[0]["lat"], state)
+        for i, org in enumerate(cluster):
+            angle = 2 * math.pi * i / max(len(cluster), 1)
+            x = cx + (0 if len(cluster) == 1 else 9 * math.cos(angle))
+            y = cy + (0 if len(cluster) == 1 else 9 * math.sin(angle))
+            dots.append(
+                f'<a href="{prefix}orgs/{esc(org["slug"])}.html">'
+                f'<circle cx="{x:.1f}" cy="{y:.1f}" r="5" fill="#c8102e" fill-opacity="0.9">'
+                f'<title>{esc(org["name"])}</title></circle></a>'
+            )
+    states = "".join(
+        f'<path d="{d}" fill="none" stroke="currentColor" stroke-opacity="0.3" stroke-width="1"/>'
+        for _name, d in proj.state_paths()
+    )
+    names = ", ".join(sorted({o["name"] for o in mappable}))
+    return (
+        f'<figure>'
+        f'<svg viewBox="0 0 {proj.width} {proj.height}" width="100%" role="img" '
+        f'aria-label="{esc(caption)}: {esc(names[:600])}">{states}{"".join(dots)}</svg>'
+        f'<figcaption class="meta">{esc(caption)} — {len(mappable)} newsrooms</figcaption>'
+        f"</figure>"
+    )
 
 
 def render_map(orgs, mode="site", prefix="", recent=()):
@@ -600,9 +639,10 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
         size = ""
         if a.get("image_w") and a.get("image_h"):
             size = f' width="{a["image_w"]}" height="{a["image_h"]}"'
+        alt = esc(a.get("image_alt") or "")
         out.append(
-            f'<a class="shot" href="{esc(a["url"])}">'
-            f'<img src="{prefix}img/{esc(a["image_file"])}" alt=""{size} '
+            f'<a class="shot" href="{esc(a["url"])}" tabindex="-1" aria-hidden="true">'
+            f'<img src="{prefix}img/{esc(a["image_file"])}" alt="{alt}"{size} '
             f'loading="lazy" decoding="async"></a>'
         )
     if a.get("summary"):
@@ -646,7 +686,6 @@ def render_feed(cur, articles, mode="site", prefix="", with_related=True, headin
         parts.append(f"<h1>{esc(heading)}</h1>")
         if intro:
             parts.append(intro)
-        parts.append(search_form())
         if subject_nav:
             parts.append(subject_nav)
     parts.append('<div id="feed-items">')
@@ -853,8 +892,7 @@ def render_catalog_index(orgs, prefix=""):
     feature_counts = collections.Counter(f for o in orgs for f in (o.get("features") or []))
     parts = [
         "<h1>Catalog</h1>",
-        f"<p>{len(orgs)} newsrooms. Text quoted from their own About pages.</p>",
-        search_form(),
+        f"<p>{len(orgs)} newsrooms.</p>",
     ]
     if feature_counts:
         parts.append("<h2>By ownership and community</h2><p>" + " · ".join(
@@ -911,7 +949,7 @@ def render_institutions(cur, orgs, mode="site", prefix=""):
             by_affiliation[name].append(org)
 
     parts = [
-        "<h1>Who funds this</h1>",
+        "<h1>Resources</h1>",
         f"<p>{len(insts)} organisations that fund, convene, or count the newsrooms "
         "in this catalog. Described in their own words, as the newsrooms are.</p>",
     ]
@@ -972,6 +1010,127 @@ def usable_about(text):
     return not _ABOUT_JUNK.search(head)
 
 
+TEXT_CSS = """<style>
+body{font-family:Plex,system-ui,sans-serif;font-size:1.25rem;line-height:1.7;
+max-width:34rem;margin:0 auto;padding:1rem 1rem 4rem;color:#111;background:#fff}
+@media(prefers-color-scheme:dark){body{color:#eee;background:#111}a{color:#ff8080}}
+a{color:#b3000f}
+h1{font-size:1.6rem}h2{font-size:1.25rem;margin:2rem 0 .3rem}
+dl{margin:.2rem 0 .6rem}dt{font-weight:700}dd{margin:0 0 .3rem}
+:focus-visible{outline:3px solid currentColor;outline-offset:2px}
+.skip{position:absolute;left:-9999px}.skip:focus{position:static;display:block}
+</style>"""
+
+
+def text_page(title, body, prefix=""):
+    """The plain edition: no images, no scripts, one column, real landmarks.
+
+    Everything a sighted reader gets from layout is written out here instead
+    — who published it, where they are, when, and how to support them — in
+    the order a screen reader will read it.
+    """
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>{esc(title)}</title>
+<link rel="icon" href="{prefix}favicon.svg" type="image/svg+xml">
+{TEXT_CSS}
+</head>
+<body>
+<a class="skip" href="#main">Skip to the stories</a>
+<header>
+<nav aria-label="Sections">
+<p><a href="{prefix}text/index.html">Stories</a> ·
+<a href="{prefix}text/catalog.html">Newsrooms</a> ·
+<a href="/search">Search</a> ·
+<a href="{prefix}index.html">Full version</a></p>
+</nav>
+</header>
+<main id="main">
+{body}
+</main>
+<footer>
+<p>Every story belongs to the newsroom that reported it. Please read it there,
+and pay them if you can.</p>
+</footer>
+</body>
+</html>
+"""
+
+
+def render_text_item(a, prefix="../"):
+    """One story, written out as a definition list a screen reader can scan."""
+    when = local_dateline(a["published_at"] or a["fetched_at"], a.get("state"), a.get("timezone"))
+    where = a.get("beat") or a.get("city") or a.get("coverage") or ""
+    support_url = a.get("support_url") or a["org_url"]
+    support_label = a.get("support_label") or "Support"
+    rows = [
+        f'<h2><a href="{esc(a["url"])}">{esc(a["title"])}</a></h2>',
+        "<dl>",
+        f'<dt>Newsroom</dt><dd><a href="{prefix}orgs/{esc(a["slug"])}.html">'
+        f'{esc(a["org_name"])}</a>{f", {esc(where)}" if where else ""}</dd>',
+    ]
+    if a.get("author"):
+        rows.append(f"<dt>Reported by</dt><dd>{esc(a['author'])}</dd>")
+    if when:
+        rows.append(f"<dt>Published</dt><dd>{esc(when)}</dd>")
+    if a.get("subject"):
+        rows.append(f"<dt>Subject</dt><dd>{esc(a['subject'])}</dd>")
+    tags = ", ".join(ownership_tags(a))
+    if tags:
+        rows.append(f"<dt>Newsroom type</dt><dd>{esc(tags)}</dd>")
+    if a.get("image_alt"):
+        rows.append(f"<dt>Picture</dt><dd>{esc(a['image_alt'])}</dd>")
+    rows.append("</dl>")
+    if a.get("summary"):
+        rows.append(f"<p>{esc(a['summary'][:600])}</p>")
+    rows.append(
+        f'<p><a href="{esc(a["url"])}">Read the full story at '
+        f'{esc(a["org_name"])}</a> · '
+        f'<a href="{esc(support_url)}">{esc(support_label)} {esc(a["org_name"])}</a></p>'
+    )
+    return "<article>" + "\n".join(rows) + "</article>"
+
+
+def write_text_edition(site, cur, articles, orgs):
+    """A no-image, no-JavaScript edition built for screen readers."""
+    out = site / "text"
+    out.mkdir(parents=True, exist_ok=True)
+    body = [
+        f"<h1>{esc(config.SITE_NAME)}</h1>",
+        f"<p>The latest {min(len(articles), 60)} stories from "
+        f"{len(orgs)} local newsrooms, newest first. "
+        "No images, no scripts, one column.</p>",
+    ]
+    body += [render_text_item(a) for a in articles[:60]]
+    (out / "index.html").write_text(text_page(f"{config.SITE_NAME} — plain text", "\n".join(body)))
+
+    groups, national = group_orgs_by_state(orgs)
+    rows = [f"<h1>Newsrooms</h1><p>{len(orgs)} newsrooms, grouped by state.</p>"]
+    for state_name, group in groups.items():
+        rows.append(f"<h2>{esc(state_name)}</h2><ul>")
+        for org in group:
+            support = org.get("support_url")
+            tail = (f' · <a href="{esc(support)}">{esc(org.get("support_label") or "Support")}</a>'
+                    if support else "")
+            rows.append(
+                f'<li><a href="../orgs/{esc(org["slug"])}.html">{esc(org["name"])}</a>'
+                f' — {esc(org["coverage"] or place_label(org))}{tail}</li>'
+            )
+        rows.append("</ul>")
+    if national:
+        rows.append("<h2>Everywhere</h2><ul>")
+        for org in national:
+            rows.append(f'<li><a href="../orgs/{esc(org["slug"])}.html">{esc(org["name"])}</a></li>')
+        rows.append("</ul>")
+    (out / "catalog.html").write_text(
+        text_page(f"{config.SITE_NAME} — newsrooms, plain text", "\n".join(rows))
+    )
+
+
 def render_org_page(cur, org):
     parts = [f'<h1><a href="{esc(org["url"])}">{esc(org["name"])}</a></h1>', f"<p>{meta_line(org)}</p>"]
     tags = tag_links(org)
@@ -1022,11 +1181,11 @@ def load_articles(cur, limit, subject=None):
     cur.execute(
         """
         SELECT a.id, a.url, a.title, a.summary, a.author, a.published_at, a.fetched_at,
-               a.image_file, a.image_w, a.image_h, a.subject,
+               a.image_file, a.image_w, a.image_h, a.image_alt, a.subject,
                o.name AS org_name, o.slug, o.url AS org_url,
                o.support_url, o.support_label,
                o.state, o.city, o.beat, o.coverage, o.coverage_type,
-               o.timezone, o.model, o.features
+               o.timezone, o.model, o.features, o.feed_url
         FROM articles a JOIN orgs o ON o.id = a.org_id
         WHERE (%s::text IS NULL OR a.subject = %s)
         ORDER BY coalesce(a.published_at, a.fetched_at) DESC, a.id DESC
@@ -1035,9 +1194,9 @@ def load_articles(cur, limit, subject=None):
         (subject, subject, limit),
     )
     cols = ("id", "url", "title", "summary", "author", "published_at", "fetched_at",
-            "image_file", "image_w", "image_h", "subject", "org_name", "slug", "org_url",
+            "image_file", "image_w", "image_h", "image_alt", "subject", "org_name", "slug", "org_url",
             "support_url", "support_label", "state", "city", "beat", "coverage",
-            "coverage_type", "timezone", "model", "features")
+            "coverage_type", "timezone", "model", "features", "org_feed")
     return [dict(zip(cols, row)) for row in cur.fetchall()]
 
 
@@ -1121,8 +1280,10 @@ def main():
             (site / "features" / f"{slug}.html").write_text(
                 page(f"{config.SITE_NAME} — {feature}", body, prefix="../")
             )
-        (site / "institutions.html").write_text(
-            page(f"{config.SITE_NAME} — Who funds this", render_institutions(cur, orgs))
+        (site / "resources.html").write_text(
+            page(f"{config.SITE_NAME} — Resources", render_institutions(cur, orgs),
+                 description="The funders, networks, associations and directories behind "
+                             "the newsrooms in this catalog.")
         )
         (site / "map.html").write_text(
             page(f"{config.SITE_NAME} — Coverage map", render_map(orgs, recent=recent))
@@ -1141,6 +1302,14 @@ def main():
             ]
             all_link = "All" if current is None else f'<a href="{prefix}index.html">All</a>'
             return f"<p>{all_link} · " + " · ".join(links) + "</p>"
+
+        MENU_SUBJECTS[:] = [
+            (name, re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-"))
+            for name, _n in subject_counts
+        ]
+        MENU_FEEDS[:] = [("feed.xml", "Everything")] + [
+            (f"subjects/{slug}.xml", name) for name, slug in MENU_SUBJECTS
+        ]
 
         n_feed_pages = write_feed_pages(
             site, cur, articles, "feed", config.SITE_NAME, "Feed",
@@ -1182,6 +1351,39 @@ def main():
             f'<a href="#map">Map</a>\n<a href="#connections">Connections</a>'
         )
         (site / "onepage.html").write_text(page(config.SITE_NAME, onepage, nav_html=onepage_nav))
+
+        # --- RSS, one per subject plus the whole feed --------------------
+        site_url = config.SITE_URL.rstrip("/")
+        (site / "feed.xml").write_text(syndicate.render_rss(
+            articles, config.SITE_NAME,
+            "Local newsrooms built to last, newest first. Every story links back "
+            "to the newsroom that reported it.",
+            "feed.xml", site_url))
+        for name, slug in MENU_SUBJECTS:
+            subject_articles = load_articles(cur, syndicate.RSS_ITEMS, subject=name)
+            (site / "subjects" / f"{slug}.xml").write_text(syndicate.render_rss(
+                subject_articles, f"{config.SITE_NAME} — {name}",
+                f"{name} reporting from local newsrooms across the United States.",
+                f"subjects/{slug}.xml", site_url))
+
+        # --- the small files a site is expected to have ------------------
+        (site / "favicon.svg").write_text(syndicate.FAVICON)
+        (site / "404.html").write_text(page(
+            f"{config.SITE_NAME} — not found",
+            "<h1>Not here</h1>"
+            "<p>That page has moved or never existed. The menu above has "
+            'everything, or start from <a href="/">the feed</a>.</p>'))
+        (site / "robots.txt").write_text(syndicate.ROBOTS.format(site_url=site_url))
+        sitemap_paths = ["", "catalog.html", "map.html", "resources.html", "connections.html"]
+        sitemap_paths += [f"catalog/{re.sub(r'[^a-z0-9]+', '-', n.lower()).strip('-')}.html"
+                          for n in state_groups]
+        sitemap_paths += [f"features/{re.sub(r'[^a-z0-9]+', '-', f.lower()).strip('-')}.html"
+                          for f in by_feature]
+        sitemap_paths += [f"orgs/{o['slug']}.html" for o in orgs]
+        (site / "sitemap.xml").write_text(syndicate.render_sitemap(sitemap_paths, site_url))
+
+        # --- the plain-text edition --------------------------------------
+        write_text_edition(site, cur, articles, orgs)
 
         path = export_catalog_json(orgs)
         n_img = sum(1 for a in articles if a.get("image_file"))
