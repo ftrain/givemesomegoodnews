@@ -43,7 +43,7 @@ GOOD_TERMS = [
 # real catalog — an actual news story or a 404 page. All of these look
 # plausible to a keyword scorer, so they are named explicitly.
 CHROME = [
-    (r"\bshare to\b", 12), (r"\bposted in\b", 12), (r"\bpublished:", 12),
+    (r"\bshare to\b", 12), (r"\bposted\s*in", 12), (r"\bpublished:", 12),
     (r"\blast updated\b", 12), (r"\bclick here\b", 12), (r"\bread more\b", 8),
     (r"\bour address is\b", 12), (r"\bsuite \d+\b", 10), (r"\b\d{5}(-\d{4})?\b", 6),
     (r"\bpage you requested\b|\bcould not locate\b|\bdoesn'?t exist\b", 20),
@@ -57,6 +57,10 @@ CHROME = [
     (r"\b(his|her|their) (brother|sister|father|mother|husband|wife)\b", 8),
     (r"\bremembering\b", 10), (r"\bobituary\b", 10),
     (r"\btweets?\b", 8), (r"\bcrowdfunding\b", 5),
+    # Quoted speech means we are reading a story, not a description.
+    (r"\bsaid\b|\bsays\b|[\u201c\u201d]", 10),
+    (r"^\s*learn about\b", 10),
+    (r"\bartificial intelligence\b|\bAI-driven\b|\bvendors\b", 6),
     # Past-tense news narration, as opposed to describing an organisation.
     (r"\b(voted|marooned|arrested|testified|announced yesterday)\b", 8),
 ]
@@ -73,7 +77,7 @@ BAD_TERMS = [
     (r"^\s*(if you|please|want to|help us|support us|join us)\b", 8),
 ]
 
-MIN_LEN, MAX_LEN, IDEAL_LO, IDEAL_HI = 40, 300, 70, 220
+MIN_LEN, MAX_LEN, IDEAL_LO, IDEAL_HI = 35, 300, 60, 220
 # Below this, no sentence is trustworthy enough to print as the pub's tag.
 MIN_SCORE = 7
 
