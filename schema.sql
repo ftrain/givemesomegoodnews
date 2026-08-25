@@ -17,6 +17,9 @@ CREATE TABLE IF NOT EXISTS orgs (
     model           TEXT,            -- ownership/funding model, short label
     beat            TEXT,            -- short topic label for topic-driven outlets
     tagline         TEXT,            -- one sentence from their About page
+    features        TEXT[] DEFAULT '{}',  -- Black-owned, Spanish, INN member, Worker-owned...
+    source          TEXT,            -- curated | mdp (which data file it came from)
+    geo_precision   TEXT,            -- place | county | state, for imported coordinates
     timezone        TEXT,            -- IANA zone override; else derived from state
     affiliations    TEXT[] DEFAULT '{}',  -- e.g. {American Journalism Project, Lenfest Beyond Print}
     founded         INT,
@@ -82,6 +85,10 @@ ALTER TABLE articles ADD COLUMN IF NOT EXISTS subject_source TEXT;
 
 ALTER TABLE orgs ADD COLUMN IF NOT EXISTS beat               TEXT;
 ALTER TABLE orgs ADD COLUMN IF NOT EXISTS tagline            TEXT;
+ALTER TABLE orgs ADD COLUMN IF NOT EXISTS features           TEXT[] DEFAULT '{}';
+ALTER TABLE orgs ADD COLUMN IF NOT EXISTS source             TEXT;
+ALTER TABLE orgs ADD COLUMN IF NOT EXISTS geo_precision      TEXT;
+CREATE INDEX IF NOT EXISTS orgs_features_idx ON orgs USING gin (features);
 ALTER TABLE orgs ADD COLUMN IF NOT EXISTS timezone           TEXT;
 ALTER TABLE orgs ADD COLUMN IF NOT EXISTS support_url        TEXT;
 ALTER TABLE orgs ADD COLUMN IF NOT EXISTS support_label      TEXT;

@@ -171,7 +171,7 @@ def main():
         cur.execute(query + " ORDER BY slug", params)
         orgs = [dict(zip(("id", "slug", "url", "feed_url"), r)) for r in cur.fetchall()]
 
-    with ThreadPoolExecutor(max_workers=8) as pool:
+    with ThreadPoolExecutor(max_workers=config.CRAWL_WORKERS) as pool:
         results = list(pool.map(crawl_one, orgs))
 
     total_new, no_feed = 0, []
@@ -193,7 +193,7 @@ def main():
             if new_items:
                 # Pull every image onto our own disk before we store the row;
                 # nothing on this site hotlinks a publisher's server.
-                with ThreadPoolExecutor(max_workers=8) as img_pool:
+                with ThreadPoolExecutor(max_workers=config.CRAWL_WORKERS) as img_pool:
                     cached = list(img_pool.map(cache_image, [i["image_url"] for i in new_items]))
                 for item, (image_file, image_w, image_h) in zip(new_items, cached):
                     item["image_file"], item["image_w"], item["image_h"] = image_file, image_w, image_h

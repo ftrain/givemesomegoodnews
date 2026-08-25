@@ -793,6 +793,60 @@ def render_connections(cur, mode="site", prefix="", limit=20):
     return "\n".join(parts)
 
 
+def feature_href(feature, prefix=""):
+    return f"{prefix}features/{re.sub(r'[^a-z0-9]+', '-', feature.lower()).strip('-')}.html"
+
+
+def state_href(state_name, prefix=""):
+    return f"{prefix}catalog/{re.sub(r'[^a-z0-9]+', '-', state_name.lower()).strip('-')}.html"
+
+
+def feature_links(org, prefix=""):
+    return " · ".join(
+        f'<a href="{feature_href(f, prefix)}">{esc(f)}</a>' for f in (org.get("features") or [])
+    )
+
+
+def render_catalog_index(orgs, prefix=""):
+    """Counts, feature facets, and a way into each state."""
+    groups, national = group_orgs_by_state(orgs)
+    feature_counts = collections.Counter(f for o in orgs for f in (o.get("features") or []))
+    parts = [
+        "<h1>Catalog</h1>",
+        f"<p>{len(orgs)} newsrooms. Text quoted from their own About pages.</p>",
+        search_form(),
+    ]
+    if feature_counts:
+        parts.append("<h2>By ownership and community</h2><p>" + " · ".join(
+            f'<a href="{feature_href(f, prefix)}">{esc(f)}</a> ({n})'
+            for f, n in sorted(feature_counts.items(), key=lambda kv: (-kv[1], kv[0]))
+        ) + "</p>")
+    parts.append("<h2>By state</h2><p>" + " · ".join(
+        f'<a href="{state_href(name, prefix)}">{esc(name)}</a> ({len(group)})'
+        for name, group in groups.items()
+    ) + "</p>")
+    if national:
+        parts.append("<h2>Everywhere</h2>")
+        parts.append(render_org_list(national, prefix="", mode="site"))
+    return "\n".join(parts)
+
+
+def render_org_list(group, prefix="", mode="site"):
+    rows = []
+    for org in group:
+        line = f'<a href="{esc(org_href(org, mode, prefix))}">{esc(org["name"])}</a>'
+        bits = [esc(org["coverage"] or place_label(org))]
+        if org.get("model"):
+            bits.append(esc(org["model"]))
+        feats = feature_links(org, prefix)
+        tail = f" — {' · '.join(b for b in bits if b)}"
+        rows.append(f"<li>{line}{tail}"
+                    + (f"<br><small>{feats}</small>" if feats else "")
+                    + (f"<br><small>{esc(org['tagline'])}</small>" if org.get("tagline") else "")
+                    + "</li>")
+    return "<ul>" + "".join(rows) + "</ul>"
+
+
 KIND_LABELS = {
     "funder": "Funders",
     "program": "Programs",
@@ -868,6 +922,9 @@ def render_institutions(cur, orgs, mode="site", prefix=""):
 
 def render_org_page(cur, org):
     parts = [f'<h1><a href="{esc(org["url"])}">{esc(org["name"])}</a></h1>', f"<p>{meta_line(org)}</p>"]
+    feats = feature_links(org)
+    if feats:
+        parts.append(f"<p><small>{feats}</small></p>")
     if org.get("support_url"):
         label = org.get("support_label") or "Support"
         parts.append(f'<p><a href="{esc(org["support_url"])}"><strong>{esc(label)}</strong></a></p>')
@@ -899,7 +956,7 @@ def render_org_page(cur, org):
 ORG_COLUMNS = (
     "id", "slug", "name", "url", "about_url", "feed_url", "city", "state", "lat", "lon",
     "coverage", "coverage_type", "model", "affiliations", "founded",
-    "support_url", "support_label",
+    "support_url", "support_label", "features", "source", "tagline", "beat",
     "about_text", "about_source_url", "about_fetched_at",
 )
 
@@ -982,7 +1039,36 @@ def main():
         )
         recent = {r[0] for r in cur.fetchall()}
 
-        (site / "catalog.html").write_text(page(f"{config.SITE_NAME} — Catalog", render_catalog(orgs)))
+        (site / "catalog.html").write_text(
+            page(f"{config.SITE_NAME} — Catalog", render_catalog_index(orgs))
+        )
+        # One page per state, so the catalog stays small however big it gets.
+        (site / "catalog").mkdir(parents=True, exist_ok=True)
+        state_groups, _national = group_orgs_by_state(orgs)
+        for state_name, group in state_groups.items():
+            body = (f"<h1>{esc(state_name)}</h1>"
+                    f"<p>{len(group)} newsrooms. "
+                    f'<a href="../catalog.html">All states</a></p>'
+                    + render_org_list(group, prefix="../"))
+            slug = re.sub(r"[^a-z0-9]+", "-", state_name.lower()).strip("-")
+            (site / "catalog" / f"{slug}.html").write_text(
+                page(f"{config.SITE_NAME} — {state_name}", body, prefix="../")
+            )
+        # And one page per feature: Black-owned, Spanish, INN member...
+        (site / "features").mkdir(parents=True, exist_ok=True)
+        by_feature = collections.defaultdict(list)
+        for org in orgs:
+            for feature in (org.get("features") or []):
+                by_feature[feature].append(org)
+        for feature, group in by_feature.items():
+            body = (f"<h1>{esc(feature)}</h1>"
+                    f"<p>{len(group)} newsrooms. "
+                    f'<a href="../catalog.html">Whole catalog</a></p>'
+                    + render_org_list(sorted(group, key=lambda o: o["name"]), prefix="../"))
+            slug = re.sub(r"[^a-z0-9]+", "-", feature.lower()).strip("-")
+            (site / "features" / f"{slug}.html").write_text(
+                page(f"{config.SITE_NAME} — {feature}", body, prefix="../")
+            )
         (site / "institutions.html").write_text(
             page(f"{config.SITE_NAME} — Who funds this", render_institutions(cur, orgs))
         )

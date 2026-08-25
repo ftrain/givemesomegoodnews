@@ -117,7 +117,7 @@ def main():
         return
 
     ok = 0
-    with ThreadPoolExecutor(max_workers=8) as pool:
+    with ThreadPoolExecutor(max_workers=config.CRAWL_WORKERS) as pool:
         results = list(pool.map(fetch_one, orgs))
 
     with connect() as conn, conn.cursor() as cur:

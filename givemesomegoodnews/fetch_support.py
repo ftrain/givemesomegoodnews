@@ -148,7 +148,7 @@ def main():
     # A hand-set link in orgs.yaml is authoritative; don't re-crawl over it.
     todo = [o for o in orgs if force or not (o["support_url"] and o["support_source"] == "yaml")]
 
-    with ThreadPoolExecutor(max_workers=8) as pool:
+    with ThreadPoolExecutor(max_workers=config.CRAWL_WORKERS) as pool:
         results = list(pool.map(discover, todo))
 
     found = 0

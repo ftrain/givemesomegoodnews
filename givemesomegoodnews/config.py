@@ -23,6 +23,8 @@ USER_AGENT = (
     "celebrating independent local news)"
 )
 FETCH_TIMEOUT = 25
+# Crawling ~1,900 feeds is network-bound, not CPU-bound.
+CRAWL_WORKERS = int(os.environ.get("CRAWL_WORKERS", "16"))
 
 # Feeds: how many entries to keep per org per crawl, and how old is too old.
 MAX_ENTRIES_PER_FEED = 40
