@@ -64,3 +64,20 @@ CREATE TABLE IF NOT EXISTS fetch_log (
     detail      TEXT,
     fetched_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- Migrations. CREATE TABLE IF NOT EXISTS above builds a fresh database, but
+-- it will not add a column to a table that already exists, so every column
+-- added after the first release is repeated here. All are idempotent, and
+-- deploy runs this file on every release.
+ALTER TABLE articles ADD COLUMN IF NOT EXISTS image_url      TEXT;
+ALTER TABLE articles ADD COLUMN IF NOT EXISTS image_file     TEXT;
+ALTER TABLE articles ADD COLUMN IF NOT EXISTS image_w        INT;
+ALTER TABLE articles ADD COLUMN IF NOT EXISTS image_h        INT;
+ALTER TABLE articles ADD COLUMN IF NOT EXISTS categories     TEXT[] DEFAULT '{}';
+ALTER TABLE articles ADD COLUMN IF NOT EXISTS subject        TEXT;
+ALTER TABLE articles ADD COLUMN IF NOT EXISTS subject_source TEXT;
+
+ALTER TABLE orgs ADD COLUMN IF NOT EXISTS support_url        TEXT;
+ALTER TABLE orgs ADD COLUMN IF NOT EXISTS support_label      TEXT;
+ALTER TABLE orgs ADD COLUMN IF NOT EXISTS support_source     TEXT;
+ALTER TABLE orgs ADD COLUMN IF NOT EXISTS support_checked_at TIMESTAMPTZ;
