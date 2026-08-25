@@ -15,6 +15,7 @@ import collections
 import json
 import math
 import os
+import re
 from datetime import datetime, timezone
 from html import escape as esc
 
@@ -23,6 +24,10 @@ from .albers import MapProjection
 from .db import connect
 
 MIN_RELATED_SIM = float(os.environ.get("MIN_RELATED_SIM", "0.30"))
+# Above this cosine similarity, or with near-identical headlines, two
+# articles are the same story running in multiple outlets (syndication or a
+# co-publish), not two newsrooms independently circling one topic.
+SAME_STORY_SIM = float(os.environ.get("SAME_STORY_SIM", "0.80"))
 FEED_PAGE_ARTICLES = 250
 ONEPAGE_ARTICLES = 80
 
@@ -241,7 +246,40 @@ def day_of(article):
     return dt.astimezone(timezone.utc).strftime("%A, %B %-d, %Y")
 
 
-def related_to(cur, article_id, limit=3):
+def title_tokens(title):
+    from .embedder import _STOPWORDS, _WORD_RE
+
+    # Normalize typographic apostrophes and strip possessives, so one
+    # outlet's "West's" matches another's "West’s".
+    norm = title.lower().replace("’", "'").replace("‘", "'")
+    words = (re.sub(r"'s$", "", w).replace("'", "") for w in _WORD_RE.findall(norm))
+    return {w for w in words if len(w) > 2 and w not in _STOPWORDS}
+
+
+def classify_pair(sim, title_a, title_b):
+    """'same' = one story in two outlets; 'kindred' = distinct stories that
+    rhyme; None = too weak to show. Embedding similarity alone can't split
+    reprints from echoes (a retitled reprint scores ~0.89 but co-published
+    copies with differently-truncated summaries score ~0.6, while
+    independent coverage of one event scores ~0.35), so headlines carry
+    half the decision."""
+    a, b = title_tokens(title_a), title_tokens(title_b)
+    union = a | b
+    jac = len(a & b) / len(union) if union else 0.0
+    if sim >= SAME_STORY_SIM:
+        return "same"
+    if jac >= 0.75 and min(len(a), len(b)) >= 4:
+        return "same"
+    if sim >= 0.50 and jac >= 0.40:
+        return "same"
+    if sim >= MIN_RELATED_SIM and (len(a & b) >= 1 or sim >= 0.45):
+        # The shared-headline-token guard keeps out spurious hashing
+        # collisions between short or unrelated titles.
+        return "kindred"
+    return None
+
+
+def related_to(cur, article_id, limit=4):
     cur.execute(
         """
         SELECT b.title, b.url, o2.name, o2.slug, o2.url AS org_url,
@@ -257,15 +295,17 @@ def related_to(cur, article_id, limit=3):
         """,
         (article_id, limit),
     )
-    return [r for r in cur.fetchall() if r[5] >= MIN_RELATED_SIM]
+    return [r for r in cur.fetchall() if r[5] >= 0.28]
 
 
 def render_feed(cur, articles, mode="site", prefix="", with_related=True):
     parts = [
         "<h1>The feed</h1>",
         "<p>Newest stories from every newsroom in the catalog, together. "
-        "Indented lines are stories from other regions that the vector index "
-        "thinks rhyme with the one above.</p>",
+        "Indented lines come from the vector index: <em>same story also "
+        "running in</em> marks a reprint or co-publish in another outlet, and "
+        "<em>echo</em> marks a distinct story from another region that rhymes "
+        "with the one above.</p>",
     ]
     current_day = None
     open_list = False
@@ -281,13 +321,22 @@ def render_feed(cur, articles, mode="site", prefix="", with_related=True):
         org_link = f'<a href="{esc(org_page)}">{esc(a["org_name"])}</a>'
         item = f"<li>{org_link}: <a href=\"{esc(a['url'])}\">{esc(a['title'])}</a>"
         if with_related:
-            rel = related_to(cur, a["id"])
-            if rel:
-                sub = "".join(
-                    f'<li>echo in <a href="{esc(r_org_url if mode == "onepage" else prefix + "orgs/" + r_slug + ".html")}">{esc(r_org)}</a>: '
-                    f'<a href="{esc(r_url)}">{esc(r_title)}</a> <small>(sim {r_sim:.2f})</small></li>'
-                    for r_title, r_url, r_org, r_slug, r_org_url, r_sim in rel[:2]
-                )
+            same_copies, echoes = [], []
+            for r_title, r_url, r_org, r_slug, r_org_url, r_sim in related_to(cur, a["id"]):
+                cls = classify_pair(r_sim, a["title"], r_title)
+                org_page = r_org_url if mode == "onepage" else f"{prefix}orgs/{r_slug}.html"
+                if cls == "same":
+                    same_copies.append(f'<a href="{esc(r_url)}">{esc(r_org)}</a>')
+                elif cls == "kindred" and len(echoes) < 2:
+                    echoes.append(
+                        f'<li>echo in <a href="{esc(org_page)}">{esc(r_org)}</a>: '
+                        f'<a href="{esc(r_url)}">{esc(r_title)}</a> <small>(sim {r_sim:.2f})</small></li>'
+                    )
+            sub = ""
+            if same_copies:
+                sub += f'<li>same story also running in {" · ".join(same_copies)}</li>'
+            sub += "".join(echoes)
+            if sub:
                 item += f"<ul>{sub}</ul>"
         item += "</li>"
         parts.append(item)
@@ -296,7 +345,9 @@ def render_feed(cur, articles, mode="site", prefix="", with_related=True):
     return "\n".join(parts)
 
 
-def render_connections(cur, mode="site", prefix="", limit=30):
+def gather_connections(cur):
+    """Cross-state neighbor pairs, split into same-story clusters and
+    kindred (distinct-story) pairs."""
     cur.execute(
         """
         WITH recent AS (
@@ -306,53 +357,125 @@ def render_connections(cur, mode="site", prefix="", limit=30):
             WHERE a.embedding IS NOT NULL
               AND coalesce(a.published_at, a.fetched_at) > now() - interval '60 days'
         )
-        SELECT a.title, a.url, a.org_name, a.slug, a.org_url, a.state,
-               m.title, m.url, m.org_name, m.slug, m.org_url, m.state, m.sim, a.id, m.id
+        SELECT a.id, a.title, a.url, a.org_name, a.slug, a.org_url, a.state, a.published_at,
+               m.id, m.title, m.url, m.org_name, m.slug, m.org_url, m.state, m.published_at, m.sim
         FROM recent a
         JOIN LATERAL (
             SELECT b.*, 1 - (a.embedding <=> b.embedding) AS sim
             FROM recent b
             WHERE b.state IS DISTINCT FROM a.state
             ORDER BY a.embedding <=> b.embedding
-            LIMIT 1
+            LIMIT 3
         ) m ON true
-        WHERE m.sim >= %s
-        ORDER BY m.sim DESC
-        """,
-        (MIN_RELATED_SIM,),
+        WHERE m.sim >= 0.28
+        """
     )
-    seen, rows = set(), []
-    for r in cur.fetchall():
-        key = frozenset((r[13], r[14]))
-        if key in seen:
+    cols = ("id", "title", "url", "org_name", "slug", "org_url", "state", "published_at")
+    articles, pairs = {}, {}
+    for row in cur.fetchall():
+        a = dict(zip(cols, row[:8]))
+        b = dict(zip(cols, row[8:16]))
+        sim = row[16]
+        articles[a["id"]] = a
+        articles.setdefault(b["id"], b)
+        key = (min(a["id"], b["id"]), max(a["id"], b["id"]))
+        if key not in pairs or sim > pairs[key][0]:
+            pairs[key] = (sim, classify_pair(sim, a["title"], b["title"]))
+
+    # Union-find over same-story pairs -> reprint/co-publish clusters.
+    parent = {}
+
+    def find(x):
+        parent.setdefault(x, x)
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+
+    for (ia, ib), (sim, cls) in pairs.items():
+        if cls == "same":
+            parent[find(ia)] = find(ib)
+
+    clusters = collections.defaultdict(list)
+    for aid in list(parent):
+        clusters[find(aid)].append(articles[aid])
+    clusters = [
+        sorted(members, key=lambda m: (m["published_at"] is None, m["published_at"], m["id"]))
+        for members in clusters.values()
+        if len(members) > 1
+    ]
+    clusters.sort(key=len, reverse=True)
+
+    # Kindred pairs, deduped so one logical story-pair doesn't appear once
+    # per reprint copy: collapse each article to its cluster root first.
+    best = {}
+    for (ia, ib), (sim, cls) in pairs.items():
+        if cls != "kindred":
             continue
-        seen.add(key)
-        rows.append(r)
-        if len(rows) >= limit:
-            break
+        ra, rb = find(ia), find(ib)
+        if ra == rb:
+            continue
+        key = (min(ra, rb), max(ra, rb))
+        if key not in best or sim > best[key][0]:
+            best[key] = (sim, ia, ib)
+    kindred = sorted(best.values(), reverse=True)
+    return clusters, kindred, articles
+
+
+def _org_line(art, mode, prefix):
+    loc = STATE_NAMES.get(art["state"], art["state"]) if art["state"] else "everywhere"
+    href = art["org_url"] if mode == "onepage" else f"{prefix}orgs/{art['slug']}.html"
+    return f'<a href="{esc(href)}">{esc(art["org_name"])}</a> ({esc(loc)})'
+
+
+def render_connections(cur, mode="site", prefix="", limit=20):
+    clusters, kindred, articles = gather_connections(cur)
 
     parts = [
         "<h1>Connections across regions</h1>",
-        "<p>The same pressures land on every town: housing, schools, water, "
-        "power, policing, money. Article embeddings live in Postgres with "
-        "pgvector, so we can ask which stories from <em>different states</em> "
-        "sit closest together. These are the strongest recent pairs.</p>",
+        "<p>Article embeddings live in Postgres with pgvector, so we can ask "
+        "which stories from <em>different states</em> sit closest together. "
+        "The answers come in two kinds, and they're separated here.</p>",
+        "<h2>One story, many mastheads</h2>",
+        "<p>Near-identical matches are the same story running in several "
+        "outlets — collaborations, shared statehouse desks, and networks like "
+        "Deep South Today publishing across their newsrooms. That sharing is "
+        "part of how this model survives; here's the network showing itself.</p>",
     ]
-    if not rows:
+    if clusters:
+        parts.append("<ul>")
+        for members in clusters[:limit]:
+            rep = members[0]
+            outlets = " · ".join(
+                f'<a href="{esc(m["url"])}">{esc(m["org_name"])}</a>' for m in members
+            )
+            parts.append(
+                f'<li><p><a href="{esc(rep["url"])}">{esc(rep["title"])}</a><br>'
+                f"<small>running in {len(members)} outlets: {outlets}</small></p></li>"
+            )
+        parts.append("</ul>")
+    else:
+        parts.append("<p><em>No shared stories detected in this crawl.</em></p>")
+
+    parts += [
+        "<h2>Kindred stories, different places</h2>",
+        "<p>These are <em>distinct</em> stories — separate newsrooms, separate "
+        "reporting — that the vector index says rhyme. The same pressures land "
+        "on every town: housing, schools, water, fire, policing, money.</p>",
+    ]
+    if kindred:
+        parts.append("<ol>")
+        for sim, ia, ib in kindred[:limit]:
+            a, b = articles[ia], articles[ib]
+            parts.append(
+                "<li><p>"
+                f'<a href="{esc(a["url"])}">{esc(a["title"])}</a><br><small>{_org_line(a, mode, prefix)}</small><br>'
+                f'↔ <a href="{esc(b["url"])}">{esc(b["title"])}</a><br><small>{_org_line(b, mode, prefix)} '
+                f"· similarity {sim:.2f}</small></p></li>"
+            )
+        parts.append("</ol>")
+    else:
         parts.append("<p><em>No strong cross-region pairs yet — run the feed crawler a few more times.</em></p>")
-    parts.append("<ol>")
-    for (t1, u1, n1, s1, ou1, st1, t2, u2, n2, s2, ou2, st2, sim, _, _) in rows:
-        loc1 = STATE_NAMES.get(st1, st1) if st1 else "everywhere"
-        loc2 = STATE_NAMES.get(st2, st2) if st2 else "everywhere"
-        href1 = ou1 if mode == "onepage" else f"{prefix}orgs/{s1}.html"
-        href2 = ou2 if mode == "onepage" else f"{prefix}orgs/{s2}.html"
-        parts.append(
-            "<li><p>"
-            f'<a href="{esc(u1)}">{esc(t1)}</a><br><small><a href="{esc(href1)}">{esc(n1)}</a> ({esc(loc1)})</small><br>'
-            f'↔ <a href="{esc(u2)}">{esc(t2)}</a><br><small><a href="{esc(href2)}">{esc(n2)}</a> ({esc(loc2)}) '
-            f"· similarity {sim:.2f}</small></p></li>"
-        )
-    parts.append("</ol>")
     return "\n".join(parts)
 
 
