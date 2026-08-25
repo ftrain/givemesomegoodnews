@@ -8,7 +8,7 @@ same buckets), and it can be swapped for a real embedding model later
 without touching the schema, as long as the dimension stays 384 (e.g.
 sentence-transformers all-MiniLM-L6-v2 is 384). To use a different
 dimension: ALTER TABLE articles ALTER COLUMN embedding TYPE vector(N),
-then `python3 -m localpaper.embed --all` to re-embed.
+then `python3 -m givemesomegoodnews.embed --all` to re-embed.
 
 Select with the EMBEDDER environment variable; register new embedders in
 get_embedder().

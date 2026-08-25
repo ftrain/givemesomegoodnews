@@ -1,4 +1,4 @@
--- localpaper schema. Requires the pgvector extension.
+-- givemesomegoodnews schema. Requires the pgvector extension.
 CREATE EXTENSION IF NOT EXISTS vector;
 
 CREATE TABLE IF NOT EXISTS orgs (
@@ -20,6 +20,11 @@ CREATE TABLE IF NOT EXISTS orgs (
     about_text      TEXT,            -- copied from their about page, in their words
     about_source_url TEXT,
     about_fetched_at TIMESTAMPTZ,
+    -- Where a reader can pay this newsroom. Every feed item links here.
+    support_url     TEXT,
+    support_label   TEXT,            -- Donate | Subscribe | Become a member
+    support_source  TEXT,            -- yaml | discovered | homepage
+    support_checked_at TIMESTAMPTZ,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
@@ -32,13 +37,19 @@ CREATE TABLE IF NOT EXISTS articles (
     author          TEXT,
     published_at    TIMESTAMPTZ,
     fetched_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
-    -- 384 dims matches the default local hashing embedder; see localpaper/embedder.py
+    image_url       TEXT,            -- where the feed image came from
+    image_file      TEXT,            -- our downscaled copy in site/img/; we never hotlink
+    categories      TEXT[] DEFAULT '{}',  -- the publisher's own RSS categories, verbatim
+    subject         TEXT,            -- our taxonomy; see givemesomegoodnews/subjects.py
+    subject_source  TEXT,            -- declared | url | vector
+    -- 384 dims matches the default local hashing embedder; see givemesomegoodnews/embedder.py
     -- for how to swap in a model-based embedder (requires re-embedding).
     embedding       vector(384)
 );
 
 CREATE INDEX IF NOT EXISTS articles_org_idx ON articles (org_id);
 CREATE INDEX IF NOT EXISTS articles_pub_idx ON articles (published_at DESC);
+CREATE INDEX IF NOT EXISTS articles_subject_idx ON articles (subject);
 CREATE INDEX IF NOT EXISTS articles_embedding_idx ON articles
     USING hnsw (embedding vector_cosine_ops);
 

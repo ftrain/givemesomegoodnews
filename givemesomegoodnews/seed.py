@@ -10,6 +10,7 @@ from .db import connect
 FIELDS = [
     "slug", "name", "url", "about_url", "feed_url", "city", "state", "lat",
     "lon", "coverage", "coverage_type", "model", "affiliations", "founded",
+    "support_url", "support_label",
 ]
 
 
@@ -29,10 +30,12 @@ def main():
             cur.execute(
                 """
                 INSERT INTO orgs (slug, name, url, about_url, feed_url, city, state,
-                                  lat, lon, coverage, coverage_type, model, affiliations, founded)
+                                  lat, lon, coverage, coverage_type, model, affiliations, founded,
+                                  support_url, support_label)
                 VALUES (%(slug)s, %(name)s, %(url)s, %(about_url)s, %(feed_url)s, %(city)s,
                         %(state)s, %(lat)s, %(lon)s, %(coverage)s, %(coverage_type)s,
-                        %(model)s, %(affiliations)s, %(founded)s)
+                        %(model)s, %(affiliations)s, %(founded)s,
+                        %(support_url)s, %(support_label)s)
                 ON CONFLICT (slug) DO UPDATE SET
                     name = EXCLUDED.name, url = EXCLUDED.url,
                     about_url = EXCLUDED.about_url,
@@ -43,7 +46,10 @@ def main():
                     coverage_type = EXCLUDED.coverage_type,
                     model = EXCLUDED.model,
                     affiliations = EXCLUDED.affiliations,
-                    founded = EXCLUDED.founded
+                    founded = EXCLUDED.founded,
+                    -- yaml wins when it says something; otherwise keep what we discovered
+                    support_url = COALESCE(EXCLUDED.support_url, orgs.support_url),
+                    support_label = COALESCE(EXCLUDED.support_label, orgs.support_label)
                 """,
                 row,
             )

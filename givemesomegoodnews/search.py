@@ -1,6 +1,6 @@
 """Vector search over the article corpus.
 
-    python3 -m localpaper.search "housing vouchers eviction" [-k 15]
+    python3 -m givemesomegoodnews.search "housing vouchers eviction" [-k 15]
 """
 
 import sys
@@ -35,7 +35,7 @@ def main():
         k = int(args[i + 1])
         del args[i : i + 2]
     if not args:
-        sys.exit('usage: python3 -m localpaper.search "query" [-k 10]')
+        sys.exit('usage: python3 -m givemesomegoodnews.search "query" [-k 10]')
     for name, city, state, title, url, sim in search(" ".join(args), k):
         place = f"{city}, {state}" if city and state else (state or "national")
         print(f"{sim:.3f}  [{name} — {place}] {title}\n       {url}")

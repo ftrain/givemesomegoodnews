@@ -6,6 +6,7 @@ Discovered URLs are saved back to the orgs table so the next crawl is
 direct. Articles are keyed by canonical URL, so re-running is idempotent.
 """
 
+import re
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
@@ -17,6 +18,8 @@ import feedparser
 from . import config
 from .db import connect, log_fetch, vec_literal
 from .embedder import get_embedder
+from .images import cache_image
+from .subjects import classify
 from .extract import text_from_html_fragment
 from .fetchutil import FEED_CANDIDATE_PATHS, canonical_url, feed_links_in_html, get, looks_like_feed
 
@@ -75,6 +78,44 @@ def _entry_time(entry):
     return None
 
 
+_IMG_SRC_RE = re.compile(r"""<img\b[^>]*\bsrc\s*=\s*("([^"]*)"|'([^']*)'|([^\s>]+))""", re.IGNORECASE)
+
+
+def _entry_image(entry, link):
+    """Best image URL a feed entry offers, in order of how deliberate it is."""
+    for mc in entry.get("media_content") or []:
+        url = mc.get("url")
+        if url and str(mc.get("medium") or "image") == "image":
+            return urljoin(link, url)
+    for mt in entry.get("media_thumbnail") or []:
+        if mt.get("url"):
+            return urljoin(link, mt["url"])
+    for enc in entry.get("enclosures") or []:
+        if str(enc.get("type") or "").startswith("image/") and enc.get("href"):
+            return urljoin(link, enc["href"])
+    # Otherwise take the first image out of the entry body.
+    html = "".join((c.get("value") or "") for c in (entry.get("content") or []))
+    html += entry.get("summary") or ""
+    m = _IMG_SRC_RE.search(html)
+    if m:
+        src = (m.group(2) or m.group(3) or m.group(4) or "").strip()
+        if src:
+            return urljoin(link, src)
+    return None
+
+
+def _entry_categories(entry):
+    """The publisher's own categories, verbatim and de-duplicated."""
+    out, seen = [], set()
+    for tag in entry.get("tags") or []:
+        term = (tag.get("term") or "").strip()
+        key = term.lower()
+        if term and key not in seen:
+            seen.add(key)
+            out.append(term[:80])
+    return out[:12]
+
+
 def crawl_one(org):
     feed_url, parsed = resolve_feed(org)
     if not parsed:
@@ -94,13 +135,20 @@ def crawl_one(org):
             continue
         summary = text_from_html_fragment(entry.get("summary", "") or "")[:1500]
         author = (entry.get("author") or "").strip()[:200] or None
+        categories = _entry_categories(entry)
+        url = canonical_url(link)
+        subject, subject_source = classify(categories, url)
         items.append(
             {
-                "url": canonical_url(link),
+                "url": url,
                 "title": title[:500],
                 "summary": summary,
                 "author": author,
                 "published_at": published,
+                "image_url": _entry_image(entry, link),
+                "categories": categories,
+                "subject": subject,
+                "subject_source": subject_source,
             }
         )
     return org, feed_url, items
@@ -139,14 +187,25 @@ def main():
                     new_items.append(item)
 
             if new_items:
+                # Pull every image onto our own disk before we store the row;
+                # nothing on this site hotlinks a publisher's server.
+                with ThreadPoolExecutor(max_workers=8) as img_pool:
+                    files = list(img_pool.map(cache_image, [i["image_url"] for i in new_items]))
+                for item, image_file in zip(new_items, files):
+                    item["image_file"] = image_file
+
                 vecs = embedder.embed([f"{i['title']} {i['summary']}" for i in new_items])
                 for item, vec in zip(new_items, vecs):
                     cur.execute(
-                        """INSERT INTO articles (org_id, url, title, summary, author, published_at, embedding)
-                           VALUES (%s, %s, %s, %s, %s, %s, %s)
+                        """INSERT INTO articles (org_id, url, title, summary, author, published_at,
+                                                 image_url, image_file, categories, subject,
+                                                 subject_source, embedding)
+                           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                            ON CONFLICT (url) DO NOTHING""",
                         (org["id"], item["url"], item["title"], item["summary"],
-                         item["author"], item["published_at"], vec_literal(vec)),
+                         item["author"], item["published_at"], item["image_url"],
+                         item["image_file"], item["categories"], item["subject"],
+                         item["subject_source"], vec_literal(vec)),
                     )
             log_fetch(cur, org["slug"], "feed", feed_url, True, f"{len(new_items)} new / {len(items)} in feed")
             print(f"  {org['slug']}: {len(new_items)} new / {len(items)} in feed")

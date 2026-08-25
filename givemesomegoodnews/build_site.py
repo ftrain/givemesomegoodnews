@@ -48,7 +48,7 @@ STATE_NAMES = {
 }
 
 NAV = [
-    ("index.html", "Localpaper"),
+    ("index.html", config.SITE_NAME),
     ("catalog.html", "Catalog"),
     ("map.html", "Map"),
     ("feed.html", "Feed"),
@@ -72,10 +72,9 @@ def page(title, body, prefix="", nav_html=None):
 <hr>
 {body}
 <hr>
-<p><small>Generated {generated}. Catalog descriptions are quoted from each
-newsroom's own About page; headlines and summaries come from their public
-feeds and link to the original story. Built from
-<a href="https://github.com/ftrain/localpaper">ftrain/localpaper</a>.</small></p>
+<p><small>Generated {generated}. About text quoted from each newsroom's own
+About page; headlines, summaries and images from their public feeds, linking to
+the original. <a href="{config.REPO_URL}">{config.REPO_LABEL}</a></small></p>
 </body>
 </html>
 """
@@ -165,8 +164,7 @@ def render_catalog(orgs, mode="site", prefix=""):
     groups, national = group_orgs_by_state(orgs)
     parts = [
         "<h1>Catalog</h1>",
-        f"<p>{len(orgs)} newsrooms, each described in its own words — text quoted "
-        "directly from their About pages.</p>",
+        f"<p>{len(orgs)} newsrooms. Text quoted from their own About pages.</p>",
     ]
     for state_name, group in groups.items():
         parts.append(f"<h2>{esc(state_name)}</h2>")
@@ -235,8 +233,7 @@ def render_map(orgs, mode="site", prefix=""):
 
     return (
         "<h1>Coverage map</h1>"
-        "<p>Every dot is a newsroom; hover for the name, click for the details. "
-        "Statewide outlets are plotted at their home city.</p>"
+        "<p>One dot per newsroom; statewide outlets plotted at their home city.</p>"
         f"{svg}\n{off_note}\n<h2>By state</h2>\n" + "\n".join(listing)
     )
 
@@ -298,50 +295,72 @@ def related_to(cur, article_id, limit=4):
     return [r for r in cur.fetchall() if r[5] >= 0.28]
 
 
-def render_feed(cur, articles, mode="site", prefix="", with_related=True):
-    parts = [
-        "<h1>The feed</h1>",
-        "<p>Newest stories from every newsroom in the catalog, together. "
-        "Indented lines come from the vector index: <em>same story also "
-        "running in</em> marks a reprint or co-publish in another outlet, and "
-        "<em>echo</em> marks a distinct story from another region that rhymes "
-        "with the one above.</p>",
-    ]
+def subject_href(subject, prefix=""):
+    return f"{prefix}subjects/{subject.lower().replace(' ', '-')}.html"
+
+
+def support_link(article):
+    """Every item carries the ask. Falls back to the newsroom's front page."""
+    if article.get("support_url"):
+        url = article["support_url"]
+        label = article.get("support_label") or "Donate"
+    else:
+        # No payment page found — send them to the newsroom itself rather
+        # than label a homepage as something it is not.
+        url, label = article["org_url"], "Support"
+    return f'<a href="{esc(url)}"><strong>{esc(label)}</strong></a>'
+
+
+def render_feed_item(cur, a, mode="site", prefix="", with_related=True):
+    org_page = a["org_url"] if mode == "onepage" else f"{prefix}orgs/{a['slug']}.html"
+    when = (a["published_at"] or a["fetched_at"]).astimezone(timezone.utc).strftime("%H:%M UTC")
+
+    meta = [f'<a href="{esc(org_page)}">{esc(a["org_name"])}</a>']
+    if a.get("subject"):
+        label = esc(a["subject"])
+        meta.append(label if mode == "onepage" else f'<a href="{subject_href(a["subject"], prefix)}">{label}</a>')
+    meta.append(when)
+    if a.get("author"):
+        meta.append(esc(a["author"]))
+    meta.append(support_link(a))
+
+    out = ["<article>", f"<p><small>{' · '.join(meta)}</small></p>"]
+    if a.get("image_file"):
+        out.append(
+            f'<p><a href="{esc(a["url"])}">'
+            f'<img src="{prefix}img/{esc(a["image_file"])}" alt="" width="480" loading="lazy"></a></p>'
+        )
+    out.append(f'<p><a href="{esc(a["url"])}"><strong>{esc(a["title"])}</strong></a></p>')
+    if a.get("summary"):
+        out.append(f"<p>{esc(a['summary'][:400])}</p>")
+
+    if with_related:
+        same_copies, echoes = [], []
+        for r_title, r_url, r_org, r_slug, r_org_url, r_sim in related_to(cur, a["id"]):
+            cls = classify_pair(r_sim, a["title"], r_title)
+            if cls == "same":
+                same_copies.append(f'<a href="{esc(r_url)}">{esc(r_org)}</a>')
+            elif cls == "kindred" and len(echoes) < 2:
+                echoes.append(f'<a href="{esc(r_url)}">{esc(r_org)}: {esc(r_title)}</a>')
+        if same_copies:
+            out.append(f"<p><small>Also in {' · '.join(same_copies)}</small></p>")
+        if echoes:
+            out.append(f"<p><small>Echo: {' · '.join(echoes)}</small></p>")
+    out.append("</article>")
+    return "\n".join(out)
+
+
+def render_feed(cur, articles, mode="site", prefix="", with_related=True, heading="Feed", subject_nav=None):
+    parts = [f"<h1>{esc(heading)}</h1>"]
+    if subject_nav:
+        parts.append(subject_nav)
     current_day = None
-    open_list = False
     for a in articles:
         day = day_of(a)
         if day != current_day:
-            if open_list:
-                parts.append("</ul>")
             parts.append(f"<h2>{esc(day)}</h2>")
-            parts.append("<ul>")
-            current_day, open_list = day, True
-        org_page = a["org_url"] if mode == "onepage" else f"{prefix}orgs/{a['slug']}.html"
-        org_link = f'<a href="{esc(org_page)}">{esc(a["org_name"])}</a>'
-        item = f"<li>{org_link}: <a href=\"{esc(a['url'])}\">{esc(a['title'])}</a>"
-        if with_related:
-            same_copies, echoes = [], []
-            for r_title, r_url, r_org, r_slug, r_org_url, r_sim in related_to(cur, a["id"]):
-                cls = classify_pair(r_sim, a["title"], r_title)
-                org_page = r_org_url if mode == "onepage" else f"{prefix}orgs/{r_slug}.html"
-                if cls == "same":
-                    same_copies.append(f'<a href="{esc(r_url)}">{esc(r_org)}</a>')
-                elif cls == "kindred" and len(echoes) < 2:
-                    echoes.append(
-                        f'<li>echo in <a href="{esc(org_page)}">{esc(r_org)}</a>: '
-                        f'<a href="{esc(r_url)}">{esc(r_title)}</a> <small>(sim {r_sim:.2f})</small></li>'
-                    )
-            sub = ""
-            if same_copies:
-                sub += f'<li>same story also running in {" · ".join(same_copies)}</li>'
-            sub += "".join(echoes)
-            if sub:
-                item += f"<ul>{sub}</ul>"
-        item += "</li>"
-        parts.append(item)
-    if open_list:
-        parts.append("</ul>")
+            current_day = day
+        parts.append(render_feed_item(cur, a, mode, prefix, with_related))
     return "\n".join(parts)
 
 
@@ -433,14 +452,8 @@ def render_connections(cur, mode="site", prefix="", limit=20):
 
     parts = [
         "<h1>Connections across regions</h1>",
-        "<p>Article embeddings live in Postgres with pgvector, so we can ask "
-        "which stories from <em>different states</em> sit closest together. "
-        "The answers come in two kinds, and they're separated here.</p>",
-        "<h2>One story, many mastheads</h2>",
-        "<p>Near-identical matches are the same story running in several "
-        "outlets — collaborations, shared statehouse desks, and networks like "
-        "Deep South Today publishing across their newsrooms. That sharing is "
-        "part of how this model survives; here's the network showing itself.</p>",
+        "<p>Nearest neighbours across state lines, by cosine distance.</p>",
+        "<h2>Same story, several outlets</h2>",
     ]
     if clusters:
         parts.append("<ul>")
@@ -459,7 +472,7 @@ def render_connections(cur, mode="site", prefix="", limit=20):
 
     parts += [
         "<h2>Kindred stories, different places</h2>",
-        "<p>These are <em>distinct</em> stories — separate newsrooms, separate "
+        "<p>Distinct stories — separate newsrooms, separate "
         "reporting — that the vector index says rhyme. The same pressures land "
         "on every town: housing, schools, water, fire, policing, money.</p>",
     ]
@@ -484,57 +497,34 @@ def render_index(cur, orgs, articles, mode="site"):
     n_states = len({o["state"] for o in orgs if o["state"]})
     cur.execute("SELECT count(*) FROM articles")
     n_articles = cur.fetchone()[0]
-    coops = sum(1 for o in orgs if "worker" in (o["model"] or ""))
     parts = [
-        "<h1>Localpaper</h1>",
-        "<p><strong>A steady feed of the local news being built to last.</strong></p>",
-        "<p>American local news wasn't killed by the internet alone; a lot of it "
-        "was stripped for parts. But all over the country, journalists and "
-        "communities are building something better in its place: nonprofit "
-        "newsrooms, worker-owned cooperatives, century-old family papers trying "
-        "new models, metro dailies handed to civic institutions instead of "
-        "hedge funds. They answer to readers and neighbors, not shareholders. "
-        "They are surviving — many are growing.</p>",
-        "<p>This site is a catalog of those newsrooms in their own words, a map "
-        "of who covers where, and one combined feed of what they published "
-        "today. Everything links back to them; go read them, subscribe, become "
-        "a member.</p>",
-        f"<p><strong>{len(orgs)}</strong> newsrooms · <strong>{n_states}</strong> states and D.C. · "
-        f"<strong>{coops}</strong> worker-owned or worker-led · <strong>{n_articles}</strong> stories in the feed.</p>",
-        f'<ul><li><a href="{"#catalog" if one else "catalog.html"}">The catalog</a> — every newsroom, described in its own words</li>'
-        f'<li><a href="{"#map" if one else "map.html"}">The map</a> — who covers where</li>'
-        f'<li><a href="{"#feed" if one else "feed.html"}">The feed</a> — what they published, newest first</li>'
-        f'<li><a href="{"#connections" if one else "connections.html"}">Connections</a> — kindred stories across regions, via vector search</li></ul>',
-        "<p>Guides to this movement, and where many of these newsrooms found "
-        'backing: the <a href="https://www.lenfestinstitute.org/">Lenfest Institute</a> '
-        '(including its <a href="https://www.lenfestinstitute.org/institute-news/beyond-print-launches-11-newspaper-business-transformation-experiments/">Beyond Print</a> cohort), '
-        'the <a href="https://www.theajp.org/">American Journalism Project</a>, '
-        'the <a href="https://inn.org/">Institute for Nonprofit News</a>, and '
-        '<a href="https://rjionline.org/news/what-is-a-non-traditional-newsroom/">RJI on non-traditional newsrooms</a>.</p>',
-        "<h2>Latest from the feed</h2>",
+        f"<h1>{esc(config.SITE_NAME)}</h1>",
+        f"<p>{len(orgs)} newsrooms · {n_states} states and D.C. · {n_articles} stories</p>",
+        f'<ul><li><a href="{"#feed" if one else "feed.html"}">Feed</a></li>'
+        f'<li><a href="{"#catalog" if one else "catalog.html"}">Catalog</a></li>'
+        f'<li><a href="{"#map" if one else "map.html"}">Map</a></li>'
+        f'<li><a href="{"#connections" if one else "connections.html"}">Connections</a></li></ul>',
+        "<h2>Latest</h2>",
         "<ul>",
     ]
-    # Keep the front page varied: at most two consecutive-list items per org.
-    latest, per_org = [], collections.Counter()
-    for a in articles:
-        if per_org[a["slug"]] < 2:
-            latest.append(a)
-            per_org[a["slug"]] += 1
-        if len(latest) == 15:
-            break
-    for a in latest:
+    for a in articles[:15]:
         org_page = a["org_url"] if one else f'orgs/{a["slug"]}.html'
+        subject = f' <small>{esc(a["subject"])}</small>' if a.get("subject") else ""
         parts.append(
             f'<li><a href="{esc(org_page)}">{esc(a["org_name"])}</a>: '
-            f'<a href="{esc(a["url"])}">{esc(a["title"])}</a></li>'
+            f'<a href="{esc(a["url"])}">{esc(a["title"])}</a>{subject} '
+            f'{support_link(a)}</li>'
         )
     parts.append("</ul>")
-    parts.append(f'<p><a href="{"#feed" if one else "feed.html"}">The whole feed →</a></p>')
+    parts.append(f'<p><a href="{"#feed" if one else "feed.html"}">Whole feed</a></p>')
     return "\n".join(parts)
 
 
 def render_org_page(cur, org):
     parts = [f'<h1><a href="{esc(org["url"])}">{esc(org["name"])}</a></h1>', f"<p>{meta_line(org)}</p>"]
+    if org.get("support_url"):
+        label = org.get("support_label") or "Support"
+        parts.append(f'<p><a href="{esc(org["support_url"])}"><strong>{esc(label)}</strong></a></p>')
     if org["feed_url"]:
         parts.append(f'<p><a href="{esc(org["feed_url"])}">RSS feed</a></p>')
     if org["about_text"]:
@@ -563,6 +553,7 @@ def render_org_page(cur, org):
 ORG_COLUMNS = (
     "id", "slug", "name", "url", "about_url", "feed_url", "city", "state", "lat", "lon",
     "coverage", "coverage_type", "model", "affiliations", "founded",
+    "support_url", "support_label",
     "about_text", "about_source_url", "about_fetched_at",
 )
 
@@ -572,18 +563,23 @@ def load_orgs(cur):
     return [dict(zip(ORG_COLUMNS, row)) for row in cur.fetchall()]
 
 
-def load_articles(cur, limit):
+def load_articles(cur, limit, subject=None):
     cur.execute(
         """
-        SELECT a.id, a.url, a.title, a.published_at, a.fetched_at,
-               o.name AS org_name, o.slug, o.url AS org_url
+        SELECT a.id, a.url, a.title, a.summary, a.author, a.published_at, a.fetched_at,
+               a.image_file, a.subject,
+               o.name AS org_name, o.slug, o.url AS org_url,
+               o.support_url, o.support_label
         FROM articles a JOIN orgs o ON o.id = a.org_id
-        ORDER BY coalesce(a.published_at, a.fetched_at) DESC
+        WHERE (%s::text IS NULL OR a.subject = %s)
+        ORDER BY coalesce(a.published_at, a.fetched_at) DESC, a.id DESC
         LIMIT %s
         """,
-        (limit,),
+        (subject, subject, limit),
     )
-    cols = ("id", "url", "title", "published_at", "fetched_at", "org_name", "slug", "org_url")
+    cols = ("id", "url", "title", "summary", "author", "published_at", "fetched_at",
+            "image_file", "subject", "org_name", "slug", "org_url",
+            "support_url", "support_label")
     return [dict(zip(cols, row)) for row in cur.fetchall()]
 
 
@@ -607,16 +603,44 @@ def main():
         orgs = load_orgs(cur)
         articles = load_articles(cur, FEED_PAGE_ARTICLES)
 
-        (site / "index.html").write_text(page("Localpaper", render_index(cur, orgs, articles)))
-        (site / "catalog.html").write_text(page("Localpaper — Catalog", render_catalog(orgs)))
-        (site / "map.html").write_text(page("Localpaper — Coverage map", render_map(orgs)))
-        (site / "feed.html").write_text(page("Localpaper — The feed", render_feed(cur, articles)))
-        (site / "connections.html").write_text(page("Localpaper — Connections", render_connections(cur)))
+        (site / "index.html").write_text(page(config.SITE_NAME, render_index(cur, orgs, articles)))
+        (site / "catalog.html").write_text(page(f"{config.SITE_NAME} — Catalog", render_catalog(orgs)))
+        (site / "map.html").write_text(page(f"{config.SITE_NAME} — Coverage map", render_map(orgs)))
+        cur.execute(
+            "SELECT subject, count(*) FROM articles WHERE subject IS NOT NULL "
+            "GROUP BY subject ORDER BY subject"
+        )
+        subject_counts = cur.fetchall()
+
+        def subject_nav(prefix="", current=None):
+            links = [
+                (f'{esc(name)} ({n})' if name == current
+                 else f'<a href="{subject_href(name, prefix)}">{esc(name)}</a> ({n})')
+                for name, n in subject_counts
+            ]
+            all_link = "All" if current is None else f'<a href="{prefix}feed.html">All</a>'
+            return f"<p>{all_link} · " + " · ".join(links) + "</p>"
+
+        (site / "feed.html").write_text(
+            page(f"{config.SITE_NAME} — Feed",
+                 render_feed(cur, articles, subject_nav=subject_nav()))
+        )
+
+        (site / "subjects").mkdir(parents=True, exist_ok=True)
+        for name, _n in subject_counts:
+            subject_articles = load_articles(cur, FEED_PAGE_ARTICLES, subject=name)
+            (site / "subjects" / f"{name.lower().replace(' ', '-')}.html").write_text(
+                page(f"{config.SITE_NAME} — {name}",
+                     render_feed(cur, subject_articles, prefix="../", heading=name,
+                                 subject_nav=subject_nav(prefix="../", current=name)),
+                     prefix="../")
+            )
+        (site / "connections.html").write_text(page(f"{config.SITE_NAME} — Connections", render_connections(cur)))
 
         for org in orgs:
             body = render_org_page(cur, org)
             (site / "orgs" / f"{org['slug']}.html").write_text(
-                page(f"Localpaper — {org['name']}", body, prefix="../")
+                page(f"{config.SITE_NAME} — {org['name']}", body, prefix="../")
             )
 
         onepage_articles = articles[:ONEPAGE_ARTICLES]
@@ -630,13 +654,15 @@ def main():
             ]
         )
         onepage_nav = (
-            '<p><strong>Localpaper</strong> · <a href="#catalog">Catalog</a> · <a href="#map">Map</a> · '
+            f'<p><strong>{esc(config.SITE_NAME)}</strong> · <a href="#catalog">Catalog</a> · <a href="#map">Map</a> · '
             '<a href="#feed">Feed</a> · <a href="#connections">Connections</a></p>'
         )
-        (site / "onepage.html").write_text(page("Localpaper", onepage, nav_html=onepage_nav))
+        (site / "onepage.html").write_text(page(config.SITE_NAME, onepage, nav_html=onepage_nav))
 
         path = export_catalog_json(orgs)
-        print(f"built site/ ({len(orgs)} orgs, {len(articles)} feed items) and {path.relative_to(config.ROOT)}")
+        n_img = sum(1 for a in articles if a.get("image_file"))
+        print(f"built site/ ({len(orgs)} orgs, {len(articles)} feed items, {n_img} with images, "
+              f"{len(subject_counts)} subjects) and {path.relative_to(config.ROOT)}")
 
 
 if __name__ == "__main__":
