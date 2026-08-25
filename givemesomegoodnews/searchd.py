@@ -144,6 +144,31 @@ def facet_bar(query, tags, region, language, rows):
     return '<p class="chips">' + "".join(chips) + "</p>"
 
 
+def feed_link(query, tags, region, language):
+    """The RSS equivalent of whatever the reader is currently looking at."""
+    params = {k: v for k, v in
+              (("q", query), ("tag", list(tags)), ("region", region), ("lang", language)) if v}
+    return "search.xml?" + urlencode(params, doseq=True)
+
+
+def run_search(cur, query, tags, region, language, subject):
+    sql, params = build_query(query, tags, region, language, subject)
+    cur.execute(sql, params)
+    return [dict(zip(COLS, r)) for r in cur.fetchall()]
+
+
+def render_search_rss(query, tags, region, language, subject):
+    label = (query.strip()
+             or " + ".join(list(tags) + [x for x in (region, language) if x])
+             or "everything")
+    with connect() as conn, conn.cursor() as cur:
+        rows = run_search(cur, query, tags, region, language, subject)
+    return syndicate.render_rss(
+        rows, f"{config.SITE_NAME} — {label}",
+        f"Search results for {label}, newest first.",
+        feed_link(query, tags, region, language), config.SITE_URL.rstrip("/"))
+
+
 def render(query, tags=(), region="", language="", subject=""):
     tags = list(tags)
     active = [t for t in tags]
