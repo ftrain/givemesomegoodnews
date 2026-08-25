@@ -139,8 +139,12 @@ border-bottom:2px solid var(--fg);margin-bottom:1.25rem}}
 .menu>summary{{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}}
 .menu>summary::-webkit-details-marker{{display:none}}
-.burger{{flex:none;fill:var(--dim)}}
-.menu>summary:hover .burger,.menu>summary:focus .burger{{fill:var(--link)}}
+.menu{{flex:none}}
+.burger{{width:28px;height:28px;flex:none;fill:currentColor;display:block}}
+.menu>summary{{color:var(--fg)}}
+.menu>summary:hover,.menu>summary:focus{{color:var(--link)}}
+.menu-label{{font:600 .78rem/1 PlexMono,ui-monospace,monospace;
+text-transform:uppercase;letter-spacing:.08em}}
 .burger .cross{{display:none}}
 .menu[open] .burger .bars{{display:none}}
 .menu[open] .burger .cross{{display:inline}}
@@ -186,12 +190,12 @@ def menu(prefix="", site_name=""):
     return f"""<a class="home" href="{prefix}index.html"><img class="masthead"
  src="{prefix}masthead.svg" alt="{esc(site_name)}" width="440" height="44"></a>
 <details class="menu">
-<summary title="Menu"><span class="skip">Menu</span><svg class="burger" viewBox="0 0 24 24"
+<summary title="Menu"><svg class="burger" viewBox="0 0 24 24"
  width="24" height="24" aria-hidden="true" focusable="false"><g class="bars"><rect x="1" y="4"
  width="22" height="2.5" rx="1.25"/><rect x="1" y="10.75" width="22" height="2.5" rx="1.25"/><rect
  x="1" y="17.5" width="22" height="2.5" rx="1.25"/></g><g class="cross"><rect x="1" y="10.75"
  width="22" height="2.5" rx="1.25" transform="rotate(45 12 12)"/><rect x="1" y="10.75" width="22"
- height="2.5" rx="1.25" transform="rotate(-45 12 12)"/></g></svg></summary>
+ height="2.5" rx="1.25" transform="rotate(-45 12 12)"/></g></svg><span class="menu-label">Menu</span></summary>
 <div class="panel">
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
