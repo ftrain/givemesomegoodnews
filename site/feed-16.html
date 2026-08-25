@@ -13,12 +13,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -27,22 +40,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -50,19 +69,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -75,7 +126,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -93,7 +144,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -106,7 +157,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="subjects/news.html">News</a></li><li><a href="subjects/politics.html">Politics</a></li><li><a href="subjects/opinion.html">Opinion</a></li><li><a href="subjects/health.html">Health</a></li><li><a href="subjects/environment.html">Environment</a></li><li><a href="subjects/education.html">Education</a></li><li><a href="subjects/business.html">Business</a></li><li><a href="subjects/housing.html">Housing</a></li><li><a href="subjects/sports.html">Sports</a></li><li><a href="subjects/food.html">Food</a></li><li><a href="subjects/arts.html">Arts</a></li></ul></nav>
@@ -121,264 +172,284 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <main id="main">
 <div id="feed-items">
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T05:34:00+00:00" data-pub="1:34 AM EDT">Tuesday, August 25, 2026 at 1:34 AM EDT</time></small><a class="lozenge" href="subjects/opinion.html">Opinion</a></p>
-<p><small>MI / Detroit / <a href="https://elcentralmedia.com/">EL CENTRAL Hispanic News</a></small></p>
-<h2><a href="https://elcentralmedia.com/beyond-shock-and-outrage-surviving-a-madman/">Beyond Shock and Outrage: Surviving a Madman</a></h2>
-<p class="byline"><small>By EL CENTRAL</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://elcentralmedia.com/wp-content/uploads/2023/04/unnamed.png">Become a member</a></span></p>
-<p>Trump&#x27;s mental fitness questioned as he makes claims contradicting reality—approval ratings, economy, Iran conflict. Is he losing his grip? Analysis inside</p>
-<p class="more"><a href="https://elcentralmedia.com/beyond-shock-and-outrage-surviving-a-madman/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/news.html">News</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://atlantablackstar.com/">Support</a></aside>
+<p class="source"><a href="https://atlantablackstar.com/"><strong>Atlanta Black Star</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T12:00:00+00:00" data-pub="8:00 AM EDT">Tue, Aug 25 @ 8AM EDT</time><a class="lozenge place" href="/search?state=GA">Georgia</a><a class="lozenge place" href="/search?place=Atlanta&state=GA">Atlanta</a></p>
+<h2><a href="https://atlantablackstar.com/2026/08/25/white-man-charged-in-fatal-stabbing-on-atlanta-beltline/">‘Immediate Danger’: White Man With 30 Prior Arrests Charged in Fatal Stabbing of Black Man on Atlanta BeltLine as Mayor Questions How He Was Out</a></h2>
+<p class="byline">By Carlos Miller</p>
+<a class="shot" href="https://atlantablackstar.com/2026/08/25/white-man-charged-in-fatal-stabbing-on-atlanta-beltline/" tabindex="-1" aria-hidden="true"><img src="img/f1b7cb76ce2c2ed8f7bb10b13b4433e3fe242a3a.webp" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>A horrifying video showing a white man fatally stabbing a Black man after an argument on the Atlanta BeltLine over the weekend has prompted Atlanta’s […] ‘Immediate Danger’: White Man With 30 Prior Arrests Charged in Fatal Stabbing of Black Man on Atlanta BeltLine as Mayor Questions How He Was Out <a class="lozenge more" href="https://atlantablackstar.com/2026/08/25/white-man-charged-in-fatal-stabbing-on-atlanta-beltline/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T05:24:16+00:00" data-pub="1:24 AM EDT">Tuesday, August 25, 2026 at 1:24 AM EDT</time></small><a class="lozenge" href="subjects/news.html">News</a></p>
-<p><small>GA / Atlanta / <a href="https://www.gpb.org/news">Georgia News Lab</a></small></p>
-<h2><a href="https://www.gpb.org/news/2026/08/25/indonesians-brave-choking-smoke-pray-for-rain-country-battles-wildfires">Indonesians brave choking smoke to pray for rain as country battles wildfires</a></h2>
-<p class="byline"><small>By The Associated Press</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.gpb.org/support/planned">Donate</a></span></p>
-<a class="shot" href="https://www.gpb.org/news/2026/08/25/indonesians-brave-choking-smoke-pray-for-rain-country-battles-wildfires" tabindex="-1" aria-hidden="true"><img src="img/83777a5f95bcfd8913c709e4da7ae46a364a0343.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Huge blazes in central and western regions of Indonesia have scorched wide areas of forests and peatland, creating a choking haze that blanketed some cities.</p>
-<p class="more"><a href="https://www.gpb.org/news/2026/08/25/indonesians-brave-choking-smoke-pray-for-rain-country-battles-wildfires">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.pleasantonweekly.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://www.pleasantonweekly.com/"><strong>Pleasanton Weekly</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T12:00:00+00:00" data-pub="5:00 AM PDT">Tue, Aug 25 @ 5AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Pleasanton&state=CA">Pleasanton</a></p>
+<h2><a href="https://www.pleasantonweekly.com/calmatters/2026/08/25/help-calmatters-report-on-what-happens-to-drivers-after-they-cause-a-serious-car-crash/">Help CalMatters report on what happens to drivers after they cause a serious car crash</a></h2>
+<p class="byline">By CalMatters</p>
+<a class="shot" href="https://www.pleasantonweekly.com/calmatters/2026/08/25/help-calmatters-report-on-what-happens-to-drivers-after-they-cause-a-serious-car-crash/" tabindex="-1" aria-hidden="true"><img src="img/3db422e7da2f821639ff2779a3bbde22bfb62967.webp" alt="" width="480" height="251" loading="lazy" decoding="async"></a>
+<p>This story was originally published by CalMatters. Sign up for their newsletters. Sign up for the License to Kill newsletter to get updates on our investigation into how California lets deadly drivers stay on the road. <a class="lozenge more" href="https://www.pleasantonweekly.com/calmatters/2026/08/25/help-calmatters-report-on-what-happens-to-drivers-after-they-cause-a-serious-car-crash/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://www.almanacnews.com/calmatters/2026/08/25/help-calmatters-report-on-what-happens-to-drivers-after-they-cause-a-serious-car-crash/">The Almanac</a> &middot; <a href="https://calmatters.org/investigation/2026/08/car-crash-survey/">CalMatters</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T05:23:02+00:00" data-pub="1:23 AM EDT">Tuesday, August 25, 2026 at 1:23 AM EDT</time></small></p>
-<p><small>IN / Statewide / <a href="https://indianacitizen.org/">Indiana Citizen</a></small></p>
-<h2><a href="https://indianacitizen.org/contested-history-league-of-women-voters-event-examined-meaning-behind-separation-of-church-and-state/">CONTESTED HISTORY: League of Women Voters’ event examined meaning behind ‘separation of church and state’</a></h2>
-<p class="byline"><small>By Marilyn Odendahl</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://indianacitizen.org/donation/">Donate</a></span></p>
-<p>By Sydney Byerly The Indiana Citizen August 25, 2026 MUNCIE, Ind. — As debates over religion in public life play out in Indiana and across the country, a group of Muncie residents gathered Saturday to examine a question that has been contested since the nation’s earliest days: What does the Constitution actually say about the relationship between religion and government? The League of Women Voters</p>
-<p class="more"><a href="https://indianacitizen.org/contested-history-league-of-women-voters-event-examined-meaning-behind-separation-of-church-and-state/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/opinion.html">Opinion</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.pleasantonweekly.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://www.pleasantonweekly.com/"><strong>Pleasanton Weekly</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T12:00:00+00:00" data-pub="5:00 AM PDT">Tue, Aug 25 @ 5AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Pleasanton&state=CA">Pleasanton</a></p>
+<h2><a href="https://www.pleasantonweekly.com/calmatters/2026/08/25/federal-wildfire-crews-are-stretched-thin-california-is-stepping-in-to-help/">Federal wildfire crews are stretched thin. California is stepping in to help</a></h2>
+<p class="byline">By CalMatters</p>
+<a class="shot" href="https://www.pleasantonweekly.com/calmatters/2026/08/25/federal-wildfire-crews-are-stretched-thin-california-is-stepping-in-to-help/" tabindex="-1" aria-hidden="true"><img src="img/3b1fcc0c71b336374509d111dfd8140dc2d5ef83.webp" alt="" width="480" height="319" loading="lazy" decoding="async"></a>
+<p>This story was originally published by CalMatters. Sign up for their newsletters. California’s last working nuclear power plant sits cradled in a landscape that would worry any firefighter when the wind picks up. The Pacific Ocean and its perpetual fog lick the western edge of the coastal bluffs holding the Diablo Canyon Power Plant. But <a class="lozenge more" href="https://www.pleasantonweekly.com/calmatters/2026/08/25/federal-wildfire-crews-are-stretched-thin-california-is-stepping-in-to-help/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://www.almanacnews.com/calmatters/2026/08/25/federal-wildfire-crews-are-stretched-thin-california-is-stepping-in-to-help/">The Almanac</a> &middot; <a href="https://calmatters.org/environment/wildfires/2026/08/california-wildfires-forest-fuels-management/">CalMatters</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T05:00:00+00:00" data-pub="12:00 AM CDT">Tuesday, August 25, 2026 at 12:00 AM CDT</time></small><a class="lozenge" href="subjects/politics.html">Politics</a></p>
-<p><small>TX / Houston / <a href="https://defendernetwork.com/">Houston Defender</a></small></p>
-<h2><a href="https://defendernetwork.com/news/local-state/always-remember-congressman-al-green-hosts-slavery-remembrance-gathering/">‘Always remember’: Congressman Al Green hosts slavery remembrance gathering</a></h2>
-<p class="byline"><small>By Tannistha Sinha</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://defendernetwork.com/defender-95th-donate/">Donate</a></span></p>
-<a class="shot" href="https://defendernetwork.com/news/local-state/always-remember-congressman-al-green-hosts-slavery-remembrance-gathering/" tabindex="-1" aria-hidden="true"><img src="img/2afbc60efa79634142ce69a33f8d75da028620d5.jpg" alt="" width="480" height="415" loading="lazy" decoding="async"></a>
-<p>Houstonians gathered to remember slavery’s brutality, honor the enslaved, and confront unfinished fights for equality.</p>
-<p class="more"><a href="https://defendernetwork.com/news/local-state/always-remember-congressman-al-green-hosts-slavery-remembrance-gathering/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/opinion.html">Opinion</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.centralmaine.com/subscription-plans/">Subscribe</a></aside>
+<p class="source"><a href="https://www.centralmaine.com/times-record/"><strong>Times Record</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T12:00:00+00:00" data-pub="8:00 AM EDT">Tue, Aug 25 @ 8AM EDT</time><a class="lozenge place" href="/search?state=ME">Maine</a><a class="lozenge place" href="/search?place=Central+Maine&state=ME">Central Maine</a></p>
+<h2><a href="https://www.centralmaine.com/2026/08/25/schooner-trip-was-an-amazing-experience-letter/">Schooner trip was an amazing experience | Letter</a></h2>
+<p class="byline">By Deb Sayer</p>
+<a class="shot" href="https://www.centralmaine.com/2026/08/25/schooner-trip-was-an-amazing-experience-letter/" tabindex="-1" aria-hidden="true"><img src="img/556cc89809a6768239b2f43516aeeb2225bccd7e.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>I wanted to thank the Portland Press Herald for its June 25 article “Windjammers want more Mainers to take schooner staycations.” Without it, I might not have been inspired to take a cruise across Penobscot Bay on the schooner Grace Bailey, and what a phenomenal journey I would have missed! What an amazing privilege to <a class="lozenge more" href="https://www.centralmaine.com/2026/08/25/schooner-trip-was-an-amazing-experience-letter/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://www.sunjournal.com/2026/08/25/schooner-trip-was-an-amazing-experience-letter/">Sun Journal</a> &middot; <a href="https://www.pressherald.com/2026/08/25/schooner-trip-was-an-amazing-experience-letter/">Portland Press Herald</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T05:00:00+00:00" data-pub="12:00 AM CDT">Tuesday, August 25, 2026 at 12:00 AM CDT</time></small><a class="lozenge" href="subjects/news.html">News</a></p>
-<p><small>TX / Houston / <a href="https://defendernetwork.com/">Houston Defender</a></small></p>
-<h2><a href="https://defendernetwork.com/news/karmelo-anthony-denied-new-trial-by-recently-appointed-judge/">Karmelo Anthony denied new trial by recently appointed judge</a></h2>
-<p class="byline"><small>By Defender News Service</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://defendernetwork.com/defender-95th-donate/">Donate</a></span></p>
-<a class="shot" href="https://defendernetwork.com/news/karmelo-anthony-denied-new-trial-by-recently-appointed-judge/" tabindex="-1" aria-hidden="true"><img src="img/1dee7fb79ee1bad9cba16f0349c577d2aaf83d62.jpg" alt="" width="399" height="300" loading="lazy" decoding="async"></a>
-<p>The judge’s ruling leaves Karmelo Anthony’s conviction and 35-year sentence intact.</p>
-<p class="more"><a href="https://defendernetwork.com/news/karmelo-anthony-denied-new-trial-by-recently-appointed-judge/">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Echo: <a href="https://theblackwallsttimes.com/2026/08/22/judge-denies-new-trial-for-karmelo-anthony-appeal-moves-forward/">Black Wall Street Times: Judge denies new trial for Karmelo Anthony; appeal moves forward</a> · <a href="https://www.afro.com/national-news/texas-judge-denies-karmelo-anthonys-request-for-new-trial-e1f26736">Afro-American: Texas judge denies Karmelo Anthony&#x27;s request for new trial</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://phillytrib.com/subscribe">Subscribe</a></aside>
+<p class="source"><a href="https://www.phillytrib.com/"><strong>The Philadelphia Tribune</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T12:00:00+00:00" data-pub="8:00 AM EDT">Tue, Aug 25 @ 8AM EDT</time><a class="lozenge place" href="/search?state=PA">Pennsylvania</a><a class="lozenge place" href="/search?place=Philadelphia&state=PA">Philadelphia</a></p>
+<h2><a href="https://www.phillytrib.com/lifestyle/book-review-mahalia-jackson-moving-on-up-a-little-higher-the-story-of-a-civil/article_a76a02ab-fbdd-4ec2-904f-8decd2bee365.html">Book Review: &#x27;Mahalia Jackson, Moving On Up a Little Higher&#x27;: The story of a Civil Rights influencer in the forefront</a></h2>
+<p class="byline">By Terri Schlichenmeyer Tribune Correspondent</p>
+<a class="shot" href="https://www.phillytrib.com/lifestyle/book-review-mahalia-jackson-moving-on-up-a-little-higher-the-story-of-a-civil/article_a76a02ab-fbdd-4ec2-904f-8decd2bee365.html" tabindex="-1" aria-hidden="true"><img src="img/f27c1b8c3dd4340350bc4002bb2de08ed592434d.jpg" alt="" width="300" height="450" loading="lazy" decoding="async"></a>
+<p>Your actual job is one thing. <a class="lozenge more" href="https://www.phillytrib.com/lifestyle/book-review-mahalia-jackson-moving-on-up-a-little-higher-the-story-of-a-civil/article_a76a02ab-fbdd-4ec2-904f-8decd2bee365.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Echo: <a href="https://njurbannews.com/2026/08/20/mahalia-jackson-moving-on-up-a-little-higher/">NJ Urban News: “Mahalia Jackson, Moving On Up a Little Higher:</a> &middot; <a href="https://floridasunreview.com/mahalia-jackson-book-review-civil-rights-pioneer/">The Florida Sun: “Mahalia Jackson, Moving On Up a Little Higher: The Story of An American Civil Rights Pioneer” by Timothy B. Tyson &amp; Mary D. Williams</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T05:00:00+00:00" data-pub="12:00 AM CDT">Tuesday, August 25, 2026 at 12:00 AM CDT</time></small><a class="lozenge" href="subjects/housing.html">Housing</a></p>
-<p><small>TX / Houston / <a href="https://defendernetwork.com/">Houston Defender</a></small></p>
-<h2><a href="https://defendernetwork.com/under-40/report-cost-of-living-is-americans-top-source-of-anxiety/">Report: Cost of living is Americans’ top source of anxiety</a></h2>
-<p class="byline"><small>By Laura Onyeneho</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://defendernetwork.com/defender-95th-donate/">Donate</a></span></p>
-<a class="shot" href="https://defendernetwork.com/under-40/report-cost-of-living-is-americans-top-source-of-anxiety/" tabindex="-1" aria-hidden="true"><img src="img/d79297f577aec72ca3e39a54a6dfd0f09c76130b.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Inflation and high debt levels continue to cause financial anxiety for many Americans.</p>
-<p class="more"><a href="https://defendernetwork.com/under-40/report-cost-of-living-is-americans-top-source-of-anxiety/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/education.html">Education</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://nextcity.org/donate">Donate</a></aside>
+<p class="source"><a href="https://nextcity.org/Los_Angeles"><strong>Next City: Los Angeles</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T12:00:00+00:00" data-pub="5:00 AM PDT">Tue, Aug 25 @ 5AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://nextcity.org/features/learning-to-drive-in-gaza-city">Learning To Drive in Gaza City</a></h2>
+<p class="byline">By Ansam Al-Kitaa</p>
+<a class="shot" href="https://nextcity.org/features/learning-to-drive-in-gaza-city" tabindex="-1" aria-hidden="true"><img src="img/bf796f3da1486dfe864c6fcad1751a1e4174306a.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Essay: A Palestinian driving school and its four remaining cars are surviving the same way the whole city is: by salvaging, improvising, and refusing to stop. <a class="lozenge more" href="https://nextcity.org/features/learning-to-drive-in-gaza-city">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T05:00:00+00:00" data-pub="1:00 AM EDT">Tuesday, August 25, 2026 at 1:00 AM EDT</time></small><a class="lozenge" href="subjects/politics.html">Politics</a></p>
-<p><small>National / Education / <a href="https://hechingerreport.org/">The Hechinger Report</a></small></p>
-<h2><a href="https://hechingerreport.org/california-encourages-undocumented-students-to-go-to-college-but-some-are-losing-hope/">California encourages undocumented students to go to college. But some are losing hope</a></h2>
-<p class="byline"><small>By Alexandra Villarreal</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://hechingerreport.org/support-the-hechinger-report/?utm_source=website&amp;utm_medium=homepage&amp;utm_campaign=header">Donate</a></span></p>
-<a class="shot" href="https://hechingerreport.org/california-encourages-undocumented-students-to-go-to-college-but-some-are-losing-hope/" tabindex="-1" aria-hidden="true"><img src="img/9845052f42ac67f996478de94a6c722291717ece.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>FOLSOM, Calif. — At Folsom Lake College’s main administrative building, a flyer on the wall tells undocumented students, “You can still go to college in California even with the current political climate.” “Keep going,” it says. “You are not alone.” Nearby is Alicia Alejo’s office at the Undocu-Falcons Center, where the student support specialist helps undocumented</p>
-<p class="more"><a href="https://hechingerreport.org/california-encourages-undocumented-students-to-go-to-college-but-some-are-losing-hope/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://mosaic.nj.com/">Support</a></aside>
+<p class="source"><a href="https://mosaic.nj.com/"><strong>Mosaic</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T12:00:00+00:00" data-pub="8:00 AM EDT">Tue, Aug 25 @ 8AM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a></p>
+<h2><a href="https://www.nj.com/highschoolsports/2026/08/group-4-girls-volleyball-championship-favorites-contenders-for-2026.html">Group 4 girls volleyball championship favorites &amp; contenders for 2026</a></h2>
+<p class="byline">By Tyler Duffy</p>
+<a class="shot" href="https://www.nj.com/highschoolsports/2026/08/group-4-girls-volleyball-championship-favorites-contenders-for-2026.html" tabindex="-1" aria-hidden="true"><img src="img/30bd629a285c33c88d0ddfe625741705da5a0925.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>Take a look at the Group 4 girls volleyball championship favorites &amp; contenders for 2026! <a class="lozenge more" href="https://www.nj.com/highschoolsports/2026/08/group-4-girls-volleyball-championship-favorites-contenders-for-2026.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://www.nj.com/highschoolsports/2026/08/girls-tennis-preview-2026-group-4-favorites-and-contenders.html">Mosaic</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:56:25+00:00" data-pub="11:56 PM CDT">Monday, August 24, 2026 at 11:56 PM CDT</time></small><a class="lozenge" href="subjects/news.html">News</a></p>
-<p><small>TX / Austin / <a href="https://thedailytexan.com/">Daily Texan</a></small></p>
-<h2><a href="https://thedailytexan.com/2026/08/24/what-thc-ban-enforcement-looks-like-in-austin/">What THC ban enforcement looks like in Austin</a></h2>
-<p class="byline"><small>By Arianna Nevarez, Senior News Reporter</small><span class="aside"><a class="lozenge" href="tags/college.html">College</a><a class="lozenge give" href="https://thedailytexan.com/apply-to-the-daily-texan/">Become a member</a></span></p>
-<p>The Texas Supreme Court allowed a ban on delta-8 tetrahydrocannabinol (THC), a compound found in small amounts in cannabis plants that had been legal for nearly five years. The compound is now classified as a Schedule I drug effective July 31. The change was the latest after a series of changes this year and in</p>
-<p class="more"><a href="https://thedailytexan.com/2026/08/24/what-thc-ban-enforcement-looks-like-in-austin/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/news.html">News</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://mosaic.nj.com/">Support</a></aside>
+<p class="source"><a href="https://mosaic.nj.com/"><strong>Mosaic</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T12:00:00+00:00" data-pub="8:00 AM EDT">Tue, Aug 25 @ 8AM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a></p>
+<h2><a href="https://www.nj.com/news/2026/08/are-you-in-the-1-whats-the-maximum-amount-of-social-security-benefits-you-can-get-in-a-month.html">What’s the maximum amount of Social Security benefits you can get in a month?</a></h2>
+<p class="byline">By Leada Gore</p>
+<a class="shot" href="https://www.nj.com/news/2026/08/are-you-in-the-1-whats-the-maximum-amount-of-social-security-benefits-you-can-get-in-a-month.html" tabindex="-1" aria-hidden="true"><img src="img/d6c9bd4ca8d90b63994bdb6d42fd5e45484020c9.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Earnings play a key role in determining how much your monthly Social Security check will be. <a class="lozenge more" href="https://www.nj.com/news/2026/08/are-you-in-the-1-whats-the-maximum-amount-of-social-security-benefits-you-can-get-in-a-month.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:50:18+00:00" data-pub="12:50 AM EDT">Tuesday, August 25, 2026 at 12:50 AM EDT</time></small></p>
-<p><small>KY / Northern Kentucky / <a href="https://www.nkytribune.com/">Northern Kentucky Tribune</a></small></p>
-<h2><a href="https://nkytribune.com/2026/08/look-up-stargazers-on-thursday-evening-you-can-see-a-deep-partial-eclipse-of-the-moon/">Look up, stargazers: On Thursday evening you can see a deep partial eclipse of the Moon</a></h2>
-<p class="byline"><small>By Judy Clabes</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.nkytribune.com/">Support</a></span></p>
-<p>Thursday, August 27, will be a big night for stargazers in the Cincinnati area. The Cincinnati Observatory kicks off the evening with its monthly Pop-Up Planetarium at MadTree Brewing in Oakley, then opens its doors on Mt. Lookout for a free public telescope viewing of a deep partial lunar eclipse, one of the most striking</p>
-<p class="more"><a href="https://nkytribune.com/2026/08/look-up-stargazers-on-thursday-evening-you-can-see-a-deep-partial-eclipse-of-the-moon/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/politics.html">Politics</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://calmatters.org/about/contact-us/#manage-your-donation">Donate</a></aside>
+<p class="source"><a href="https://calmatters.org/"><strong>CalMatters</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T12:00:00+00:00" data-pub="5:00 AM PDT">Tue, Aug 25 @ 5AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Sacramento&state=CA">Sacramento</a></p>
+<h2><a href="https://calmatters.org/commentary/2026/08/local-governments-tax-increases-california/">California’s local governments rush to ask for tax increases before voters get the chance to curb them</a></h2>
+<p class="byline">By Dan Walters</p>
+<a class="shot" href="https://calmatters.org/commentary/2026/08/local-governments-tax-increases-california/" tabindex="-1" aria-hidden="true"><img src="img/2e4ac54e47e9d47d65df15c6851237eaf776932c.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>If Prop 43 succeeds, local tax increases will need two-thirds approval from voters to pass. Some cities and counties have put tax increases on the current ballot. <a class="lozenge more" href="https://calmatters.org/commentary/2026/08/local-governments-tax-increases-california/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:48:04+00:00" data-pub="12:48 AM EDT">Tuesday, August 25, 2026 at 12:48 AM EDT</time></small><a class="lozenge" href="subjects/news.html">News</a></p>
-<p><small>KY / Northern Kentucky / <a href="https://www.nkytribune.com/">Northern Kentucky Tribune</a></small></p>
-<h2><a href="https://nkytribune.com/2026/08/city-of-erlanger-to-host-opening-of-the-flow-bike-park-thursday-at-eons-adventure-park/">City of Erlanger to host opening of The Flow Bike Park Thursday at Eons Adventure Park</a></h2>
-<p class="byline"><small>By Ben Clabes</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.nkytribune.com/">Support</a></span></p>
-<p>The City of Erlanger has announced the ribbon cutting ceremony for The Flow Bike Park. Located within the Eons Adventure Park, The Flow Bike Park features a 1,000-foot jump line, a pump track, a beginner skills course and bicycle playground with eight elements, including hula hoops and tunnels. The park is fully progressive: a three-year-old</p>
-<p class="more"><a href="https://nkytribune.com/2026/08/city-of-erlanger-to-host-opening-of-the-flow-bike-park-thursday-at-eons-adventure-park/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/politics.html">Politics</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://calmatters.org/about/contact-us/#manage-your-donation">Donate</a></aside>
+<p class="source"><a href="https://calmatters.org/"><strong>CalMatters</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T12:00:00+00:00" data-pub="5:00 AM PDT">Tue, Aug 25 @ 5AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Sacramento&state=CA">Sacramento</a></p>
+<h2><a href="https://calmatters.org/commentary/2026/08/counting-votes-quickly-accurately-california/">Counting votes quickly and accurately are not mutually exclusive. Here’s how California can do it</a></h2>
+<p class="byline">By Don Wagner</p>
+<a class="shot" href="https://calmatters.org/commentary/2026/08/counting-votes-quickly-accurately-california/" tabindex="-1" aria-hidden="true"><img src="img/8678492bb4fe0a4ac86bf4c0cf1a587b0ee14b66.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>California&#x27;s slow vote counts are a policy problem, argues the Republican candidate for state elections chief. Three changes could made a concrete difference, he says. <a class="lozenge more" href="https://calmatters.org/commentary/2026/08/counting-votes-quickly-accurately-california/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:46:00+00:00" data-pub="12:46 AM EDT">Tuesday, August 25, 2026 at 12:46 AM EDT</time></small></p>
-<p><small>CT / Naugatuck Valley / <a href="https://valley.newhavenindependent.org/obituaries">Valley Independent Sentinel</a></small></p>
-<h2><a href="https://valley.newhavenindependent.org/2026/08/25/morris-and-madison-founding-fathers-of-the-constitution/">Morris And Madison: Founding Fathers Of The Constitution</a></h2>
-<p class="byline"><small>By By DAR RIPTON PARISH CHAPTER</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://valley.newhavenindependent.org/obituaries">Support</a></span></p>
-<a class="shot" href="https://valley.newhavenindependent.org/2026/08/25/morris-and-madison-founding-fathers-of-the-constitution/" tabindex="-1" aria-hidden="true"><img src="img/d64ec58f928b213c3198936fbc79d5601ec39138.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Two men who shaped the Constitution.</p>
-<p class="more"><a href="https://valley.newhavenindependent.org/2026/08/25/morris-and-madison-founding-fathers-of-the-constitution/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://blockclubchicago.org/donate">Donate</a></aside>
+<p class="source"><a href="https://blockclubchicago.org/"><strong>Block Club Chicago</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T12:00:00+00:00" data-pub="7:00 AM CDT">Tue, Aug 25 @ 7AM CDT</time><a class="lozenge place" href="/search?state=IL">Illinois</a><a class="lozenge place" href="/search?place=Chicago&state=IL">Chicago</a></p>
+<h2><a href="https://blockclubchicago.org/2026/08/25/developer-selling-half-of-82-unit-apartment-complex-planned-for-edison-park/">Developer Selling Half Of 82-Unit Apartment Complex Planned For Edison Park</a></h2>
+<p class="byline">By Molly DeVore</p>
+<a class="shot" href="https://blockclubchicago.org/2026/08/25/developer-selling-half-of-82-unit-apartment-complex-planned-for-edison-park/" tabindex="-1" aria-hidden="true"><img src="img/a709f37ac2145aae5f585f00cf98de5dd6131548.jpg" alt="" width="480" height="261" loading="lazy" decoding="async"></a>
+<p>Approved by the city in 2024, plans for the development call for two 41-unit apartment buildings. The developer is now selling one of the buildings. <a class="lozenge more" href="https://blockclubchicago.org/2026/08/25/developer-selling-half-of-82-unit-apartment-complex-planned-for-edison-park/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:45:30+00:00" data-pub="12:45 AM EDT">Tuesday, August 25, 2026 at 12:45 AM EDT</time></small><a class="lozenge" href="subjects/education.html">Education</a></p>
-<p><small>KY / Northern Kentucky / <a href="https://www.nkytribune.com/">Northern Kentucky Tribune</a></small></p>
-<h2><a href="https://nkytribune.com/2026/08/learning-grove-names-patricia-nagelkirk-vp-of-youth-workforce-executive-director-of-navigo/">Learning Grove names Patricia Nagelkirk VP of youth workforce, executive director of Navigo</a></h2>
-<p class="byline"><small>By Jacob Clabes</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.nkytribune.com/">Support</a></span></p>
-<p>Learning Grove has named Patricia “Patty” Nagelkirk, regional leader in youth development, education strategy and cross-sector collaboration as vice president of youth workforce and executive director of NaviGo. Nagelkirk brings extensive experience working across education, nonprofits, philanthropy, business and civic sectors to build stronger pathways to opportunity for young people. “Patty has </p>
-<p class="more"><a href="https://nkytribune.com/2026/08/learning-grove-names-patricia-nagelkirk-vp-of-youth-workforce-executive-director-of-navigo/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/news.html">News</a><a class="lozenge give" href="https://www.berkshireeagle.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://www.berkshireeagle.com/"><strong>The Berkshire Eagle</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T12:00:00+00:00" data-pub="8:00 AM EDT">Tue, Aug 25 @ 8AM EDT</time><a class="lozenge place" href="/search?state=MA">Massachusetts</a><a class="lozenge place" href="/search?place=Pittsfield&state=MA">Pittsfield</a></p>
+<h2><a href="https://www.berkshireeagle.com/news/local/massachusetts-kratom-ban-berkshire-officials-treatment-concerns/article_2af1ff29-f668-4a42-8dcf-8984de7dd23c.html">As Massachusetts moves to temporarily ban kratom, Berkshire officials worry about what comes next</a></h2>
+<p class="byline">By By Izzy Bryars, The Berkshire Eagle</p>
+<a class="shot" href="https://www.berkshireeagle.com/news/local/massachusetts-kratom-ban-berkshire-officials-treatment-concerns/article_2af1ff29-f668-4a42-8dcf-8984de7dd23c.html" tabindex="-1" aria-hidden="true"><img src="img/7bfbfc64d84e323ec664fba9722a6dc64ba1155a.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+<p>Local health and addiction officials acknowledge the drug’s risks but worry cutting off access without clear treatment options could push dependent users back to heroin, fentanyl or other drugs. <a class="lozenge more" href="https://www.berkshireeagle.com/news/local/massachusetts-kratom-ban-berkshire-officials-treatment-concerns/article_2af1ff29-f668-4a42-8dcf-8984de7dd23c.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:43:46+00:00" data-pub="11:43 PM CDT">Monday, August 24, 2026 at 11:43 PM CDT</time></small></p>
-<p><small>OK / Oklahoma City / <a href="https://blackchronicle.com/">Black Chronicle</a></small></p>
-<h2><a href="https://blackchronicle.com/midwest/illinois/illinois-quick-hits-cook-county-property-tax-bills-rise/">Illinois quick hits: Cook County property tax bills rise</a></h2>
-<p class="byline"><small>By Black Chronicle News Service</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://blackchronicle.com/product/the-black-chronicle-newspaper-subscription-now-with-the-all-new-tbc-magazine/">Subscribe</a></span></p>
-<a class="shot" href="https://blackchronicle.com/midwest/illinois/illinois-quick-hits-cook-county-property-tax-bills-rise/" tabindex="-1" aria-hidden="true"><img src="img/a3cdd8bf0ef87a88aa3f81567a55ee7cc13593ee.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Cook County property tax bills to rise A new report from Cook County Treasurer Maria Pappas’ office found property taxes have gone up again. County residents are expected to pay $593.4 million in new taxes, […] Continue reading with a Black Chronicle subscription. Purchase The Black Chronicle Newspaper Subscription – Now with the All-New TBC Magazine! or The Black Chronicle Newspaper Subscription </p>
-<p class="more"><a href="https://blackchronicle.com/midwest/illinois/illinois-quick-hits-cook-county-property-tax-bills-rise/">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Echo: <a href="http://2026primary.injusticewatch.org/results">Injustice Watch: Live results: March 2026 Cook County judicial primary election</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/education.html">Education</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="http://benitolink.fundjournalism.org/support">Donate</a></aside>
+<p class="source"><a href="https://benitolink.com"><strong>BenitoLink</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T12:00:00+00:00" data-pub="5:00 AM PDT">Tue, Aug 25 @ 5AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Hollister&state=CA">Hollister</a></p>
+<h2><a href="https://benitolink.com/local-schools-make-cellphone-policies-stricter/">Local schools make cellphone policies stricter</a></h2>
+<p class="byline">By Isabella Beltran</p>
+<a class="shot" href="https://benitolink.com/local-schools-make-cellphone-policies-stricter/" tabindex="-1" aria-hidden="true"><img src="img/2cde7d96620aa35396752ba2c243825dcd560b7b.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Lea este artículo en español aquí. With the onset of the new school year, local schools are again attempting to battle something that’s been affecting student engagement for years: cellphones. <a class="lozenge more" href="https://benitolink.com/local-schools-make-cellphone-policies-stricter/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:42:44+00:00" data-pub="12:42 AM EDT">Tuesday, August 25, 2026 at 12:42 AM EDT</time></small><a class="lozenge" href="subjects/environment.html">Environment</a></p>
-<p><small>KY / Northern Kentucky / <a href="https://www.nkytribune.com/">Northern Kentucky Tribune</a></small></p>
-<h2><a href="https://nkytribune.com/2026/08/kentucky-by-heart-recalling-fond-memories-and-making-new-ones-at-the-2026-kentucky-state-fair/">Kentucky by Heart: Recalling fond memories and making new ones at the 2026 Kentucky State Fair</a></h2>
-<p class="byline"><small>By Jacob Clabes</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.nkytribune.com/">Support</a></span></p>
-<p>By Steve Flairty NKyTribune columnist The 2026 Kentucky State Fair, designed to bring our state’s citizens together to celebrate our common resources — material and human — is now in session and it’s stoked a few enriching memories for me. I hope it does for others, too. A few years back, I wrote here about</p>
-<p class="more"><a href="https://nkytribune.com/2026/08/kentucky-by-heart-recalling-fond-memories-and-making-new-ones-at-the-2026-kentucky-state-fair/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.adirondackexplorer.org/donate-now/">Donate</a></aside>
+<p class="source"><a href="https://www.adirondackexplorer.org/"><strong>Adirondack Explorer</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T12:00:00+00:00" data-pub="8:00 AM EDT">Tue, Aug 25 @ 8AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Saranac+Lake&state=NY">Saranac Lake</a></p>
+<h2><a href="https://www.adirondackexplorer.org/communities/history/schroon-river-the-name-game/">Schroon River: The name game</a></h2>
+<p class="byline">By By William Cranker</p>
+<a class="shot" href="https://www.adirondackexplorer.org/communities/history/schroon-river-the-name-game/" tabindex="-1" aria-hidden="true"><img src="img/89d2b507569f66a57ab0d82f8087613100a655b3.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Research behind the name of the Schroon River reveals the Dutch origins and New England anglicization of the name <a class="lozenge more" href="https://www.adirondackexplorer.org/communities/history/schroon-river-the-name-game/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Echo: <a href="https://www.deseret.com/the-west/2026/08/24/nevada-files-lawsuit-over-colorado-river-utah-reaction/">Deseret News: Nevada files federal lawsuit as battle over Colorado River heats up</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:41:53+00:00" data-pub="12:41 AM EDT">Tuesday, August 25, 2026 at 12:41 AM EDT</time></small><a class="lozenge" href="subjects/politics.html">Politics</a></p>
-<p><small>IN / Statewide / <a href="https://indianacitizen.org/">Indiana Citizen</a></small></p>
-<h2><a href="https://indianacitizen.org/judicial-review-indiana-supreme-court-accepts-appeal-in-deery-copenhaver-primary-fight/">JUDICIAL REVIEW: Indiana Supreme Court accepts appeal in Deery-Copenhaver primary fight</a></h2>
-<p class="byline"><small>By Marilyn Odendahl</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://indianacitizen.org/donation/">Donate</a></span></p>
-<p>By Marilyn Odendahl The Indiana Citizen August 24, 2026 The Indiana Supreme Court has decided to wade into the Republican nomination fight between Sen. Spencer Deery and Paula Copenhaver for state Senate District 23, requesting front-and-back images of the six disputed ballots and scheduling oral arguments for Sept. 10. Issued on Monday, the Supreme Court’s order came after Copenhaver argued in he</p>
-<p class="more"><a href="https://indianacitizen.org/judicial-review-indiana-supreme-court-accepts-appeal-in-deery-copenhaver-primary-fight/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/news.html">News</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://mosaic.nj.com/">Support</a></aside>
+<p class="source"><a href="https://mosaic.nj.com/"><strong>Mosaic</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:58:58+00:00" data-pub="7:58 AM EDT">Tue, Aug 25 @ 7AM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a></p>
+<h2><a href="https://www.nj.com/news/2026/08/22-still-missing-after-cargo-ship-sinks-in-bay-of-bengal.html">22 still missing after cargo ship sinks in Bay of Bengal</a></h2>
+<p class="byline">By Mark Heim</p>
+<a class="shot" href="https://www.nj.com/news/2026/08/22-still-missing-after-cargo-ship-sinks-in-bay-of-bengal.html" tabindex="-1" aria-hidden="true"><img src="img/b491c2c94436bd73a52c0f9f3c92c4b2a592d8b7.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>The search is a joint effort by the Indian Coast Guard and Indian Navy. <a class="lozenge more" href="https://www.nj.com/news/2026/08/22-still-missing-after-cargo-ship-sinks-in-bay-of-bengal.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:40:26+00:00" data-pub="12:40 AM EDT">Tuesday, August 25, 2026 at 12:40 AM EDT</time></small><a class="lozenge" href="subjects/politics.html">Politics</a></p>
-<p><small>KY / Northern Kentucky / <a href="https://www.nkytribune.com/">Northern Kentucky Tribune</a></small></p>
-<h2><a href="https://nkytribune.com/2026/08/ky-court-of-appeals-upholds-10-year-sentence-of-nky-man-convicted-for-possession-of-child-sexual-material/">KY Court of Appeals upholds 10-year sentence of NKY man convicted for possession of child sexual material</a></h2>
-<p class="byline"><small>By Ben Clabes</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.nkytribune.com/">Support</a></span></p>
-<p>The Kentucky Attorney General’s office has announced the Kentucky Court of Appeals upheld the conviction of a Kenton County man on 20 felony counts of possession of child sexual exploitation material. Rob Sanders, Commonwealth’s Attorney for Kenton County, prosecuted Kevin Master, 33, after federal law enforcement and the Kentucky State Police discovered a child sex</p>
-<p class="more"><a href="https://nkytribune.com/2026/08/ky-court-of-appeals-upholds-10-year-sentence-of-nky-man-convicted-for-possession-of-child-sexual-material/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://haitiantimes.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://haitiantimes.com/florida-news/"><strong>The Haitian Times</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:58:49+00:00" data-pub="7:58 AM EDT">Tue, Aug 25 @ 7AM EDT</time><a class="lozenge place" href="/search?state=FL">Florida</a><a class="lozenge place" href="/search?place=Miami&state=FL">Miami</a></p>
+<h2><a href="https://haitiantimes.com/2026/08/25/haiti-gonaives-cleanup-program/">Gonaïves launches cleanup program to tackle persistent waste problem</a></h2>
+<p class="byline">By Edxon Francisque and Onès Joseph</p>
+<a class="shot" href="https://haitiantimes.com/2026/08/25/haiti-gonaives-cleanup-program/" tabindex="-1" aria-hidden="true"><img src="img/dd688170b5a0d918f9e4b6f613dcfad278f59435.jpg" alt="" width="480" height="216" loading="lazy" decoding="async"></a>
+<p>Some workers and project supervisors wear yellow shirts, while others wear white shirts bearing the words “Katye Pa m Pi Pwòp,” Haitian Creole for “My Neighborhood Is Cleaner.” The cleanup has taken on a community-contest atmosphere, but organizers say the goal extends beyond making streets look cleaner. They want to establish a more regular waste-collection system while encouraging residents to c <a class="lozenge more" href="https://haitiantimes.com/2026/08/25/haiti-gonaives-cleanup-program/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:38:07+00:00" data-pub="12:38 AM EDT">Tuesday, August 25, 2026 at 12:38 AM EDT</time></small><a class="lozenge" href="subjects/business.html">Business</a></p>
-<p><small>KY / Northern Kentucky / <a href="https://www.nkytribune.com/">Northern Kentucky Tribune</a></small></p>
-<h2><a href="https://nkytribune.com/2026/08/be-nky-growth-partnerships-kimberly-rossetti-promoted-to-chief-economic-development-officer/">BE NKY Growth Partnership’s Kimberly Rossetti promoted to chief economic development officer</a></h2>
-<p class="byline"><small>By Ben Clabes</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.nkytribune.com/">Support</a></span></p>
-<p>BE NKY Growth Partnership has announced the promotion Vice President of Economic Development Kimberly Rossetti to chief economic development officer. In this role, Rossetti will implement BE NKY’s strategies for advancing opportunity and prosperity for all Northern Kentuckians, develop economic development strategies, and play a key leadership role in BE NKY’s Build + Elevate 2032</p>
-<p class="more"><a href="https://nkytribune.com/2026/08/be-nky-growth-partnerships-kimberly-rossetti-promoted-to-chief-economic-development-officer/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/news.html">News</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/public-media.html">Public media</a><a class="lozenge give" href="https://pledge.wnyc.org/support/gothamist/?utm_medium=partnersite&amp;utm_source=gothamist&amp;utm_campaign=homepage-header">Donate</a></aside>
+<p class="source"><a href="https://gothamist.com/"><strong>Gothamist</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:57:03+00:00" data-pub="7:57 AM EDT">Tue, Aug 25 @ 7AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=New+York&state=NY">New York</a></p>
+<h2><a href="https://gothamist.com/news/nypd-is-investigating-a-mans-death-on-arrival-to-a-bronx-hospital">NYPD is investigating a man’s death on arrival to a Bronx hospital</a></h2>
+<p class="byline">By Brittany Kriegstein</p>
+<a class="shot" href="https://gothamist.com/news/nypd-is-investigating-a-mans-death-on-arrival-to-a-bronx-hospital" tabindex="-1" aria-hidden="true"><img src="img/1d1bded92bf2835a3be3f389de02d2e42c21e3c7.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>The man arrived with injuries to his head and body—his death has not been ruled a homicide. [ more › ] <a class="lozenge more" href="https://gothamist.com/news/nypd-is-investigating-a-mans-death-on-arrival-to-a-bronx-hospital">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:36:16+00:00" data-pub="12:36 AM EDT">Tuesday, August 25, 2026 at 12:36 AM EDT</time></small><a class="lozenge" href="subjects/health.html">Health</a></p>
-<p><small>KY / Northern Kentucky / <a href="https://www.nkytribune.com/">Northern Kentucky Tribune</a></small></p>
-<h2><a href="https://nkytribune.com/2026/08/third-annual-menopause-masterclass-aims-to-help-women-better-understand-hormonal-changes/">Third annual Menopause Masterclass aims to help women better understand hormonal changes</a></h2>
-<p class="byline"><small>By Jacob Clabes</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.nkytribune.com/">Support</a></span></p>
-<p>Staff report Women can begin experiencing perimenopausal symptoms as early as their mid-30s, with hormonal changes affecting heart health, bone health, weight, mental health and overall well-being. The 3rd Annual Menopause Masterclass will bring together 20 health experts Saturday, Aug. 29, from 8 a.m.-noon at The Madison Event Center in Covington. Open to women of</p>
-<p class="more"><a href="https://nkytribune.com/2026/08/third-annual-menopause-masterclass-aims-to-help-women-better-understand-hormonal-changes/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://wausaupilotandreview.com/2026/08/24/dnr-seeks-hunters-meat-processors-for-deer-donation-program/">Donate</a></aside>
+<p class="source"><a href="https://www.wausaupilotandreview.com"><strong>Wausau Pilot &amp; Review</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:55:00+00:00" data-pub="6:55 AM CDT">Tue, Aug 25 @ 6AM CDT</time><a class="lozenge place" href="/search?state=WI">Wisconsin</a><a class="lozenge place" href="/search?place=Wausau&state=WI">Wausau</a></p>
+<h2><a href="https://wausaupilotandreview.com/2026/08/25/daily-poll-for-august-25-2026-home-internet-reliability/">Daily Poll for August 25, 2026: Home Internet Reliability</a></h2>
+<p class="byline">By Devon Flynn</p>
+<a class="shot" href="https://wausaupilotandreview.com/2026/08/25/daily-poll-for-august-25-2026-home-internet-reliability/" tabindex="-1" aria-hidden="true"><img src="img/9b59e241a9432acc7e2216c475d8b0b6ac647f37.jpg" alt="" width="336" height="189" loading="lazy" decoding="async"></a>
+<p>Wausau Pilot &amp; Review Start your morning by weighing in on the day’s question. Our Poll of the Day is an informal, unscientific snapshot of reader opinion. We’ll publish the results in a weekly roundup—so be sure to watch for the answers. Have an idea for a future poll question? Email editor@wausaupilotandreview.com <a class="lozenge more" href="https://wausaupilotandreview.com/2026/08/25/daily-poll-for-august-25-2026-home-internet-reliability/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:33:26+00:00" data-pub="11:33 PM CDT">Monday, August 24, 2026 at 11:33 PM CDT</time></small><a class="lozenge" href="subjects/environment.html">Environment</a></p>
-<p><small>TX / Houston / <a href="https://queondamagazine.com/">¡Qué Onda! Houston</a></small></p>
-<h2><a href="https://queondamagazine.com/triple-digit-heat-continues-this-week-with-small-rain-chances-by-weeks-end/">Triple-digit heat continues this week with small rain chances by week’s end</a></h2>
-<p class="byline"><small>By Precious F. Moore</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://queondamagazine.com/">Support</a></span></p>
-<p>HOUSTON, Texas (KTRK) — The heat dome is still in control of the forecast early on this week, bringing Houston more triple digit days. But as this system moves to the west, an increase in moisture levels across the Gulf Coast could bring a few showers and storms to Southeast Texas later this week. We’ll […] La entrada Triple-digit heat continues this week with small rain chances by week’s end se p</p>
-<p class="more"><a href="https://queondamagazine.com/triple-digit-heat-continues-this-week-with-small-rain-chances-by-weeks-end/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://mosaic.nj.com/">Support</a></aside>
+<p class="source"><a href="https://mosaic.nj.com/"><strong>Mosaic</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:54:23+00:00" data-pub="7:54 AM EDT">Tue, Aug 25 @ 7AM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a></p>
+<h2><a href="https://www.nj.com/burlington/2026/08/search-resumes-for-woman-who-disappeared-after-rescuing-girl-from-delaware-river-in-nj.html">Search resumes for woman missing after N.J. river rescue</a></h2>
+<p class="byline">By Anthony G. Attrino</p>
+<a class="shot" href="https://www.nj.com/burlington/2026/08/search-resumes-for-woman-who-disappeared-after-rescuing-girl-from-delaware-river-in-nj.html" tabindex="-1" aria-hidden="true"><img src="img/0ed876e23f60b352fa24e497ccf7ce379188b33e.jpg" alt="" width="480" height="316" loading="lazy" decoding="async"></a>
+<p>The search shifted from a rescue effort to a recovery mission after the woman did not resurface. <a class="lozenge more" href="https://www.nj.com/burlington/2026/08/search-resumes-for-woman-who-disappeared-after-rescuing-girl-from-delaware-river-in-nj.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:32:22+00:00" data-pub="12:32 AM EDT">Tuesday, August 25, 2026 at 12:32 AM EDT</time></small><a class="lozenge" href="subjects/housing.html">Housing</a></p>
-<p><small>KY / Northern Kentucky / <a href="https://www.nkytribune.com/">Northern Kentucky Tribune</a></small></p>
-<h2><a href="https://nkytribune.com/2026/08/point-arc-to-offer-speed-dating-event-for-individuals-with-i-dd-38-years-and-older/">Point/Arc to offer speed dating event for individuals with I/DD, 38 years and older</a></h2>
-<p class="byline"><small>By Judy Clabes</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.nkytribune.com/">Support</a></span></p>
-<p>Speed Dating event is an organized social event designed to help singles meet multiple potential romantic partners in a short amount of time, typically though a series of three-to-eight minute ‘mini-dates.’ The Point/Arc will host a Speed Dating event, Friday evening, August 28 from 6-8 p.m. for individuals with intellectual and developmental disabilities at the Zembrodt Education Center, located </p>
-<p class="more"><a href="https://nkytribune.com/2026/08/point-arc-to-offer-speed-dating-event-for-individuals-with-i-dd-38-years-and-older/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://wausaupilotandreview.com/2026/08/24/dnr-seeks-hunters-meat-processors-for-deer-donation-program/">Donate</a></aside>
+<p class="source"><a href="https://www.wausaupilotandreview.com"><strong>Wausau Pilot &amp; Review</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:53:44+00:00" data-pub="6:53 AM CDT">Tue, Aug 25 @ 6AM CDT</time><a class="lozenge place" href="/search?state=WI">Wisconsin</a><a class="lozenge place" href="/search?place=Wausau&state=WI">Wausau</a></p>
+<h2><a href="https://wausaupilotandreview.com/2026/08/25/wausau-weather-for-tuesday-and-wednesday-140/">Wausau weather for Tuesday and Wednesday</a></h2>
+<p class="byline">By Devon Flynn</p>
+<a class="shot" href="https://wausaupilotandreview.com/2026/08/25/wausau-weather-for-tuesday-and-wednesday-140/" tabindex="-1" aria-hidden="true"><img src="img/c77c8909bfb9513488333b0e137cbe6d532b4c23.jpg" alt="" width="336" height="251" loading="lazy" decoding="async"></a>
+<p>Wausau Pilot &amp; Review Today Mostly cloudy, with a high near 81. Light and variable wind becoming south southwest 8 to 13 mph in the morning. Winds could gust as high as 18 mph. Tonight A chance of showers and thunderstorms before 11pm, then showers likely and possibly a thunderstorm between 11pm and 1am. Mostly <a class="lozenge more" href="https://wausaupilotandreview.com/2026/08/25/wausau-weather-for-tuesday-and-wednesday-140/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:30:26+00:00" data-pub="12:30 AM EDT">Tuesday, August 25, 2026 at 12:30 AM EDT</time></small></p>
-<p><small>KY / Northern Kentucky / <a href="https://www.nkytribune.com/">Northern Kentucky Tribune</a></small></p>
-<h2><a href="https://nkytribune.com/2026/08/opinion-chris-reinersman-independence-till-remove-all-flock-safety-cameras-in-the-city/">Opinion – Chris Reinersman: Independence till remove all Flock Safety cameras in the city</a></h2>
-<p class="byline"><small>By Judy Clabes</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.nkytribune.com/">Support</a></span></p>
-<p>After much consideration, I have decided to move forward with the removal of all Flock Safety cameras in the City of Independence. I want to be clear that my position on the cameras themselves has not changed. I continue to believe our original decision to utilize this technology was a sound one. I do not</p>
-<p class="more"><a href="https://nkytribune.com/2026/08/opinion-chris-reinersman-independence-till-remove-all-flock-safety-cameras-in-the-city/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/politics.html">Politics</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://sgfcitizen.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://sgfcitizen.org/"><strong>Springfield Daily Citizen</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:45:00+00:00" data-pub="6:45 AM CDT">Tue, Aug 25 @ 6AM CDT</time><a class="lozenge place" href="/search?state=MO">Missouri</a><a class="lozenge place" href="/search?place=Springfield&state=MO">Springfield</a></p>
+<h2><a href="https://sgfcitizen.org/government/springfield-human-rights-commission-changes/">Council removes investigatory responsibilities of Springfield’s human rights commission</a></h2>
+<p class="byline">By Jack McGee</p>
+<a class="shot" href="https://sgfcitizen.org/government/springfield-human-rights-commission-changes/" tabindex="-1" aria-hidden="true"><img src="img/566f9140e76e567168f4c2937da132df14b766b4.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>Established in 1960, the Mayor&#x27;s Commission on Human Rights and Community Relations has long been unable to act on its findings. <a class="lozenge more" href="https://sgfcitizen.org/government/springfield-human-rights-commission-changes/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:29:39+00:00" data-pub="11:29 PM CDT">Monday, August 24, 2026 at 11:29 PM CDT</time></small><a class="lozenge" href="subjects/education.html">Education</a></p>
-<p><small>IL / Lansing / <a href="https://thelansingjournal.org/2018/09/05/a-newspaper-for-all-of-lansing/">Lansing Journal</a></small></p>
-<h2><a href="https://thelansingjournal.org/2026/08/24/illiana-christian-basketball-players-help-glenwood-academy-recover-from-tornado/">Illiana Christian basketball players help Glenwood Academy recover from tornado</a></h2>
-<p class="byline"><small>By Jon Bannister</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://thelansingjournal.org/2018/09/05/a-newspaper-for-all-of-lansing/">Support</a></span></p>
-<p>Students from Illiana Christian High School’s girls basketball program recently helped Glenwood Academy clean up after a tornado.</p>
-<p class="more"><a href="https://thelansingjournal.org/2026/08/24/illiana-christian-basketball-players-help-glenwood-academy-recover-from-tornado/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/opinion.html">Opinion</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://www.losangelesblade.com/2026/06/19/im-dead-is-the-queer-stand-up-show-giving-us-life/">Donate</a></aside>
+<p class="source"><a href="https://www.losangelesblade.com/"><strong>Los Angeles Blade</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:38:13+00:00" data-pub="4:38 AM PDT">Tue, Aug 25 @ 4AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://www.losangelesblade.com/2026/08/25/when-home-becomes-a-journey-migration-memory-and-the-african-diaspora/">When home becomes a journey: migration, memory, and the African diaspora</a></h2>
+<p class="byline">By Staff reports</p>
+<a class="shot" href="https://www.losangelesblade.com/2026/08/25/when-home-becomes-a-journey-migration-memory-and-the-african-diaspora/" tabindex="-1" aria-hidden="true"><img src="img/a03476958294906d8943a0a6176d2b4fc11a6507.jpg" alt="" width="480" height="300" loading="lazy" decoding="async"></a>
+<p>People carry pieces of previous lives wherever they go <a class="lozenge more" href="https://www.losangelesblade.com/2026/08/25/when-home-becomes-a-journey-migration-memory-and-the-african-diaspora/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:24:51+00:00" data-pub="9:24 PM PDT">Monday, August 24, 2026 at 9:24 PM PDT</time></small><a class="lozenge" href="subjects/education.html">Education</a></p>
-<p><small>CA / Long Beach / <a href="https://lbpost.com/">Long Beach Post</a></small></p>
-<h2><a href="https://lbpost.com/news/education/why-sex-abuse-survivors-and-broke-school-districts-are-at-odds-in-legislatures-final-days">Why sex abuse survivors and broke school districts are at odds in Legislature’s final days</a></h2>
-<p class="byline"><small>By Maya C. Miller, CalMatters</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://lbpost.com/?form=join">Become a member</a></span></p>
-<a class="shot" href="https://lbpost.com/news/education/why-sex-abuse-survivors-and-broke-school-districts-are-at-odds-in-legislatures-final-days" tabindex="-1" aria-hidden="true"><img src="img/a2cf827fd67c300dd8fe2a80d3cf34a1fc001de3.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>California counties and school districts have been flooded since 2019 with lawsuits from people who say they were sexually abused as children in schools, foster care and juvenile detention facilities. State lawmakers are struggling to balance counties’ and schools’ financial health with the incalculable cost of survivors’ trauma.</p>
-<p class="more"><a href="https://lbpost.com/news/education/why-sex-abuse-survivors-and-broke-school-districts-are-at-odds-in-legislatures-final-days">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/news.html">News</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.gpb.org/support/planned">Donate</a></aside>
+<p class="source"><a href="https://www.gpb.org/news"><strong>Georgia News Lab</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:34:07+00:00" data-pub="7:34 AM EDT">Tue, Aug 25 @ 7AM EDT</time><a class="lozenge place" href="/search?state=GA">Georgia</a><a class="lozenge place" href="/search?place=Atlanta&state=GA">Atlanta</a></p>
+<h2><a href="https://www.gpb.org/news/2026/08/25/did-climate-change-cause-heat-wave-most-likely-and-heres-why">Did climate change cause this heat wave? Most likely, and here&#x27;s why</a></h2>
+<p class="byline">By Sadie Babits</p>
+<a class="shot" href="https://www.gpb.org/news/2026/08/25/did-climate-change-cause-heat-wave-most-likely-and-heres-why" tabindex="-1" aria-hidden="true"><img src="img/865a6bf3a7988e8ef52c104ae70f4d983954081d.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>As the senior climate editor at NPR, when extreme weather impacts us, I often send out guidance to the newsroom to help everyone understand the role of climate change. Here&#x27;s what I tell them. <a class="lozenge more" href="https://www.gpb.org/news/2026/08/25/did-climate-change-cause-heat-wave-most-likely-and-heres-why">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:22:03+00:00" data-pub="11:22 PM CDT">Monday, August 24, 2026 at 11:22 PM CDT</time></small><a class="lozenge" href="subjects/news.html">News</a></p>
-<p><small>TX / Houston / <a href="https://aframnews.com/">African-American News and Issues</a></small></p>
-<h2><a href="https://aframnews.com/local/houston-civic-leaders-grambling-family-celebrate-attorney-barbara-hudsons-70th-birthday-and-legacy-of-service/">Houston Civic Leaders, Grambling Family Celebrate Attorney Barbara Hudson’s 70th Birthday and Legacy of Service</a></h2>
-<p class="byline"><small>By Anthony Shields</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.paypal.com/donate/?hosted_button_id=CSYL9VMKB2Y2E">Donate</a></span></p>
-<p>MISSOURI CITY, Texas — For Houston attorney Barbara J. Hudson, turning 70 was more than a birthday milestone. It was an opportunity for family, longtime friends, fellow Grambling State University alumni and Houston-area civic leaders to come together in recognition of a life shaped by law, relationships and service to the community. Hudson was honored Saturday,</p>
-<p class="more"><a href="https://aframnews.com/local/houston-civic-leaders-grambling-family-celebrate-attorney-barbara-hudsons-70th-birthday-and-legacy-of-service/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/news.html">News</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.zeffy.com/en-US/donation-form/donate-to-change-lives-2258">Donate</a></aside>
+<p class="source"><a href="https://texasmetronews.com/"><strong>Texas Metro News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:32:38+00:00" data-pub="6:32 AM CDT">Tue, Aug 25 @ 6AM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=https%3A&state=TX">https:</a></p>
+<h2><a href="https://texasmetronews.com/129627/we-dream-together/">We Dream Together</a></h2>
+<p class="byline">By Texas Metro News</p>
+<p>Their synergy is evident. With five years separating them, the Dailey sisters, Shelly Clark and Brea Mathis, have a connection sparked from their parents’ union, also linking their thoughts as businesswomen and entrepreneurs. <a class="lozenge more" href="https://texasmetronews.com/129627/we-dream-together/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:19:11+00:00" data-pub="9:19 PM PDT">Monday, August 24, 2026 at 9:19 PM PDT</time></small><a class="lozenge" href="subjects/politics.html">Politics</a></p>
-<p><small>OR / Ashland / <a href="https://ashland.news/">Ashland.news</a></small></p>
-<h2><a href="https://ashland.news/justice-for-hakiym-fight-to-free-wildland-firefighter-continues-2-years-after-conviction/">‘Justice for Hakiym’: Fight to free wildland firefighter continues 2 years after conviction</a></h2>
-<p class="byline"><small>By Bert Etling</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://ashland.news/donation/">Donate</a></span></p>
-<a class="shot" href="https://ashland.news/justice-for-hakiym-fight-to-free-wildland-firefighter-continues-2-years-after-conviction/" tabindex="-1" aria-hidden="true"><img src="img/aa66a8d7bf3db18983935cdc0cf005c63e0815b9.jpg" alt="" width="450" height="600" loading="lazy" decoding="async"></a>
-<p>The push to free former wildland firefighter Brian “Hakiym” Simpson continues two years after he was sentenced to nearly six years in prison after a June 2024 altercation with a fellow firefighter in Josephine County. Simpson says he acted in self-defense in what was alleged to be a racially motivated attack during a recovery day for Grayback Forestry firefighters at Paradise Ranch in Merlin.</p>
-<p class="more"><a href="https://ashland.news/justice-for-hakiym-fight-to-free-wildland-firefighter-continues-2-years-after-conviction/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/news.html">News</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://jacksonadvocateonline.com/support-us/">Donate</a></aside>
+<p class="source"><a href="https://jacksonadvocateonline.com/"><strong>Jackson Advocate</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:31:28+00:00" data-pub="6:31 AM CDT">Tue, Aug 25 @ 6AM CDT</time><a class="lozenge place" href="/search?state=MS">Mississippi</a><a class="lozenge place" href="/search?place=Jackson&state=MS">Jackson</a></p>
+<h2><a href="https://jacksonadvocateonline.com/notice-of-tax-collectors-sale-of-land-for-delinquent-taxes-first-judicial-district-of-hinds-county-mississippi-2/">Notice of Tax Collector’s Sale of Land for Delinquent Taxes, First Judicial District of Hinds County, Mississippi</a></h2>
+<p class="byline">By Jackson Advocate News Service</p>
+<a class="shot" href="https://jacksonadvocateonline.com/notice-of-tax-collectors-sale-of-land-for-delinquent-taxes-first-judicial-district-of-hinds-county-mississippi-2/" tabindex="-1" aria-hidden="true"><img src="img/9b61a89685bce6489d8dd1009f4c86a99274d1df.jpg" alt="" width="480" height="480" loading="lazy" decoding="async"></a>
+<p>DELINQUENT TAX SALE Notice of Tax Collector’s Sale of Land for Delinquent Taxes, First Judicial District of Hinds County, Mississippi. In Accordance with the provisions of Section 9, House <a class="lozenge more" href="https://jacksonadvocateonline.com/notice-of-tax-collectors-sale-of-land-for-delinquent-taxes-first-judicial-district-of-hinds-county-mississippi-2/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:18:51+00:00" data-pub="12:18 AM EDT">Tuesday, August 25, 2026 at 12:18 AM EDT</time></small></p>
-<p><small>MA / Plymouth / <a href="https://www.theplymouthindependent.org/">Plymouth Independent</a></small></p>
-<h2><a href="https://www.plymouthindependent.org/jacqueline-margaret-ahola-keane-87-retired-nurse/">Jacqueline Margaret Ahola Keane, 87, retired nurse</a></h2>
-<p class="byline"><small>By Admin</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.plymouthindependent.org/donate/">Donate</a></span></p>
-<p>Jacqueline “Jackie” Margaret Ahola Keane, who had a 32-year nursing career, died peacefully at her home after an unexpected illness. She was 87. Born Feb 15, 1939 to the late Alice &amp; Theadore Ahola, she was raised in Quincy with her twin sister, was involved in many clubs during her school years, and enjoyed a</p>
-<p class="more"><a href="https://www.plymouthindependent.org/jacqueline-margaret-ahola-keane-87-retired-nurse/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/politics.html">Politics</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://ctmirror.donorsupport.co/page/FUNDVURKCRQ">Donate</a></aside>
+<p class="source"><a href="https://ctmirror.org/"><strong>The Connecticut Mirror</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:30:00+00:00" data-pub="7:30 AM EDT">Tue, Aug 25 @ 7AM EDT</time><a class="lozenge place" href="/search?state=CT">Connecticut</a><a class="lozenge place" href="/search?place=Hartford&state=CT">Hartford</a></p>
+<h2><a href="https://ctmirror.org/2026/08/25/immigration-arrests-danbury/">ICE makes arrests in Danbury as activists document agent activity</a></h2>
+<p class="byline">By Connecticut Public Radio</p>
+<a class="shot" href="https://ctmirror.org/2026/08/25/immigration-arrests-danbury/" tabindex="-1" aria-hidden="true"><img src="img/faa283d5189bc50bc36a30548755a39d5efa840c.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Witnesses, including a CT Public reporter, saw 2 arrests in Danbury&#x27;s Kennedy Park. An ICE agent was seen pushing a person who was recording. <a class="lozenge more" href="https://ctmirror.org/2026/08/25/immigration-arrests-danbury/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:18:10+00:00" data-pub="12:18 AM EDT">Tuesday, August 25, 2026 at 12:18 AM EDT</time></small><a class="lozenge" href="subjects/news.html">News</a></p>
-<p><small>OH / Columbus / <a href="https://www.thelantern.com/">The Lantern</a></small></p>
-<h2><a href="https://www.thelantern.com/2026/08/les-wexner-steps-down-from-university-medical-board-remains-as-chair-emeritus/">Les Wexner steps down from  university medical board, remains as chair emeritus</a></h2>
-<p class="byline"><small>By Reegan Davis</small><span class="aside"><a class="lozenge" href="tags/college.html">College</a><a class="lozenge give" href="https://www.giveto.osu.edu/makeagift/OnlineGivingDonation.aspx?Source_Code=WA&amp;Fund=312878">Donate</a></span></p>
-<a class="shot" href="https://www.thelantern.com/2026/08/les-wexner-steps-down-from-university-medical-board-remains-as-chair-emeritus/" tabindex="-1" aria-hidden="true"><img src="img/862c97a7e6729367b344f388f0221a89f280923c.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Les Wexner has stepped down as chair of the Wexner Medical Center Board, but is not entirely leaving the Board of Trustees. Wexner will stay on the board as chair emeritus – meaning he will remain on the board without being a voting member, university officials confirmed. The move follows months of public scrutiny involving</p>
-<p class="more"><a href="https://www.thelantern.com/2026/08/les-wexner-steps-down-from-university-medical-board-remains-as-chair-emeritus/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/education.html">Education</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://sgfcitizen.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://sgfcitizen.org/"><strong>Springfield Daily Citizen</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:30:00+00:00" data-pub="6:30 AM CDT">Tue, Aug 25 @ 6AM CDT</time><a class="lozenge place" href="/search?state=MO">Missouri</a><a class="lozenge place" href="/search?place=Springfield&state=MO">Springfield</a></p>
+<h2><a href="https://sgfcitizen.org/schools/k12-education/cox-college-healthcare-alliance/">Milestone marked: All levels of healthcare Alliance students attend first day of school on the same campus</a></h2>
+<p class="byline">By Joe Hadsall</p>
+<a class="shot" href="https://sgfcitizen.org/schools/k12-education/cox-college-healthcare-alliance/" tabindex="-1" aria-hidden="true"><img src="img/6dad3d44b0bccefc631e5ca803a299d3d2b5f4d5.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>A landmark healthcare education partnership involving Springfield Public Schools, Ozarks Technical Community College, Missouri State University, and CoxHealth reached a major milestone on Monday as students from all three institutions attended classes together on a shared campus following a $15 million renovation. <a class="lozenge more" href="https://sgfcitizen.org/schools/k12-education/cox-college-healthcare-alliance/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:14:57+00:00" data-pub="12:14 AM EDT">Tuesday, August 25, 2026 at 12:14 AM EDT</time></small><a class="lozenge" href="subjects/environment.html">Environment</a></p>
-<p><small>MA / Plymouth / <a href="https://www.theplymouthindependent.org/">Plymouth Independent</a></small></p>
-<h2><a href="https://www.plymouthindependent.org/another-nuclear-reactor-in-plymouth-be-careful-what-you-wish-for/">Another nuclear reactor in Plymouth? Be careful what you wish for.</a></h2>
-<p class="byline"><small>By Mark Pothier - Independent Staff</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.plymouthindependent.org/donate/">Donate</a></span></p>
-<a class="shot" href="https://www.plymouthindependent.org/another-nuclear-reactor-in-plymouth-be-careful-what-you-wish-for/" tabindex="-1" aria-hidden="true"><img src="img/98a9498790321326920831f16869f12cd366545a.jpg" alt="" width="480" height="288" loading="lazy" decoding="async"></a>
-<p>This is the second installment of a two-part opinion column on nuclear power in Plymouth. How soon we forget. Or maybe we didn’t know much to begin with. Those two thoughts pop into my head when I hear people – especially politicians – speak in glowing terms about the prospect of building a new nuclear</p>
-<p class="more"><a href="https://www.plymouthindependent.org/another-nuclear-reactor-in-plymouth-be-careful-what-you-wish-for/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/business.html">Business</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://lailluminator.com/">Support</a></aside>
+<p class="source"><a href="https://lailluminator.com/"><strong>Lousiana Illuminator</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:22:28+00:00" data-pub="6:22 AM CDT">Tue, Aug 25 @ 6AM CDT</time><a class="lozenge place" href="/search?state=LA">Louisiana</a></p>
+<h2><a href="https://lailluminator.com/2026/08/25/repub/social-media-addiction/">Mom advocates for more social media regulations as states sue Meta</a></h2>
+<p class="byline">By McKenna Horsley</p>
+<a class="shot" href="https://lailluminator.com/2026/08/25/repub/social-media-addiction/" tabindex="-1" aria-hidden="true"><img src="img/b12384cda6e9930e03ef411e0a4cd31052b28fb4.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>A Kentucky mom is closely watching a court case against Meta that could determine if the social media company knowingly designed addictive products that are harmful to children. <a class="lozenge more" href="https://lailluminator.com/2026/08/25/repub/social-media-addiction/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:11:38+00:00" data-pub="11:11 PM CDT">Monday, August 24, 2026 at 11:11 PM CDT</time></small><a class="lozenge" href="subjects/politics.html">Politics</a></p>
-<p><small>TX / Houston / <a href="https://aframnews.com/">African-American News and Issues</a></small></p>
-<h2><a href="https://aframnews.com/politics/texas-orders-3-budget-request-cuts-what-it-could-mean-for-hbcus-and-black-communities/">Texas Orders 3% Budget-Request Cuts: What It Could Mean for HBCUs and Black Communities</a></h2>
-<p class="byline"><small>By African American News Editorial Staff</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.paypal.com/donate/?hosted_button_id=CSYL9VMKB2Y2E">Donate</a></span></p>
-<p>AUSTIN, Texas — Texas’ next state budget fight is already taking shape, and the decisions being made before lawmakers return to the Capitol could have significant consequences for historically Black colleges and universities, working families and communities across the state. Gov. Greg Abbott, Lt. Gov. Dan Patrick and Texas House Speaker Dustin Burrows have directed state</p>
-<p class="more"><a href="https://aframnews.com/politics/texas-orders-3-budget-request-cuts-what-it-could-mean-for-hbcus-and-black-communities/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/news.html">News</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.zeffy.com/en-US/donation-form/donate-to-change-lives-2258">Donate</a></aside>
+<p class="source"><a href="https://texasmetronews.com/"><strong>Texas Metro News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:20:49+00:00" data-pub="6:20 AM CDT">Tue, Aug 25 @ 6AM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=https%3A&state=TX">https:</a></p>
+<h2><a href="https://texasmetronews.com/129623/congressional-black-caucus-condemns-scotus-ruling-clearing-path-for-trumps-attacks-on-mail-in-ballots-ahead-of-november-elections/">Congressional Black Caucus Condemns SCOTUS Ruling Clearing Path for Trump’s Attacks on Mail-in Ballots Ahead of November Elections</a></h2>
+<p class="byline">By Texas Metro News</p>
+<p>Congressional Black Caucus Chair Yvette D. Clarke (NY-09) and members of the Congressional Black Caucus issued the following statement: <a class="lozenge more" href="https://texasmetronews.com/129623/congressional-black-caucus-condemns-scotus-ruling-clearing-path-for-trumps-attacks-on-mail-in-ballots-ahead-of-november-elections/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:09:21+00:00" data-pub="11:09 PM CDT">Monday, August 24, 2026 at 11:09 PM CDT</time></small><a class="lozenge" href="subjects/politics.html">Politics</a></p>
-<p><small>TX / Houston / <a href="https://queondamagazine.com/">¡Qué Onda! Houston</a></small></p>
-<h2><a href="https://queondamagazine.com/man-accused-of-stealing-suv-with-2-children-inside-leads-police-on-17-mile-chase-hpd-says/">Man accused of stealing SUV with 2 children inside leads police on 17-mile chase, HPD says</a></h2>
-<p class="byline"><small>By Precious F. Moore</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://queondamagazine.com/">Support</a></span></p>
-<p>HOUSTON, Texas (KTRK) — Two children are home safe after police say a man stole their father’s SUV with them still inside, then led officers on a 17-mile chase through Houston that reached speeds of more than 100 mph. The suspect, Robert Gonzales, was arrested after the stolen SUV collided with another vehicle and crashed […] La entrada Man accused of stealing SUV with 2 children inside leads poli</p>
-<p class="more"><a href="https://queondamagazine.com/man-accused-of-stealing-suv-with-2-children-inside-leads-police-on-17-mile-chase-hpd-says/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/politics.html">Politics</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.pressherald.com/subscription-plans/">Subscribe</a></aside>
+<p class="source"><a href="https://www.pressherald.com/"><strong>Portland Press Herald</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:18:19+00:00" data-pub="7:18 AM EDT">Tue, Aug 25 @ 7AM EDT</time><a class="lozenge place" href="/search?state=ME">Maine</a><a class="lozenge place" href="/search?place=Portland&state=ME">Portland</a></p>
+<h2><a href="https://www.pressherald.com/2026/08/25/police-searching-for-potentially-armed-suspect-in-springvale/">Police searching for potentially armed suspects in Springvale</a></h2>
+<p class="byline">By Staff report</p>
+<p>Sanford police say someone shot at an officer during a traffic stop early Tuesday. Residents who see anything suspicious are asked to call 911. <a class="lozenge more" href="https://www.pressherald.com/2026/08/25/police-searching-for-potentially-armed-suspect-in-springvale/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 </div>
 <p><a id="more" href="feed-17.html">More stories</a></p>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="index.html">Today&#x27;s news</a> · <a href="map.html">Map</a> · <a href="catalog.html">Newsrooms</a> · <a href="big-stories.html">Big Stories</a> · <a href="story-links.html">Story Links</a> · <a href="resources.html">Resources</a> · <a href="text/">Plain text edition</a> · <a href="feeds.html">RSS Feeds</a> · <a href="about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="map.html">Map</a> · <a href="catalog.html">Newsrooms</a> · <a href="big-stories.html">Big Stories</a> · <a href="story-links.html">Story Links</a> · <a href="resources.html">Resources</a> · <a href="text/">Plain text edition</a> · <a href="feeds.html">RSS Feeds</a> · <a href="about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -394,6 +465,47 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>

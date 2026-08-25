@@ -13,12 +13,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(../fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -27,22 +40,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -50,19 +69,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -75,7 +126,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -93,7 +144,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="../index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="../masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -106,7 +157,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="../subjects/news.html">News</a></li><li><a href="../subjects/politics.html">Politics</a></li><li><a href="../subjects/opinion.html">Opinion</a></li><li><a href="../subjects/health.html">Health</a></li><li><a href="../subjects/environment.html">Environment</a></li><li><a href="../subjects/education.html">Education</a></li><li><a href="../subjects/business.html">Business</a></li><li><a href="../subjects/housing.html">Housing</a></li><li><a href="../subjects/sports.html">Sports</a></li><li><a href="../subjects/food.html">Food</a></li><li><a href="../subjects/arts.html">Arts</a></li></ul></nav>
@@ -121,264 +172,267 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <main id="main">
 <div id="feed-items">
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:00:00+00:00" data-pub="12:00 AM EDT">Tuesday, August 25, 2026 at 12:00 AM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>PA / Philadelphia / <a href="https://www.phillytrib.com/">The Philadelphia Tribune</a></small></p>
-<h2><a href="https://www.phillytrib.com/news/health/science-backed-health-benefits-of-tea-from-longevity-to-brain-health/article_085c9988-0c0e-432e-9526-a90792e0898d.html">Science-backed health benefits of tea, from longevity to brain health</a></h2>
-<p class="byline"><small>By Anahad O’Connor</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://phillytrib.com/subscribe">Subscribe</a></span></p>
-<a class="shot" href="https://www.phillytrib.com/news/health/science-backed-health-benefits-of-tea-from-longevity-to-brain-health/article_085c9988-0c0e-432e-9526-a90792e0898d.html" tabindex="-1" aria-hidden="true"><img src="../img/2beba4875e0324d4a4f0255f05ec199b1199634e.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
-<p>After water, tea is the world’s most popular beverage, consumed by nearly two-thirds of people across the globe.</p>
-<p class="more"><a href="https://www.phillytrib.com/news/health/science-backed-health-benefits-of-tea-from-longevity-to-brain-health/article_085c9988-0c0e-432e-9526-a90792e0898d.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://phillytrib.com/subscribe">Subscribe</a></aside>
+<p class="source"><a href="https://www.phillytrib.com/"><strong>The Philadelphia Tribune</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T12:00:00+00:00" data-pub="8:00 AM EDT">Tue, Aug 25 @ 8AM EDT</time><a class="lozenge place" href="/search?state=PA">Pennsylvania</a><a class="lozenge place" href="/search?place=Philadelphia&state=PA">Philadelphia</a></p>
+<h2><a href="https://www.phillytrib.com/lifestyle/book-review-mahalia-jackson-moving-on-up-a-little-higher-the-story-of-a-civil/article_a76a02ab-fbdd-4ec2-904f-8decd2bee365.html">Book Review: &#x27;Mahalia Jackson, Moving On Up a Little Higher&#x27;: The story of a Civil Rights influencer in the forefront</a></h2>
+<p class="byline">By Terri Schlichenmeyer Tribune Correspondent</p>
+<a class="shot" href="https://www.phillytrib.com/lifestyle/book-review-mahalia-jackson-moving-on-up-a-little-higher-the-story-of-a-civil/article_a76a02ab-fbdd-4ec2-904f-8decd2bee365.html" tabindex="-1" aria-hidden="true"><img src="../img/f27c1b8c3dd4340350bc4002bb2de08ed592434d.jpg" alt="" width="300" height="450" loading="lazy" decoding="async"></a>
+<p>Your actual job is one thing. <a class="lozenge more" href="https://www.phillytrib.com/lifestyle/book-review-mahalia-jackson-moving-on-up-a-little-higher-the-story-of-a-civil/article_a76a02ab-fbdd-4ec2-904f-8decd2bee365.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:00:00+00:00" data-pub="12:00 AM EDT">Tuesday, August 25, 2026 at 12:00 AM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>PA / Philadelphia / <a href="https://www.phillytrib.com/">The Philadelphia Tribune</a></small></p>
-<h2><a href="https://www.phillytrib.com/news/health/how-to-gauge-when-to-make-eye-contact/article_b626fc6e-f4fc-48b3-95f1-45625f5f1d5c.html">How to gauge when to make eye contact</a></h2>
-<p class="byline"><small>By Terry Ward</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://phillytrib.com/subscribe">Subscribe</a></span></p>
-<a class="shot" href="https://www.phillytrib.com/news/health/how-to-gauge-when-to-make-eye-contact/article_b626fc6e-f4fc-48b3-95f1-45625f5f1d5c.html" tabindex="-1" aria-hidden="true"><img src="../img/2ac0da3e9031f635e22d183687356b1a1ffafc70.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
-<p>“Look at me when I’m talking to you.”</p>
-<p class="more"><a href="https://www.phillytrib.com/news/health/how-to-gauge-when-to-make-eye-contact/article_b626fc6e-f4fc-48b3-95f1-45625f5f1d5c.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://haitiantimes.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://haitiantimes.com/florida-news/"><strong>The Haitian Times</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:58:49+00:00" data-pub="7:58 AM EDT">Tue, Aug 25 @ 7AM EDT</time><a class="lozenge place" href="/search?state=FL">Florida</a><a class="lozenge place" href="/search?place=Miami&state=FL">Miami</a></p>
+<h2><a href="https://haitiantimes.com/2026/08/25/haiti-gonaives-cleanup-program/">Gonaïves launches cleanup program to tackle persistent waste problem</a></h2>
+<p class="byline">By Edxon Francisque and Onès Joseph</p>
+<a class="shot" href="https://haitiantimes.com/2026/08/25/haiti-gonaives-cleanup-program/" tabindex="-1" aria-hidden="true"><img src="../img/dd688170b5a0d918f9e4b6f613dcfad278f59435.jpg" alt="" width="480" height="216" loading="lazy" decoding="async"></a>
+<p>Some workers and project supervisors wear yellow shirts, while others wear white shirts bearing the words “Katye Pa m Pi Pwòp,” Haitian Creole for “My Neighborhood Is Cleaner.” The cleanup has taken on a community-contest atmosphere, but organizers say the goal extends beyond making streets look cleaner. They want to establish a more regular waste-collection system while encouraging residents to c <a class="lozenge more" href="https://haitiantimes.com/2026/08/25/haiti-gonaives-cleanup-program/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:00:00+00:00" data-pub="12:00 AM EDT">Tuesday, August 25, 2026 at 12:00 AM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>PA / Philadelphia / <a href="https://www.phillytrib.com/">The Philadelphia Tribune</a></small></p>
-<h2><a href="https://www.phillytrib.com/news/health/tips-to-be-fit-protecting-vision-in-philadelphia-s-black-community/article_809289d6-1080-4e47-879b-700b4523062b.html">Tips To Be Fit: Protecting vision in Philadelphia’s Black community</a></h2>
-<p class="byline"><small>By Vince Faust</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://phillytrib.com/subscribe">Subscribe</a></span></p>
-<p>Glaucoma is one of those health conditions that does not make a lot of noise. It usually does not cause sudden pain, and it often develops without obvious warning signs. Yet it is one of the leading causes of blindness</p>
-<p class="more"><a href="https://www.phillytrib.com/news/health/tips-to-be-fit-protecting-vision-in-philadelphia-s-black-community/article_809289d6-1080-4e47-879b-700b4523062b.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.zeffy.com/en-US/donation-form/donate-to-change-lives-2258">Donate</a></aside>
+<p class="source"><a href="https://texasmetronews.com/"><strong>Texas Metro News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:32:38+00:00" data-pub="6:32 AM CDT">Tue, Aug 25 @ 6AM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=https%3A&state=TX">https:</a></p>
+<h2><a href="https://texasmetronews.com/129627/we-dream-together/">We Dream Together</a></h2>
+<p class="byline">By Texas Metro News</p>
+<p>Their synergy is evident. With five years separating them, the Dailey sisters, Shelly Clark and Brea Mathis, have a connection sparked from their parents’ union, also linking their thoughts as businesswomen and entrepreneurs. <a class="lozenge more" href="https://texasmetronews.com/129627/we-dream-together/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:00:00+00:00" data-pub="12:00 AM EDT">Tuesday, August 25, 2026 at 12:00 AM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>PA / Philadelphia / <a href="https://www.phillytrib.com/">The Philadelphia Tribune</a></small></p>
-<h2><a href="https://www.phillytrib.com/news/health/false-claims-about-miscarriage-risk-from-covid-19-vaccines-are-spreading-online/article_b7730b45-d067-4cc6-9c8a-1a7e1ca77c5b.html">False claims about miscarriage risk from COVID-19 vaccines are spreading online</a></h2>
-<p class="byline"><small>By Deidre Mcphillips</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://phillytrib.com/subscribe">Subscribe</a></span></p>
-<a class="shot" href="https://www.phillytrib.com/news/health/false-claims-about-miscarriage-risk-from-covid-19-vaccines-are-spreading-online/article_b7730b45-d067-4cc6-9c8a-1a7e1ca77c5b.html" tabindex="-1" aria-hidden="true"><img src="../img/c909bd3f17ebfa2f083a1b27f9a6d00fe6f732c9.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
-<p>Numerous studies have shown that COVID-19 vaccines are safe during pregnancy, but Republican senators have recently stirred up false and misleading claims that are now spreading on social media.</p>
-<p class="more"><a href="https://www.phillytrib.com/news/health/false-claims-about-miscarriage-risk-from-covid-19-vaccines-are-spreading-online/article_b7730b45-d067-4cc6-9c8a-1a7e1ca77c5b.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://jacksonadvocateonline.com/support-us/">Donate</a></aside>
+<p class="source"><a href="https://jacksonadvocateonline.com/"><strong>Jackson Advocate</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:31:28+00:00" data-pub="6:31 AM CDT">Tue, Aug 25 @ 6AM CDT</time><a class="lozenge place" href="/search?state=MS">Mississippi</a><a class="lozenge place" href="/search?place=Jackson&state=MS">Jackson</a></p>
+<h2><a href="https://jacksonadvocateonline.com/notice-of-tax-collectors-sale-of-land-for-delinquent-taxes-first-judicial-district-of-hinds-county-mississippi-2/">Notice of Tax Collector’s Sale of Land for Delinquent Taxes, First Judicial District of Hinds County, Mississippi</a></h2>
+<p class="byline">By Jackson Advocate News Service</p>
+<a class="shot" href="https://jacksonadvocateonline.com/notice-of-tax-collectors-sale-of-land-for-delinquent-taxes-first-judicial-district-of-hinds-county-mississippi-2/" tabindex="-1" aria-hidden="true"><img src="../img/9b61a89685bce6489d8dd1009f4c86a99274d1df.jpg" alt="" width="480" height="480" loading="lazy" decoding="async"></a>
+<p>DELINQUENT TAX SALE Notice of Tax Collector’s Sale of Land for Delinquent Taxes, First Judicial District of Hinds County, Mississippi. In Accordance with the provisions of Section 9, House <a class="lozenge more" href="https://jacksonadvocateonline.com/notice-of-tax-collectors-sale-of-land-for-delinquent-taxes-first-judicial-district-of-hinds-county-mississippi-2/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:00:00+00:00" data-pub="12:00 AM EDT">Tuesday, August 25, 2026 at 12:00 AM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>PA / Philadelphia / <a href="https://www.phillytrib.com/">The Philadelphia Tribune</a></small></p>
-<h2><a href="https://www.phillytrib.com/nyt/i-tested-a-popular-ai-slop-detector-it-felt-empowering/article_855dd340-05e2-45ba-94fc-c738e272f8b0.html">I tested a popular AI slop detector. It felt empowering.</a></h2>
-<p class="byline"><small>By Brian X. Chen</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://phillytrib.com/subscribe">Subscribe</a></span></p>
-<a class="shot" href="https://www.phillytrib.com/nyt/i-tested-a-popular-ai-slop-detector-it-felt-empowering/article_855dd340-05e2-45ba-94fc-c738e272f8b0.html" tabindex="-1" aria-hidden="true"><img src="../img/87d6d5873b6e89936df85e1f6e6d2fcaa88ece7f.jpg" alt="" width="300" height="450" loading="lazy" decoding="async"></a>
-<p>Recently, as I was scrolling through my phone, I realized I was suffering from a new kind of fatigue: slop-induced burnout. Almost all the posts I was reading on social media were riddled with bullet points, emoji and em dashes.</p>
-<p class="more"><a href="https://www.phillytrib.com/nyt/i-tested-a-popular-ai-slop-detector-it-felt-empowering/article_855dd340-05e2-45ba-94fc-c738e272f8b0.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.zeffy.com/en-US/donation-form/donate-to-change-lives-2258">Donate</a></aside>
+<p class="source"><a href="https://texasmetronews.com/"><strong>Texas Metro News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:20:49+00:00" data-pub="6:20 AM CDT">Tue, Aug 25 @ 6AM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=https%3A&state=TX">https:</a></p>
+<h2><a href="https://texasmetronews.com/129623/congressional-black-caucus-condemns-scotus-ruling-clearing-path-for-trumps-attacks-on-mail-in-ballots-ahead-of-november-elections/">Congressional Black Caucus Condemns SCOTUS Ruling Clearing Path for Trump’s Attacks on Mail-in Ballots Ahead of November Elections</a></h2>
+<p class="byline">By Texas Metro News</p>
+<p>Congressional Black Caucus Chair Yvette D. Clarke (NY-09) and members of the Congressional Black Caucus issued the following statement: <a class="lozenge more" href="https://texasmetronews.com/129623/congressional-black-caucus-condemns-scotus-ruling-clearing-path-for-trumps-attacks-on-mail-in-ballots-ahead-of-november-elections/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:00:00+00:00" data-pub="12:00 AM EDT">Tuesday, August 25, 2026 at 12:00 AM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>PA / Philadelphia / <a href="https://www.phillytrib.com/">The Philadelphia Tribune</a></small></p>
-<h2><a href="https://www.phillytrib.com/nyt/satellite-advances-are-changing-the-game-for-ukraine/article_6b7a830a-9710-43ee-b852-98a4555a6f3c.html">Satellite advances are changing the game for Ukraine</a></h2>
-<p class="byline"><small>By Michael Schwirtz</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://phillytrib.com/subscribe">Subscribe</a></span></p>
-<a class="shot" href="https://www.phillytrib.com/nyt/satellite-advances-are-changing-the-game-for-ukraine/article_6b7a830a-9710-43ee-b852-98a4555a6f3c.html" tabindex="-1" aria-hidden="true"><img src="../img/0d4f6051c8323c2092431a89ba07184ecb388b97.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
-<p>The Russian drone pilots had bedded down for the night. Their white vehicle was parked in the driveway of a small house in occupied southern Ukraine.</p>
-<p class="more"><a href="https://www.phillytrib.com/nyt/satellite-advances-are-changing-the-game-for-ukraine/article_6b7a830a-9710-43ee-b852-98a4555a6f3c.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://buy.stripe.com/8wM4gOal085h3Wo7ss">Donate</a></aside>
+<p class="source"><a href="https://nycaribnews.com/"><strong>New York Carib News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:54:00+00:00" data-pub="6:54 AM EDT">Tue, Aug 25 @ 6AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=New+York+City&state=NY">New York City</a></p>
+<h2><a href="https://nycaribnews.com/us-plans-historic-mass-revocation-of-visas-for-asylum-seekers/">US Plans Historic Mass Revocation of Visas for Asylum Seekers</a></h2>
+<p class="byline">By nycaribnews</p>
+<p>The United States is preparing to revoke the visas of as many as 200,000 foreign nationals who entered the country on business or tourist visas before seeking asylum, in what could become the largest mass visa cancellation in the nation’s history. The planned action is part of the Trump administration’s broader effort to tighten immigration <a class="lozenge more" href="https://nycaribnews.com/us-plans-historic-mass-revocation-of-visas-for-asylum-seekers/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T03:45:02+00:00" data-pub="11:45 PM EDT">Monday, August 24, 2026 at 11:45 PM EDT</time></small></p>
-<p><small>FL / Tampa / <a href="https://www.flcourier.com/">Florida Courier</a></small></p>
-<h2><a href="https://www.flcourier.com/online_features/press_releases/kitchen-goodies-4-u-llc-reaffirms-commitment-to-fast-customer-focused-online-shopping-for-home/article_3d2bcee3-efb3-58f8-b5fa-a53d3fc24945.html">Kitchen Goodies 4 U LLC Reaffirms Commitment to Fast, Customer-Focused Online Shopping for Home Cooks Across the United States</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.flcourier.com/entertainment/nedra-talley-ross-the-last-surviving-member-of-the-1960s-bee-hived-pop-band-the/article_34f17ef4-8731-45d4-b9d3-18c6388ce6ad.html">Become a member</a></span></p>
-<p class="more"><a href="https://www.flcourier.com/online_features/press_releases/kitchen-goodies-4-u-llc-reaffirms-commitment-to-fast-customer-focused-online-shopping-for-home/article_3d2bcee3-efb3-58f8-b5fa-a53d3fc24945.html">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Also in <a href="https://www.miamitimesonline.com/online_features/press_releases/kitchen-goodies-4-u-llc-reaffirms-commitment-to-fast-customer-focused-online-shopping-for-home/article_4fd44b7a-6f51-55f8-a36b-d17d3b9ebb6e.html">The Miami Times</a> · <a href="https://www.insightnews.com/online_features/press_releases/kitchen-goodies-4-u-llc-reaffirms-commitment-to-fast-customer-focused-online-shopping-for-home/article_e55798df-6a46-547c-9932-21c57159bcc0.html">Insight News</a> · <a href="https://www.daytonatimes.com/online_features/press_releases/kitchen-goodies-4-u-llc-reaffirms-commitment-to-fast-customer-focused-online-shopping-for-home/article_5de5af51-8495-5d76-a91f-74cb6d7f518d.html">Daytona Times</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://buy.stripe.com/8wM4gOal085h3Wo7ss">Donate</a></aside>
+<p class="source"><a href="https://nycaribnews.com/"><strong>New York Carib News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:48:12+00:00" data-pub="6:48 AM EDT">Tue, Aug 25 @ 6AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=New+York+City&state=NY">New York City</a></p>
+<h2><a href="https://nycaribnews.com/eminence-by-beenie-man-no-1-on-itunes-chart/">‘Eminence’ by Beenie Man No 1 On Itunes Chart</a></h2>
+<p class="byline">By nycaribnews</p>
+<p>Dancehall veteran Beenie Man has returned to the top of the US digital music charts, with his latest album Eminencereaching No. 1 on the US iTunes Albums chart just days after its release. The achievement marks another significant moment in the career of the Jamaican deejay, whose 20th studio album was released through Billboard King. Eminence moved ahead <a class="lozenge more" href="https://nycaribnews.com/eminence-by-beenie-man-no-1-on-itunes-chart/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T03:44:15+00:00" data-pub="10:44 PM CDT">Monday, August 24, 2026 at 10:44 PM CDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>OK / Oklahoma City / <a href="https://blackchronicle.com/">Black Chronicle</a></small></p>
-<h2><a href="https://blackchronicle.com/education/coalition-sues-trump-over-foreign-student-visa-policy/">Coalition sues Trump over foreign student visa policy</a></h2>
-<p class="byline"><small>By Black Chronicle News Service</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://blackchronicle.com/product/the-black-chronicle-newspaper-subscription-now-with-the-all-new-tbc-magazine/">Subscribe</a></span></p>
-<a class="shot" href="https://blackchronicle.com/education/coalition-sues-trump-over-foreign-student-visa-policy/" tabindex="-1" aria-hidden="true"><img src="../img/436e5b4f6c18d61d78d348cdc22f9ef71dfdb9c4.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>(The Center Square) – A coalition of education and union groups sued the Trump administration, seeking to block a rule that would impose time limits on visas for international students, exchange visitors and foreign journalists. […] Continue reading with a Black Chronicle subscription. Purchase The Black Chronicle Newspaper Subscription – Now with the All-New TBC Magazine! or The Black Chronicle N</p>
-<p class="more"><a href="https://blackchronicle.com/education/coalition-sues-trump-over-foreign-student-visa-policy/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://blackchronicle.com/product/the-black-chronicle-newspaper-subscription-now-with-the-all-new-tbc-magazine/">Subscribe</a></aside>
+<p class="source"><a href="https://blackchronicle.com/"><strong>Black Chronicle</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:44:34+00:00" data-pub="5:44 AM CDT">Tue, Aug 25 @ 5AM CDT</time><a class="lozenge place" href="/search?state=OK">Oklahoma</a><a class="lozenge place" href="/search?place=Oklahoma+City&state=OK">Oklahoma City</a></p>
+<h2><a href="https://blackchronicle.com/midwest/illinois/judge-clears-tracks-for-trucker-class-action-against-union-pacific/">Judge clears tracks for trucker class action against Union Pacific</a></h2>
+<p class="byline">By Black Chronicle News Service</p>
+<a class="shot" href="https://blackchronicle.com/midwest/illinois/judge-clears-tracks-for-trucker-class-action-against-union-pacific/" tabindex="-1" aria-hidden="true"><img src="../img/31320d15d857b7c696bd5ab0f73a34b7fabafbe6.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>(Legal Newsline)—A federal judge has cleared the way for potentially more than 22,000 truck drivers to move ahead with a class action lawsuit potentially worth many millions of dollars against Union Pacific Railroad […] Continue reading with a Black Chronicle subscription. Purchase The Black Chronicle Newspaper Subscription – Now with the All-New TBC Magazine! or The Black Chronicle Newspaper Su <a class="lozenge more" href="https://blackchronicle.com/midwest/illinois/judge-clears-tracks-for-trucker-class-action-against-union-pacific/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T03:44:00+00:00" data-pub="11:44 PM EDT">Monday, August 24, 2026 at 11:44 PM EDT</time></small></p>
-<p><small>FL / Tampa / <a href="https://www.flcourier.com/">Florida Courier</a></small></p>
-<h2><a href="https://www.flcourier.com/online_features/press_releases/greentree-hospitality-group-ltd-reports-second-quarter-of-2026-financial-results/article_6e7fff1c-ac65-5083-aca1-8dec30988252.html">GreenTree Hospitality Group Ltd. Reports Second Quarter of 2026 Financial Results</a></h2>
-<p class="byline"><small>By By GreenTree Hospitality Group Ltd.</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.flcourier.com/entertainment/nedra-talley-ross-the-last-surviving-member-of-the-1960s-bee-hived-pop-band-the/article_34f17ef4-8731-45d4-b9d3-18c6388ce6ad.html">Become a member</a></span></p>
-<p>Total revenues decreased by 18.7% year over year to RMB235.1 million (US$34.7 million)[1].Income from operations was RMB48.2 million (US$7.1 million)[1] compared to RMB49.2 million for the second quarter of 2025.Net income was RMB21.3 million (US$3.1 million)[1] compared to RMB160.0 million</p>
-<p class="more"><a href="https://www.flcourier.com/online_features/press_releases/greentree-hospitality-group-ltd-reports-second-quarter-of-2026-financial-results/article_6e7fff1c-ac65-5083-aca1-8dec30988252.html">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Also in <a href="https://www.miamitimesonline.com/online_features/press_releases/greentree-hospitality-group-ltd-reports-second-quarter-of-2026-financial-results/article_2bdc0945-89fe-5913-af85-13a3196af77a.html">The Miami Times</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://buy.stripe.com/8wM4gOal085h3Wo7ss">Donate</a></aside>
+<p class="source"><a href="https://nycaribnews.com/"><strong>New York Carib News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:42:35+00:00" data-pub="6:42 AM EDT">Tue, Aug 25 @ 6AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=New+York+City&state=NY">New York City</a></p>
+<h2><a href="https://nycaribnews.com/jamaica-celene-hall-crowned-miss-universe-jamaica-2026/">Jamaica – Celene Hall Crowned Miss Universe Jamaica 2026</a></h2>
+<p class="byline">By nycaribnews</p>
+<p>Portland native Celene Hall has been crowned Miss Universe Jamaica 2026, earning the opportunity to represent the island at the Miss Universe finals in Puerto Rico later this year. The 25-year-old businesswoman, artist and philanthropist captured the national title on Sunday night at the AC Hotel Kingston, emerging from a field of 33 contestants. Medical <a class="lozenge more" href="https://nycaribnews.com/jamaica-celene-hall-crowned-miss-universe-jamaica-2026/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T03:40:02+00:00" data-pub="11:40 PM EDT">Monday, August 24, 2026 at 11:40 PM EDT</time></small></p>
-<p><small>FL / Tampa / <a href="https://www.flcourier.com/">Florida Courier</a></small></p>
-<h2><a href="https://www.flcourier.com/online_features/press_releases/hrh-candle-introduces-revolutionary-crystal-wax-candle-system-that-empowers-consumers-to-customize-their-home/article_af3d1536-77d0-5235-810e-e70aea1bdbb3.html">HRH Candle Introduces Revolutionary Crystal Wax Candle System That Empowers Consumers to Customize Their Home Fragrance Experience</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.flcourier.com/entertainment/nedra-talley-ross-the-last-surviving-member-of-the-1960s-bee-hived-pop-band-the/article_34f17ef4-8731-45d4-b9d3-18c6388ce6ad.html">Become a member</a></span></p>
-<p class="more"><a href="https://www.flcourier.com/online_features/press_releases/hrh-candle-introduces-revolutionary-crystal-wax-candle-system-that-empowers-consumers-to-customize-their-home/article_af3d1536-77d0-5235-810e-e70aea1bdbb3.html">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Also in <a href="https://www.miamitimesonline.com/online_features/press_releases/hrh-candle-introduces-revolutionary-crystal-wax-candle-system-that-empowers-consumers-to-customize-their-home/article_0515c494-5f7e-5c4e-99e8-cc3657123022.html">The Miami Times</a> · <a href="https://www.insightnews.com/online_features/press_releases/hrh-candle-introduces-revolutionary-crystal-wax-candle-system-that-empowers-consumers-to-customize-their-home/article_d720e91a-d627-5588-91d2-ddf6a4eaf967.html">Insight News</a> · <a href="https://www.daytonatimes.com/online_features/press_releases/hrh-candle-introduces-revolutionary-crystal-wax-candle-system-that-empowers-consumers-to-customize-their-home/article_a59c7a69-baa2-5f9f-b224-a0b6025dd46f.html">Daytona Times</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.zeffy.com/en-US/donation-form/donate-to-change-lives-2258">Donate</a></aside>
+<p class="source"><a href="https://texasmetronews.com/"><strong>Texas Metro News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:38:20+00:00" data-pub="5:38 AM CDT">Tue, Aug 25 @ 5AM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=https%3A&state=TX">https:</a></p>
+<h2><a href="https://texasmetronews.com/129617/whats-cooking-august-25/">What’s Cooking – August 25</a></h2>
+<p class="byline">By Texas Metro News</p>
+<p>A New Way to Make Lasagna @DonaReceitas <a class="lozenge more" href="https://texasmetronews.com/129617/whats-cooking-august-25/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T03:40:02+00:00" data-pub="11:40 PM EDT">Monday, August 24, 2026 at 11:40 PM EDT</time></small></p>
-<p><small>FL / Tampa / <a href="https://www.flcourier.com/">Florida Courier</a></small></p>
-<h2><a href="https://www.flcourier.com/online_features/press_releases/foxfire-canoes-merges-artisan-woodworking-with-paddle-sport-performance-to-create-the-ultimate-fly-fishing/article_f320eb41-7c97-5848-9500-cacb2ddccf11.html">Foxfire Canoes Merges Artisan Woodworking With Paddle Sport Performance to Create the Ultimate Fly Fishing Watercraft</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.flcourier.com/entertainment/nedra-talley-ross-the-last-surviving-member-of-the-1960s-bee-hived-pop-band-the/article_34f17ef4-8731-45d4-b9d3-18c6388ce6ad.html">Become a member</a></span></p>
-<p class="more"><a href="https://www.flcourier.com/online_features/press_releases/foxfire-canoes-merges-artisan-woodworking-with-paddle-sport-performance-to-create-the-ultimate-fly-fishing/article_f320eb41-7c97-5848-9500-cacb2ddccf11.html">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Also in <a href="https://www.miamitimesonline.com/online_features/press_releases/foxfire-canoes-merges-artisan-woodworking-with-paddle-sport-performance-to-create-the-ultimate-fly-fishing/article_945b47ec-387a-53c8-b14d-34d99901a81e.html">The Miami Times</a> · <a href="https://www.insightnews.com/online_features/press_releases/foxfire-canoes-merges-artisan-woodworking-with-paddle-sport-performance-to-create-the-ultimate-fly-fishing/article_675286a4-dfc9-54be-ba08-dfc695916185.html">Insight News</a> · <a href="https://www.daytonatimes.com/online_features/press_releases/foxfire-canoes-merges-artisan-woodworking-with-paddle-sport-performance-to-create-the-ultimate-fly-fishing/article_b5e1d062-ba8f-509d-82ef-54aa74472565.html">Daytona Times</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://buy.stripe.com/8wM4gOal085h3Wo7ss">Donate</a></aside>
+<p class="source"><a href="https://nycaribnews.com/"><strong>New York Carib News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:37:34+00:00" data-pub="6:37 AM EDT">Tue, Aug 25 @ 6AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=New+York+City&state=NY">New York City</a></p>
+<h2><a href="https://nycaribnews.com/florida-byron-donald-gop-candidate-for-governor-claims-he-is-in-touch-with-haiti-on-tps-matters/">Florida – Byron Donald GOP Candidate for Governor Claims He Is In Touch with Haiti on TPS Matters</a></h2>
+<p class="byline">By nycaribnews</p>
+<p>Republican gubernatorial nominee Byron Donalds says he has been in contact with Haiti’s transitional government as he defends the Trump administration’s decision to end Temporary Protected Status (TPS) for hundreds of thousands of Haitians living in the United States. Donalds, a Florida congressman who recently secured the Republican nomination for governor, made the comments during <a class="lozenge more" href="https://nycaribnews.com/florida-byron-donald-gop-candidate-for-governor-claims-he-is-in-touch-with-haiti-on-tps-matters/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T03:35:04+00:00" data-pub="11:35 PM EDT">Monday, August 24, 2026 at 11:35 PM EDT</time></small></p>
-<p><small>FL / Tampa / <a href="https://www.flcourier.com/">Florida Courier</a></small></p>
-<h2><a href="https://www.flcourier.com/online_features/press_releases/ethiopia-prime-leads-purelight-coffee-lineup-as-bootstrapped-brand-redefines-online-specialty-coffee-for-a/article_83ce9423-9623-5777-bca1-29c0fbf916db.html">Ethiopia Prime Leads Purelight Coffee Lineup as Bootstrapped Brand Redefines Online Specialty Coffee for a New Generation</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.flcourier.com/entertainment/nedra-talley-ross-the-last-surviving-member-of-the-1960s-bee-hived-pop-band-the/article_34f17ef4-8731-45d4-b9d3-18c6388ce6ad.html">Become a member</a></span></p>
-<p class="more"><a href="https://www.flcourier.com/online_features/press_releases/ethiopia-prime-leads-purelight-coffee-lineup-as-bootstrapped-brand-redefines-online-specialty-coffee-for-a/article_83ce9423-9623-5777-bca1-29c0fbf916db.html">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Also in <a href="https://www.miamitimesonline.com/online_features/press_releases/ethiopia-prime-leads-purelight-coffee-lineup-as-bootstrapped-brand-redefines-online-specialty-coffee-for-a/article_ce5e7778-9aa4-53d9-b506-9268374dd131.html">The Miami Times</a> · <a href="https://www.insightnews.com/online_features/press_releases/ethiopia-prime-leads-purelight-coffee-lineup-as-bootstrapped-brand-redefines-online-specialty-coffee-for-a/article_7fbdba88-ffd4-5f88-b4ca-b5db727dd01c.html">Insight News</a> · <a href="https://www.daytonatimes.com/online_features/press_releases/ethiopia-prime-leads-purelight-coffee-lineup-as-bootstrapped-brand-redefines-online-specialty-coffee-for-a/article_87330158-5ff2-5b7c-8a97-b1737be6340d.html">Daytona Times</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.zeffy.com/en-US/donation-form/donate-to-change-lives-2258">Donate</a></aside>
+<p class="source"><a href="https://texasmetronews.com/"><strong>Texas Metro News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:34:17+00:00" data-pub="5:34 AM CDT">Tue, Aug 25 @ 5AM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=https%3A&state=TX">https:</a></p>
+<h2><a href="https://texasmetronews.com/129614/my-home-is-a-house-august-25/">MY HOME IS A HOUSE – August 25</a></h2>
+<p class="byline">By Texas Metro News</p>
+<p><a class="lozenge more" href="https://texasmetronews.com/129614/my-home-is-a-house-august-25/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T03:35:04+00:00" data-pub="11:35 PM EDT">Monday, August 24, 2026 at 11:35 PM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>FL / Tampa / <a href="https://www.flcourier.com/">Florida Courier</a></small></p>
-<h2><a href="https://www.flcourier.com/online_features/press_releases/veteran-founded-house-of-enough-bridges-mental-health-expertise-and-body-care-to-serve-women/article_95260899-fcfa-51bf-a8ae-89a63fb69e0c.html">Veteran-Founded House of Enough Bridges Mental Health Expertise and Body Care to Serve Women Often Overlooked by Beauty Brands</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.flcourier.com/entertainment/nedra-talley-ross-the-last-surviving-member-of-the-1960s-bee-hived-pop-band-the/article_34f17ef4-8731-45d4-b9d3-18c6388ce6ad.html">Become a member</a></span></p>
-<p class="more"><a href="https://www.flcourier.com/online_features/press_releases/veteran-founded-house-of-enough-bridges-mental-health-expertise-and-body-care-to-serve-women/article_95260899-fcfa-51bf-a8ae-89a63fb69e0c.html">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Also in <a href="https://www.miamitimesonline.com/online_features/press_releases/veteran-founded-house-of-enough-bridges-mental-health-expertise-and-body-care-to-serve-women/article_66ba34ab-8e5a-547b-a228-928450b68c72.html">The Miami Times</a> · <a href="https://www.insightnews.com/online_features/press_releases/veteran-founded-house-of-enough-bridges-mental-health-expertise-and-body-care-to-serve-women/article_aae5e26c-b7b1-5bb4-a6c7-2d87e13e20d7.html">Insight News</a> · <a href="https://www.daytonatimes.com/online_features/press_releases/veteran-founded-house-of-enough-bridges-mental-health-expertise-and-body-care-to-serve-women/article_6829a92d-c752-5bda-a562-a1e4e0915c4c.html">Daytona Times</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://buy.stripe.com/8wM4gOal085h3Wo7ss">Donate</a></aside>
+<p class="source"><a href="https://nycaribnews.com/"><strong>New York Carib News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:32:11+00:00" data-pub="6:32 AM EDT">Tue, Aug 25 @ 6AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=New+York+City&state=NY">New York City</a></p>
+<h2><a href="https://nycaribnews.com/carib-news-editorial-trinidad-and-tobago-celebrating-64/">Carib News Editorial – Trinidad And Tobago Celebrating 64</a></h2>
+<p class="byline">By nycaribnews</p>
+<p>As the people of Trinidad and Tobago celebrate the 64th anniversary of their independence, the Caribbean community joins them in celebrating one of the region’s most accomplished, creative and influential nations. Since achieving independence on August 31, 1962, Trinidad and Tobago has occupied a special place in Caribbean development. Its contribution has extended far beyond <a class="lozenge more" href="https://nycaribnews.com/carib-news-editorial-trinidad-and-tobago-celebrating-64/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T03:33:40+00:00" data-pub="10:33 PM CDT">Monday, August 24, 2026 at 10:33 PM CDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>TX / San Antonio / <a href="https://saobserver.com/">San Antonio Observer</a></small></p>
-<h2><a href="https://saobserver.com/target-admits-minstrel-like-halloween-costume-was-wrong/">Target Admits ‘Minstrel-Like’ Halloween Costume Was ‘Wrong’</a></h2>
-<p class="byline"><small>By Observer Staff</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://saobserver.com/">Support</a></span></p>
-<a class="shot" href="https://saobserver.com/target-admits-minstrel-like-halloween-costume-was-wrong/" tabindex="-1" aria-hidden="true"><img src="../img/aacf7a760209ffd45f2903e0e540c39aa6a512f9.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
-<p>The Retailer Apologized After a Children’s Clown Costume Featuring a Black Model Drew Comparisons to Blackface and Minstrel Shows Target has pulled a children’s Halloween costume from its shelves after widespread criticism that the design and its marketing evoked racist minstrel imagery and historical caricatures of Black Americans. The retailer removed the $25 costume from</p>
-<p class="more"><a href="https://saobserver.com/target-admits-minstrel-like-halloween-costume-was-wrong/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.wvgazettemail.com/subscribe">Subscribe</a></aside>
+<p class="source"><a href="https://www.wvgazettemail.com/"><strong>Charleson Gazette-Mail</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:20:00+00:00" data-pub="6:20 AM EDT">Tue, Aug 25 @ 6AM EDT</time><a class="lozenge place" href="/search?state=WV">West Virginia</a><a class="lozenge place" href="/search?place=Charleston&state=WV">Charleston</a></p>
+<h2><a href="https://www.wvgazettemail.com/news/health/hospitals-in-wv-elsewhere-continue-to-deal-with-shortage-of-workers-report/article_72e01570-9dcc-44e8-8c69-ef44b26359b8.html">Hospitals in WV, elsewhere continue to deal with shortage of workers: Report</a></h2>
+<p class="byline">By By MAGGIE SUSA msusa@hdmediallc.com</p>
+<p>HUNTINGTON—Across the country, states including West Virginia are dealing with a significant shortage of healthcare workers. <a class="lozenge more" href="https://www.wvgazettemail.com/news/health/hospitals-in-wv-elsewhere-continue-to-deal-with-shortage-of-workers-report/article_72e01570-9dcc-44e8-8c69-ef44b26359b8.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T03:30:02+00:00" data-pub="11:30 PM EDT">Monday, August 24, 2026 at 11:30 PM EDT</time></small></p>
-<p><small>FL / Tampa / <a href="https://www.flcourier.com/">Florida Courier</a></small></p>
-<h2><a href="https://www.flcourier.com/online_features/press_releases/the-estate-lawyers-attorneys-carl-l-jones-and-michael-c-mcdonald-recognized-in-2027-best/article_8f03ab35-7cd4-5344-963e-dd9b4c3f3ea2.html">The Estate Lawyers Attorneys Carl L. Jones and Michael C. McDonald Recognized in 2027 Best Lawyers: Ones to Watch® in America</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.flcourier.com/entertainment/nedra-talley-ross-the-last-surviving-member-of-the-1960s-bee-hived-pop-band-the/article_34f17ef4-8731-45d4-b9d3-18c6388ce6ad.html">Become a member</a></span></p>
-<p class="more"><a href="https://www.flcourier.com/online_features/press_releases/the-estate-lawyers-attorneys-carl-l-jones-and-michael-c-mcdonald-recognized-in-2027-best/article_8f03ab35-7cd4-5344-963e-dd9b4c3f3ea2.html">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Also in <a href="https://www.miamitimesonline.com/online_features/press_releases/the-estate-lawyers-attorneys-carl-l-jones-and-michael-c-mcdonald-recognized-in-2027-best/article_33c911e1-b420-5753-90d6-0a9d2b183dc7.html">The Miami Times</a> · <a href="https://www.insightnews.com/online_features/press_releases/the-estate-lawyers-attorneys-carl-l-jones-and-michael-c-mcdonald-recognized-in-2027-best/article_74ab4eda-ef0a-5671-9abc-49f5dd88ed17.html">Insight News</a> · <a href="https://www.daytonatimes.com/online_features/press_releases/the-estate-lawyers-attorneys-carl-l-jones-and-michael-c-mcdonald-recognized-in-2027-best/article_2c0f8b90-e86a-5348-979c-93bf676681c8.html">Daytona Times</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.flcourier.com/entertainment/nedra-talley-ross-the-last-surviving-member-of-the-1960s-bee-hived-pop-band-the/article_34f17ef4-8731-45d4-b9d3-18c6388ce6ad.html">Become a member</a></aside>
+<p class="source"><a href="https://www.flcourier.com/"><strong>Florida Courier</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:00:00+00:00" data-pub="6:00 AM EDT">Tue, Aug 25 @ 6AM EDT</time><a class="lozenge place" href="/search?state=FL">Florida</a><a class="lozenge place" href="/search?place=Tampa&state=FL">Tampa</a></p>
+<h2><a href="https://www.flcourier.com/news/buzz-that-byron-donalds-will-pick-miami-running-mate-in-florida-governors-race-builds/article_3f0aa0e5-8312-40eb-a9fd-a585a782a4b4.html">Buzz that Byron Donalds will pick Miami running mate in Florida governor&#x27;s race builds</a></h2>
+<p class="byline">By Claire Heddles/MIAMI HERALD/TNS</p>
+<a class="shot" href="https://www.flcourier.com/news/buzz-that-byron-donalds-will-pick-miami-running-mate-in-florida-governors-race-builds/article_3f0aa0e5-8312-40eb-a9fd-a585a782a4b4.html" tabindex="-1" aria-hidden="true"><img src="../img/33e84d001137d7683c7152130fe24f5f3895545e.webp" alt="" width="300" height="218" loading="lazy" decoding="async"></a>
+<p><a class="lozenge more" href="https://www.flcourier.com/news/buzz-that-byron-donalds-will-pick-miami-running-mate-in-florida-governors-race-builds/article_3f0aa0e5-8312-40eb-a9fd-a585a782a4b4.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T03:30:02+00:00" data-pub="11:30 PM EDT">Monday, August 24, 2026 at 11:30 PM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>FL / Tampa / <a href="https://www.flcourier.com/">Florida Courier</a></small></p>
-<h2><a href="https://www.flcourier.com/online_features/press_releases/prv-tree-service-highlights-efficient-land-clearing-solutions-for-austin-tx-property-development/article_b2dcc5d3-c0bc-5b02-9ce5-ff405d3d9c00.html">PRV Tree Service Highlights Efficient Land Clearing Solutions for Austin, TX Property Development</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.flcourier.com/entertainment/nedra-talley-ross-the-last-surviving-member-of-the-1960s-bee-hived-pop-band-the/article_34f17ef4-8731-45d4-b9d3-18c6388ce6ad.html">Become a member</a></span></p>
-<p class="more"><a href="https://www.flcourier.com/online_features/press_releases/prv-tree-service-highlights-efficient-land-clearing-solutions-for-austin-tx-property-development/article_b2dcc5d3-c0bc-5b02-9ce5-ff405d3d9c00.html">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Also in <a href="https://www.miamitimesonline.com/online_features/press_releases/prv-tree-service-highlights-efficient-land-clearing-solutions-for-austin-tx-property-development/article_f6acffcc-2efe-552c-a681-40e5a59b55ce.html">The Miami Times</a> · <a href="https://www.insightnews.com/online_features/press_releases/prv-tree-service-highlights-efficient-land-clearing-solutions-for-austin-tx-property-development/article_4a3fd281-f9da-5a26-8e47-759621b21278.html">Insight News</a> · <a href="https://www.daytonatimes.com/online_features/press_releases/prv-tree-service-highlights-efficient-land-clearing-solutions-for-austin-tx-property-development/article_0e1f9f04-5165-54d1-9f36-4f8806370270.html">Daytona Times</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://spokesman-recorder.com/donate-to-msr/">Donate</a></aside>
+<p class="source"><a href="https://spokesman-recorder.com/"><strong>Minnesota Spokesman-Recorder</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:00:00+00:00" data-pub="5:00 AM CDT">Tue, Aug 25 @ 5AM CDT</time><a class="lozenge place" href="/search?state=MN">Minnesota</a><a class="lozenge place" href="/search?place=Minneapolis&state=MN">Minneapolis</a></p>
+<h2><a href="https://spokesman-recorder.com/2026/08/25/clapping-monkey-fridley-coffee-shop-walkout/">How a Fridley coffee shop lost half its staff over a Nintendo system and its plans to rebuild</a></h2>
+<p class="byline">By Izzy Canizares</p>
+<a class="shot" href="https://spokesman-recorder.com/2026/08/25/clapping-monkey-fridley-coffee-shop-walkout/" tabindex="-1" aria-hidden="true"><img src="../img/523d251887c883e174fef683fe0c7c232eb98c0e.jpg" alt="" width="480" height="366" loading="lazy" decoding="async"></a>
+<p>When a dispute over a video game system pushed staff to walk out, it exposed months of tension over culture, communication, and workplace leadership at Fridley&#x27;s Clapping Monkey. <a class="lozenge more" href="https://spokesman-recorder.com/2026/08/25/clapping-monkey-fridley-coffee-shop-walkout/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T03:25:02+00:00" data-pub="11:25 PM EDT">Monday, August 24, 2026 at 11:25 PM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>FL / Tampa / <a href="https://www.flcourier.com/">Florida Courier</a></small></p>
-<h2><a href="https://www.flcourier.com/online_features/press_releases/woman-owned-nuyou360-ventures-llc-publishes-full-red-light-therapy-device-specifications-to-combat-skincare/article_c3916bfe-5a6b-5d8a-befb-1ce75b7b7817.html">Woman-Owned NuYOU360 Ventures LLC Publishes Full Red Light Therapy Device Specifications to Combat Skincare Industry Misinformation</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.flcourier.com/entertainment/nedra-talley-ross-the-last-surviving-member-of-the-1960s-bee-hived-pop-band-the/article_34f17ef4-8731-45d4-b9d3-18c6388ce6ad.html">Become a member</a></span></p>
-<p class="more"><a href="https://www.flcourier.com/online_features/press_releases/woman-owned-nuyou360-ventures-llc-publishes-full-red-light-therapy-device-specifications-to-combat-skincare/article_c3916bfe-5a6b-5d8a-befb-1ce75b7b7817.html">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Also in <a href="https://www.miamitimesonline.com/online_features/press_releases/woman-owned-nuyou360-ventures-llc-publishes-full-red-light-therapy-device-specifications-to-combat-skincare/article_f9e025d6-eca0-5fa8-b4e5-4fe414bb0f1c.html">The Miami Times</a> · <a href="https://www.insightnews.com/online_features/press_releases/woman-owned-nuyou360-ventures-llc-publishes-full-red-light-therapy-device-specifications-to-combat-skincare/article_a111b35e-89a9-5b3c-9b99-66928b5543b0.html">Insight News</a> · <a href="https://www.daytonatimes.com/online_features/press_releases/woman-owned-nuyou360-ventures-llc-publishes-full-red-light-therapy-device-specifications-to-combat-skincare/article_90aef83a-135e-5481-835c-09b7ea14ddd0.html">Daytona Times</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://flintbeat.com/">Support</a></aside>
+<p class="source"><a href="https://flintbeat.com/"><strong>Flint Beat</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:00:00+00:00" data-pub="6:00 AM EDT">Tue, Aug 25 @ 6AM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=Flint&state=MI">Flint</a></p>
+<h2><a href="https://www.flintbeat.com/gun-violence/flint-seeks-coordinated-response-as-gun-violence-continues-bd16398f">Flint calls for coordinated effort as gun violence continues</a></h2>
+<p class="byline">By Jiquanda Johnson</p>
+<a class="shot" href="https://www.flintbeat.com/gun-violence/flint-seeks-coordinated-response-as-gun-violence-continues-bd16398f" tabindex="-1" aria-hidden="true"><img src="../img/180f62f657c29674dae289b36b6c9f71f86bd905.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Flint leaders propose a public safety summit as recent fatal shootings spur a broader response involving police, courts, prosecutors and community groups. <a class="lozenge more" href="https://www.flintbeat.com/gun-violence/flint-seeks-coordinated-response-as-gun-violence-continues-bd16398f">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T03:20:02+00:00" data-pub="11:20 PM EDT">Monday, August 24, 2026 at 11:20 PM EDT</time></small></p>
-<p><small>FL / Miami / <a href="https://www.miamitimesonline.com/">The Miami Times</a></small></p>
-<h2><a href="https://www.miamitimesonline.com/online_features/press_releases/sunshinescoffee-invites-adventurous-drinkers-to-explore-a-new-world-of-flavor-with-its-signature-blends/article_3e036246-a2ff-5644-ba51-8454d049b484.html">SunshinesCoffee Invites Adventurous Drinkers to Explore a New World of Flavor With Its Signature Blends</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://miamitimes.typeform.com/to/mQvUpc">Subscribe</a></span></p>
-<p class="more"><a href="https://www.miamitimesonline.com/online_features/press_releases/sunshinescoffee-invites-adventurous-drinkers-to-explore-a-new-world-of-flavor-with-its-signature-blends/article_3e036246-a2ff-5644-ba51-8454d049b484.html">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Also in <a href="https://www.insightnews.com/online_features/press_releases/sunshinescoffee-invites-adventurous-drinkers-to-explore-a-new-world-of-flavor-with-its-signature-blends/article_4f49f2c1-7e61-558e-ab13-e0a57b116040.html">Insight News</a> · <a href="https://www.daytonatimes.com/online_features/press_releases/sunshinescoffee-invites-adventurous-drinkers-to-explore-a-new-world-of-flavor-with-its-signature-blends/article_a5710cbb-de1a-59bd-9481-2ec3cfbd05cd.html">Daytona Times</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.wvgazettemail.com/subscribe">Subscribe</a></aside>
+<p class="source"><a href="https://www.wvgazettemail.com/"><strong>Charleson Gazette-Mail</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:00:00+00:00" data-pub="6:00 AM EDT">Tue, Aug 25 @ 6AM EDT</time><a class="lozenge place" href="/search?state=WV">West Virginia</a><a class="lozenge place" href="/search?place=Charleston&state=WV">Charleston</a></p>
+<h2><a href="https://www.wvgazettemail.com/news/kanawha_valley/1st-part-of-mural-project-installed-in-public-space-outside-echo-lit-in-charleston/article_384546a2-3cb2-4067-840f-46c8a3f26ec9.html">1st part of mural project installed in public space outside Echo-Lit in Charleston</a></h2>
+<p class="byline">By By Laura Bilson lbilson@hdmediallc.com</p>
+<a class="shot" href="https://www.wvgazettemail.com/news/kanawha_valley/1st-part-of-mural-project-installed-in-public-space-outside-echo-lit-in-charleston/article_384546a2-3cb2-4067-840f-46c8a3f26ec9.html" tabindex="-1" aria-hidden="true"><img src="../img/f2ad5f90436cf1505819c42e3f78669ebd2dcf80.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+<p><a class="lozenge more" href="https://www.wvgazettemail.com/news/kanawha_valley/1st-part-of-mural-project-installed-in-public-space-outside-echo-lit-in-charleston/article_384546a2-3cb2-4067-840f-46c8a3f26ec9.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T03:15:02+00:00" data-pub="11:15 PM EDT">Monday, August 24, 2026 at 11:15 PM EDT</time></small></p>
-<p><small>FL / Miami / <a href="https://www.miamitimesonline.com/">The Miami Times</a></small></p>
-<h2><a href="https://www.miamitimesonline.com/online_features/press_releases/fewer-than-30-of-eligible-small-businesses-claim-the-r-d-tax-credit-k-38/article_53949447-9337-55fd-8098-a8882a065d05.html">Fewer Than 30% of Eligible Small Businesses Claim the R&amp;D Tax Credit, K-38 Consulting Reports</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://miamitimes.typeform.com/to/mQvUpc">Subscribe</a></span></p>
-<p class="more"><a href="https://www.miamitimesonline.com/online_features/press_releases/fewer-than-30-of-eligible-small-businesses-claim-the-r-d-tax-credit-k-38/article_53949447-9337-55fd-8098-a8882a065d05.html">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Also in <a href="https://www.daytonatimes.com/online_features/press_releases/fewer-than-30-of-eligible-small-businesses-claim-the-r-d-tax-credit-k-38/article_5f12d1a4-e653-5ad1-8fe8-2356fc50e62e.html">Daytona Times</a> · <a href="https://www.insightnews.com/online_features/press_releases/fewer-than-30-of-eligible-small-businesses-claim-the-r-d-tax-credit-k-38/article_6c264191-9508-586c-9de4-5818b585a4bc.html">Insight News</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.wvgazettemail.com/subscribe">Subscribe</a></aside>
+<p class="source"><a href="https://www.wvgazettemail.com/"><strong>Charleson Gazette-Mail</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T09:45:00+00:00" data-pub="5:45 AM EDT">Tue, Aug 25 @ 5AM EDT</time><a class="lozenge place" href="/search?state=WV">West Virginia</a><a class="lozenge place" href="/search?place=Charleston&state=WV">Charleston</a></p>
+<h2><a href="https://www.wvgazettemail.com/news/energy_and_environment/psc-staff-makes-case-for-path-to-dismissing-nexteras-1b-marl-power-line-project/article_e9c69e7d-5b79-4b1b-9989-a75fecf29660.html">PSC staff makes case for path to dismissing NextEra&#x27;s $1B+ MARL power line project</a></h2>
+<p class="byline">By By Mike Tony mtony@hdmediallc.com</p>
+<p>The staff of the West Virginia Public Service Commission has made a case to the agency that it should consider dismissing the application it’s considering for regulatory certification of a deeply unpopular, $1 billion-plus regional interstate power transmission line project. <a class="lozenge more" href="https://www.wvgazettemail.com/news/energy_and_environment/psc-staff-makes-case-for-path-to-dismissing-nexteras-1b-marl-power-line-project/article_e9c69e7d-5b79-4b1b-9989-a75fecf29660.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T03:15:00+00:00" data-pub="11:15 PM EDT">Monday, August 24, 2026 at 11:15 PM EDT</time></small></p>
-<p><small>DC / Washington / <a href="https://afro.com/section/news/washington-d-c-news/">Afro-American</a></small></p>
-<h2><a href="https://www.afro.com/word-in-black/barber-takes-moral-mondays-from-protest-to-the-polls-8c6a41b5">Barber takes Moral Mondays from protest to the polls</a></h2>
-<p class="byline"><small>By By Rev. Dorothy S. Boulware, Word In Black</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://afro.com/section/news/washington-d-c-news/">Support</a></span></p>
-<a class="shot" href="https://www.afro.com/word-in-black/barber-takes-moral-mondays-from-protest-to-the-polls-8c6a41b5" tabindex="-1" aria-hidden="true"><img src="../img/74a5cbce5832c88bae37bc2ce2d8239648993f07.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>After weeks of protest and arrests on Capitol Hill, Bishop William Barber II is shifting his movement’s focus from Washington to communities nationwide, betting that organizing millions of infrequent voters can change who holds political power.</p>
-<p class="more"><a href="https://www.afro.com/word-in-black/barber-takes-moral-mondays-from-protest-to-the-polls-8c6a41b5">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.wvgazettemail.com/subscribe">Subscribe</a></aside>
+<p class="source"><a href="https://www.wvgazettemail.com/"><strong>Charleson Gazette-Mail</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T09:30:00+00:00" data-pub="5:30 AM EDT">Tue, Aug 25 @ 5AM EDT</time><a class="lozenge place" href="/search?state=WV">West Virginia</a><a class="lozenge place" href="/search?place=Charleston&state=WV">Charleston</a></p>
+<h2><a href="https://www.wvgazettemail.com/news/huntington-residents-launch-ballot-initiative-in-attempt-to-ban-surveillance-tech/article_c8e7c847-0718-4d38-947b-b1f110a3385b.html">Huntington residents launch ballot initiative in attempt to ban surveillance tech</a></h2>
+<p class="byline">By By Destiney Dingess ddingess@hdmediallc.com</p>
+<a class="shot" href="https://www.wvgazettemail.com/news/huntington-residents-launch-ballot-initiative-in-attempt-to-ban-surveillance-tech/article_c8e7c847-0718-4d38-947b-b1f110a3385b.html" tabindex="-1" aria-hidden="true"><img src="../img/17366337818fb0922e3bdc8d44338d2b35b003c0.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+<p><a class="lozenge more" href="https://www.wvgazettemail.com/news/huntington-residents-launch-ballot-initiative-in-attempt-to-ban-surveillance-tech/article_c8e7c847-0718-4d38-947b-b1f110a3385b.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T03:12:06+00:00" data-pub="11:12 PM EDT">Monday, August 24, 2026 at 11:12 PM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>MI / East Lansing / <a href="http://www.tncp.net/">New Citizens Press</a></small></p>
-<h2><a href="https://tncpnews.com/michigan-auto-law-explains-school-bus-safety-laws-what-every-driver-must-know-before-the-school-year-starts/">Michigan Auto Law Explains School Bus Safety Laws: What Every Driver Must Know Before the School Year Starts</a></h2>
-<p class="byline"><small>By Rina Risper</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://tncpnews.com/donate/">Donate</a></span></p>
-<p>Photo by Vitaliy Haiduk From the 20-foot stop rule to school zone speed limits, violations can mean fines, points, or even jail time. By Michigan Auto Law Farmington Hills, MI — As students across Michigan head back to school, drivers should review the state’s school bus and school zone traffic laws. These laws protect children,</p>
-<p class="more"><a href="https://tncpnews.com/michigan-auto-law-explains-school-bus-safety-laws-what-every-driver-must-know-before-the-school-year-starts/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://spokesman-recorder.com/donate-to-msr/">Donate</a></aside>
+<p class="source"><a href="https://spokesman-recorder.com/"><strong>Minnesota Spokesman-Recorder</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T09:16:00+00:00" data-pub="4:16 AM CDT">Tue, Aug 25 @ 4AM CDT</time><a class="lozenge place" href="/search?state=MN">Minnesota</a><a class="lozenge place" href="/search?place=Minneapolis&state=MN">Minneapolis</a></p>
+<h2><a href="https://spokesman-recorder.com/2026/08/25/dwayne-dixon-ai-workplace-black-professionals/">AI won’t take your job overnight, but it will change it, local strategist says</a></h2>
+<p class="byline">By Jasmine McBride</p>
+<a class="shot" href="https://spokesman-recorder.com/2026/08/25/dwayne-dixon-ai-workplace-black-professionals/" tabindex="-1" aria-hidden="true"><img src="../img/f0a7e3d6d9e26b0111174ed84785cab1754dd7e9.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Local strategist Dwayne Dixon reveals why judgment and lived experience matter more than ever, and how Black professionals can turn tech shifts into real leverage. <a class="lozenge more" href="https://spokesman-recorder.com/2026/08/25/dwayne-dixon-ai-workplace-black-professionals/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T03:10:01+00:00" data-pub="11:10 PM EDT">Monday, August 24, 2026 at 11:10 PM EDT</time></small></p>
-<p><small>FL / Miami / <a href="https://www.miamitimesonline.com/">The Miami Times</a></small></p>
-<h2><a href="https://www.miamitimesonline.com/online_features/press_releases/canadian-medical-thriller-author-jenny-white-brings-nursing-expertise-and-survivor-perspective-to-new-mccord/article_6c99d234-4d6e-50a0-834b-ac7269a9a2fd.html">Canadian Medical Thriller Author Jenny White Brings Nursing Expertise and Survivor Perspective to New McCord List Network Television Series</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://miamitimes.typeform.com/to/mQvUpc">Subscribe</a></span></p>
-<p class="more"><a href="https://www.miamitimesonline.com/online_features/press_releases/canadian-medical-thriller-author-jenny-white-brings-nursing-expertise-and-survivor-perspective-to-new-mccord/article_6c99d234-4d6e-50a0-834b-ac7269a9a2fd.html">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Also in <a href="https://www.daytonatimes.com/online_features/press_releases/canadian-medical-thriller-author-jenny-white-brings-nursing-expertise-and-survivor-perspective-to-new-mccord/article_9ecc9f42-6c2e-5c24-b684-98a1bee0b17f.html">Daytona Times</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.wvgazettemail.com/subscribe">Subscribe</a></aside>
+<p class="source"><a href="https://www.wvgazettemail.com/"><strong>Charleson Gazette-Mail</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T09:15:00+00:00" data-pub="5:15 AM EDT">Tue, Aug 25 @ 5AM EDT</time><a class="lozenge place" href="/search?state=WV">West Virginia</a><a class="lozenge place" href="/search?place=Charleston&state=WV">Charleston</a></p>
+<h2><a href="https://www.wvgazettemail.com/news/health/wv-to-redirect-future-opioid-funds-to-state-local-govs-instead-of-first-foundation/article_ca1f966a-fb94-549d-80e5-daafb09faab4.html">WV to redirect future opioid funds to state, local govs instead of First Foundation</a></h2>
+<p class="byline">By By Caity Coyne West Virginia Watch</p>
+<a class="shot" href="https://www.wvgazettemail.com/news/health/wv-to-redirect-future-opioid-funds-to-state-local-govs-instead-of-first-foundation/article_ca1f966a-fb94-549d-80e5-daafb09faab4.html" tabindex="-1" aria-hidden="true"><img src="../img/5a60d5a59c9da510a08e71d20321481ae131e4b0.jpg" alt="" width="300" height="199" loading="lazy" decoding="async"></a>
+<p>The West Virginia First Foundation will no longer receive funds from the state’s opioid settlements, according to a Tuesday news release from Attorney General J.B. McCuskey. <a class="lozenge more" href="https://www.wvgazettemail.com/news/health/wv-to-redirect-future-opioid-funds-to-state-local-govs-instead-of-first-foundation/article_ca1f966a-fb94-549d-80e5-daafb09faab4.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T03:10:01+00:00" data-pub="11:10 PM EDT">Monday, August 24, 2026 at 11:10 PM EDT</time></small></p>
-<p><small>FL / Miami / <a href="https://www.miamitimesonline.com/">The Miami Times</a></small></p>
-<h2><a href="https://www.miamitimesonline.com/online_features/press_releases/veilapp-prepares-to-launch-privacy-first-communications-platform-that-eliminates-the-need-for-phone-numbers/article_1198b1a5-2739-5338-be14-285c6eba3672.html">VeilApp Prepares to Launch Privacy-First Communications Platform That Eliminates the Need for Phone Numbers or Email Addresses</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://miamitimes.typeform.com/to/mQvUpc">Subscribe</a></span></p>
-<p class="more"><a href="https://www.miamitimesonline.com/online_features/press_releases/veilapp-prepares-to-launch-privacy-first-communications-platform-that-eliminates-the-need-for-phone-numbers/article_1198b1a5-2739-5338-be14-285c6eba3672.html">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Also in <a href="https://www.daytonatimes.com/online_features/press_releases/veilapp-prepares-to-launch-privacy-first-communications-platform-that-eliminates-the-need-for-phone-numbers/article_64636a11-85b5-532b-b4ed-8670c06fb50a.html">Daytona Times</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://thenewjournalandguide.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://thenewjournalandguide.com/"><strong>New Journal &amp; Guide</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T09:04:41+00:00" data-pub="5:04 AM EDT">Tue, Aug 25 @ 5AM EDT</time><a class="lozenge place" href="/search?state=VA">Virginia</a><a class="lozenge place" href="/search?place=Norfolk&state=VA">Norfolk</a></p>
+<h2><a href="https://thenewjournalandguide.com/what-the-data-say-trumps-disdain-for-the-military/">What the Data Say:  Trump’s Disdain for the Military</a></h2>
+<p class="byline">By Web Staff</p>
+<a class="shot" href="https://thenewjournalandguide.com/what-the-data-say-trumps-disdain-for-the-military/" tabindex="-1" aria-hidden="true"><img src="../img/060eca515202b18c1b142104e5d388c28702fc02.jpg" alt="" width="480" height="198" loading="lazy" decoding="async"></a>
+<p>A compilation of reported comments by President Donald Trump about service members, veterans and military sacrifice raises questions about his relationship with the U.S. military. #DonaldTrump #USMilitary #MilitaryFamilies #Veterans #MilitaryVeterans #MilitaryMentalHealth #USSAbrahamLincoln #VeteransAffairs #MilitaryNews #MiddleEast <a class="lozenge more" href="https://thenewjournalandguide.com/what-the-data-say-trumps-disdain-for-the-military/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T03:01:15+00:00" data-pub="11:01 PM EDT">Monday, August 24, 2026 at 11:01 PM EDT</time></small></p>
-<p><small>MI / East Lansing / <a href="http://www.tncp.net/">New Citizens Press</a></small></p>
-<h2><a href="https://tncpnews.com/interpersonal-edge-how-to-end-workplace-wars/">Interpersonal Edge: How to end workplace wars</a></h2>
-<p class="byline"><small>By Rina Risper</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://tncpnews.com/donate/">Donate</a></span></p>
-<p>By Dr. Daneen Skube Tribune Content Agency Interpersonal Edge Q: There are two departments in my company that are having a war and cannot get anything done. I’m managing the department heads. Both sides blame the other for not communicating. I’m at my wits end! How can I get them to stop fighting, and start</p>
-<p class="more"><a href="https://tncpnews.com/interpersonal-edge-how-to-end-workplace-wars/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.wvgazettemail.com/subscribe">Subscribe</a></aside>
+<p class="source"><a href="https://www.wvgazettemail.com/"><strong>Charleson Gazette-Mail</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T09:00:00+00:00" data-pub="5:00 AM EDT">Tue, Aug 25 @ 5AM EDT</time><a class="lozenge place" href="/search?state=WV">West Virginia</a><a class="lozenge place" href="/search?place=Charleston&state=WV">Charleston</a></p>
+<h2><a href="https://www.wvgazettemail.com/news/kanawha_valley/in-the-know-pumpkin-spice-other-fall-flavors-return-to-charleston-coffee-shops/article_8ac440e7-f458-4d5e-bcdd-397c447114e7.html">In the Know: Pumpkin spice, other fall flavors return to Charleston coffee shops</a></h2>
+<p class="byline">By By Kendra Gilchrist kgilchrist@hdmediallc.com</p>
+<a class="shot" href="https://www.wvgazettemail.com/news/kanawha_valley/in-the-know-pumpkin-spice-other-fall-flavors-return-to-charleston-coffee-shops/article_8ac440e7-f458-4d5e-bcdd-397c447114e7.html" tabindex="-1" aria-hidden="true"><img src="../img/1dc41c3d50ea9b01538bc1309f6c778e48fc1e16.jpg" alt="" width="300" height="196" loading="lazy" decoding="async"></a>
+<p><a class="lozenge more" href="https://www.wvgazettemail.com/news/kanawha_valley/in-the-know-pumpkin-spice-other-fall-flavors-return-to-charleston-coffee-shops/article_8ac440e7-f458-4d5e-bcdd-397c447114e7.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T02:55:02+00:00" data-pub="10:55 PM EDT">Monday, August 24, 2026 at 10:55 PM EDT</time></small></p>
-<p><small>FL / Miami / <a href="https://www.miamitimesonline.com/">The Miami Times</a></small></p>
-<h2><a href="https://www.miamitimesonline.com/online_features/press_releases/fort-collins-artisan-jeweler-justin-rogers-creator-of-wildbeard-legacy-co-brings-healing-through-handcrafted/article_f856507f-70b6-57e1-8741-1a0103a92cdb.html">Fort Collins Artisan Jeweler, Justin Rogers Creator of WildBeard Legacy Co, Brings Healing Through Handcrafted Pet Memorial Keepsakes and Custom Rings</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://miamitimes.typeform.com/to/mQvUpc">Subscribe</a></span></p>
-<p class="more"><a href="https://www.miamitimesonline.com/online_features/press_releases/fort-collins-artisan-jeweler-justin-rogers-creator-of-wildbeard-legacy-co-brings-healing-through-handcrafted/article_f856507f-70b6-57e1-8741-1a0103a92cdb.html">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Also in <a href="https://www.daytonatimes.com/online_features/press_releases/fort-collins-artisan-jeweler-justin-rogers-creator-of-wildbeard-legacy-co-brings-healing-through-handcrafted/article_e1db109b-56b9-5eb6-8f30-259cd1d9139c.html">Daytona Times</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.wvgazettemail.com/subscribe">Subscribe</a></aside>
+<p class="source"><a href="https://www.wvgazettemail.com/"><strong>Charleson Gazette-Mail</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T09:00:00+00:00" data-pub="5:00 AM EDT">Tue, Aug 25 @ 5AM EDT</time><a class="lozenge place" href="/search?state=WV">West Virginia</a><a class="lozenge place" href="/search?place=Charleston&state=WV">Charleston</a></p>
+<h2><a href="https://www.wvgazettemail.com/metrokanawha/wings-etc-franchise-opening-elkview-location-sept-1/article_5502922f-4498-463a-95b2-aa946ea7d286.html">Wings Etc. franchise opening Elkview location Sept. 1</a></h2>
+<a class="shot" href="https://www.wvgazettemail.com/metrokanawha/wings-etc-franchise-opening-elkview-location-sept-1/article_5502922f-4498-463a-95b2-aa946ea7d286.html" tabindex="-1" aria-hidden="true"><img src="../img/817381b59019ca56eb3fce7fee1b6b19d24d73ba.jpg" alt="" width="300" height="225" loading="lazy" decoding="async"></a>
+<p>Franchise owners Scott Creel and Chris Herrington will open a new Wings Etc. Grill &amp; Pub location at Elkview on Sept. 1, bringing an estimated 40 to 50 jobs to the area. <a class="lozenge more" href="https://www.wvgazettemail.com/metrokanawha/wings-etc-franchise-opening-elkview-location-sept-1/article_5502922f-4498-463a-95b2-aa946ea7d286.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T02:53:37+00:00" data-pub="10:53 PM EDT">Monday, August 24, 2026 at 10:53 PM EDT</time></small></p>
-<p><small>MI / East Lansing / <a href="http://www.tncp.net/">New Citizens Press</a></small></p>
-<h2><a href="https://tncpnews.com/michigans-largest-foster-care-agency-has-concerns-about-medicaid/">Michigan’s largest foster care agency has concerns about Medicaid</a></h2>
-<p class="byline"><small>By Rina Risper</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://tncpnews.com/donate/">Donate</a></span></p>
-<p>By Chrystal Blair – Producer Public News Service New federal Medicaid requirements could create hardships for some families in Michigan’s foster care system, according to the state’s largest private foster care and adoption agencies. Samaritas serves almost 40,000 people each year through programs including foster care, adoption, mental health and housing. Dave Morin, president and</p>
-<p class="more"><a href="https://tncpnews.com/michigans-largest-foster-care-agency-has-concerns-about-medicaid/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://blackchronicle.com/product/the-black-chronicle-newspaper-subscription-now-with-the-all-new-tbc-magazine/">Subscribe</a></aside>
+<p class="source"><a href="https://blackchronicle.com/"><strong>Black Chronicle</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T08:43:51+00:00" data-pub="3:43 AM CDT">Tue, Aug 25 @ 3AM CDT</time><a class="lozenge place" href="/search?state=OK">Oklahoma</a><a class="lozenge place" href="/search?place=Oklahoma+City&state=OK">Oklahoma City</a></p>
+<h2><a href="https://blackchronicle.com/national/michael-wright-the-five-heartbeats-actor-dies-at-70/">Michael Wright, ‘The Five Heartbeats’ Actor, Dies at 70</a></h2>
+<p class="byline">By Clay Cane</p>
+<a class="shot" href="https://blackchronicle.com/national/michael-wright-the-five-heartbeats-actor-dies-at-70/" tabindex="-1" aria-hidden="true"><img src="../img/9119aa974e50050ac3772702e970e560f100134f.jpg" alt="" width="480" height="326" loading="lazy" decoding="async"></a>
+<p>(AURN News)—Actor Michael Wright, known for his role as Eddie King Jr. in the 1991 musical drama “The Five Heartbeats,” has died at 70, according to NBC News. Wright died Wednesday at UCI […] Continue reading with a Black Chronicle subscription. Purchase The Black Chronicle Newspaper Subscription – Now with the All-New TBC Magazine! or The Black Chronicle Newspaper Subscription – Now with the Al <a class="lozenge more" href="https://blackchronicle.com/national/michael-wright-the-five-heartbeats-actor-dies-at-70/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T02:50:02+00:00" data-pub="10:50 PM EDT">Monday, August 24, 2026 at 10:50 PM EDT</time></small></p>
-<p><small>FL / Miami / <a href="https://www.miamitimesonline.com/">The Miami Times</a></small></p>
-<h2><a href="https://www.miamitimesonline.com/online_features/press_releases/rare-houston-meteorite-event-brings-dozens-of-new-photos-to-the-public/article_cfa477f6-a8c1-5a75-b6fe-433d0ac19dc9.html">Rare Houston Meteorite Event Brings Dozens Of New Photos To The Public</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://miamitimes.typeform.com/to/mQvUpc">Subscribe</a></span></p>
-<a class="shot" href="https://www.miamitimesonline.com/online_features/press_releases/rare-houston-meteorite-event-brings-dozens-of-new-photos-to-the-public/article_cfa477f6-a8c1-5a75-b6fe-433d0ac19dc9.html" tabindex="-1" aria-hidden="true"><img src="../img/dc24385ecf4925d444835a5ea8f5c94c81cd3892.webp" alt="" width="300" height="168" loading="lazy" decoding="async"></a>
-<p class="more"><a href="https://www.miamitimesonline.com/online_features/press_releases/rare-houston-meteorite-event-brings-dozens-of-new-photos-to-the-public/article_cfa477f6-a8c1-5a75-b6fe-433d0ac19dc9.html">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Also in <a href="https://www.daytonatimes.com/online_features/press_releases/rare-houston-meteorite-event-brings-dozens-of-new-photos-to-the-public/article_a4d64bbc-0475-5649-b47a-cb28020e4a74.html">Daytona Times</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://spokesman-recorder.com/donate-to-msr/">Donate</a></aside>
+<p class="source"><a href="https://spokesman-recorder.com/"><strong>Minnesota Spokesman-Recorder</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T08:21:00+00:00" data-pub="3:21 AM CDT">Tue, Aug 25 @ 3AM CDT</time><a class="lozenge place" href="/search?state=MN">Minnesota</a><a class="lozenge place" href="/search?place=Minneapolis&state=MN">Minneapolis</a></p>
+<h2><a href="https://spokesman-recorder.com/2026/08/25/robert-s-abbott-youth-leadership-first-educators/">Robert S. Abbott: Defender of justice</a></h2>
+<p class="byline">By Dr. Artika R. Tyner</p>
+<a class="shot" href="https://spokesman-recorder.com/2026/08/25/robert-s-abbott-youth-leadership-first-educators/" tabindex="-1" aria-hidden="true"><img src="../img/8e91f857db059456e6ed0f4f4db7290b31d26189.jpg" alt="" width="480" height="267" loading="lazy" decoding="async"></a>
+<p>Robert S. Abbott launched The Chicago Defender to combat Jim Crow and champion equality. Dr. Artika R. Tyner explores how parents and caregivers can use his legacy of unrelenting tenacity to inspire young changemakers today. <a class="lozenge more" href="https://spokesman-recorder.com/2026/08/25/robert-s-abbott-youth-leadership-first-educators/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T02:44:43+00:00" data-pub="9:44 PM CDT">Monday, August 24, 2026 at 9:44 PM CDT</time></small></p>
-<p><small>OK / Oklahoma City / <a href="https://blackchronicle.com/">Black Chronicle</a></small></p>
-<h2><a href="https://blackchronicle.com/national/bessent-announces-economic-d-day-sanctions-campaign-against-iran/">Bessent Announces ‘Economic D-Day’ Sanctions Campaign Against Iran</a></h2>
-<p class="byline"><small>By Ebony McMorris</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://blackchronicle.com/product/the-black-chronicle-newspaper-subscription-now-with-the-all-new-tbc-magazine/">Subscribe</a></span></p>
-<a class="shot" href="https://blackchronicle.com/national/bessent-announces-economic-d-day-sanctions-campaign-against-iran/" tabindex="-1" aria-hidden="true"><img src="../img/710e7931b281df335370dd6c84e5d7521aebbc3d.jpg" alt="" width="480" height="321" loading="lazy" decoding="async"></a>
-<p>WASHINGTON (AURN News) — Treasury Secretary Scott Bessent announced a new sanctions campaign aimed at further isolating Iran from the global economy, warning, “Every country, every entity should know that they should be prepared to […] Continue reading with a Black Chronicle subscription. Purchase The Black Chronicle Newspaper Subscription – Now with the All-New TBC Magazine! or The Black Chronicl</p>
-<p class="more"><a href="https://blackchronicle.com/national/bessent-announces-economic-d-day-sanctions-campaign-against-iran/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://blackchronicle.com/product/the-black-chronicle-newspaper-subscription-now-with-the-all-new-tbc-magazine/">Subscribe</a></aside>
+<p class="source"><a href="https://blackchronicle.com/"><strong>Black Chronicle</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T07:45:03+00:00" data-pub="2:45 AM CDT">Tue, Aug 25 @ 2AM CDT</time><a class="lozenge place" href="/search?state=OK">Oklahoma</a><a class="lozenge place" href="/search?place=Oklahoma+City&state=OK">Oklahoma City</a></p>
+<h2><a href="https://blackchronicle.com/west-coast-pacific/washington/light-rail-in-west-seattle-delayed-until-2035/">Light rail in West Seattle delayed until 2035</a></h2>
+<p class="byline">By Black Chronicle News Service</p>
+<a class="shot" href="https://blackchronicle.com/west-coast-pacific/washington/light-rail-in-west-seattle-delayed-until-2035/" tabindex="-1" aria-hidden="true"><img src="../img/42e5fea03d31b93fd54adf55c4a21cae65c4b5f3.jpg" alt="" width="480" height="353" loading="lazy" decoding="async"></a>
+<p>(The Center Square – It will be at least nine more years before Sound Transit launches light rail service in West Seattle. Sound Transit has pushed back the expected launch date for its West Seattle […] Continue reading with a Black Chronicle subscription. Purchase The Black Chronicle Newspaper Subscription – Now with the All-New TBC Magazine! or The Black Chronicle Newspaper Subscription – Now wi <a class="lozenge more" href="https://blackchronicle.com/west-coast-pacific/washington/light-rail-in-west-seattle-delayed-until-2035/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T02:40:03+00:00" data-pub="10:40 PM EDT">Monday, August 24, 2026 at 10:40 PM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>FL / Miami / <a href="https://www.miamitimesonline.com/">The Miami Times</a></small></p>
-<h2><a href="https://www.miamitimesonline.com/online_features/press_releases/global-career-institute-expands-executive-leadership-development-across-the-caribbean-with-international-programme/article_85b26576-5231-5ef9-9eb4-2c191efd8ad2.html">Global Career Institute Expands Executive Leadership Development Across the Caribbean with International Programme</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://miamitimes.typeform.com/to/mQvUpc">Subscribe</a></span></p>
-<a class="shot" href="https://www.miamitimesonline.com/online_features/press_releases/global-career-institute-expands-executive-leadership-development-across-the-caribbean-with-international-programme/article_85b26576-5231-5ef9-9eb4-2c191efd8ad2.html" tabindex="-1" aria-hidden="true"><img src="../img/8c3de4652697ba831f5303e86d425e5623e4d7b5.webp" alt="" width="300" height="300" loading="lazy" decoding="async"></a>
-<p>International leadership expert Professor Joel Farnworth to lead four-session executive programme focused on leadership, people and organisational performance</p>
-<p class="more"><a href="https://www.miamitimesonline.com/online_features/press_releases/global-career-institute-expands-executive-leadership-development-across-the-caribbean-with-international-programme/article_85b26576-5231-5ef9-9eb4-2c191efd8ad2.html">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Also in <a href="https://www.daytonatimes.com/online_features/press_releases/global-career-institute-expands-executive-leadership-development-across-the-caribbean-with-international-programme/article_e741580a-e969-5a85-8982-1b80bb6e4c03.html">Daytona Times</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.zeffy.com/en-US/donation-form/donate-to-change-lives-2258">Donate</a></aside>
+<p class="source"><a href="https://texasmetronews.com/"><strong>Texas Metro News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T07:15:00+00:00" data-pub="2:15 AM CDT">Tue, Aug 25 @ 2AM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=https%3A&state=TX">https:</a></p>
+<h2><a href="https://texasmetronews.com/129571/this-day-in-time-august-25/">This Day in Time – August 25</a></h2>
+<p class="byline">By Texas Metro News</p>
+<p>On August 25, 1886, Seventy-four Blacks were reported lynched in 1886. <a class="lozenge more" href="https://texasmetronews.com/129571/this-day-in-time-august-25/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T02:35:02+00:00" data-pub="10:35 PM EDT">Monday, August 24, 2026 at 10:35 PM EDT</time></small></p>
-<p><small>FL / Miami / <a href="https://www.miamitimesonline.com/">The Miami Times</a></small></p>
-<h2><a href="https://www.miamitimesonline.com/online_features/press_releases/divorce-lawyers-in-arlington-va-share-common-diy-divorce-filing-errors/article_72f88215-9425-5951-9750-73c1e88b1ea0.html">Divorce Lawyers In Arlington VA Share Common DIY Divorce Filing Errors</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://miamitimes.typeform.com/to/mQvUpc">Subscribe</a></span></p>
-<p class="more"><a href="https://www.miamitimesonline.com/online_features/press_releases/divorce-lawyers-in-arlington-va-share-common-diy-divorce-filing-errors/article_72f88215-9425-5951-9750-73c1e88b1ea0.html">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Also in <a href="https://www.daytonatimes.com/online_features/press_releases/divorce-lawyers-in-arlington-va-share-common-diy-divorce-filing-errors/article_addff0cb-3561-53ac-8a08-fdc666738c6b.html">Daytona Times</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.zeffy.com/en-US/donation-form/donate-to-change-lives-2258">Donate</a></aside>
+<p class="source"><a href="https://texasmetronews.com/"><strong>Texas Metro News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T07:10:00+00:00" data-pub="2:10 AM CDT">Tue, Aug 25 @ 2AM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=https%3A&state=TX">https:</a></p>
+<h2><a href="https://texasmetronews.com/129566/metro-salute-august-25/">Metro Salute – August 25</a></h2>
+<p class="byline">By Texas Metro News</p>
+<p>Dr. Opal Lee was honored with a certificate of recognition for her outstanding service, unwavering dedication, and meaningful contributions to the community by the Fort Worth Association of Federated Women’s Clubs. <a class="lozenge more" href="https://texasmetronews.com/129566/metro-salute-august-25/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 </div>
 <p><a id="more" href="black-owned-4.html">More stories</a></p>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="../index.html">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -394,6 +448,47 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>

@@ -13,12 +13,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(../fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -27,22 +40,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -50,19 +69,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -75,7 +126,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -93,7 +144,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="../index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="../masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -106,7 +157,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="../subjects/news.html">News</a></li><li><a href="../subjects/politics.html">Politics</a></li><li><a href="../subjects/opinion.html">Opinion</a></li><li><a href="../subjects/health.html">Health</a></li><li><a href="../subjects/environment.html">Environment</a></li><li><a href="../subjects/education.html">Education</a></li><li><a href="../subjects/business.html">Business</a></li><li><a href="../subjects/housing.html">Housing</a></li><li><a href="../subjects/sports.html">Sports</a></li><li><a href="../subjects/food.html">Food</a></li><li><a href="../subjects/arts.html">Arts</a></li></ul></nav>
@@ -121,276 +172,272 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <main id="main">
 <div id="feed-items">
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T20:47:53+00:00" data-pub="4:47 PM EDT">Monday, August 24, 2026 at 4:47 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>MD / Baltimore / <a href="https://baltimorewitness.org/">Baltimore Witness</a></small></p>
-<h2><a href="https://baltimorewitness.org/teenage-attempted-homicide-suspect-rejects-plea-deal/">Teenage Attempted Homicide Suspect Rejects Plea Deal</a></h2>
-<p class="byline"><small>By shrihithanookala</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://baltimorewitness.org/">Support</a></span></p>
-<p>Attempted homicide suspect Delvon Bryant, 19, rejected a plea deal Aug. 24. Bryant is charged with attempted first-degree murder, attempted second-degree murder, first-degree assault, a misdemeanor for the use of a firearm in the commission of a violent crime, and other handgun-related misdemeanor charges. He is being charged for an incident that occurred Dec. 9,</p>
-<p class="more"><a href="https://baltimorewitness.org/teenage-attempted-homicide-suspect-rejects-plea-deal/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://give.texastribune.org/campaign/814363/donate?c_src=website&amp;c_src2=donatebutton">Donate</a></aside>
+<p class="source"><a href="https://www.texastribune.org/"><strong>The Texas Tribune</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T23:03:14+00:00" data-pub="6:03 PM CDT">Mon, Aug 24 @ 6PM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=Austin&state=TX">Austin</a></p>
+<h2><a href="https://feeds.texastribune.org/link/16799/17427881/south-texas-speaker-mike-johnson-campaign-visit-congress-hispanic-voters">Speaker Mike Johnson to campaign in battleground South Texas House districts this week</a></h2>
+<p class="byline">By Gabby Birenbaum</p>
+<a class="shot" href="https://feeds.texastribune.org/link/16799/17427881/south-texas-speaker-mike-johnson-campaign-visit-congress-hispanic-voters" tabindex="-1" aria-hidden="true"><img src="../img/42edc1e007ce2586be83e36c43a544b4c74a5dbc.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>The Louisiana Republican is visiting four districts, each of which are majority Hispanic and were carried by Donald Trump in 2024. The seats could help decide control of the House this fall. <a class="lozenge more" href="https://feeds.texastribune.org/link/16799/17427881/south-texas-speaker-mike-johnson-campaign-visit-congress-hispanic-voters">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T20:47:26+00:00" data-pub="4:47 PM EDT">Monday, August 24, 2026 at 4:47 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>SC / Statewide / <a href="https://scdailygazette.com/">South Carolina Daily Gazette</a></small></p>
-<h2><a href="https://scdailygazette.com/2026/08/24/31-charged-with-drug-smuggling-after-sc-nightclub-investigations/">31 charged with drug smuggling after SC nightclub investigations</a></h2>
-<p class="byline"><small>By Skylar Laird</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://scdailygazette.com/">Support</a></span></p>
-<a class="shot" href="https://scdailygazette.com/2026/08/24/31-charged-with-drug-smuggling-after-sc-nightclub-investigations/" tabindex="-1" aria-hidden="true"><img src="../img/0eb4053ca2484329be8988904ded482234bf726a.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Law enforcement officers seized large quantities of narcotics and guns from nightclubs operating without permits, the state&#x27;s top prosecutor said.</p>
-<p class="more"><a href="https://scdailygazette.com/2026/08/24/31-charged-with-drug-smuggling-after-sc-nightclub-investigations/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://citylimits.org/get-involved">Donate</a></aside>
+<p class="source"><a href="https://citylimits.org/"><strong>City Limits</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T23:02:42+00:00" data-pub="7:02 PM EDT">Mon, Aug 24 @ 7PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=New+York&state=NY">New York</a></p>
+<h2><a href="https://citylimits.org/podcast-a-cuanto-ascienden-multas-civiles-de-migracion-impuestas-por-gobierno-trump/">PODCAST: ¿A cuánto ascienden multas civiles de migración impuestas por gobierno Trump?</a></h2>
+<p class="byline">By Daniel Parra</p>
+<a class="shot" href="https://citylimits.org/podcast-a-cuanto-ascienden-multas-civiles-de-migracion-impuestas-por-gobierno-trump/" tabindex="-1" aria-hidden="true"><img src="../img/3a8d6a082d27ef88f64d95a52f5916bf1cd55776.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Según un nuevo informe elaborado por investigadores de la Immigrant Rights Clinic de la Facultad de Derecho de la Universidad de Nueva York, el gobierno ha impuesto al menos 103.000 multas a inmigrantes, lo que supone una deuda potencial de más de $84.000 millones de dólares. <a class="lozenge more" href="https://citylimits.org/podcast-a-cuanto-ascienden-multas-civiles-de-migracion-impuestas-por-gobierno-trump/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T20:46:28+00:00" data-pub="4:46 PM EDT">Monday, August 24, 2026 at 4:46 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>NY / New York / <a href="https://www.thecity.nyc/">THE CITY</a></small></p>
-<h2><a href="https://www.thecityreporter.nyc/2026/08/24/beloved-amc-movie-theater-in-kips-bay-will-close-by-years-end/">Beloved AMC Movie Theater in Kips Bay Will Close by Year’s End</a></h2>
-<p class="byline"><small>By Andrew Giambrone</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://donorbox.org/supportlocalnews?utm_source=bottom%20epic&amp;utm_medium=web&amp;utm_campaign=Harry%20Siegel">Donate</a></span></p>
-<a class="shot" href="https://www.thecityreporter.nyc/2026/08/24/beloved-amc-movie-theater-in-kips-bay-will-close-by-years-end/" tabindex="-1" aria-hidden="true"><img src="../img/939c26e397c0f47ab9d9c61130f54fe009e56d1f.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>That’s a wrap, folks. The beloved AMC movie theater on Second Avenue and East 31st Street in Kips Bay will close by the end of 2026, the company confirmed Monday to The City Reporter. “We expect that AMC Kips Bay 15 will continue operating until the end of 2026, at which time the theatre will</p>
-<p class="more"><a href="https://www.thecityreporter.nyc/2026/08/24/beloved-amc-movie-theater-in-kips-bay-will-close-by-years-end/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://newjerseymonitor.com/">Support</a></aside>
+<p class="source"><a href="https://newjerseymonitor.com/"><strong>New Jersey Monitor</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T22:59:15+00:00" data-pub="6:59 PM EDT">Mon, Aug 24 @ 6PM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a></p>
+<h2><a href="https://newjerseymonitor.com/2026/08/24/governor-gop-feud-voter-registration/">Feud escalates between NJ governor, GOP over voter registration gaffe</a></h2>
+<p class="byline">By Sophie Nieto-Munoz</p>
+<a class="shot" href="https://newjerseymonitor.com/2026/08/24/governor-gop-feud-voter-registration/" tabindex="-1" aria-hidden="true"><img src="../img/59f136d33c4feaa331deb65ad60839f010ab3f94.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Gov. Mikie Sherrill (D) and Rep. Jeff Van Drew (R) are sparring over Sherrill&#x27;s recent revelation that the state registered noncitizens to vote. <a class="lozenge more" href="https://newjerseymonitor.com/2026/08/24/governor-gop-feud-voter-registration/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T20:45:00+00:00" data-pub="4:45 PM EDT">Monday, August 24, 2026 at 4:45 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>MI / Grand Rapids / <a href="https://therapidian.org/">The Rapidian</a></small></p>
-<h2><a href="https://therapidian.org/what-to-know-before-the-grand-rapids-city-commission-hosts-flock-hearing">What to know before the Grand Rapids City Commission hosts Flock hearing</a></h2>
-<p class="byline"><small>By ericjj9829@gmail.com (Eric Johnson)</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://therapidian.org/">Support</a></span></p>
-<a class="shot" href="https://therapidian.org/what-to-know-before-the-grand-rapids-city-commission-hosts-flock-hearing" tabindex="-1" aria-hidden="true"><img src="../img/fdb9cde3d44e72700d4b1b93529fdbdc332882bc.jpg" alt="" width="480" height="361" loading="lazy" decoding="async"></a>
-<p>At Tuesday&#x27;s City Commission Public Safety Committee meeting, the Grand Rapids Police Department and officials from Flock will be presenting on Flock cameras.</p>
-<p class="more"><a href="https://therapidian.org/what-to-know-before-the-grand-rapids-city-commission-hosts-flock-hearing">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://fortworthreport.org/donate?campaign=7014x000001BzAoAAK">Donate</a></aside>
+<p class="source"><a href="https://fortworthreport.org/"><strong>Fort Worth Report</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T22:54:30+00:00" data-pub="5:54 PM CDT">Mon, Aug 24 @ 5PM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=Fort+Worth&state=TX">Fort Worth</a></p>
+<h2><a href="https://fortworthreport.org/2026/08/24/fort-worth-fire-department-gets-new-interim-chief/">Fort Worth Fire Department gets new interim chief</a></h2>
+<p class="byline">By Scott Nishimura</p>
+<a class="shot" href="https://fortworthreport.org/2026/08/24/fort-worth-fire-department-gets-new-interim-chief/" tabindex="-1" aria-hidden="true"><img src="../img/0a46f958664c778903b21679c3caa376f04af379.jpg" alt="" width="300" height="234" loading="lazy" decoding="async"></a>
+<p>James Horton will become interim fire chief when Raymond Hill retires Aug. 31. <a class="lozenge more" href="https://fortworthreport.org/2026/08/24/fort-worth-fire-department-gets-new-interim-chief/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T20:44:54+00:00" data-pub="4:44 PM EDT">Monday, August 24, 2026 at 4:44 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>MD / Silver Spring / <a href="https://www.mymcmedia.org">MyMCMedia</a></small></p>
-<h2><a href="https://www.mymcmedia.org/community-rallies-for-injured-4-year-old-who-lost-his-mom-in-collision/">Community rallies for injured 4 year old who lost his mom in collision</a></h2>
-<p class="byline"><small>By Fran Murphy</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.mymcmedia.org/donate/">Donate</a></span></p>
-<a class="shot" href="https://www.mymcmedia.org/community-rallies-for-injured-4-year-old-who-lost-his-mom-in-collision/" tabindex="-1" aria-hidden="true"><img src="../img/d919145e4c65e0fd98d9fec719b2e085b2fb3154.jpg" alt="" width="480" height="271" loading="lazy" decoding="async"></a>
-<p>Four-year-old Adam Bouziri lost his mother 44-year-old Raoudha Khelifi in a traffic collision last Monday evening in Rockville. He was holding her hand when they were struck by a car</p>
-<p class="more"><a href="https://www.mymcmedia.org/community-rallies-for-injured-4-year-old-who-lost-his-mom-in-collision/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://thebeaconnews.org/support-local-journalism/">Donate</a></aside>
+<p class="source"><a href="https://thebeaconnews.org/"><strong>The Kansas City Beacon</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T22:52:49+00:00" data-pub="5:52 PM CDT">Mon, Aug 24 @ 5PM CDT</time><a class="lozenge place" href="/search?state=KS">Kansas</a><a class="lozenge place" href="/search?place=Kansas+City&state=KS">Kansas City</a></p>
+<h2><a href="https://thebeaconnews.org/stories/2026/08/24/country-club-plaza-redevelopment-tax-breaks-approved-port-kc/">Port KC approves property tax break for the Country Club Plaza redevelopment</a></h2>
+<p class="byline">By Josh Merchant</p>
+<a class="shot" href="https://thebeaconnews.org/stories/2026/08/24/country-club-plaza-redevelopment-tax-breaks-approved-port-kc/" tabindex="-1" aria-hidden="true"><img src="../img/82f91c91e8db8c0cb807429306fb2c5d866eee40.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>Gillon Property Group will finance the redevelopment using $1.49 billion in bonds issued by Port KC. But Gillon ultimately will be responsible to pay back that debt. <a class="lozenge more" href="https://thebeaconnews.org/stories/2026/08/24/country-club-plaza-redevelopment-tax-breaks-approved-port-kc/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T20:43:53+00:00" data-pub="4:43 PM EDT">Monday, August 24, 2026 at 4:43 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>CT / Naugatuck Valley / <a href="https://valley.newhavenindependent.org/obituaries">Valley Independent Sentinel</a></small></p>
-<h2><a href="https://valley.newhavenindependent.org/2026/08/24/ansonia-officer-arrested-on-disorderly-conduct-charge/">Ansonia Officer Arrested On Disorderly Conduct Charge</a></h2>
-<p class="byline"><small>By Jasmine Wright</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://valley.newhavenindependent.org/obituaries">Support</a></span></p>
-<a class="shot" href="https://valley.newhavenindependent.org/2026/08/24/ansonia-officer-arrested-on-disorderly-conduct-charge/" tabindex="-1" aria-hidden="true"><img src="../img/4ca881e1a23d02746d0c888afaabe3765d6cb3b9.jpg" alt="" width="480" height="267" loading="lazy" decoding="async"></a>
-<p>After alleged drunken fight with family.</p>
-<p class="more"><a href="https://valley.newhavenindependent.org/2026/08/24/ansonia-officer-arrested-on-disorderly-conduct-charge/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://northdakotamonitor.com/">Support</a></aside>
+<p class="source"><a href="https://northdakotamonitor.com/"><strong>North Dakota Monitor</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T22:52:46+00:00" data-pub="5:52 PM CDT">Mon, Aug 24 @ 5PM CDT</time><a class="lozenge place" href="/search?state=ND">North Dakota</a></p>
+<h2><a href="https://northdakotamonitor.com/2026/08/24/north-dakotans-receiving-developmental-disability-services-affected-by-phishing-attack-on-state/">North Dakotans receiving developmental disability services affected by phishing attack on state</a></h2>
+<p class="byline">By North Dakota Monitor staff</p>
+<a class="shot" href="https://northdakotamonitor.com/2026/08/24/north-dakotans-receiving-developmental-disability-services-affected-by-phishing-attack-on-state/" tabindex="-1" aria-hidden="true"><img src="../img/fe26b75061d1db4f71b21def444d79acc78f4cce.jpg" alt="" width="480" height="323" loading="lazy" decoding="async"></a>
+<p>A data breach made public Monday by the North Dakota Department of Health and Human Services may have exposed health information of people receiving developmental disability services. A phishing email attack targeted the Department of Health and Human Services in July. The Information Technology Department investigated and determined that three Developmental Disabilities Division employees interac <a class="lozenge more" href="https://northdakotamonitor.com/2026/08/24/north-dakotans-receiving-developmental-disability-services-affected-by-phishing-attack-on-state/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T20:43:44+00:00" data-pub="4:43 PM EDT">Monday, August 24, 2026 at 4:43 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>MD / Baltimore / <a href="https://baltimorewitness.org/">Baltimore Witness</a></small></p>
-<h2><a href="https://baltimorewitness.org/defense-attorneys-unavailability-delays-double-shooting-duos-trial/">Defense Attorneys’ Unavailability Delays Double Shooting Duo’s Trial</a></h2>
-<p class="byline"><small>By Andrew Michaels</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://baltimorewitness.org/">Support</a></span></p>
-<p>The jury trial of a duo accused of fatally shooting 44-year-old Ricky Forehand Jr. and assaulting and attempting to kill another man was postponed on Aug. 24 due to the unavailability of both defense attorneys. Gregory Granger, 42, and Ritchie Hicks, 31, were scheduled to begin trial before Baltimore City Circuit Court Judge Althea M.</p>
-<p class="more"><a href="https://baltimorewitness.org/defense-attorneys-unavailability-delays-double-shooting-duos-trial/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.thebaltimorebanner.com/give">Donate</a></aside>
+<p class="source"><a href="https://www.thebaltimorebanner.com/"><strong>The Baltimore Banner</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T22:45:57+00:00" data-pub="6:45 PM EDT">Mon, Aug 24 @ 6PM EDT</time><a class="lozenge place" href="/search?state=MD">Maryland</a><a class="lozenge place" href="/search?place=Baltimore&state=MD">Baltimore</a></p>
+<h2><a href="https://www.thebanner.com/community/criminal-justice/baltimore-city-homicide-investigation-HBQ6KQN4YRFYBKHATYRYZZC2FU/">Woman found dead, man fatally shot in separate Baltimore incidents</a></h2>
+<p class="byline">By Olivia Bensimon</p>
+<a class="shot" href="https://www.thebanner.com/community/criminal-justice/baltimore-city-homicide-investigation-HBQ6KQN4YRFYBKHATYRYZZC2FU/" tabindex="-1" aria-hidden="true"><img src="../img/aca7bb9909047a2fbda31e3e7e6130cd2508c3e8.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Baltimore Police are investigating a suspicious death and a fatal shooting, officials said Monday. <a class="lozenge more" href="https://www.thebanner.com/community/criminal-justice/baltimore-city-homicide-investigation-HBQ6KQN4YRFYBKHATYRYZZC2FU/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T20:41:54+00:00" data-pub="4:41 PM EDT">Monday, August 24, 2026 at 4:41 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>NY / Harlem / <a href="https://www.harlemworldmagazine.com">Harlem World Magazine</a></small></p>
-<h2><a href="https://www.harlemworldmagazine.com/72-elected-officials-urge-dfs-to-reject-health-insurance-rate-hikes-from-harlem-to-hollis/">72 Elected Officials Urge DFS To Reject Health Insurance Rate Hikes From Harlem To Hollis</a></h2>
-<p class="byline"><small>By Harlem World Magazine</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.harlemworldmagazine.com/join-the-harlem-world-magazine-panel-free-speech-fundraiser-with-naacp-and-nycha-partners/">Become a member</a></span></p>
-<p>The #1 source in the world for all things Harlem. Assembly Member Jessica González-Rojas, State Senator Gustavo Rivera, and 72 additional NY elected officials are calling on the NY State Department of Financial Services (DFS). The call is to reject or substantially reduce excessive health insurance premium increases proposed for the 2027 plan year. In a letter to DFS, the elected officials warn th</p>
-<p class="more"><a href="https://www.harlemworldmagazine.com/72-elected-officials-urge-dfs-to-reject-health-insurance-rate-hikes-from-harlem-to-hollis/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://evanstonroundtable.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://evanstonroundtable.com/"><strong>Evanston RoundTable</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T22:45:49+00:00" data-pub="5:45 PM CDT">Mon, Aug 24 @ 5PM CDT</time><a class="lozenge place" href="/search?state=IL">Illinois</a><a class="lozenge place" href="/search?place=Evanston&state=IL">Evanston</a></p>
+<h2><a href="https://evanstonroundtable.com/2026/08/24/attorney-for-evanston-man-charged-with-animal-cruelty-torture-says-his-client-loved-his-dogs-had-no-criminal-intent/">Attorney for Evanston man charged with animal cruelty, torture, says his client loved his dogs, had no criminal intent</a></h2>
+<p class="byline">By Bob Chiarito</p>
+<a class="shot" href="https://evanstonroundtable.com/2026/08/24/attorney-for-evanston-man-charged-with-animal-cruelty-torture-says-his-client-loved-his-dogs-had-no-criminal-intent/" tabindex="-1" aria-hidden="true"><img src="../img/8e6f1d13932b14529a7d463d57710df2cf158dfc.jpg" alt="" width="480" height="480" loading="lazy" decoding="async"></a>
+<p>The Evanston man scheduled to go on trial for animal cruelty and torture in October did indeed zip-tie his dogs’ mouths shut, but was negligent and “stupid” rather than intending to hurt them, according to his attorney. Clifford Henry, 30, of the 1100 block of Florence Ave., is alleged to have tortured poodles and poodle mixes that he owned. He was arrested Aug. 10, 2024, and […] Attorney for Evan <a class="lozenge more" href="https://evanstonroundtable.com/2026/08/24/attorney-for-evanston-man-charged-with-animal-cruelty-torture-says-his-client-loved-his-dogs-had-no-criminal-intent/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T20:39:00+00:00" data-pub="4:39 PM EDT">Monday, August 24, 2026 at 4:39 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>NC / Whiteville / <a href="https://www.nrcolumbus.com/">The News Reporter</a></small></p>
-<h2><a href="https://www.nrcolumbus.com/northbrunswicknews/sample-ballots-available-ahead-of-oct-15-early-voting/article_6746de9c-a275-4423-a79c-6d64dce6d1dc.html">Sample ballots available ahead of Oct. 15 early voting</a></h2>
-<p class="byline"><small>By By George Willoughby georgewilloughby@northbrunswicknews.com</small><span class="aside"><a class="lozenge" href="../tags/family-owned.html">Family-owned</a><a class="lozenge give" href="https://www.nrcolumbus.com/donate">Donate</a></span></p>
-<a class="shot" href="https://www.nrcolumbus.com/northbrunswicknews/sample-ballots-available-ahead-of-oct-15-early-voting/article_6746de9c-a275-4423-a79c-6d64dce6d1dc.html" tabindex="-1" aria-hidden="true"><img src="../img/1763dda7b91aeacb1411a4f8b1c69b8eeac80273.jpg" alt="" width="300" height="181" loading="lazy" decoding="async"></a>
-<p>Brunswick County voters can now preview their choices in the Nov. 3 general election after the Brunswick County Board of Elections posted sample ballots and its early voting schedule.</p>
-<p class="more"><a href="https://www.nrcolumbus.com/northbrunswicknews/sample-ballots-available-ahead-of-oct-15-early-voting/article_6746de9c-a275-4423-a79c-6d64dce6d1dc.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://tulsaflyer.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://tulsaflyer.org/"><strong>Tulsa Flyer</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T22:42:23+00:00" data-pub="5:42 PM CDT">Mon, Aug 24 @ 5PM CDT</time><a class="lozenge place" href="/search?state=OK">Oklahoma</a><a class="lozenge place" href="/search?place=Tulsa&state=OK">Tulsa</a></p>
+<h2><a href="https://tulsaflyer.org/2026/08/24/your-money/post/pso-11-hike-could-last-longer/">PSO’s temporary $11 hike could last longer, but there is movement on the utility’s pending rate case</a></h2>
+<p class="byline">By Libby Hobbs</p>
+<a class="shot" href="https://tulsaflyer.org/2026/08/24/your-money/post/pso-11-hike-could-last-longer/" tabindex="-1" aria-hidden="true"><img src="../img/071137ead13ca8b7df18c2ac7b99b34e2259504f.jpg" alt="" width="480" height="220" loading="lazy" decoding="async"></a>
+<p>What’s next for PSO’s rate case before the Oklahoma Corporation Commission? A judge has made his recommendation, but the monthly increase will stick for now. <a class="lozenge more" href="https://tulsaflyer.org/2026/08/24/your-money/post/pso-11-hike-could-last-longer/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T20:36:18+00:00" data-pub="4:36 PM EDT">Monday, August 24, 2026 at 4:36 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>MD / Baltimore / <a href="https://baltimorewitness.org/">Baltimore Witness</a></small></p>
-<h2><a href="https://baltimorewitness.org/man-agrees-to-alford-plea-over-second-retrial-for-murder-of-his-5-month-old-baby/">Man Agrees to Alford Plea Over Second Retrial For Murder of His 5-Month-Old Baby</a></h2>
-<p class="byline"><small>By Andrew Michaels</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://baltimorewitness.org/">Support</a></span></p>
-<p>A 29-year-old Baltimore man previously convicted and later retried for the death of his 5-month-old daughter in 2018 accepted an Alford plea of 15 years incarceration on Aug. 24 in Baltimore City Circuit Court. Anthony Ford was scheduled for a second retrial before Judge Anthony F. Vittoria; however, counsel informed the court that the parties</p>
-<p class="more"><a href="https://baltimorewitness.org/man-agrees-to-alford-plea-over-second-retrial-for-murder-of-his-5-month-old-baby/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://wednesday-journal.fundjournalism.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://www.oakpark.com/"><strong>Wednesday Journal of Oak Park and River Forest</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T22:38:01+00:00" data-pub="5:38 PM CDT">Mon, Aug 24 @ 5PM CDT</time><a class="lozenge place" href="/search?state=IL">Illinois</a><a class="lozenge place" href="/search?place=River+Forest&state=IL">River Forest</a></p>
+<h2><a href="https://www.oakpark.com/2026/08/24/overnight-parking/">Overnight parking and single-family zoning issues remain separate</a></h2>
+<p class="byline">By Sydney Lovan</p>
+<a class="shot" href="https://www.oakpark.com/2026/08/24/overnight-parking/" tabindex="-1" aria-hidden="true"><img src="../img/c55a81aa475bf30f01cfe02ecbab8bf37fd1f0f3.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Proposed changes to single-family zoning designations throughout Oak Park are at the forefront of public discussion with community concerns raised over how these changes might impact Oak Park’s historic limits on parking cars on most streets overnight. Craig Failor, Oak Park’s head of development services, simply said they wouldn’t. “The zoning recommendations have no impact on the overnight <a class="lozenge more" href="https://www.oakpark.com/2026/08/24/overnight-parking/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T20:36:17+00:00" data-pub="3:36 PM CDT">Monday, August 24, 2026 at 3:36 PM CDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>WI / Wausau / <a href="https://www.wausaupilotandreview.com">Wausau Pilot &amp; Review</a></small></p>
-<h2><a href="https://wausaupilotandreview.com/2026/08/24/portage-co-jail-officer-resigns-after-arrest-for-fight-with-brother/">Portage Co jail officer resigns after arrest for fight with brother</a></h2>
-<p class="byline"><small>By Shereen Siewert</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://wausaupilotandreview.com/2026/08/24/dnr-seeks-hunters-meat-processors-for-deer-donation-program/">Donate</a></span></p>
-<a class="shot" href="https://wausaupilotandreview.com/2026/08/24/portage-co-jail-officer-resigns-after-arrest-for-fight-with-brother/" tabindex="-1" aria-hidden="true"><img src="../img/058b6011780bc274e5743d4d4f7550b1e66a705a.jpg" alt="" width="336" height="224" loading="lazy" decoding="async"></a>
-<p>By Annie Pulley, THE BADGER PROJECT A Portage County corrections officer resigned days after he was arrested under suspicion of assaulting his brother with a thermos during an argument in July. Todd Domres, the 46-year-old former jail officer, now faces charges of substantial battery, a felony, and criminal damage to property, a misdemeanor. He quit his</p>
-<p class="more"><a href="https://wausaupilotandreview.com/2026/08/24/portage-co-jail-officer-resigns-after-arrest-for-fight-with-brother/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://votebeat.fundjournalism.org/donate/?campaign=701Pc00000M3cVWIAZ">Donate</a></aside>
+<p class="source"><a href="https://www.votebeat.org/arizona/"><strong>Votebeat Arizona</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T22:37:11+00:00" data-pub="3:37 PM MST">Mon, Aug 24 @ 3PM MST</time><a class="lozenge place" href="/search?state=AZ">Arizona</a></p>
+<h2><a href="https://www.votebeat.org/national/2026/08/24/supreme-court-lifts-stay-trump-executive-order-on-elections-mail-ballot-restrictions/">Supreme Court lifts 1 of 2 blocks on Trump’s mail-voting executive order</a></h2>
+<p class="byline">By Dion Nissenbaum, Carrie Levine</p>
+<a class="shot" href="https://www.votebeat.org/national/2026/08/24/supreme-court-lifts-stay-trump-executive-order-on-elections-mail-ballot-restrictions/" tabindex="-1" aria-hidden="true"><img src="../img/087f7476c9f8cc21c1894ce9091b010c0bd7a81b.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>President Donald Trump signs an executive order cracking down on mail-in voting on March 31, 2026. The U.S. Supreme Court on Monday lifted a stay blocking key provisions, but legal and practical hurdles could make it hard to put new restrictions in place for November. <a class="lozenge more" href="https://www.votebeat.org/national/2026/08/24/supreme-court-lifts-stay-trump-executive-order-on-elections-mail-ballot-restrictions/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T20:30:14+00:00" data-pub="1:30 PM PDT">Monday, August 24, 2026 at 1:30 PM PDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>WA / Statewide / <a href="https://washingtonstatestandard.com/">Washington State Standard</a></small></p>
-<h2><a href="https://washingtonstatestandard.com/2026/08/24/repub/nevada-sues-feds-over-colorado-river-cuts/">Nevada sues feds over Colorado River cuts</a></h2>
-<p class="byline"><small>By Jeniffer Solis</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://washingtonstatestandard.com/">Support</a></span></p>
-<a class="shot" href="https://washingtonstatestandard.com/2026/08/24/repub/nevada-sues-feds-over-colorado-river-cuts/" tabindex="-1" aria-hidden="true"><img src="../img/4d34f86e23eaeb95ec343dcb786ee4a94f0dd85d.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Nevada officials have filed the first lawsuit challenging the Trump administration’s Colorado River plan, a plan that would require Nevada to cut water use by about 17% over the next two years and authorizes even larger cuts during dry years. The lawsuit filed Monday, comes three days after the Trump administration released its 10-year plan</p>
-<p class="more"><a href="https://washingtonstatestandard.com/2026/08/24/repub/nevada-sues-feds-over-colorado-river-cuts/">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Also in <a href="https://utahnewsdispatch.com/2026/08/24/repub/nevada-sues-feds-over-colorado-river-cuts/">Utah News Dispatch</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.newtonbeacon.org/give/">Donate</a></aside>
+<p class="source"><a href="https://www.newtonbeacon.org/"><strong>Newton Beacon</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T22:36:50+00:00" data-pub="6:36 PM EDT">Mon, Aug 24 @ 6PM EDT</time><a class="lozenge place" href="/search?state=MA">Massachusetts</a><a class="lozenge place" href="/search?place=Newton&state=MA">Newton</a></p>
+<h2><a href="https://www.newtonbeacon.org/massachusetts-primary-five-things-to-know-in-newton/">Massachusetts Primary: Five things to know in Newton</a></h2>
+<p class="byline">By Bryan McGonigle</p>
+<p>In one week, the 2026 primary campaign season will end in Massachusetts. And what a noisy primary season it’s been. Candidates for governor, state legislature, the U.S. House of Representatives and the U.S. Senate are clamoring for their party’s respective nomination. Here’s a rundown of what to know for next Tuesday’s big day. 1. Who <a class="lozenge more" href="https://www.newtonbeacon.org/massachusetts-primary-five-things-to-know-in-newton/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T20:30:14+00:00" data-pub="4:30 PM EDT">Monday, August 24, 2026 at 4:30 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>NC / Statewide / <a href="https://ncnewsline.com">NC Newsline</a></small></p>
-<h2><a href="https://ncnewsline.com/2026/08/24/nc-failed-to-protect-coastal-fisheries-court-says/">NC failed to protect coastal fisheries, court says</a></h2>
-<p class="byline"><small>By Christine Zhu</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://ncnewsline.com">Support</a></span></p>
-<a class="shot" href="https://ncnewsline.com/2026/08/24/nc-failed-to-protect-coastal-fisheries-court-says/" tabindex="-1" aria-hidden="true"><img src="../img/8035c2acbf5ea5a2792af311cec90446aa0b405c.jpg" alt="" width="480" height="355" loading="lazy" decoding="async"></a>
-<p>None of North Carolina’s 13 state-managed coastal fish stocks is currently viable for the long term, according to the court’s 190-page ruling.</p>
-<p class="more"><a href="https://ncnewsline.com/2026/08/24/nc-failed-to-protect-coastal-fisheries-court-says/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://vtdigger.org/become-a-member/?campaign=7013i000000d8rcAAA">Donate</a></aside>
+<p class="source"><a href="https://vtdigger.org/"><strong>VTDigger</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T22:35:11+00:00" data-pub="6:35 PM EDT">Mon, Aug 24 @ 6PM EDT</time><a class="lozenge place" href="/search?state=VT">Vermont</a><a class="lozenge place" href="/search?place=Montpelier&state=VT">Montpelier</a></p>
+<h2><a href="https://vtdigger.org/2026/08/24/a-vermonter-is-running-for-treasurer-as-a-progressive-the-party-says-hes-not-their-candidate/">A Vermonter is running for treasurer as a Progressive. The party says he’s not their candidate.</a></h2>
+<p class="byline">By Shaun Robinson</p>
+<a class="shot" href="https://vtdigger.org/2026/08/24/a-vermonter-is-running-for-treasurer-as-a-progressive-the-party-says-hes-not-their-candidate/" tabindex="-1" aria-hidden="true"><img src="../img/a98365b951dbbcbe3aade51d4b898ee17d82ecf5.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>“Most of my dearest friends were astounded to discover my choice of party when I decided to run for office,” Zachary Hampl said earlier this year. <a class="lozenge more" href="https://vtdigger.org/2026/08/24/a-vermonter-is-running-for-treasurer-as-a-progressive-the-party-says-hes-not-their-candidate/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T20:30:00+00:00" data-pub="2:30 PM MDT">Monday, August 24, 2026 at 2:30 PM MDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>MT / Helena / <a href="https://montanafreepress.org/">Montana Free Press</a></small></p>
-<h2><a href="https://montanafreepress.org/2026/08/24/judges-say-public-defender-backlog-taking-a-toll-in-great-falls-city-court/">Judges say public defender backlog taking a toll in Great Falls city court</a></h2>
-<p class="byline"><small>By Matt Hudson</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://montanafreepress.org/donate/?utm_source=website&amp;utm_medium=homepage&amp;utm_campaign=header">Donate</a></span></p>
-<a class="shot" href="https://montanafreepress.org/2026/08/24/judges-say-public-defender-backlog-taking-a-toll-in-great-falls-city-court/" tabindex="-1" aria-hidden="true"><img src="../img/15f12b9037e0cd9a0cfdc4739fe11d42ee88ec00.jpg" alt="" width="480" height="319" loading="lazy" decoding="async"></a>
-<p>The state&#x27;s public defender office acknowledged several challenges, including difficulty filling vacant positions, a shortage of contract attorneys and growing caseloads.</p>
-<p class="more"><a href="https://montanafreepress.org/2026/08/24/judges-say-public-defender-backlog-taking-a-toll-in-great-falls-city-court/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://ithacavoice.org/support-our-publication/">Donate</a></aside>
+<p class="source"><a href="https://ithacavoice.org/"><strong>The Ithaca Voice</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T22:35:00+00:00" data-pub="6:35 PM EDT">Mon, Aug 24 @ 6PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Ithaca&state=NY">Ithaca</a></p>
+<h2><a href="https://ithacavoice.org/2026/08/bangs-ambulance-contract-came-with-gains-and-difficult-compromises/">Bangs Ambulance contract came with gains and difficult compromises</a></h2>
+<p class="byline">By Hailea Potter</p>
+<a class="shot" href="https://ithacavoice.org/2026/08/bangs-ambulance-contract-came-with-gains-and-difficult-compromises/" tabindex="-1" aria-hidden="true"><img src="../img/b8f0811c539c5a0a67c61c1c832e40bffb67c9c3.jpg" alt="" width="400" height="267" loading="lazy" decoding="async"></a>
+<p>Bangs Ambulance workers finally have their first union contract after more than three years of negotiations. The union membership cast a decisive vote to ratify the agreement despite some members <a class="lozenge more" href="https://ithacavoice.org/2026/08/bangs-ambulance-contract-came-with-gains-and-difficult-compromises/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T20:27:34+00:00" data-pub="4:27 PM EDT">Monday, August 24, 2026 at 4:27 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>MD / Baltimore / <a href="https://baltimorewitness.org/">Baltimore Witness</a></small></p>
-<h2><a href="https://baltimorewitness.org/defendant-sentenced-to-five-years-in-prison-for-harford-road-school-shooting/">Defendant Sentenced to Five Years in Prison for Harford Road School Shooting</a></h2>
-<p class="byline"><small>By Abraham Leo</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://baltimorewitness.org/">Support</a></span></p>
-<p>Baltimore City Circuit Court Judge John Addison Howard sentenced 44-year-old Owen Michael Tonkins III to five years imprisonment on Aug. 21 after Owen pleaded guilty to firing 40 rounds of ammunition at a school building. Owen was originally charged with two counts of handgun on person and a single count of discharging a gun, pistol, and</p>
-<p class="more"><a href="https://baltimorewitness.org/defendant-sentenced-to-five-years-in-prison-for-harford-road-school-shooting/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://indepthnh.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://indepthnh.org/"><strong>In Depth New Hampshire</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T22:31:03+00:00" data-pub="6:31 PM EDT">Mon, Aug 24 @ 6PM EDT</time><a class="lozenge place" href="/search?state=NH">New Hampshire</a></p>
+<h2><a href="https://indepthnh.org/2026/08/24/vp-jd-vance-campaigns-for-paul-lepage-in-maine/">VP JD Vance Campaigns for Paul LePage in Maine</a></h2>
+<p class="byline">By Nancy West</p>
+<p>Vice President JD Vance delivered remarks on the economy and campaigned for U.S. House candidate Paul LePage (R-ME) at a rally in Brewer, Maine in Part 2 of video. <a class="lozenge more" href="https://indepthnh.org/2026/08/24/vp-jd-vance-campaigns-for-paul-lepage-in-maine/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T20:20:06+00:00" data-pub="4:20 PM EDT">Monday, August 24, 2026 at 4:20 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>FL / Statewide / <a href="https://floridaphoenix.com/">Florida Phoenix</a></small></p>
-<h2><a href="https://floridaphoenix.com/2026/08/24/desantis-uncertain-floridas-redistricted-congressional-map-can-save-house-republicans-this-fall/">DeSantis uncertain Florida’s redistricted congressional map can save House Republicans this fall</a></h2>
-<p class="byline"><small>By Mitch Perry</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://floridaphoenix.com/">Support</a></span></p>
-<a class="shot" href="https://floridaphoenix.com/2026/08/24/desantis-uncertain-floridas-redistricted-congressional-map-can-save-house-republicans-this-fall/" tabindex="-1" aria-hidden="true"><img src="../img/0a9aa776c2d486e04da0bb1e3e08a4ab61dd6a2c.jpg" alt="" width="480" height="361" loading="lazy" decoding="async"></a>
-<p>TAMPA — Although Gov. Ron DeSantis and the Republican-led Florida Legislature have always insisted constitutional obligations compelled their mid-decade congressional redistricting, the map was designed to add as many as four Florida Republicans to the U.S. House of Representatives. But with Donald Trump’s approval ratings tanking and images of a Democratic blue wave emerging, DeSantis</p>
-<p class="more"><a href="https://floridaphoenix.com/2026/08/24/desantis-uncertain-floridas-redistricted-congressional-map-can-save-house-republicans-this-fall/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://atlantablackstar.com/">Support</a></aside>
+<p class="source"><a href="https://atlantablackstar.com/"><strong>Atlanta Black Star</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T22:30:45+00:00" data-pub="6:30 PM EDT">Mon, Aug 24 @ 6PM EDT</time><a class="lozenge place" href="/search?state=GA">Georgia</a><a class="lozenge place" href="/search?place=Atlanta&state=GA">Atlanta</a></p>
+<h2><a href="https://atlantablackstar.com/2026/08/24/trump-goes-off-the-rails-in-rant-about-his-former-allies/">‘Pretty Low IQ’: Trump Goes Off the Rails in Rant About His Former Allies—But His Attempt at a Brutal Insult Only Puts Him to Shame</a></h2>
+<p class="byline">By ArLuther Lee</p>
+<a class="shot" href="https://atlantablackstar.com/2026/08/24/trump-goes-off-the-rails-in-rant-about-his-former-allies/" tabindex="-1" aria-hidden="true"><img src="../img/5789a2635a77aebd01ba334a16d903912f8a3fea.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>Another late-night social media attack from President Donald Trump last week turned one of his favorite political weapons back on himself. After years of boasting […] ‘Pretty Low IQ’: Trump Goes Off the Rails in Rant About His Former Allies—But His Attempt at a Brutal Insult Only Puts Him to Shame <a class="lozenge more" href="https://atlantablackstar.com/2026/08/24/trump-goes-off-the-rails-in-rant-about-his-former-allies/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T20:18:23+00:00" data-pub="3:18 PM CDT">Monday, August 24, 2026 at 3:18 PM CDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>TX / Amarillo / <a href="https://amarillotribune.org/">Amarillo Tribune</a></small></p>
-<h2><a href="https://amarillotribune.org/2026/08/24/potter-county-commissioners-approve-budget-and-potential-2026-tax-rate/">Potter County Commissioners approve budget and potential 2026 tax rate</a></h2>
-<p class="byline"><small>By Brianna Maestas</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://amarillotribune.org/support-our-publication/">Donate</a></span></p>
-<a class="shot" href="https://amarillotribune.org/2026/08/24/potter-county-commissioners-approve-budget-and-potential-2026-tax-rate/" tabindex="-1" aria-hidden="true"><img src="../img/1ac183b4d426b8fde940a36bd06d746888947ba1.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Editor’s note: Local elected officials make decisions every week. The Amarillo Tribune follows those conversations closely and shares what matters most, and what it means for you, in our Need to Know series. Here’s what you need to know about the Potter County Commissioners’ Court meeting on Aug. 24, 2026, briefly explained in a few</p>
-<p class="more"><a href="https://amarillotribune.org/2026/08/24/potter-county-commissioners-approve-budget-and-potential-2026-tax-rate/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://eastlansinginfo.news/donate/">Donate</a></aside>
+<p class="source"><a href="https://eastlansinginfo.news/"><strong>East Lansing Info</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T22:30:00+00:00" data-pub="6:30 PM EDT">Mon, Aug 24 @ 6PM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=East+Lansing&state=MI">East Lansing</a></p>
+<h2><a href="https://eastlansinginfo.news/a-community-watch-group-is-monitoring-elpd-as-msu-students-return-to-east-lansing/">A Community Watch Group is Monitoring ELPD as MSU Students Return to East Lansing</a></h2>
+<p class="byline">By Anna Liz Nichols</p>
+<p>The group began sending members downtown last fall amid a series of policing controversies. <a class="lozenge more" href="https://eastlansinginfo.news/a-community-watch-group-is-monitoring-elpd-as-msu-students-return-to-east-lansing/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T20:14:12+00:00" data-pub="4:14 PM EDT">Monday, August 24, 2026 at 4:14 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>NJ / Montclair / <a href="https://montclairlocal.news/">Montclair Local</a></small></p>
-<h2><a href="https://montclairlocal.news/2026/08/historic-tree-felled-at-hillside-school-montclair/">A 60-Inch Oak is Gone as Montclair Debates Tree Protections</a></h2>
-<p class="byline"><small>By Matt Kadosh</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://montclairlocal.news/donate/">Donate</a></span></p>
-<a class="shot" href="https://montclairlocal.news/2026/08/historic-tree-felled-at-hillside-school-montclair/" tabindex="-1" aria-hidden="true"><img src="../img/214e1260f54283257b537c20803843483adb1183.jpg" alt="" width="250" height="188" loading="lazy" decoding="async"></a>
-<p>A 60-inch diameter oak in front of Montclair&#x27;s Hillside School is now logs. Here&#x27;s what would change under a proposed tree preservation law.</p>
-<p class="more"><a href="https://montclairlocal.news/2026/08/historic-tree-felled-at-hillside-school-montclair/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/public-media.html">Public media</a><a class="lozenge give" href="https://laist.com/support-us/car-donation">Donate</a></aside>
+<p class="source"><a href="https://laist.com/"><strong>LAist</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T22:28:37+00:00" data-pub="3:28 PM PDT">Mon, Aug 24 @ 3PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://laist.com/news/politics/supreme-court-pauses-lower-court-ruling-on-trumps-mail-voting-order-as-hurdles-loom">Supreme Court gives Trump an interim win on his mail voting order, but hurdles loom</a></h2>
+<a class="shot" href="https://laist.com/news/politics/supreme-court-pauses-lower-court-ruling-on-trumps-mail-voting-order-as-hurdles-loom" tabindex="-1" aria-hidden="true"><img src="../img/6ff52956a512d4531fda5220eff1a967b3d8370e.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>The Supreme Court paused a lower court&#x27;s ruling that blocked key parts of Trump&#x27;s order to limit voting by mail for the midterms. <a class="lozenge more" href="https://laist.com/news/politics/supreme-court-pauses-lower-court-ruling-on-trumps-mail-voting-order-as-hurdles-loom">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T20:06:07+00:00" data-pub="4:06 PM EDT">Monday, August 24, 2026 at 4:06 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>MA / Cambridge / <a href="https://www.cambridgeday.com/">Cambridge Day</a></small></p>
-<h2><a href="https://www.cambridgeday.com/2026/08/24/man-killed-by-police-identified/">Man killed by police identified</a></h2>
-<p class="byline"><small>By Michael F. Fitzgerald</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.cambridgeday.com/donate">Donate</a></span></p>
-<a class="shot" href="https://www.cambridgeday.com/2026/08/24/man-killed-by-police-identified/" tabindex="-1" aria-hidden="true"><img src="../img/9ed30387487c482a126e5d9d314bad1f15f1d96e.jpg" alt="" width="480" height="480" loading="lazy" decoding="async"></a>
-<p>The person fatally shot by Cambridge police Friday night was William Woodworth, 64. He lived in Watertown.</p>
-<p class="more"><a href="https://www.cambridgeday.com/2026/08/24/man-killed-by-police-identified/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://arkansasadvocate.com/">Support</a></aside>
+<p class="source"><a href="https://arkansasadvocate.com/"><strong>Arkansas Advocate</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T22:26:41+00:00" data-pub="5:26 PM CDT">Mon, Aug 24 @ 5PM CDT</time><a class="lozenge place" href="/search?state=AR">Arkansas</a></p>
+<h2><a href="https://arkansasadvocate.com/2026/08/24/arkansas-state-police-director-cancels-appearance-before-black-lawmakers-to-discuss-traffic-stop/">Arkansas State Police director cancels appearance before Black lawmakers to discuss traffic stop</a></h2>
+<p class="byline">By Antoinette Grajeda</p>
+<a class="shot" href="https://arkansasadvocate.com/2026/08/24/arkansas-state-police-director-cancels-appearance-before-black-lawmakers-to-discuss-traffic-stop/" tabindex="-1" aria-hidden="true"><img src="../img/d73f04ec306a7c2aa1730e45b0a0f27a7d20f9e6.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>The head of Arkansas State Police said Monday he would be unable to appear before the Arkansas Legislative Black Caucus to discuss a state trooper punching an 18-year-old during a traffic stop because of pending litigation. Col. Mike Hagar had been scheduled to appear before the caucus Tuesday to discuss the Aug. 1 traffic stop <a class="lozenge more" href="https://arkansasadvocate.com/2026/08/24/arkansas-state-police-director-cancels-appearance-before-black-lawmakers-to-discuss-traffic-stop/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T20:00:21+00:00" data-pub="12:00 PM AKDT">Monday, August 24, 2026 at 12:00 PM AKDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>AK / Statewide / <a href="https://alaskabeacon.com/">Alaska Beacon</a></small></p>
-<h2><a href="https://alaskabeacon.com/2026/08/24/a-democratic-socialist-could-cost-peltola-votes-in-november-but-he-says-hed-actually-boost-her/">A Democratic Socialist could cost Peltola votes in November. But he says he’d actually boost her.</a></h2>
-<p class="byline"><small>By Nathaniel Herz, Northern Journal-Anchorage Press</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://alaskabeacon.com/">Support</a></span></p>
-<a class="shot" href="https://alaskabeacon.com/2026/08/24/a-democratic-socialist-could-cost-peltola-votes-in-november-but-he-says-hed-actually-boost-her/" tabindex="-1" aria-hidden="true"><img src="../img/6af51269bd609d1c68c0a07b15bb5aa2f82956ea.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>This story was originally published in the Anchorage Press. Subscribe here. Leading up to Alaska’s high-profile U.S. Senate primary, political groups spent millions of dollars to boost not only the leading Republicans and Democrats, but also fringe candidates who could tip the balance of a tight race in November. Most of those efforts fell flat</p>
-<p class="more"><a href="https://alaskabeacon.com/2026/08/24/a-democratic-socialist-could-cost-peltola-votes-in-november-but-he-says-hed-actually-boost-her/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://lbpost.com/?form=join">Become a member</a></aside>
+<p class="source"><a href="https://lbpost.com/"><strong>Long Beach Post</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T22:25:16+00:00" data-pub="3:25 PM PDT">Mon, Aug 24 @ 3PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Long+Beach&state=CA">Long Beach</a></p>
+<h2><a href="https://lbpost.com/news/crime/long-beach-deadly-crashes-weekend-drunk-driver-tela">Three killed in separate crashes during deadly weekend on Long Beach streets</a></h2>
+<p class="byline">By Jacob Sisneros</p>
+<a class="shot" href="https://lbpost.com/news/crime/long-beach-deadly-crashes-weekend-drunk-driver-tela" tabindex="-1" aria-hidden="true"><img src="../img/8b318e2fb40fbeaebfb8fc540d5ccc3c6e50aac7.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Three people were killed and several more were injured in a string of wrecks, including a speeding Tesla driver crashing through a cinderblock wall and a suspected drunk driver slamming into another car. <a class="lozenge more" href="https://lbpost.com/news/crime/long-beach-deadly-crashes-weekend-drunk-driver-tela">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T20:00:00+00:00" data-pub="1:00 PM PDT">Monday, August 24, 2026 at 1:00 PM PDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>CA / Orange County / <a href="https://voiceofoc.org/">Voice of OC</a></small></p>
-<h2><a href="https://voiceofoc.org/2026/08/another-orange-county-city-bans-kratom/">Another Orange County City Bans Kratom</a></h2>
-<p class="byline"><small>By Michelle King</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://voiceofoc.org/donate">Donate</a></span></p>
-<a class="shot" href="https://voiceofoc.org/2026/08/another-orange-county-city-bans-kratom/" tabindex="-1" aria-hidden="true"><img src="../img/aebec781d1e24438603819a8f849b86698fb76f5.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Fountain Valley city officials banned the sale of synthetic kratom, following suit of several cities introducing similar bans over the past year. Voice of OC is Orange County&#x27;s nonprofit newsroom. We rely on donations from people like you to sustain our news agency. Please make a contribution today: https://voiceofoc.org/donate</p>
-<p class="more"><a href="https://voiceofoc.org/2026/08/another-orange-county-city-bans-kratom/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://michiganadvance.com/">Support</a></aside>
+<p class="source"><a href="https://michiganadvance.com/"><strong>Michigan Advance</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T22:21:33+00:00" data-pub="6:21 PM EDT">Mon, Aug 24 @ 6PM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a></p>
+<h2><a href="https://michiganadvance.com/2026/08/24/board-of-state-canvassers-deadlocks-on-citizens-only-voting-measure-setting-up-court-fight/">Board of State Canvassers deadlocks on citizens-only voting measure, setting up court fight</a></h2>
+<p class="byline">By Katherine Dailey</p>
+<a class="shot" href="https://michiganadvance.com/2026/08/24/board-of-state-canvassers-deadlocks-on-citizens-only-voting-measure-setting-up-court-fight/" tabindex="-1" aria-hidden="true"><img src="../img/af77a7ae1ced59db9dd31c78b25cdeb2cef2164b.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>After nearly seven hours of discussion, the Michigan Board of State Canvassers deadlocked 2-2 on a ballot measure that would enact strict voter ID laws, meaning the proposal was not certified for the November ballot. However, the measure is likely to go to the Michigan Supreme Court for a final decision. The board’s four members, <a class="lozenge more" href="https://michiganadvance.com/2026/08/24/board-of-state-canvassers-deadlocks-on-citizens-only-voting-measure-setting-up-court-fight/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T20:00:00+00:00" data-pub="4:00 PM EDT">Monday, August 24, 2026 at 4:00 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>ME / Augusta / <a href="https://themainemonitor.org/">The Maine Monitor</a></small></p>
-<h2><a href="https://themainemonitor.org/police-checks-collins-home-spike/">Police checks on Susan Collins’ home spike with high-profile Senate votes</a></h2>
-<p class="byline"><small>By Sawyer Loftus, Bangor Daily News</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://themainemonitor.org/donate/?utm_source=website&amp;utm_medium=mobile_offcanvas&amp;utm_campaign=general">Donate</a></span></p>
-<a class="shot" href="https://themainemonitor.org/police-checks-collins-home-spike/" tabindex="-1" aria-hidden="true"><img src="../img/8b5e780fbc25a1de74a218f51ce5707a95279cdd.jpg" alt="" width="480" height="308" loading="lazy" decoding="async"></a>
-<p>The pattern traces Collins’ transformation from a popular figure into a polarizing one drawing strong Democratic campaigns against her.</p>
-<p class="more"><a href="https://themainemonitor.org/police-checks-collins-home-spike/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.cpr.org/news/">Support</a></aside>
+<p class="source"><a href="https://www.cpr.org/news/"><strong>CPRNews</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T22:20:35+00:00" data-pub="4:20 PM MDT">Mon, Aug 24 @ 4PM MDT</time><a class="lozenge place" href="/search?state=CO">Colorado</a><a class="lozenge place" href="/search?place=Centennial&state=CO">Centennial</a></p>
+<h2><a href="https://www.cpr.org/2026/08/24/caring-for-denver-proposed-restrictions/">City council considers guardrails for Caring for Denver after revelations about record-keeping, spending</a></h2>
+<a class="shot" href="https://www.cpr.org/2026/08/24/caring-for-denver-proposed-restrictions/" tabindex="-1" aria-hidden="true"><img src="../img/277e531f35d57624d145aa077d18461ee512b7ed.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>The organization has deemed itself exempt from many open records requirements. That could change. <a class="lozenge more" href="https://www.cpr.org/2026/08/24/caring-for-denver-proposed-restrictions/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T19:51:58+00:00" data-pub="3:51 PM EDT">Monday, August 24, 2026 at 3:51 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>VT / Montpelier / <a href="https://vtdigger.org/">VTDigger</a></small></p>
-<h2><a href="https://vtdigger.org/2026/08/24/opinion-vermont-cannot-spend-its-way-into-affordability/">Vermont cannot spend its way into affordability</a></h2>
-<p class="byline"><small>By Elizabeth Brown</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://vtdigger.org/become-a-member/?campaign=7013i000000d8rcAAA">Donate</a></span></p>
-<a class="shot" href="https://vtdigger.org/2026/08/24/opinion-vermont-cannot-spend-its-way-into-affordability/" tabindex="-1" aria-hidden="true"><img src="../img/29283b1322500a85908f4590fefe17d68ea301bd.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>New taxes and revenue proposals won&#x27;t fix what&#x27;s driving up costs for Vermonters.</p>
-<p class="more"><a href="https://vtdigger.org/2026/08/24/opinion-vermont-cannot-spend-its-way-into-affordability/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://iowacapitaldispatch.com/">Support</a></aside>
+<p class="source"><a href="https://iowacapitaldispatch.com/"><strong>Iowa Capital Dispatch</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T22:17:33+00:00" data-pub="5:17 PM CDT">Mon, Aug 24 @ 5PM CDT</time><a class="lozenge place" href="/search?state=IA">Iowa</a></p>
+<h2><a href="https://iowacapitaldispatch.com/2026/08/24/zach-lahn-calls-for-state-regulation-of-data-centers-surveillance-cameras/">Zach Lahn calls for state regulation of data centers, surveillance cameras</a></h2>
+<p class="byline">By Robin Opsahl</p>
+<a class="shot" href="https://iowacapitaldispatch.com/2026/08/24/zach-lahn-calls-for-state-regulation-of-data-centers-surveillance-cameras/" tabindex="-1" aria-hidden="true"><img src="../img/99aabd3575d05c1092d8d41a41d2bd4ebd104932.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Zach Lahn, the GOP nominee for Iowa governor in 2026, said Monday many of the major concerns about new technologies like data center power use and Flock cameras are issues that need to be regulated at a state level. Lahn, a businessman, spoke about his gubernatorial campaign and answered questions at an Iowa Association of <a class="lozenge more" href="https://iowacapitaldispatch.com/2026/08/24/zach-lahn-calls-for-state-regulation-of-data-centers-surveillance-cameras/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T19:49:55+00:00" data-pub="3:49 PM EDT">Monday, August 24, 2026 at 3:49 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>MD / Silver Spring / <a href="https://www.mymcmedia.org">MyMCMedia</a></small></p>
-<h2><a href="https://www.mymcmedia.org/new-video-app-aims-to-better-connect-the-community-with-county-services/">New video app aims to better connect the community with county services</a></h2>
-<p class="byline"><small>By Cristina Caicedo Smit</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.mymcmedia.org/donate/">Donate</a></span></p>
-<a class="shot" href="https://www.mymcmedia.org/new-video-app-aims-to-better-connect-the-community-with-county-services/" tabindex="-1" aria-hidden="true"><img src="../img/d7c8b90942c418f8f94f0e5d9005925e9efb81fb.jpg" alt="" width="480" height="724" loading="lazy" decoding="async"></a>
-<p>Montgomery County recently announced the launch of an app called Connect Montgomery. The new mobile platform aims to bring together, in one place, informational videos about local announcements, programs and</p>
-<p class="more"><a href="https://www.mymcmedia.org/new-video-app-aims-to-better-connect-the-community-with-county-services/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://marbleheadcurrent.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://marbleheadcurrent.org/"><strong>Marblehead Current</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T22:17:21+00:00" data-pub="6:17 PM EDT">Mon, Aug 24 @ 6PM EDT</time><a class="lozenge place" href="/search?state=MA">Massachusetts</a><a class="lozenge place" href="/search?place=Marblehead&state=MA">Marblehead</a></p>
+<h2><a href="https://marbleheadcurrent.org/2026/08/24/marblehead-cycle-owner-i-wont-sell-e-bikes-to-or-for-kids/">Marblehead Cycle owner: I won’t sell e-bikes to—or for—kids</a></h2>
+<p class="byline">By Submitted Content</p>
+<p>This is a guest column by Dan Shuman, owner of Marblehead Cycle Parents, please do not buy e-bikes for kids. Recently NBC Nightly News did a feature on the increasing <a class="lozenge more" href="https://marbleheadcurrent.org/2026/08/24/marblehead-cycle-owner-i-wont-sell-e-bikes-to-or-for-kids/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T19:46:36+00:00" data-pub="2:46 PM CDT">Monday, August 24, 2026 at 2:46 PM CDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>KS / Wichita / <a href="https://communityvoiceks.com/">The Community Voice</a></small></p>
-<h2><a href="https://www.communityvoiceks.com/2026/08/24/missouri-supreme-court-ballot-measures/">Missouri Supreme Court Sets Hearing Date for Referendum, Initiative Case Appeals</a></h2>
-<p class="byline"><small>By Bonita, Editor-in-Chief and Rudi Keller, Missouri Independent</small><span class="aside"><a class="lozenge give" href="https://www.communityvoiceks.com/contribute/">Donate</a></span></p>
-<a class="shot" href="https://www.communityvoiceks.com/2026/08/24/missouri-supreme-court-ballot-measures/" tabindex="-1" aria-hidden="true"><img src="../img/b77512b9a19ab40325f424a85eb7ff25896b46a4.jpg" alt="" width="480" height="286" loading="lazy" decoding="async"></a>
-<p>The Missouri Supreme Court set Sept. 2 for arguments in the appeals of two ballot measure cases, including a referendum on the state’s gerrymandered congressional map. Both measures were ruled unconstitutional Wednesday</p>
-<p class="more"><a href="https://www.communityvoiceks.com/2026/08/24/missouri-supreme-court-ballot-measures/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://wausaupilotandreview.com/2026/08/24/dnr-seeks-hunters-meat-processors-for-deer-donation-program/">Donate</a></aside>
+<p class="source"><a href="https://www.wausaupilotandreview.com"><strong>Wausau Pilot &amp; Review</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T22:16:00+00:00" data-pub="5:16 PM CDT">Mon, Aug 24 @ 5PM CDT</time><a class="lozenge place" href="/search?state=WI">Wisconsin</a><a class="lozenge place" href="/search?place=Wausau&state=WI">Wausau</a></p>
+<h2><a href="https://wausaupilotandreview.com/2026/08/24/republicans-on-defense-as-democrats-seek-control-of-the-wisconsin-senate/">Republicans on defense as Democrats seek control of the Wisconsin Senate</a></h2>
+<p class="byline">By Shereen Siewert</p>
+<a class="shot" href="https://wausaupilotandreview.com/2026/08/24/republicans-on-defense-as-democrats-seek-control-of-the-wisconsin-senate/" tabindex="-1" aria-hidden="true"><img src="../img/0182c422822e75f3b0d402dc99fefd11cfcc2732.jpg" alt="" width="336" height="224" loading="lazy" decoding="async"></a>
+<p>by Baylor Spears, Wisconsin Examiner August 24, 2026 Out of the 98 state legislative bodies across the U.S., the Wisconsin Senate has been deemed the “most flippable” by Wisconsin Democrats. Still, Sen. Patrick Testin (R-Stevens Point) told the Wisconsin Examiner that he sees a definite path for Republicans to maintain their majority. “We have our <a class="lozenge more" href="https://wausaupilotandreview.com/2026/08/24/republicans-on-defense-as-democrats-seek-control-of-the-wisconsin-senate/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T19:45:36+00:00" data-pub="3:45 PM EDT">Monday, August 24, 2026 at 3:45 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>FL / Statewide / <a href="https://floridaphoenix.com/">Florida Phoenix</a></small></p>
-<h2><a href="https://floridaphoenix.com/2026/08/24/did-school-vaccines-just-become-a-campaign-issue/">Did school vaccines just become a campaign issue?</a></h2>
-<p class="byline"><small>By Christine Sexton</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://floridaphoenix.com/">Support</a></span></p>
-<a class="shot" href="https://floridaphoenix.com/2026/08/24/did-school-vaccines-just-become-a-campaign-issue/" tabindex="-1" aria-hidden="true"><img src="../img/7988339c795a08b74198bb792dd58cf6aae8cbd1.jpg" alt="" width="480" height="321" loading="lazy" decoding="async"></a>
-<p>Mandated vaccines for school attendance—and a parent’s ability to reject those vaccines— may have been injected into the race for Florida governor. With five months left before he’s term limited out of office, the administration of Gov. Ron DeSantis Monday released a proposed regulation that would eliminate a number of vaccines required for public and</p>
-<p class="more"><a href="https://floridaphoenix.com/2026/08/24/did-school-vaccines-just-become-a-campaign-issue/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://pages.deseret.com/subscribe?utm_source=supernav&amp;utm_medium=site&amp;utm_campaign=deseretnews/">Subscribe</a></aside>
+<p class="source"><a href="https://www.deseret.com"><strong>Deseret News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T22:15:14+00:00" data-pub="4:15 PM MDT">Mon, Aug 24 @ 4PM MDT</time><a class="lozenge place" href="/search?state=UT">Utah</a></p>
+<h2><a href="https://www.deseret.com/politics/2026/08/24/enes-kanter-freedom-ejection-sophie-cunningham-lara-trump/">Enes Kanter Freedom’s big weekend: An ejection and a Fox News appearance</a></h2>
+<p class="byline">By Jennifer Graham</p>
+<a class="shot" href="https://www.deseret.com/politics/2026/08/24/enes-kanter-freedom-ejection-sophie-cunningham-lara-trump/" tabindex="-1" aria-hidden="true"><img src="../img/a162ec2728acdb57d4afcf64c44259529d51c599.jpg" alt="" width="480" height="294" loading="lazy" decoding="async"></a>
+<p><a class="lozenge more" href="https://www.deseret.com/politics/2026/08/24/enes-kanter-freedom-ejection-sophie-cunningham-lara-trump/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T19:43:55+00:00" data-pub="3:43 PM EDT">Monday, August 24, 2026 at 3:43 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>WV / Statewide / <a href="https://westvirginiawatch.com/">West Virginia Watch</a></small></p>
-<h2><a href="https://westvirginiawatch.com/2026/08/24/ex-delegate-pritt-pleads-not-guilty-to-federal-charges-of-alleged-child-sexual-exploitation/">Ex-delegate Pritt pleads not guilty to federal charges of alleged child sexual exploitation</a></h2>
-<p class="byline"><small>By Amelia Ferrell Knisely</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://westvirginiawatch.com/">Support</a></span></p>
-<a class="shot" href="https://westvirginiawatch.com/2026/08/24/ex-delegate-pritt-pleads-not-guilty-to-federal-charges-of-alleged-child-sexual-exploitation/" tabindex="-1" aria-hidden="true"><img src="../img/1313c1ec06d701894daaccbe9992d1c5f6f94923.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Former Fayette County lawmaker Elliott Pritt pleaded not guilty to three federal charges in connection with an alleged inappropriate sexual relationship he forced with a minor girl. Pritt, 36, appeared in federal court in Charleston, West Virginia, on Monday morning. He was indicted on federal charges last week after federal prosecutors described how Pritt, a</p>
-<p class="more"><a href="https://westvirginiawatch.com/2026/08/24/ex-delegate-pritt-pleads-not-guilty-to-federal-charges-of-alleged-child-sexual-exploitation/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://myedmondsnews.com/">Support</a></aside>
+<p class="source"><a href="https://myedmondsnews.com/"><strong>My Edmonds News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T22:12:56+00:00" data-pub="3:12 PM PDT">Mon, Aug 24 @ 3PM PDT</time><a class="lozenge place" href="/search?state=WA">Washington</a><a class="lozenge place" href="/search?place=Snohomish+County&state=WA">Snohomish County</a></p>
+<h2><a href="https://myedmondsnews.com/2026/08/south-county-fire-board-welcomes-new-edmonds-liaison/">South County Fire Board welcomes new Edmonds liaison</a></h2>
+<p class="byline">By MyEdmondsNews</p>
+<p>South County Fire’s Board of Commissioners welcomed Beckie Peterson Aug. 18 to serve as the Edmonds liaison to the board. Peterson has served the City of Edmonds as both legislative <a class="lozenge more" href="https://myedmondsnews.com/2026/08/south-county-fire-board-welcomes-new-edmonds-liaison/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T19:43:13+00:00" data-pub="12:43 PM PDT">Monday, August 24, 2026 at 12:43 PM PDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>CA / Bay / <a href="https://www.indybay.org">IndyBay</a></small></p>
-<h2><a href="https://www.indybay.org/newsitems/2026/08/24/18888180.php">“Get the Flock Out of SF” Message From Sunrise Movement</a></h2>
-<p class="byline"><small>By Leon Kunstenaar</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.indybay.org/donate">Donate</a></span></p>
-<a class="shot" href="https://www.indybay.org/newsitems/2026/08/24/18888180.php" tabindex="-1" aria-hidden="true"><img src="../img/ee11f20cab74fd057f769f1dc818d7dbcf23ce01.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>As part of nationwide anti-Flock protests, Sunrise Movement Action in SF’s ritzyist streets sends clear message to billionaire Flock investor Chris Larsen</p>
-<p class="more"><a href="https://www.indybay.org/newsitems/2026/08/24/18888180.php">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://nebraskaexaminer.com/">Support</a></aside>
+<p class="source"><a href="https://nebraskaexaminer.com/"><strong>Nebraska Examiner</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T22:10:54+00:00" data-pub="5:10 PM CDT">Mon, Aug 24 @ 5PM CDT</time><a class="lozenge place" href="/search?state=NE">Nebraska</a></p>
+<h2><a href="https://nebraskaexaminer.com/2026/08/24/single-subject-complaint-filed-against-respect-nebraska-voters-ballot-measure/">Single-subject complaint filed against ‘Respect Nebraska Voters’ ballot measure</a></h2>
+<p class="byline">By Zach Wendling</p>
+<a class="shot" href="https://nebraskaexaminer.com/2026/08/24/single-subject-complaint-filed-against-respect-nebraska-voters-ballot-measure/" tabindex="-1" aria-hidden="true"><img src="../img/ced04d8ea87b172b537730648d0b9c71c8edac9b.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>LINCOLN—Nebraska’s top elections official will decide whether a ballot measure seeking to make it harder for Nebraska legislators to amend voter-approved laws is too broad for the November ballot. Nebraska Secretary of State Bob Evnen confirmed Monday he has been asked to weigh the fate of the Respect Nebraska Voters measure. State Sen. Machaela <a class="lozenge more" href="https://nebraskaexaminer.com/2026/08/24/single-subject-complaint-filed-against-respect-nebraska-voters-ballot-measure/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T19:41:24+00:00" data-pub="3:41 PM EDT">Monday, August 24, 2026 at 3:41 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>FL / Jacksonville / <a href="https://jaxtoday.org/about/">Jacksonville Today</a></small></p>
-<h2><a href="https://jaxtoday.org/2026/08/24/florida-repeal-four-vaccines-for-schools/">Florida seeks repeal of four required vaccines for schools</a></h2>
-<p class="byline"><small>By Ana Goñi-Lessan - News Service of Florida</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://jaxtoday.org/give">Donate</a></span></p>
-<p>The rule would remove Hepatitis B, chicken pox, influenza type b, and pneumococcal vaccines for public school attendance.</p>
-<p class="more"><a href="https://jaxtoday.org/2026/08/24/florida-repeal-four-vaccines-for-schools/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://thecurrentla.com/support-us/">Donate</a></aside>
+<p class="source"><a href="https://thecurrentla.com/"><strong>The Current (LA)</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T22:06:17+00:00" data-pub="5:06 PM CDT">Mon, Aug 24 @ 5PM CDT</time><a class="lozenge place" href="/search?state=LA">Louisiana</a><a class="lozenge place" href="/search?place=Lafayette&state=LA">Lafayette</a></p>
+<h2><a href="https://thecurrentla.com/2026/lafayettes-fight-on-blight-is-restarting-with-new-rules/">Lafayette’s fight on blight is restarting—with new rules</a></h2>
+<p class="byline">By Stephen Marcantel</p>
+<p>Lafayette is restarting its process for reviving abandoned properties with new fees and requirements for acquiring them. <a class="lozenge more" href="https://thecurrentla.com/2026/lafayettes-fight-on-blight-is-restarting-with-new-rules/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T19:34:14+00:00" data-pub="2:34 PM CDT">Monday, August 24, 2026 at 2:34 PM CDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>TX / Dallas / <a href="https://lakehighlands.advocatemag.com/">Lake Highlands Advocate</a></small></p>
-<h2><a href="https://lakehighlands.advocatemag.com/2026/08/24/walnut-hill-retail-office-development-clears-first-hurdle/">Walnut Hill retail/office development clears first hurdle</a></h2>
-<p class="byline"><small>By Carol Toler</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://lakehighlands.advocatemag.com/donate/">Donate</a></span></p>
-<a class="shot" href="https://lakehighlands.advocatemag.com/2026/08/24/walnut-hill-retail-office-development-clears-first-hurdle/" tabindex="-1" aria-hidden="true"><img src="../img/94c0fa6e41472ee781d0c73d7242ab2e9b769901.jpg" alt="" width="480" height="303" loading="lazy" decoding="async"></a>
-<p>Highlands Village, courtesy of TyGra Walnut Hill The Skillman Corridor TIF District board of directors unanimously approved a plan today to demolish and redevelop Lake Highlands Car Wash near the corner of Walnut Hill and Audelia. TyGra Walnut Hill would replace the 1970s era building with Highlands Village, a retail and office development.</p>
-<p class="more"><a href="https://lakehighlands.advocatemag.com/2026/08/24/walnut-hill-retail-office-development-clears-first-hurdle/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://insideclimatenews.org/">Support</a></aside>
+<p class="source"><a href="https://insideclimatenews.org/"><strong>Inside Climate News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T22:06:00+00:00" data-pub="6:06 PM EDT">Mon, Aug 24 @ 6PM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Climate">Climate</a></p>
+<h2><a href="https://insideclimatenews.org/news/24082026/texas-gov-abbott-data-centers-audit/">ERCOT Says Abbott’s Data Center Audit Will Be Done in December</a></h2>
+<p class="byline">By By Arcelia Martin</p>
+<p>The first group of large data centers in line to get connected to Texas’ grid won’t move forward until mid-December, grid officials say. Electric Reliability Council of Texas (ERCOT) staff needs to vet the first 300 projects, 90 percent of which are data centers, in “Batch Zero,” and put together a community impact review as <a class="lozenge more" href="https://insideclimatenews.org/news/24082026/texas-gov-abbott-data-centers-audit/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 </div>
 <p><a id="more" href="politics-9.html">More stories</a></p>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="../index.html">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -406,6 +453,47 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>

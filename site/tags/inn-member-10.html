@@ -13,12 +13,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(../fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -27,22 +40,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -50,19 +69,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -75,7 +126,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -93,7 +144,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="../index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="../masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -106,7 +157,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="../subjects/news.html">News</a></li><li><a href="../subjects/politics.html">Politics</a></li><li><a href="../subjects/opinion.html">Opinion</a></li><li><a href="../subjects/health.html">Health</a></li><li><a href="../subjects/environment.html">Environment</a></li><li><a href="../subjects/education.html">Education</a></li><li><a href="../subjects/business.html">Business</a></li><li><a href="../subjects/housing.html">Housing</a></li><li><a href="../subjects/sports.html">Sports</a></li><li><a href="../subjects/food.html">Food</a></li><li><a href="../subjects/arts.html">Arts</a></li></ul></nav>
@@ -121,264 +172,276 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <main id="main">
 <div id="feed-items">
 <article>
-<p class="stamp"><small><time datetime="2026-08-22T13:04:02+00:00" data-pub="6:04 AM PDT">Saturday, August 22, 2026 at 6:04 AM PDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>WA / Snohomish County / <a href="https://myedmondsnews.com/">My Edmonds News</a></small></p>
-<h2><a href="https://myedmondsnews.com/2026/08/edmonds-police-blotter-aug-10-16-2026/">Edmonds Police Blotter: Aug. 10-16, 2026</a></h2>
-<p class="byline"><small>By Nick Ng</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://myedmondsnews.com/">Support</a></span></p>
-<p>Aug. 10 23900 block Highway 99: A man was cited for patronizing a woman for sexual services. 23400 block Highway 99: A woman was arrested after allegedly assaulting her boyfriend.</p>
-<p class="more"><a href="https://myedmondsnews.com/2026/08/edmonds-police-blotter-aug-10-16-2026/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://evanstonroundtable.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://evanstonroundtable.com/"><strong>Evanston RoundTable</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T02:08:57+00:00" data-pub="9:08 PM CDT">Sun, Aug 23 @ 9PM CDT</time><a class="lozenge place" href="/search?state=IL">Illinois</a><a class="lozenge place" href="/search?place=Evanston&state=IL">Evanston</a></p>
+<h2><a href="https://evanstonroundtable.com/2026/08/23/velvet-stitch-house-provides-haven-for-crafting-community/">Velvet Stitch House provides haven for crafting, community</a></h2>
+<p class="byline">By Belinda Lichty Clarke</p>
+<a class="shot" href="https://evanstonroundtable.com/2026/08/23/velvet-stitch-house-provides-haven-for-crafting-community/" tabindex="-1" aria-hidden="true"><img src="../img/8435151c48def59210fa57cd987804f107adaa5c.jpg" alt="" width="480" height="720" loading="lazy" decoding="async"></a>
+<p>A creative and crafty new concept has taken over the space at 2114 Central St. vacated by Starbucks. Velvet Stitch House is drawing needlepoint enthusiasts from all over, beginners and experts alike. Owner and founder Rebecca Zikakis, said that just two weeks in, Velvet Stitch is selling out of designs and scrambling to replace inventory. […] Velvet Stitch House provides haven for crafting, commun <a class="lozenge more" href="https://evanstonroundtable.com/2026/08/23/velvet-stitch-house-provides-haven-for-crafting-community/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-22T12:15:00+00:00" data-pub="8:15 AM EDT">Saturday, August 22, 2026 at 8:15 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>NJ / Montclair / <a href="https://montclairlocal.news/">Montclair Local</a></small></p>
-<h2><a href="https://montclairlocal.news/2026/08/mfee-opens-educator-grants-invites-teachers-to-share-their-passions/">MFEE Opens Educator Grants, Invites Teachers to Share Their Passions</a></h2>
-<p class="byline"><small>By Announcement</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://montclairlocal.news/donate/">Donate</a></span></p>
-<a class="shot" href="https://montclairlocal.news/2026/08/mfee-opens-educator-grants-invites-teachers-to-share-their-passions/" tabindex="-1" aria-hidden="true"><img src="../img/a25b1394911c4f9a19aad40435bf69b36b5c199c.jpg" alt="" width="250" height="220" loading="lazy" decoding="async"></a>
-<p>The Montclair Fund for Educational Excellence (MFEE) is excited to open its call for Montclair Public Schools teachers to apply for educator grants for the 2026-27 school year! Each year,</p>
-<p class="more"><a href="https://montclairlocal.news/2026/08/mfee-opens-educator-grants-invites-teachers-to-share-their-passions/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://walthamtimes.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://walthamtimes.org/"><strong>Waltham Times</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T02:02:38+00:00" data-pub="10:02 PM EDT">Sun, Aug 23 @ 10PM EDT</time><a class="lozenge place" href="/search?state=MA">Massachusetts</a><a class="lozenge place" href="/search?place=Waltham&state=MA">Waltham</a></p>
+<h2><a href="https://walthamtimes.org/2026/08/23/legion-band-to-close-out-concerts-on-the-common/">Legion Band to close out Concerts on the Common</a></h2>
+<p class="byline">By Timothy Lok</p>
+<a class="shot" href="https://walthamtimes.org/2026/08/23/legion-band-to-close-out-concerts-on-the-common/" tabindex="-1" aria-hidden="true"><img src="../img/da93e7427d4a9b19cb63bbbb845365377af921b8.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>A large crowd sprawled across Waltham Common on Tuesday, Aug. 18, to hear Elton John and Billy Joel hits performed by Billy and the Jets. This week brings the final <a class="lozenge more" href="https://walthamtimes.org/2026/08/23/legion-band-to-close-out-concerts-on-the-common/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-22T12:02:56+00:00" data-pub="8:02 AM EDT">Saturday, August 22, 2026 at 8:02 AM EDT</time></small></p>
-<p><small>NY / Cold Spring / <a href="https://highlandscurrent.org/">The Highlands Current</a></small></p>
-<h2><a href="https://highlandscurrent.org/2026/08/22/sister-margaret-sikora-1930-2026/">Sister Margaret Sikora (1930-2026)</a></h2>
-<p class="byline"><small>By Staff</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://highlandscurrent.org/membership/short-form">Donate</a></span></p>
-<p>Atonement missionary for over 75 years</p>
-<p class="more"><a href="https://highlandscurrent.org/2026/08/22/sister-margaret-sikora-1930-2026/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://mymltnews.com/membership/">Donate</a></aside>
+<p class="source"><a href="https://mymltnews.com/"><strong>MLT News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T01:58:11+00:00" data-pub="6:58 PM PDT">Sun, Aug 23 @ 6PM PDT</time><a class="lozenge place" href="/search?state=WA">Washington</a><a class="lozenge place" href="/search?place=Mountlake+Terrace&state=WA">Mountlake Terrace</a></p>
+<h2><a href="https://mymltnews.com/work-begins-on-ballinger-food-forest/">Work begins on Ballinger Food Forest</a></h2>
+<p class="byline">By Teresa Wippel</p>
+<p>The Ballinger Food Forest took some crucial first steps toward abundance Saturday morning when dozen of people came to the project’s first work party at Ballinger Park. Members of the <a class="lozenge more" href="https://mymltnews.com/work-begins-on-ballinger-food-forest/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-22T11:12:35+00:00" data-pub="7:12 AM EDT">Saturday, August 22, 2026 at 7:12 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>NY / Cold Spring / <a href="https://highlandscurrent.org/">The Highlands Current</a></small></p>
-<h2><a href="https://highlandscurrent.org/2026/08/22/cold-spring-to-flush-hydrants-3/">Cold Spring to Flush Hydrants</a></h2>
-<p class="byline"><small>By Staff</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://highlandscurrent.org/membership/short-form">Donate</a></span></p>
-<p>Work scheduled for Aug. 24 to 28</p>
-<p class="more"><a href="https://highlandscurrent.org/2026/08/22/cold-spring-to-flush-hydrants-3/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://evanstonroundtable.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://evanstonroundtable.com/"><strong>Evanston RoundTable</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T01:55:14+00:00" data-pub="8:55 PM CDT">Sun, Aug 23 @ 8PM CDT</time><a class="lozenge place" href="/search?state=IL">Illinois</a><a class="lozenge place" href="/search?place=Evanston&state=IL">Evanston</a></p>
+<h2><a href="https://evanstonroundtable.com/2026/08/23/evanston-city-council-zoning-rewrite-contract-2/">Zoning contract and development votes lead packed City Council agenda</a></h2>
+<p class="byline">By Alex Harrison</p>
+<a class="shot" href="https://evanstonroundtable.com/2026/08/23/evanston-city-council-zoning-rewrite-contract-2/" tabindex="-1" aria-hidden="true"><img src="../img/08d17893d65b27244733938fcc9964c55b3ad054.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Evanston’s City Council will meet at 6:45 p.m. Monday in the Council Chambers at Morton City Hall, 909 Davis St., for its first meeting after a four-week summer break. Councilmembers have their work cut out for them, as the agenda is loaded with multiple development and zoning votes on top of other noteworthy items. At […] Zoning contract and development votes lead packed City Council agenda is fr <a class="lozenge more" href="https://evanstonroundtable.com/2026/08/23/evanston-city-council-zoning-rewrite-contract-2/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-22T09:00:00+00:00" data-pub="5:00 AM EDT">Saturday, August 22, 2026 at 5:00 AM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>NY / Syracuse / <a href="https://centralcurrent.org/">Central Current</a></small></p>
-<h2><a href="https://centralcurrent.org/what-are-the-bottlenecks-in-housing-production-leading-to-syracuses-housing-crisis/">What are the bottlenecks in housing production leading to Syracuse’s housing crisis?</a></h2>
-<p class="byline"><small>By Debadrita Sur and Eddie Velazquez</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://checkout.fundjournalism.org/memberform?org_id=centralcurrent&amp;campaign=7018V000001hVNTQA2">Donate</a></span></p>
-<a class="shot" href="https://centralcurrent.org/what-are-the-bottlenecks-in-housing-production-leading-to-syracuses-housing-crisis/" tabindex="-1" aria-hidden="true"><img src="../img/5cafc50e03564c291e75f3a132a0c96d373a0b66.jpg" alt="" width="480" height="361" loading="lazy" decoding="async"></a>
-<p>Central Current dove into the issues clogging the pipeline of housing production and what city officials are doing to speed up construction as the region experiences unprecedented need.</p>
-<p class="more"><a href="https://centralcurrent.org/what-are-the-bottlenecks-in-housing-production-leading-to-syracuses-housing-crisis/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://breckenridgetexan.fundjournalism.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://breckenridgetexan.com/"><strong>Breckenridge Texan</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T01:23:23+00:00" data-pub="8:23 PM CDT">Sun, Aug 23 @ 8PM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=Breckenridge&state=TX">Breckenridge</a></p>
+<h2><a href="https://breckenridgetexan.com/2026/08/23/city-county-school-district-to-hold-public-hearings-on-proposed-tax-rates-budgets/">City, county, school district to hold public hearings on proposed tax rates, budgets</a></h2>
+<p class="byline">By Carla McKeown</p>
+<p>The local government entities will have their public hearings regarding the tax rates for the upcoming year, as well as their budgets, within the next three weeks, beginning with the school district’s hearing on Monday, Aug. 24. <a class="lozenge more" href="https://breckenridgetexan.com/2026/08/23/city-county-school-district-to-hold-public-hearings-on-proposed-tax-rates-budgets/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-22T05:38:56+00:00" data-pub="10:38 PM PDT">Friday, August 21, 2026 at 10:38 PM PDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>CA / Salinas / <a href="https://voicesofmontereybay.org">Voices of Monterey Bay</a></small></p>
-<h2><a href="https://voicesofmontereybay.org/2026/08/21/monterey-county-officials-confident-about-voting-integrity-while-state-and-national-representatives-continue-to-cast-aspersions/">Monterey County officials confident about voting integrity — while state and national representatives continue to cast aspersions</a></h2>
-<p class="byline"><small>By George B. Sanchez-Tello</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://voices-of-monterey-bay.fundjournalism.org/donate/">Donate</a></span></p>
-<p>FEATURED | By George B. Sánchez-Tello Photos by Claudia Meléndez Salinas Gina Martinez is Monterey County’s Registrar of Voters. She is in charge of elections. She wants people to watch the elections: There is even a viewing gallery — a lobby with windows — that allows the public to observe the ballot count. Most importantly,</p>
-<p class="more"><a href="https://voicesofmontereybay.org/2026/08/21/monterey-county-officials-confident-about-voting-integrity-while-state-and-national-representatives-continue-to-cast-aspersions/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://evanstonroundtable.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://evanstonroundtable.com/"><strong>Evanston RoundTable</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T01:06:43+00:00" data-pub="8:06 PM CDT">Sun, Aug 23 @ 8PM CDT</time><a class="lozenge place" href="/search?state=IL">Illinois</a><a class="lozenge place" href="/search?place=Evanston&state=IL">Evanston</a></p>
+<h2><a href="https://evanstonroundtable.com/2026/08/23/the-inner-keep-evanston-social-club/">The Inner Keep gets set to reveal what’s behind the green door</a></h2>
+<p class="byline">By Bob Chiarito</p>
+<a class="shot" href="https://evanstonroundtable.com/2026/08/23/the-inner-keep-evanston-social-club/" tabindex="-1" aria-hidden="true"><img src="../img/20a81994b13f435bac272492a42bd6b91706f1f0.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Despite the yet-to-open social club’s transparent website, the principals of The Inner Keep have found themselves amused at the speculation around it over the last few months, with some surmising it’s going to be everything from an underground club to a cigar bar. In reality, the club, set to open Sept. 1, is neither. Instead, […] The Inner Keep gets set to reveal what’s behind the green door is f <a class="lozenge more" href="https://evanstonroundtable.com/2026/08/23/the-inner-keep-evanston-social-club/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-22T01:54:10+00:00" data-pub="9:54 PM EDT">Friday, August 21, 2026 at 9:54 PM EDT</time></small></p>
-<p><small>VA / Rappahannock County / <a href="https://www.rappnews.com/">Rappahannock News</a></small></p>
-<h2><a href="https://www.rappnews.com/sponsored-content/faces-of-rappahannock-ashley-and-chad-pessini-screaming-goats-farm-brewery-004e651c">Faces of Rappahannock: Ashley and Chad Pessini, Screaming Goats Farm &amp; Brewery</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.rappnews.com/">Support</a></span></p>
-<a class="shot" href="https://www.rappnews.com/sponsored-content/faces-of-rappahannock-ashley-and-chad-pessini-screaming-goats-farm-brewery-004e651c" tabindex="-1" aria-hidden="true"><img src="../img/1b81fec63973478ed548aae2167af22dfd73efdb.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Ashley and Chad Pessini’s Screaming Goats Farm &amp; Brewery combines a playground, hands-on animal experiences and farm-inspired beer in a family-focused Amissville destination.</p>
-<p class="more"><a href="https://www.rappnews.com/sponsored-content/faces-of-rappahannock-ashley-and-chad-pessini-screaming-goats-farm-brewery-004e651c">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://walthamtimes.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://walthamtimes.org/"><strong>Waltham Times</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T00:11:59+00:00" data-pub="8:11 PM EDT">Sun, Aug 23 @ 8PM EDT</time><a class="lozenge place" href="/search?state=MA">Massachusetts</a><a class="lozenge place" href="/search?place=Waltham&state=MA">Waltham</a></p>
+<h2><a href="https://walthamtimes.org/2026/08/23/senate-candidate-moulton-makes-campaign-stops-in-moody-street-bar-crawl/">Senate candidate Moulton makes campaign stops in Moody Street bar crawl</a></h2>
+<p class="byline">By Artie Kronenfeld</p>
+<a class="shot" href="https://walthamtimes.org/2026/08/23/senate-candidate-moulton-makes-campaign-stops-in-moody-street-bar-crawl/" tabindex="-1" aria-hidden="true"><img src="../img/733fbd2b8804b25efc49ec8e956e4218a16cd752.jpg" alt="" width="480" height="328" loading="lazy" decoding="async"></a>
+<p>U.S. Rep. Seth Moulton swung by Moody Street bars Tempo and Joco’s Bar &amp; Kitchen on Friday as part of a campaign bar crawl. Moulton, who represents the Massachusetts 6th <a class="lozenge more" href="https://walthamtimes.org/2026/08/23/senate-candidate-moulton-makes-campaign-stops-in-moody-street-bar-crawl/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-22T00:45:04+00:00" data-pub="5:45 PM PDT">Friday, August 21, 2026 at 5:45 PM PDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>WA / Snohomish County / <a href="https://myedmondsnews.com/">My Edmonds News</a></small></p>
-<h2><a href="https://myedmondsnews.com/2026/08/public-asks-edmonds-school-district-superintendent-to-step-down-for-mishandling-alleged-sex-offender-case/">Public asks Edmonds School District superintendent to step down for mishandling alleged sex offender case</a></h2>
-<p class="byline"><small>By Nick Ng</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://myedmondsnews.com/">Support</a></span></p>
-<p>At the Tuesday, Aug. 18 Edmonds School District board meeting, several local residents asked Superintendent Rebecca Miner to “step down” from her position for her mishandling of the alleged sexual</p>
-<p class="more"><a href="https://myedmondsnews.com/2026/08/public-asks-edmonds-school-district-superintendent-to-step-down-for-mishandling-alleged-sex-offender-case/">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Also in <a href="https://mylynnwoodnews.com/public-asks-edmonds-school-district-superintendent-to-step-down-for-mishandling-alleged-sex-offender-case/">Lynnwood Today</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://walthamtimes.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://walthamtimes.org/"><strong>Waltham Times</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T23:51:59+00:00" data-pub="7:51 PM EDT">Sun, Aug 23 @ 7PM EDT</time><a class="lozenge place" href="/search?state=MA">Massachusetts</a><a class="lozenge place" href="/search?place=Waltham&state=MA">Waltham</a></p>
+<h2><a href="https://walthamtimes.org/2026/08/23/dizoglio-seeks-to-expand-oversight-in-second-term-as-state-auditor/">DiZoglio seeks to expand oversight in second term as state auditor</a></h2>
+<p class="byline">By Charlie Johnson</p>
+<a class="shot" href="https://walthamtimes.org/2026/08/23/dizoglio-seeks-to-expand-oversight-in-second-term-as-state-auditor/" tabindex="-1" aria-hidden="true"><img src="../img/3a8e0fc5e5f074e04b5b84e3498e9a9237eb0faf.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Diana DiZoglio centered her first term as state auditor on her push to audit the State Legislature and expand oversight across state government. She’s seeking a second term to continue <a class="lozenge more" href="https://walthamtimes.org/2026/08/23/dizoglio-seeks-to-expand-oversight-in-second-term-as-state-auditor/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-22T00:27:13+00:00" data-pub="8:27 PM EDT">Friday, August 21, 2026 at 8:27 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>NJ / Montclair / <a href="https://montclairlocal.news/">Montclair Local</a></small></p>
-<h2><a href="https://montclairlocal.news/2026/08/nicolos-italian-bakery-fights-plan-to-redevelop-historic-montclair-home/">Nicolo’s Italian Bakery Fights Plan to Redevelop Historic Montclair Home</a></h2>
-<p class="byline"><small>By Matt Kadosh</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://montclairlocal.news/donate/">Donate</a></span></p>
-<a class="shot" href="https://montclairlocal.news/2026/08/nicolos-italian-bakery-fights-plan-to-redevelop-historic-montclair-home/" tabindex="-1" aria-hidden="true"><img src="../img/74e9c2ad00c7f20abcd834e83f50db458f04e305.jpg" alt="" width="250" height="159" loading="lazy" decoding="async"></a>
-<p>A plan to redevelop Nicolo’s Italian Bakery and a nearby two-family home, replacing it with an expanded bakery and apartment building, hinges on the Montclair Historic Preservation Commission approval of the existing structures’ demolition.</p>
-<p class="more"><a href="https://montclairlocal.news/2026/08/nicolos-italian-bakery-fights-plan-to-redevelop-historic-montclair-home/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://patagoniaregionaltimes.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://patagoniaregionaltimes.org/"><strong>Patagonia Regional Times</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T23:07:54+00:00" data-pub="4:07 PM MST">Sun, Aug 23 @ 4PM MST</time><a class="lozenge place" href="/search?state=AZ">Arizona</a><a class="lozenge place" href="/search?place=Patagonia&state=AZ">Patagonia</a></p>
+<h2><a href="https://patagoniaregionaltimes.org/legislative-district-19-general-election-candidates-debate/">Legislative District 19 general election candidates debate</a></h2>
+<p class="byline">By Arizona Clean Elections Commission</p>
+<a class="shot" href="https://patagoniaregionaltimes.org/legislative-district-19-general-election-candidates-debate/" tabindex="-1" aria-hidden="true"><img src="../img/1c9ed44c2e32e2006749f83b234df5a04cc29d4d.jpg" alt="" width="480" height="269" loading="lazy" decoding="async"></a>
+<p>The Arizona Clean Elections Commission invited candidates for Legislative District 19 for a debate in advance of the general election. <a class="lozenge more" href="https://patagoniaregionaltimes.org/legislative-district-19-general-election-candidates-debate/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T23:56:34+00:00" data-pub="4:56 PM PDT">Friday, August 21, 2026 at 4:56 PM PDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>CA / Bakersfield / <a href="https://sjvwater.org/">SJV Water</a></small></p>
-<h2><a href="https://sjvwater.org/kings-county-judge-allows-state-to-move-ahead-with-groundwater-fees-for-most-farmers-in-the-region/">Kings County judge allows state to move ahead with groundwater fees for most farmers in the region</a></h2>
-<p class="byline"><small>By Lois Henry</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://sjvwater.org/support-sjv-water/donate/">Donate</a></span></p>
-<a class="shot" href="https://sjvwater.org/kings-county-judge-allows-state-to-move-ahead-with-groundwater-fees-for-most-farmers-in-the-region/" tabindex="-1" aria-hidden="true"><img src="../img/fa50a86154f368f55728593265d9b0c1a4afebce.jpg" alt="" width="480" height="354" loading="lazy" decoding="async"></a>
-<p>Invoices for state groundwater pumping fees could be headed to the mailboxes of most Kings County farmers in the near future after a judge’s ruling last week. Fees of $20 per acre foot pumped had been in limbo pending the outcome of a second preliminary injunction request made by the Kings County Farm Bureau as</p>
-<p class="more"><a href="https://sjvwater.org/kings-county-judge-allows-state-to-move-ahead-with-groundwater-fees-for-most-farmers-in-the-region/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://mymltnews.com/membership/">Donate</a></aside>
+<p class="source"><a href="https://mymltnews.com/"><strong>MLT News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T22:47:17+00:00" data-pub="3:47 PM PDT">Sun, Aug 23 @ 3PM PDT</time><a class="lozenge place" href="/search?state=WA">Washington</a><a class="lozenge place" href="/search?place=Mountlake+Terrace&state=WA">Mountlake Terrace</a></p>
+<h2><a href="https://mymltnews.com/providence-south-county-fire-offering-virtual-safe-aging-symposium-sept-22/">Providence, South County Fire offering virtual Safe Aging Symposium Sept. 22</a></h2>
+<p class="byline">By Teresa Wippel</p>
+<p>Providence Hospital and South County Fire are hosting a free virtual symposium on safe aging from 9 a.m. to 1:30 p.m. Tuesday, Sept. 22. The event is designed for healthcare <a class="lozenge more" href="https://mymltnews.com/providence-south-county-fire-offering-virtual-safe-aging-symposium-sept-22/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://mylynnwoodnews.com/providence-south-county-fire-offering-virtual-safe-aging-symposium-sept-22/">Lynnwood Today</a> &middot; <a href="https://myedmondsnews.com/2026/08/providence-south-county-fire-offering-virtual-safe-aging-symposium-sept-22/">My Edmonds News</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T23:55:36+00:00" data-pub="4:55 PM PDT">Friday, August 21, 2026 at 4:55 PM PDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>WA / Lynnwood / <a href="https://mylynnwoodnews.com/">Lynnwood Today</a></small></p>
-<h2><a href="https://mylynnwoodnews.com/edmonds-underwater-whos-that-down-there/">Edmonds Underwater: Who’s that down there?</a></h2>
-<p class="byline"><small>By Administrator</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://mylynnwoodnews.com/membership/">Donate</a></span></p>
-<a class="shot" href="https://mylynnwoodnews.com/edmonds-underwater-whos-that-down-there/" tabindex="-1" aria-hidden="true"><img src="../img/f84f4b185fe9af6bd6ed4ed78d21a00b82102c23.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Edmonds Underwater is a monthly column about Edmonds’ most visited attraction — the Edmonds Underwater Park — serving some 25,000 divers each year. When we look underwater at the Edmonds</p>
-<p class="more"><a href="https://mylynnwoodnews.com/edmonds-underwater-whos-that-down-there/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://boyleheightsbeat.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://boyleheightsbeat.com/"><strong>Boyle Heights Beat</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T22:29:00+00:00" data-pub="3:29 PM PDT">Sun, Aug 23 @ 3PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://thelalocal.org/neighborhoods/long-beach/a-broken-mental-health-system-has-kept-a-long-beach-father-locked-up-without-a-trial-his-family-says/">A broken mental health system has kept a Long Beach father locked up without a trial, his family says</a></h2>
+<p class="byline">By Long Beach Post</p>
+<a class="shot" href="https://thelalocal.org/neighborhoods/long-beach/a-broken-mental-health-system-has-kept-a-long-beach-father-locked-up-without-a-trial-his-family-says/" tabindex="-1" aria-hidden="true"><img src="../img/41de16edeb525cfb8b823a583b8d7bf2692f8df1.jpg" alt="" width="480" height="395" loading="lazy" decoding="async"></a>
+<p>Kaizann Guerrero’s mother says he was doing well, with his schizophrenia under control, until he was sent to a state mental hospital following his arrest. <a class="lozenge more" href="https://thelalocal.org/neighborhoods/long-beach/a-broken-mental-health-system-has-kept-a-long-beach-father-locked-up-without-a-trial-his-family-says/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T23:53:58+00:00" data-pub="4:53 PM PDT">Friday, August 21, 2026 at 4:53 PM PDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>CA / Fresno / <a href="https://fresnoland.org/latest-news/">Fresnoland</a></small></p>
-<h2><a href="https://fresnoland.org/2026/08/21/meet-the-judge-overseeing-fresno-countys-transportation-tax-lawsuit/">Meet the next judge overseeing Fresno County’s transportation tax lawsuit</a></h2>
-<p class="byline"><small>By Julianna Morano</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://fresnoland.org/donate/">Donate</a></span></p>
-<a class="shot" href="https://fresnoland.org/2026/08/21/meet-the-judge-overseeing-fresno-countys-transportation-tax-lawsuit/" tabindex="-1" aria-hidden="true"><img src="../img/ea213397a56031df5e0babcc510239f7909fda95.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Updated story: Read the latest developments on Fresno County’s lawsuit here. The dust has mostly settled on the judge disqualification spree this week in Fresno County’s lawsuit against the State of California, their own elections clerk and a local transportation tax campaign, and Judge Lisa Gamoian has emerged as the likely arbiter on the critical</p>
-<p class="more"><a href="https://fresnoland.org/2026/08/21/meet-the-judge-overseeing-fresno-countys-transportation-tax-lawsuit/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://eastgreenwichnews.com/">Support</a></aside>
+<p class="source"><a href="https://eastgreenwichnews.com/"><strong>East Greenwich News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T21:10:58+00:00" data-pub="5:10 PM EDT">Sun, Aug 23 @ 5PM EDT</time><a class="lozenge place" href="/search?state=RI">Rhode Island</a><a class="lozenge place" href="/search?place=East+Greenwich&state=RI">East Greenwich</a></p>
+<h2><a href="https://eastgreenwichnews.com/eg-calendar-first-day-of-school-revolutionary-war-encampment/">EG Calendar: First Day of School, Revolutionary War Encampment</a></h2>
+<p class="byline">By Elizabeth McNamara</p>
+<a class="shot" href="https://eastgreenwichnews.com/eg-calendar-first-day-of-school-revolutionary-war-encampment/" tabindex="-1" aria-hidden="true"><img src="../img/6f9f5de605abae3dae3abb62a1e8e9c08078c56c.jpg" alt="" width="300" height="225" loading="lazy" decoding="async"></a>
+<p>Above: The view last week from the ramp under construction that will connect Route 95N to Route 4S, part of the “Missing Move” project due for completion in October 2027. Read more about that project HERE. And the 3rd Annual ‘Suds &amp; Songs’ for the Academy Science Center Editor’s note: We share items here that <a class="lozenge more" href="https://eastgreenwichnews.com/eg-calendar-first-day-of-school-revolutionary-war-encampment/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T23:42:34+00:00" data-pub="4:42 PM PDT">Friday, August 21, 2026 at 4:42 PM PDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>WA / Snohomish County / <a href="https://myedmondsnews.com/">My Edmonds News</a></small></p>
-<h2><a href="https://myedmondsnews.com/2026/08/edmonds-underwater-whos-that-down-there/">Edmonds Underwater: Who’s that down there?</a></h2>
-<p class="byline"><small>By MyEdmondsNews</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://myedmondsnews.com/">Support</a></span></p>
-<p>Edmonds Underwater is a monthly column about Edmonds’ most visited attraction — the Edmonds Underwater Park — serving some 25,000 divers each year. When we look underwater at the Edmonds</p>
-<p class="more"><a href="https://myedmondsnews.com/2026/08/edmonds-underwater-whos-that-down-there/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://hoptownchronicle.org/about/support-us/">Donate</a></aside>
+<p class="source"><a href="https://hoptownchronicle.org/"><strong>Hoptown Chronicle</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T21:02:55+00:00" data-pub="5:02 PM EDT">Sun, Aug 23 @ 5PM EDT</time><a class="lozenge place" href="/search?state=KY">Kentucky</a><a class="lozenge place" href="/search?place=Hopkinsville&state=KY">Hopkinsville</a></p>
+<h2><a href="https://hoptownchronicle.org/lincoln-elmo-and-the-lizard-man-ky-voters-picking-next-i-voted-sticker-at-state-fair/">Lincoln, Elmo and the Lizard Man: KY voters picking next ‘I Voted’ sticker at state fair</a></h2>
+<p class="byline">By McKenna Horsley</p>
+<p>Drawings from eight finalists appear on the ballot from students across the state. Much like during Kentucky’s regular elections, voters may use a paper ballot to mark their choice and return it to a scanner. <a class="lozenge more" href="https://hoptownchronicle.org/lincoln-elmo-and-the-lizard-man-ky-voters-picking-next-i-voted-sticker-at-state-fair/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T23:39:58+00:00" data-pub="4:39 PM PDT">Friday, August 21, 2026 at 4:39 PM PDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>CA / Orange County / <a href="https://voiceofoc.org/">Voice of OC</a></small></p>
-<h2><a href="https://voiceofoc.org/2026/08/black-alex-guess-is-right-that-orange-county-needs-action-but-it-needs-a-complete-e-bike-safety-strategy/">Black: Alex Guess Is Right That Orange County Needs Action. But It Needs a Complete E-Bike Safety Strategy.</a></h2>
-<p class="byline"><small>By Beth Black</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://voiceofoc.org/donate">Donate</a></span></p>
-<a class="shot" href="https://voiceofoc.org/2026/08/black-alex-guess-is-right-that-orange-county-needs-action-but-it-needs-a-complete-e-bike-safety-strategy/" tabindex="-1" aria-hidden="true"><img src="../img/74a128546fcae776a1d3f830a3e7bf7a772dacf4.jpg" alt="" width="480" height="471" loading="lazy" decoding="async"></a>
-<p>Alex Guess is right that Orange County needs action on e-bike safety. The Bellemont Project offers a comprehensive alternative to fragmented enforcement responses — combining familyeducation, behavior management, informed enforcement, infrastructure, regional coordination and safer riding opportunities to protect communities while respecting young riders as part of the solution. Voice of OC is Ora</p>
-<p class="more"><a href="https://voiceofoc.org/2026/08/black-alex-guess-is-right-that-orange-county-needs-action-but-it-needs-a-complete-e-bike-safety-strategy/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://indiacurrents.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://indiacurrents.com/"><strong>India Currents</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T21:00:00+00:00" data-pub="2:00 PM PDT">Sun, Aug 23 @ 2PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=San+Jose&state=CA">San Jose</a></p>
+<h2><a href="https://indiacurrents.com/ny-federal-judge-sets-aside-trump-policy-that-suspended-processing-of-immigration-visas-from-75-countries/">NY Federal Judge Sets Aside Trump Policy That Suspended Processing Of Immigration Visas From 75 Countries</a></h2>
+<p class="byline">By AP</p>
+<p>Copyright 2026 The Associated Press. All rights reserved. This material may not be published, broadcast, rewritten or redistributed without permission. A federal judge in New York has vacated a Trump <a class="lozenge more" href="https://indiacurrents.com/ny-federal-judge-sets-aside-trump-policy-that-suspended-processing-of-immigration-visas-from-75-countries/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T22:34:07+00:00" data-pub="6:34 PM EDT">Friday, August 21, 2026 at 6:34 PM EDT</time></small></p>
-<p><small>VA / Rappahannock County / <a href="https://www.rappnews.com/">Rappahannock News</a></small></p>
-<h2><a href="https://www.rappnews.com/land-use/washington-approves-hayfields-exhaust-fan-ad761241">Washington approves Hayfields’ exhaust fan, clearing hurdle for future restaurant</a></h2>
-<p class="byline"><small>By By Trebor Maitin</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.rappnews.com/">Support</a></span></p>
-<a class="shot" href="https://www.rappnews.com/land-use/washington-approves-hayfields-exhaust-fan-ad761241" tabindex="-1" aria-hidden="true"><img src="../img/534086e56fef9167e89bfbf409216a41784a2b8b.jpg" alt="" width="480" height="160" loading="lazy" decoding="async"></a>
-<p>The Washington Architectural Review Board on Monday approved an exhaust fan and other utilities necessary to run a commercial kitchen at Hayfields Rural Kitchen and Market at Rush River Commons.</p>
-<p class="more"><a href="https://www.rappnews.com/land-use/washington-approves-hayfields-exhaust-fan-ad761241">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://patagoniaregionaltimes.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://patagoniaregionaltimes.org/"><strong>Patagonia Regional Times</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T20:22:46+00:00" data-pub="1:22 PM MST">Sun, Aug 23 @ 1PM MST</time><a class="lozenge place" href="/search?state=AZ">Arizona</a><a class="lozenge place" href="/search?place=Patagonia&state=AZ">Patagonia</a></p>
+<h2><a href="https://patagoniaregionaltimes.org/lobos-volleyball-looks-to-build-upon-last-seasons-success/">Lobos volleyball looks to build upon last season’s success</a></h2>
+<p class="byline">By Dave Lumia</p>
+<a class="shot" href="https://patagoniaregionaltimes.org/lobos-volleyball-looks-to-build-upon-last-seasons-success/" tabindex="-1" aria-hidden="true"><img src="../img/860cc9a842aa96e624c238f5bcaece8b660d28e0.jpg" alt="" width="480" height="328" loading="lazy" decoding="async"></a>
+<p>Last season&#x27;s success ledto a turnout of 20 players for this season&#x27;s Patagonia High volleyball team. The Lobos return four starters from a team that won 18 games. <a class="lozenge more" href="https://patagoniaregionaltimes.org/lobos-volleyball-looks-to-build-upon-last-seasons-success/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T22:21:27+00:00" data-pub="6:21 PM EDT">Friday, August 21, 2026 at 6:21 PM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>VA / Rappahannock County / <a href="https://www.rappnews.com/">Rappahannock News</a></small></p>
-<h2><a href="https://www.rappnews.com/technology/rappahannock-officials-oppose-verizon-ending-landline-service-96715e4c">Rappahannock officials oppose Verizon ending landline service</a></h2>
-<p class="byline"><small>By By Julia Shanahan</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.rappnews.com/">Support</a></span></p>
-<a class="shot" href="https://www.rappnews.com/technology/rappahannock-officials-oppose-verizon-ending-landline-service-96715e4c" tabindex="-1" aria-hidden="true"><img src="../img/b83797f3b2bf8b5290d94a8c9e0e75019fcc4ad7.jpg" alt="" width="480" height="313" loading="lazy" decoding="async"></a>
-<p>Rappahannock County officials are raising concerns about Verizon’s plan to retire portions of its landline network, but the company says customers will not lose their copper landlines if a suitable replacement is not available.</p>
-<p class="more"><a href="https://www.rappnews.com/technology/rappahannock-officials-oppose-verizon-ending-landline-service-96715e4c">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.adirondackexplorer.org/donate-now/">Donate</a></aside>
+<p class="source"><a href="https://www.adirondackexplorer.org/"><strong>Adirondack Explorer</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T20:00:00+00:00" data-pub="4:00 PM EDT">Sun, Aug 23 @ 4PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Saranac+Lake&state=NY">Saranac Lake</a></p>
+<h2><a href="https://www.adirondackexplorer.org/communities/history/adirondack-stories-ned-buntline/">Adirondack Stories: Ned Buntline</a></h2>
+<p class="byline">By Marty Podskoch</p>
+<a class="shot" href="https://www.adirondackexplorer.org/communities/history/adirondack-stories-ned-buntline/" tabindex="-1" aria-hidden="true"><img src="../img/2c143569877e805cb7337359cc86cabf054146ec.jpg" alt="" width="480" height="612" loading="lazy" decoding="async"></a>
+<p>Ned Buntline wrote more than 400 historical novels about the Wild West, Civil War, pirates, politics and much more <a class="lozenge more" href="https://www.adirondackexplorer.org/communities/history/adirondack-stories-ned-buntline/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T22:19:48+00:00" data-pub="6:19 PM EDT">Friday, August 21, 2026 at 6:19 PM EDT</time></small></p>
-<p><small>DC / Washington / <a href="https://dcwitness.org/">D.C. Witness</a></small></p>
-<h2><a href="https://dcwitness.org/defendant-accepts-plea-deal-for-traffic-shooting-judge-denies-release/">Defendant Accepts Plea Deal for Traffic Shooting, Judge Denies Release</a></h2>
-<p class="byline"><small>By Sophia Cooper</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://dcwitness.org/">Support</a></span></p>
-<p>DC Superior Court Judge Michael Ryan denied release for a non-fatal shooting defendant who accepted a plea deal in a hearing on Aug. 21. Lafonzo Williams, 58, was initially charged with assault with intent to kill while armed, aggravated assault while armed, and two counts of possession of a firearm during a crime of violence.</p>
-<p class="more"><a href="https://dcwitness.org/defendant-accepts-plea-deal-for-traffic-shooting-judge-denies-release/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://indiacurrents.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://indiacurrents.com/"><strong>India Currents</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T19:00:00+00:00" data-pub="12:00 PM PDT">Sun, Aug 23 @ 12PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=San+Jose&state=CA">San Jose</a></p>
+<h2><a href="https://indiacurrents.com/california-lawmaker-aisha-wahab-wins-special-election-to-succeed-eric-swalwell-in-congress/">California Lawmaker Aisha Wahab Wins Special Election To Succeed Eric Swalwell In Congress</a></h2>
+<p class="byline">By AP</p>
+<p>Copyright 2026 The Associated Press. All rights reserved. This material may not be published, broadcast, rewritten or redistributed without permission. SACRAMENTO, Calif. (AP)—California state Sen. Aisha Wahab will serve out <a class="lozenge more" href="https://indiacurrents.com/california-lawmaker-aisha-wahab-wins-special-election-to-succeed-eric-swalwell-in-congress/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T22:12:27+00:00" data-pub="6:12 PM EDT">Friday, August 21, 2026 at 6:12 PM EDT</time></small></p>
-<p><small>DC / Washington / <a href="https://dcwitness.org/">D.C. Witness</a></small></p>
-<h2><a href="https://dcwitness.org/defendant-accused-of-2023-stabbing-rejects-plea-deal-trial-set-for-2028/">Defendant Accused of 2023 Stabbing Rejects Plea Deal, Trial Set for 2028</a></h2>
-<p class="byline"><small>By Sophia Cooper</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://dcwitness.org/">Support</a></span></p>
-<p>A defendant accused of stabbing his cousin’s then-boyfriend rejected a plea deal and scheduled a trial before DC Superior Court Judge Michael Ryan on Aug. 21. Herbert Young, 43, is charged with assault with intent to kill while armed, aggravated assault knowingly while armed, and assault with a dangerous weapon, all against a senior citizen.</p>
-<p class="more"><a href="https://dcwitness.org/defendant-accused-of-2023-stabbing-rejects-plea-deal-trial-set-for-2028/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://myedmondsnews.com/">Support</a></aside>
+<p class="source"><a href="https://myedmondsnews.com/"><strong>My Edmonds News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T18:27:55+00:00" data-pub="11:27 AM PDT">Sun, Aug 23 @ 11AM PDT</time><a class="lozenge place" href="/search?state=WA">Washington</a><a class="lozenge place" href="/search?place=Snohomish+County&state=WA">Snohomish County</a></p>
+<h2><a href="https://myedmondsnews.com/2026/08/youre-invited-to-learn-square-dancing-this-fall/">You’re invited to learn square dancing this fall</a></h2>
+<p class="byline">By MyEdmondsNews</p>
+<p>Are you looking for a fun way to socialize, have fun, and exercise both mind and body in a family friendly environment? The Mount Baker Square Dance Council invites you <a class="lozenge more" href="https://myedmondsnews.com/2026/08/youre-invited-to-learn-square-dancing-this-fall/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://mylynnwoodnews.com/youre-invited-to-learn-square-dancing-this-fall/">Lynnwood Today</a> &middot; <a href="https://mymltnews.com/youre-invited-to-learn-square-dancing-this-fall/">MLT News</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T21:49:03+00:00" data-pub="5:49 PM EDT">Friday, August 21, 2026 at 5:49 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>MD / Baltimore / <a href="https://baltimorewitness.org/">Baltimore Witness</a></small></p>
-<h2><a href="https://baltimorewitness.org/trial-scheduling-date-set-for-2022-would-be-retaliation-homicide/">Trial Scheduling Date Set for 2022 Would be Retaliation Homicide</a></h2>
-<p class="byline"><small>By sebastianritschel</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://baltimorewitness.org/">Support</a></span></p>
-<p>Baltimore City Circuit Court Judge Melissa M. Phinn presided over a reception court proceeding to schedule the homicide trial of Dontaye Miontez Carter for September 25, 2026. Carter, 45, is charged with first-degree murder, premeditated conspiracy to commit murder, conspiracy to commit kidnapping, kidnapping, conspiracy to use a firearm during the commission of a violent</p>
-<p class="more"><a href="https://baltimorewitness.org/trial-scheduling-date-set-for-2022-would-be-retaliation-homicide/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://stocktonia.fundjournalism.org/donate/?campaign=6Mw4frEeMIYnrxMsnt">Donate</a></aside>
+<p class="source"><a href="https://stocktonia.org/"><strong>Stocktonia</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T18:27:12+00:00" data-pub="11:27 AM PDT">Sun, Aug 23 @ 11AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Stockton&state=CA">Stockton</a></p>
+<h2><a href="https://stocktonia.org/news/public-safety/2026/08/23/stockton-teen-girl-shot-after-bullet-goes-through-wall/">Stockton teen girl shot after bullet goes through wall</a></h2>
+<p class="byline">By Bay City News</p>
+<a class="shot" href="https://stocktonia.org/news/public-safety/2026/08/23/stockton-teen-girl-shot-after-bullet-goes-through-wall/" tabindex="-1" aria-hidden="true"><img src="../img/a16c1686741f6f1027cafd6134a6de2ba98fb3b5.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>A Stockton teenager was shot when a firearm discharged inside a residence in the Seaport District on Friday. Stockton teen girl shot after bullet goes through wall is a story from Stocktonia News, a rigorous and factual newsroom covering Greater Stockton, California. Please consider making a charitable contribution to support our journalism. <a class="lozenge more" href="https://stocktonia.org/news/public-safety/2026/08/23/stockton-teen-girl-shot-after-bullet-goes-through-wall/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T21:40:47+00:00" data-pub="2:40 PM PDT">Friday, August 21, 2026 at 2:40 PM PDT</time></small></p>
-<p><small>WA / Snohomish County / <a href="https://myedmondsnews.com/">My Edmonds News</a></small></p>
-<h2><a href="https://myedmondsnews.com/2026/08/can-you-name-this-place-in-edmonds-49/">Can you name this place in Edmonds?</a></h2>
-<p class="byline"><small>By MyEdmondsNews</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://myedmondsnews.com/">Support</a></span></p>
-<p class="more"><a href="https://myedmondsnews.com/2026/08/can-you-name-this-place-in-edmonds-49/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://boyleheightsbeat.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://boyleheightsbeat.com/"><strong>Boyle Heights Beat</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T18:00:00+00:00" data-pub="11:00 AM PDT">Sun, Aug 23 @ 11AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://thelalocal.org/education/how-to-navigate-finding-after-school-care-in-lausd/">How to navigate finding after-school care in LAUSD</a></h2>
+<p class="byline">By LAist</p>
+<a class="shot" href="https://thelalocal.org/education/how-to-navigate-finding-after-school-care-in-lausd/" tabindex="-1" aria-hidden="true"><img src="../img/266549b51e3d5f167d875c108f32993cbd6d8742.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>The district offers free after-school programs at more than 700 schools. But it can be tricky to understand all the options. <a class="lozenge more" href="https://thelalocal.org/education/how-to-navigate-finding-after-school-care-in-lausd/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T21:35:30+00:00" data-pub="5:35 PM EDT">Friday, August 21, 2026 at 5:35 PM EDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>MD / Baltimore / <a href="https://baltimorewitness.org/">Baltimore Witness</a></small></p>
-<h2><a href="https://baltimorewitness.org/murder-trial-date-set-for-18-year-old-suspect/">Murder Trial Date Set for 18-year-old Suspect</a></h2>
-<p class="byline"><small>By sebastianritschel</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://baltimorewitness.org/">Support</a></span></p>
-<p>Kamya Stratton, 18, appeared in court Aug. 21st, to set a trial date for her alleged involvement in a Feb. 3, 2024, murder. Baltimore City Circuit Court Judge Melissa M. Phinn presided over the reception hearing, where a date was set for her first-degree murder trial. According to the charging documents, Stratton was identified by</p>
-<p class="more"><a href="https://baltimorewitness.org/murder-trial-date-set-for-18-year-old-suspect/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://stocktonia.fundjournalism.org/donate/?campaign=6Mw4frEeMIYnrxMsnt">Donate</a></aside>
+<p class="source"><a href="https://stocktonia.org/"><strong>Stocktonia</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T17:59:11+00:00" data-pub="10:59 AM PDT">Sun, Aug 23 @ 10AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Stockton&state=CA">Stockton</a></p>
+<h2><a href="https://stocktonia.org/news/community/2026/08/23/he-was-our-community-pastor-dwight-earl-williams-stockton-bishop-and-community-leader-dies-at-60/">‘He was our community pastor:’ Dwight Earl Williams, Stockton bishop and community leader, dies at 60</a></h2>
+<p class="byline">By Shaylee Navarro • Stocktonia</p>
+<a class="shot" href="https://stocktonia.org/news/community/2026/08/23/he-was-our-community-pastor-dwight-earl-williams-stockton-bishop-and-community-leader-dies-at-60/" tabindex="-1" aria-hidden="true"><img src="../img/aebd0aefb27477d8a2130e6af9601e29b6d21afc.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Bishop Dwight Earl Williams, a longstanding pastor in Stockton who carried his work beyond the church and into the city’s civic and community life, died on Monday. He was 60. ‘He was our community pastor:’ Dwight Earl Williams, Stockton bishop and community leader, dies at 60 is a story from Stocktonia News, a rigorous and factual newsroom covering Greater Stockton, California. Please consider mak <a class="lozenge more" href="https://stocktonia.org/news/community/2026/08/23/he-was-our-community-pastor-dwight-earl-williams-stockton-bishop-and-community-leader-dies-at-60/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T21:33:53+00:00" data-pub="5:33 PM EDT">Friday, August 21, 2026 at 5:33 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>KY / Hopkinsville / <a href="https://hoptownchronicle.org/">Hoptown Chronicle</a></small></p>
-<h2><a href="https://hoptownchronicle.org/data-center-developer-says-it-is-committing-to-beshears-requirements/">Data center developer says it is committing to Beshear’s requirements</a></h2>
-<p class="byline"><small>By Liam Niemeyer</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://hoptownchronicle.org/about/support-us/">Donate</a></span></p>
-<p>The governor said his executive order would implement an array of protections against the potential impacts of data centers, though some experts have questioned how much legal “teeth” his order has without the backing of specific state laws addressing data centers.</p>
-<p class="more"><a href="https://hoptownchronicle.org/data-center-developer-says-it-is-committing-to-beshears-requirements/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.rappnews.com/">Support</a></aside>
+<p class="source"><a href="https://www.rappnews.com/"><strong>Rappahannock News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T17:01:51+00:00" data-pub="1:01 PM EDT">Sun, Aug 23 @ 1PM EDT</time><a class="lozenge place" href="/search?state=VA">Virginia</a><a class="lozenge place" href="/search?place=Rappahannock+County&state=VA">Rappahannock County</a></p>
+<h2><a href="https://www.rappnews.com/washington-column/remembering-two-rappahannock-treasures-c02ce908">Remembering two Rappahannock treasures</a></h2>
+<p class="byline">By Jan Clatterbuck</p>
+<a class="shot" href="https://www.rappnews.com/washington-column/remembering-two-rappahannock-treasures-c02ce908" tabindex="-1" aria-hidden="true"><img src="../img/a0895e0fa996dabd5527dd287d6597230a4a1c75.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Our children, family and friends are gifts to be savored. Some days may be full of hardship and sadness for us, and we may not understand why. <a class="lozenge more" href="https://www.rappnews.com/washington-column/remembering-two-rappahannock-treasures-c02ce908">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T21:14:45+00:00" data-pub="5:14 PM EDT">Friday, August 21, 2026 at 5:14 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>MD / Baltimore / <a href="https://baltimorewitness.org/">Baltimore Witness</a></small></p>
-<h2><a href="https://baltimorewitness.org/third-trial-delayed-for-2014-double-homicide-suspect/">Trial Delayed to Determine 2014 Double Homicide Suspect’s Mental Competence</a></h2>
-<p class="byline"><small>By shrihithanookala</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://baltimorewitness.org/">Support</a></span></p>
-<p>Scott Barnett’s trial for two counts of murder more than a decade ago was postponed for a mental competency review. In 2025, Barnett, 45, walked into a police station and allegedly confessed his involvement in the fatal stabbing of 41-year-old Terrill Lehman and 46-year-old Charles Webster in 2014. Barnett appeared before Judge Mellisa M. Phinn</p>
-<p class="more"><a href="https://baltimorewitness.org/third-trial-delayed-for-2014-double-homicide-suspect/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://evanstonroundtable.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://evanstonroundtable.com/"><strong>Evanston RoundTable</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T16:00:00+00:00" data-pub="11:00 AM CDT">Sun, Aug 23 @ 11AM CDT</time><a class="lozenge place" href="/search?state=IL">Illinois</a><a class="lozenge place" href="/search?place=Evanston&state=IL">Evanston</a></p>
+<h2><a href="https://evanstonroundtable.com/2026/08/23/commission-on-aging-and-disabilities-urges-city-to-look-into-restoring-dodge-yellow-line-station/">Commission on Aging and Disabilities urges city to look into restoring Dodge Yellow Line station</a></h2>
+<p class="byline">By Igor Studenkov</p>
+<a class="shot" href="https://evanstonroundtable.com/2026/08/23/commission-on-aging-and-disabilities-urges-city-to-look-into-restoring-dodge-yellow-line-station/" tabindex="-1" aria-hidden="true"><img src="../img/b6829f5deded82ccabb6d64f15209d9913fbe27a.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>The Evanston Commission on Aging and Disabilities has officially asked the city to study the feasibility of bringing back the Yellow Line Dodge ‘L’ station. The station was one of the three Evanston stations on what originally known as the Niles Center Line. Opened in 1925, the Dodge station was closed in 1948 and demolished […] Commission on Aging and Disabilities urges city to look into restorin <a class="lozenge more" href="https://evanstonroundtable.com/2026/08/23/commission-on-aging-and-disabilities-urges-city-to-look-into-restoring-dodge-yellow-line-station/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T21:00:55+00:00" data-pub="5:00 PM EDT">Friday, August 21, 2026 at 5:00 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>VA / Fredericksburg / <a href="https://www.fredericksburgfreepress.com/about-fredericksburg-free-press/">Fredericksburg Free Press</a></small></p>
-<h2><a href="https://www.fredericksburgfreepress.com/2026/08/21/a-high-handed-rule-caroline-hemp-store-faces-uncertain-future-after-state-law-limiting-thc-takes-effect/">A high-handed rule? Caroline hemp store faces uncertain future after state law limiting THC takes effect</a></h2>
-<p class="byline"><small>By Taft Coghill Jr. and Jonathan Hunley</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.fredericksburgfreepress.com/support/">Donate</a></span></p>
-<a class="shot" href="https://www.fredericksburgfreepress.com/2026/08/21/a-high-handed-rule-caroline-hemp-store-faces-uncertain-future-after-state-law-limiting-thc-takes-effect/" tabindex="-1" aria-hidden="true"><img src="../img/17aff8bb39422fc98d5c9fb99c712d5e5d6e6bb3.jpg" alt="" width="480" height="319" loading="lazy" decoding="async"></a>
-<p>Redfern Market in Carmel Church has had to pull many popular products that exceed the new 2 mg threshold for THC, the psychoactive compound in cannabis.</p>
-<p class="more"><a href="https://www.fredericksburgfreepress.com/2026/08/21/a-high-handed-rule-caroline-hemp-store-faces-uncertain-future-after-state-law-limiting-thc-takes-effect/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://eastgreenwichnews.com/">Support</a></aside>
+<p class="source"><a href="https://eastgreenwichnews.com/"><strong>East Greenwich News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T15:47:32+00:00" data-pub="11:47 AM EDT">Sun, Aug 23 @ 11AM EDT</time><a class="lozenge place" href="/search?state=RI">Rhode Island</a><a class="lozenge place" href="/search?place=East+Greenwich&state=RI">East Greenwich</a></p>
+<h2><a href="https://eastgreenwichnews.com/police-log-9-dui-arrests-paycheck-switcheroo/">Police Log: 9 DUI Arrests, Paycheck Switcheroo</a></h2>
+<p class="byline">By Brandy Muz</p>
+<a class="shot" href="https://eastgreenwichnews.com/police-log-9-dui-arrests-paycheck-switcheroo/" tabindex="-1" aria-hidden="true"><img src="../img/ff3af285551387d333b54d1052b73b5fd1c8857a.jpg" alt="" width="300" height="225" loading="lazy" decoding="async"></a>
+<p>From the East Greenwich police log and reports, Aug. 10-17, 2026. Monday, August 10 8:39 p.m. – A caller told police she was concerned her roommate was driving intoxicated after leaving a Water Street bar. Police were unable to locate the vehicle in the area. 10:41 p.m. – A caller told police his girlfriend was <a class="lozenge more" href="https://eastgreenwichnews.com/police-log-9-dui-arrests-paycheck-switcheroo/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T20:55:11+00:00" data-pub="4:55 PM EDT">Friday, August 21, 2026 at 4:55 PM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>MD / Baltimore / <a href="https://baltimorewitness.org/">Baltimore Witness</a></small></p>
-<h2><a href="https://baltimorewitness.org/34-year-old-mother-rejects-plea-deal-for-attempted-murder/">34-Year-Old Mother Rejects Plea Deal for Attempted Murder</a></h2>
-<p class="byline"><small>By shrihithanookala</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://baltimorewitness.org/">Support</a></span></p>
-<p>Sabrea Renee Brooks, a 34-year-old Baltimore mother, who faces charges of attempted murder, assault and firearms violations, rejected a plea offer on Aug. 21. Brooks allegedly assaulted her friend during an altercation on February 24, 2026. Charging documents state that around 10 p.m., police were called to the 600 block of W. Franklin Street for</p>
-<p class="more"><a href="https://baltimorewitness.org/34-year-old-mother-rejects-plea-deal-for-attempted-murder/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://mymltnews.com/membership/">Donate</a></aside>
+<p class="source"><a href="https://mymltnews.com/"><strong>MLT News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T15:39:30+00:00" data-pub="8:39 AM PDT">Sun, Aug 23 @ 8AM PDT</time><a class="lozenge place" href="/search?state=WA">Washington</a><a class="lozenge place" href="/search?place=Mountlake+Terrace&state=WA">Mountlake Terrace</a></p>
+<h2><a href="https://mymltnews.com/watchdog-data-shows-higher-wa-child-welfare-deaths-than-previously-reported/">Watchdog data shows higher WA child welfare deaths than previously reported</a></h2>
+<p class="byline">By Teresa Wippel</p>
+<p>Deaths and serious injuries of children involved with Washington’s child welfare system last year were even higher than record levels the state previously reported, according to new data. In 2025, <a class="lozenge more" href="https://mymltnews.com/watchdog-data-shows-higher-wa-child-welfare-deaths-than-previously-reported/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://mylynnwoodnews.com/watchdog-data-shows-higher-wa-child-welfare-deaths-than-previously-reported/">Lynnwood Today</a> &middot; <a href="https://myedmondsnews.com/2026/08/watchdog-data-shows-higher-wa-child-welfare-deaths-than-previously-reported/">My Edmonds News</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T20:53:14+00:00" data-pub="1:53 PM PDT">Friday, August 21, 2026 at 1:53 PM PDT</time></small></p>
-<p><small>WA / Snohomish County / <a href="https://myedmondsnews.com/">My Edmonds News</a></small></p>
-<h2><a href="https://myedmondsnews.com/2026/08/reminder-huge-church-wide-indoor-outdoor-rummage-sale-saturday-in-edmonds/">Reminder: Huge church-wide indoor/outdoor rummage sale Saturday in Edmonds</a></h2>
-<p class="byline"><small>By MyEdmondsNews</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://myedmondsnews.com/">Support</a></span></p>
-<p>Discover great finds at Holy Trinity Edmonds’ fifth Annual Rummage Sale from 9 a.m. to 2 p.m. this Saturday, Aug. 22 at 657 Daley St. next to Edmonds’ Civic Center</p>
-<p class="more"><a href="https://myedmondsnews.com/2026/08/reminder-huge-church-wide-indoor-outdoor-rummage-sale-saturday-in-edmonds/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://stocktonia.fundjournalism.org/donate/?campaign=6Mw4frEeMIYnrxMsnt">Donate</a></aside>
+<p class="source"><a href="https://stocktonia.org/"><strong>Stocktonia</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T15:00:00+00:00" data-pub="8:00 AM PDT">Sun, Aug 23 @ 8AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Stockton&state=CA">Stockton</a></p>
+<h2><a href="https://stocktonia.org/news/opinion/2026/08/23/commentary-why-are-mexican-students-still-coming-to-the-u-s/">Commentary: Why are Mexican students still coming to the U.S.?</a></h2>
+<p class="byline">By Rachel Newman • Zócalo</p>
+<a class="shot" href="https://stocktonia.org/news/opinion/2026/08/23/commentary-why-are-mexican-students-still-coming-to-the-u-s/" tabindex="-1" aria-hidden="true"><img src="../img/eff78a133a4f38d723fa639e5fca318090906549.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Despite the risks, the power of an American degree Has always held weight Commentary: Why are Mexican students still coming to the U.S.? is a story from Stocktonia News, a rigorous and factual newsroom covering Greater Stockton, California. Please consider making a charitable contribution to support our journalism. <a class="lozenge more" href="https://stocktonia.org/news/opinion/2026/08/23/commentary-why-are-mexican-students-still-coming-to-the-u-s/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T20:45:26+00:00" data-pub="1:45 PM PDT">Friday, August 21, 2026 at 1:45 PM PDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>CA / Shasta County / <a href="https://shastascout.org/">Shasta Scout</a></small></p>
-<h2><a href="https://shastascout.org/could-shastas-elections-official-actually-hire-tina-peters/">Could Shasta’s elections official actually hire Tina Peters?</a></h2>
-<p class="byline"><small>By Madison Holcomb</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://shastascout.org/donate/">Donate</a></span></p>
-<a class="shot" href="https://shastascout.org/could-shastas-elections-official-actually-hire-tina-peters/" tabindex="-1" aria-hidden="true"><img src="../img/fe8679b46183558af9562ba7c318fca810a0c114.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>The answer is complicated and would involve factors at both the county and statewide levels.</p>
-<p class="more"><a href="https://shastascout.org/could-shastas-elections-official-actually-hire-tina-peters/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.adirondackexplorer.org/donate-now/">Donate</a></aside>
+<p class="source"><a href="https://www.adirondackexplorer.org/"><strong>Adirondack Explorer</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T15:00:00+00:00" data-pub="11:00 AM EDT">Sun, Aug 23 @ 11AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Saranac+Lake&state=NY">Saranac Lake</a></p>
+<h2><a href="https://www.adirondackexplorer.org/communities/historic-saranac-lake-opens-new-museum-campus/">Historic Saranac Lake opens new museum campus</a></h2>
+<p class="byline">By Community News Reports</p>
+<a class="shot" href="https://www.adirondackexplorer.org/communities/historic-saranac-lake-opens-new-museum-campus/" tabindex="-1" aria-hidden="true"><img src="../img/0c472ae8cedb6cc72990abaf58826c211b5f7931.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Historic Saranac Lake opened its new museum in the old Trudeau Building, encouraging visitors to explore the region <a class="lozenge more" href="https://www.adirondackexplorer.org/communities/historic-saranac-lake-opens-new-museum-campus/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T20:39:18+00:00" data-pub="4:39 PM EDT">Friday, August 21, 2026 at 4:39 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>MD / Baltimore / <a href="https://baltimorewitness.org/">Baltimore Witness</a></small></p>
-<h2><a href="https://baltimorewitness.org/man-accused-of-shooting-16-year-old-begins-jury-selection-after-previous-days-delays/">Man Accused of Shooting 16-Year-Old Begins Jury Selection After Previous Day’s Delays</a></h2>
-<p class="byline"><small>By Andrew Michaels</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://baltimorewitness.org/">Support</a></span></p>
-<p>A 43-year-old attempted murder defendant accused of shooting at two minors and an adult, injuring a 16-year-old, began jury selection on Aug. 21 after counsel encountered multiple delays the previous day. Troy Ayers was expected to begin trial on Aug. 20 before Baltimore City Circuit Court Judge Jeannie J. Hong — a trial that was</p>
-<p class="more"><a href="https://baltimorewitness.org/man-accused-of-shooting-16-year-old-begins-jury-selection-after-previous-days-delays/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://stocktonia.fundjournalism.org/donate/?campaign=6Mw4frEeMIYnrxMsnt">Donate</a></aside>
+<p class="source"><a href="https://stocktonia.org/"><strong>Stocktonia</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T13:00:00+00:00" data-pub="6:00 AM PDT">Sun, Aug 23 @ 6AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Stockton&state=CA">Stockton</a></p>
+<h2><a href="https://stocktonia.org/news/education/2026/08/23/canceled-grant-program-deemed-discriminatory/">A canceled grant program deemed ‘discriminatory’ by Trump spurs cuts at California colleges</a></h2>
+<p class="byline">By Michael Burke • EdSource</p>
+<a class="shot" href="https://stocktonia.org/news/education/2026/08/23/canceled-grant-program-deemed-discriminatory/" tabindex="-1" aria-hidden="true"><img src="../img/72efd7027b5f61ac473d52af8bb509327ce5592b.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Support services for STEM students and community college transfers are among the initiatives to be axed after HSI cuts. A canceled grant program deemed ‘discriminatory’ by Trump spurs cuts at California colleges is a story from Stocktonia News, a rigorous and factual newsroom covering Greater Stockton, California. Please consider making a charitable contribution to support our journalism. <a class="lozenge more" href="https://stocktonia.org/news/education/2026/08/23/canceled-grant-program-deemed-discriminatory/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T20:31:23+00:00" data-pub="4:31 PM EDT">Friday, August 21, 2026 at 4:31 PM EDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>MI / East Lansing / <a href="https://eastlansinginfo.news/">East Lansing Info</a></small></p>
-<h2><a href="https://eastlansinginfo.news/east-lansing-is-seeing-more-extreme-rain-storms-a-new-plan-prepares-for-a-wetter-future/">East Lansing is Seeing More Extreme Rain Storms, a New Plan Prepares for a Wetter Future</a></h2>
-<p class="byline"><small>By Lucas Day</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://eastlansinginfo.news/donate/">Donate</a></span></p>
-<p>There&#x27;s no easy fix to widespread flooding in East Lansing, but a nearly completed plan will help the city address the biggest problems.</p>
-<p class="more"><a href="https://eastlansinginfo.news/east-lansing-is-seeing-more-extreme-rain-storms-a-new-plan-prepares-for-a-wetter-future/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.fredericksburgfreepress.com/support/">Donate</a></aside>
+<p class="source"><a href="https://www.fredericksburgfreepress.com/about-fredericksburg-free-press/"><strong>Fredericksburg Free Press</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T12:56:34+00:00" data-pub="8:56 AM EDT">Sun, Aug 23 @ 8AM EDT</time><a class="lozenge place" href="/search?state=VA">Virginia</a><a class="lozenge place" href="/search?place=Fredericksburg&state=VA">Fredericksburg</a></p>
+<h2><a href="https://www.fredericksburgfreepress.com/2026/08/23/watch-historic-masonic-lodge-hosts-what-remains-this-saturday/">WATCH:  Historic Masonic Lodge hosts What Remains this Saturday</a></h2>
+<p class="byline">By Ted Schubel</p>
+<a class="shot" href="https://www.fredericksburgfreepress.com/2026/08/23/watch-historic-masonic-lodge-hosts-what-remains-this-saturday/" tabindex="-1" aria-hidden="true"><img src="../img/8f326e276b440a1cbd8726bb50542dc5fd433069.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Step inside one of Fredericksburg’s historic buildings and get a closer look at the stories and objects that usually stay behind the scenes. <a class="lozenge more" href="https://www.fredericksburgfreepress.com/2026/08/23/watch-historic-masonic-lodge-hosts-what-remains-this-saturday/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T20:30:49+00:00" data-pub="1:30 PM PDT">Friday, August 21, 2026 at 1:30 PM PDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>CA / Riverside / <a href="https://riversiderecord.org/">The Riverside Record</a></small></p>
-<h2><a href="https://riversiderecord.org/riverside-hair-salon-viral-video-ice/">‘I’m Calling ICE Next’: Immigrant Rights Groups Call For Action Following Viral Video</a></h2>
-<p class="byline"><small>By Daniel Eduardo Hernandez</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://riverside-record.fundjournalism.org/donate/">Donate</a></span></p>
-<a class="shot" href="https://riversiderecord.org/riverside-hair-salon-viral-video-ice/" tabindex="-1" aria-hidden="true"><img src="../img/4240b8ce058f7ea3d9853a54e7bad988b3528af7.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Three Inland Empire immigrant rights organizations called on Riverside officials to take action to protect workers without permanent legal status after a viral video.</p>
-<p class="more"><a href="https://riversiderecord.org/riverside-hair-salon-viral-video-ice/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.adirondackexplorer.org/donate-now/">Donate</a></aside>
+<p class="source"><a href="https://www.adirondackexplorer.org/"><strong>Adirondack Explorer</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T12:14:57+00:00" data-pub="8:14 AM EDT">Sun, Aug 23 @ 8AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Saranac+Lake&state=NY">Saranac Lake</a></p>
+<h2><a href="https://www.adirondackexplorer.org/adirondacks-almanack/latest-news-headlines-184/">Latest news headlines</a></h2>
+<p class="byline">By Ezra Maille</p>
+<a class="shot" href="https://www.adirondackexplorer.org/adirondacks-almanack/latest-news-headlines-184/" tabindex="-1" aria-hidden="true"><img src="../img/ad74a2c70b9cebe8e8429d091ac347d23f5f273b.jpg" alt="" width="480" height="278" loading="lazy" decoding="async"></a>
+<p>Here&#x27;s a look at news from around the Adirondacks this week <a class="lozenge more" href="https://www.adirondackexplorer.org/adirondacks-almanack/latest-news-headlines-184/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 </div>
 <p><a id="more" href="inn-member-11.html">More stories</a></p>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="../index.html">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -394,6 +457,47 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>

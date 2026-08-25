@@ -13,12 +13,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(../fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -27,22 +40,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -50,19 +69,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -75,7 +126,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -93,7 +144,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="../index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="../masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -106,7 +157,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="../subjects/news.html">News</a></li><li><a href="../subjects/politics.html">Politics</a></li><li><a href="../subjects/opinion.html">Opinion</a></li><li><a href="../subjects/health.html">Health</a></li><li><a href="../subjects/environment.html">Environment</a></li><li><a href="../subjects/education.html">Education</a></li><li><a href="../subjects/business.html">Business</a></li><li><a href="../subjects/housing.html">Housing</a></li><li><a href="../subjects/sports.html">Sports</a></li><li><a href="../subjects/food.html">Food</a></li><li><a href="../subjects/arts.html">Arts</a></li></ul></nav>
@@ -121,281 +172,281 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <main id="main">
 <div id="feed-items">
 <article>
-<p class="stamp"><small><time datetime="2026-08-01T13:24:38+00:00" data-pub="9:24 AM EDT">Saturday, August 1, 2026 at 9:24 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>VA / Charlottesville / <a href="https://communityengagement.substack.com/">Charlottesville Community Engagement</a></small></p>
-<h2><a href="https://communityengagement.substack.com/p/podcast-for-august-1-2026-charlottesville">Podcast for August 1, 2026: Charlottesville City Council briefed on transportation projects and four other recent stories</a></h2>
-<p class="byline"><small>By Sean Tubbs</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://communityengagement.substack.com/">Support</a></span></p>
-<a class="shot" href="https://communityengagement.substack.com/p/podcast-for-august-1-2026-charlottesville" tabindex="-1" aria-hidden="true"><img src="../img/61645bfb981917f1f6bf98b0996846fde978171f.jpg" alt="" width="480" height="378" loading="lazy" decoding="async"></a>
-<p>An audio edition to begin the new month!</p>
-<p class="more"><a href="https://communityengagement.substack.com/p/podcast-for-august-1-2026-charlottesville">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-01T12:48:47+00:00" data-pub="8:48 AM EDT">Saturday, August 1, 2026 at 8:48 AM EDT</time></small></p>
-<p><small>National / Accountability / <a href="https://popular.info/">Popular Information</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/newsletter.html">Newsletter</a><a class="lozenge" href="../tags/reader-funded.html">Reader-funded</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://popular.info/subscribe">Subscribe</a></aside>
+<p class="source"><a href="https://popular.info/"><strong>Popular Information</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-01T12:48:47+00:00" data-pub="8:48 AM EDT">Sat, Aug 1 @ 8AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Accountability">Accountability</a></p>
 <h2><a href="https://popular.info/p/popinfo-weekly-medicaid-mamdani-and">PopInfo Weekly: Medicaid, Mamdani, and misinformation</a></h2>
-<p class="byline"><small>By Rebecca Crosby</small><span class="aside"><a class="lozenge" href="../tags/newsletter.html">Newsletter</a><a class="lozenge" href="../tags/reader-funded.html">Reader-funded</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://popular.info/subscribe">Subscribe</a></span></p>
+<p class="byline">By Rebecca Crosby</p>
 <a class="shot" href="https://popular.info/p/popinfo-weekly-medicaid-mamdani-and" tabindex="-1" aria-hidden="true"><img src="../img/10804a6b2b0cdddeaecb13a420f31fa6ea0d20bb.jpg" alt="" width="480" height="334" loading="lazy" decoding="async"></a>
-<p>A Popular Information analysis found that American taxpayers are spending billions each year on Medicaid benefits for hundreds of thousands of Amazon and Walmart employees.</p>
-<p class="more"><a href="https://popular.info/p/popinfo-weekly-medicaid-mamdani-and">Read more <span aria-hidden="true">→</span></a></p>
+<p>A Popular Information analysis found that American taxpayers are spending billions each year on Medicaid benefits for hundreds of thousands of Amazon and Walmart employees. <a class="lozenge more" href="https://popular.info/p/popinfo-weekly-medicaid-mamdani-and">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-31T16:08:00+00:00" data-pub="11:08 AM CDT">Friday, July 31, 2026 at 11:08 AM CDT</time></small></p>
-<p><small>TX / Texas politics / <a href="https://www.thebarbedwire.com/">The Barbed Wire</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/newsletter.html">Newsletter</a><a class="lozenge" href="../tags/reader-funded.html">Reader-funded</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://www.thebarbedwire.com/texas-first-nonbinary-city-council-member-wants-to-make-denton-more-affordable-equitable-and-safe/">Become a member</a></aside>
+<p class="source"><a href="https://www.thebarbedwire.com/"><strong>The Barbed Wire</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-31T16:08:00+00:00" data-pub="11:08 AM CDT">Fri, Jul 31 @ 11AM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=Texas+politics&state=TX">Texas politics</a></p>
 <h2><a href="https://www.thebarbedwire.com/weed-whiplash/">Weed Whiplash</a></h2>
-<p class="byline"><small>By Mario Leal</small><span class="aside"><a class="lozenge" href="../tags/newsletter.html">Newsletter</a><a class="lozenge" href="../tags/reader-funded.html">Reader-funded</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://www.thebarbedwire.com/texas-first-nonbinary-city-council-member-wants-to-make-denton-more-affordable-equitable-and-safe/">Become a member</a></span></p>
+<p class="byline">By Mario Leal</p>
 <a class="shot" href="https://www.thebarbedwire.com/weed-whiplash/" tabindex="-1" aria-hidden="true"><img src="../img/df756b416ac88d03404f0700d55c1e3d188fc123.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>As of July 31, Texas bans hemp products built on Delta 8, Delta 10, THC-P and THC-A flower — now Schedule 1 controlled substances. Possession is a state jail felony: 180 days to two years, plus fines up to $10,000. Shops that keep selling can lose their</p>
-<p class="more"><a href="https://www.thebarbedwire.com/weed-whiplash/">Read more <span aria-hidden="true">→</span></a></p>
+<p>As of July 31, Texas bans hemp products built on Delta 8, Delta 10, THC-P and THC-A flower—now Schedule 1 controlled substances. Possession is a state jail felony: 180 days to two years, plus fines up to $10,000. Shops that keep selling can lose their <a class="lozenge more" href="https://www.thebarbedwire.com/weed-whiplash/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-31T10:30:54+00:00" data-pub="6:30 AM EDT">Friday, July 31, 2026 at 6:30 AM EDT</time></small></p>
-<p><small>National / Accountability / <a href="https://popular.info/">Popular Information</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/newsletter.html">Newsletter</a><a class="lozenge" href="../tags/reader-funded.html">Reader-funded</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://popular.info/subscribe">Subscribe</a></aside>
+<p class="source"><a href="https://popular.info/"><strong>Popular Information</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-31T10:30:54+00:00" data-pub="6:30 AM EDT">Fri, Jul 31 @ 6AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Accountability">Accountability</a></p>
 <h2><a href="https://popular.info/p/the-first-eight-years-and-the-next">The first eight years and the next eight years of Popular Information</a></h2>
-<p class="byline"><small>By Judd Legum</small><span class="aside"><a class="lozenge" href="../tags/newsletter.html">Newsletter</a><a class="lozenge" href="../tags/reader-funded.html">Reader-funded</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://popular.info/subscribe">Subscribe</a></span></p>
+<p class="byline">By Judd Legum</p>
 <a class="shot" href="https://popular.info/p/the-first-eight-years-and-the-next" tabindex="-1" aria-hidden="true"><img src="../img/3d78c0d95129b249c8ec9ff5368add5d677785f6.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>“To write the truth as I see it; to defend the weak against the strong; to fight for justice; and to seek, as best I can, to bring healing perspectives to bear on the terrible hates and fears of mankind…”</p>
-<p class="more"><a href="https://popular.info/p/the-first-eight-years-and-the-next">Read more <span aria-hidden="true">→</span></a></p>
+<p>“To write the truth as I see it; to defend the weak against the strong; to fight for justice; and to seek, as best I can, to bring healing perspectives to bear on the terrible hates and fears of mankind…” <a class="lozenge more" href="https://popular.info/p/the-first-eight-years-and-the-next">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-31T03:09:15+00:00" data-pub="9:09 PM MDT">Thursday, July 30, 2026 at 9:09 PM MDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>NM / Cloudcroft / <a href="https://www.cloudcroftreader.com/">Cloudcroft Reader</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://www.cloudcroftreader.com/">Support</a></aside>
+<p class="source"><a href="https://www.cloudcroftreader.com/"><strong>Cloudcroft Reader</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-31T03:09:15+00:00" data-pub="9:09 PM MDT">Thu, Jul 30 @ 9PM MDT</time><a class="lozenge place" href="/search?state=NM">New Mexico</a><a class="lozenge place" href="/search?place=Cloudcroft&state=NM">Cloudcroft</a></p>
 <h2><a href="https://www.cloudcroftreader.com/p/new-mexico-department-of-wildlife">New Mexico Department of Wildlife Removes Aggressive Cougar Near Cloudcroft</a></h2>
-<p class="byline"><small>By Hannah Dean</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://www.cloudcroftreader.com/">Support</a></span></p>
+<p class="byline">By Hannah Dean</p>
 <a class="shot" href="https://www.cloudcroftreader.com/p/new-mexico-department-of-wildlife" tabindex="-1" aria-hidden="true"><img src="../img/cb7bdfab762c13bcd0ef6c32dd370bc00551c5ea.jpg" alt="" width="480" height="240" loading="lazy" decoding="async"></a>
-<p>The cougar approached people aggressively, according to the agency. Eyewitnesses confirm the lion was shot and killed.</p>
-<p class="more"><a href="https://www.cloudcroftreader.com/p/new-mexico-department-of-wildlife">Read more <span aria-hidden="true">→</span></a></p>
+<p>The cougar approached people aggressively, according to the agency. Eyewitnesses confirm the lion was shot and killed. <a class="lozenge more" href="https://www.cloudcroftreader.com/p/new-mexico-department-of-wildlife">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-30T18:05:01+00:00" data-pub="11:05 AM PDT">Thursday, July 30, 2026 at 11:05 AM PDT</time></small></p>
-<p><small>WA / Statewide / <a href="https://washingtonobserver.substack.com/">Washington Observer</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://washingtonobserver.substack.com/">Support</a></aside>
+<p class="source"><a href="https://washingtonobserver.substack.com/"><strong>Washington Observer</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-30T18:05:01+00:00" data-pub="11:05 AM PDT">Thu, Jul 30 @ 11AM PDT</time><a class="lozenge place" href="/search?state=WA">Washington</a></p>
 <h2><a href="https://washingtonobserver.substack.com/p/a-three-way-battle-in-the-42nd">A three-way battle in the 42nd</a></h2>
-<p class="byline"><small>By Tim Gruver</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://washingtonobserver.substack.com/">Support</a></span></p>
+<p class="byline">By Tim Gruver</p>
 <a class="shot" href="https://washingtonobserver.substack.com/p/a-three-way-battle-in-the-42nd" tabindex="-1" aria-hidden="true"><img src="../img/522d7a5156aeb4b616ddd9a5a280224e539b2671.jpg" alt="" width="480" height="461" loading="lazy" decoding="async"></a>
-<p>Plus conservative mischief in the 43rd and a weird campaign against The Stranger</p>
-<p class="more"><a href="https://washingtonobserver.substack.com/p/a-three-way-battle-in-the-42nd">Read more <span aria-hidden="true">→</span></a></p>
+<p>Plus conservative mischief in the 43rd and a weird campaign against The Stranger <a class="lozenge more" href="https://washingtonobserver.substack.com/p/a-three-way-battle-in-the-42nd">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-30T10:30:22+00:00" data-pub="6:30 AM EDT">Thursday, July 30, 2026 at 6:30 AM EDT</time></small></p>
-<p><small>National / Accountability / <a href="https://popular.info/">Popular Information</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/newsletter.html">Newsletter</a><a class="lozenge" href="../tags/reader-funded.html">Reader-funded</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://popular.info/subscribe">Subscribe</a></aside>
+<p class="source"><a href="https://popular.info/"><strong>Popular Information</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-30T10:30:22+00:00" data-pub="6:30 AM EDT">Thu, Jul 30 @ 6AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Accountability">Accountability</a></p>
 <h2><a href="https://popular.info/p/meta-will-train-its-ai-on-far-right">Meta will train its AI on far-right media outlet</a></h2>
-<p class="byline"><small>By Judd Legum</small><span class="aside"><a class="lozenge" href="../tags/newsletter.html">Newsletter</a><a class="lozenge" href="../tags/reader-funded.html">Reader-funded</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://popular.info/subscribe">Subscribe</a></span></p>
+<p class="byline">By Judd Legum</p>
 <a class="shot" href="https://popular.info/p/meta-will-train-its-ai-on-far-right" tabindex="-1" aria-hidden="true"><img src="../img/d4df9901fef0f946bf7886177736407a5e6afeb0.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>This week, Newsmax — a far-right news organization with a strong allegiance to President Trump and a history of pushing wild conspiracy theories — announced it had struck a deal with Meta.</p>
-<p class="more"><a href="https://popular.info/p/meta-will-train-its-ai-on-far-right">Read more <span aria-hidden="true">→</span></a></p>
+<p>This week, Newsmax—a far-right news organization with a strong allegiance to President Trump and a history of pushing wild conspiracy theories—announced it had struck a deal with Meta. <a class="lozenge more" href="https://popular.info/p/meta-will-train-its-ai-on-far-right">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-29T14:38:39+00:00" data-pub="8:38 AM MDT">Wednesday, July 29, 2026 at 8:38 AM MDT</time></small></p>
-<p><small>NM / Cloudcroft / <a href="https://www.cloudcroftreader.com/">Cloudcroft Reader</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://www.cloudcroftreader.com/">Support</a></aside>
+<p class="source"><a href="https://www.cloudcroftreader.com/"><strong>Cloudcroft Reader</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-29T14:38:39+00:00" data-pub="8:38 AM MDT">Wed, Jul 29 @ 8AM MDT</time><a class="lozenge place" href="/search?state=NM">New Mexico</a><a class="lozenge place" href="/search?place=Cloudcroft&state=NM">Cloudcroft</a></p>
 <h2><a href="https://www.cloudcroftreader.com/p/little-j-chef-change-at-lodge-budget">Little J; Chef Change at Lodge; Budget Thursday; IRONMAN in Ruidoso; Bluegrass Photos, and More</a></h2>
-<p class="byline"><small>By Reader Staff</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://www.cloudcroftreader.com/">Support</a></span></p>
+<p class="byline">By Reader Staff</p>
 <a class="shot" href="https://www.cloudcroftreader.com/p/little-j-chef-change-at-lodge-budget" tabindex="-1" aria-hidden="true"><img src="../img/1ce8cba0120719f251b98be904e33551a89698b5.jpg" alt="" width="480" height="787" loading="lazy" decoding="async"></a>
-<p>Follow the stories with the Reader, the Voice of the Mountain.</p>
-<p class="more"><a href="https://www.cloudcroftreader.com/p/little-j-chef-change-at-lodge-budget">Read more <span aria-hidden="true">→</span></a></p>
+<p>Follow the stories with the Reader, the Voice of the Mountain. <a class="lozenge more" href="https://www.cloudcroftreader.com/p/little-j-chef-change-at-lodge-budget">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-29T10:31:02+00:00" data-pub="6:31 AM EDT">Wednesday, July 29, 2026 at 6:31 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>National / Accountability / <a href="https://popular.info/">Popular Information</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/newsletter.html">Newsletter</a><a class="lozenge" href="../tags/reader-funded.html">Reader-funded</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://popular.info/subscribe">Subscribe</a></aside>
+<p class="source"><a href="https://popular.info/"><strong>Popular Information</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-29T10:31:02+00:00" data-pub="6:31 AM EDT">Wed, Jul 29 @ 6AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Accountability">Accountability</a></p>
 <h2><a href="https://popular.info/p/the-fake-historian-advising-trumps">The fake historian advising Trump&#x27;s anti-Smithsonian crusade</a></h2>
-<p class="byline"><small>By Noel Sims</small><span class="aside"><a class="lozenge" href="../tags/newsletter.html">Newsletter</a><a class="lozenge" href="../tags/reader-funded.html">Reader-funded</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://popular.info/subscribe">Subscribe</a></span></p>
+<p class="byline">By Noel Sims</p>
 <a class="shot" href="https://popular.info/p/the-fake-historian-advising-trumps" tabindex="-1" aria-hidden="true"><img src="../img/c4aa5a30fa0d2c360dfb2a4c8fbcce1a7f4a3088.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Last Friday, President Trump released an executive order directing officials to install signs outside the Smithsonian’s National Museum of American History (NMAH) informing visitors that the museum presents history inaccurately.</p>
-<p class="more"><a href="https://popular.info/p/the-fake-historian-advising-trumps">Read more <span aria-hidden="true">→</span></a></p>
+<p>Last Friday, President Trump released an executive order directing officials to install signs outside the Smithsonian’s National Museum of American History (NMAH) informing visitors that the museum presents history inaccurately. <a class="lozenge more" href="https://popular.info/p/the-fake-historian-advising-trumps">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-28T10:30:39+00:00" data-pub="6:30 AM EDT">Tuesday, July 28, 2026 at 6:30 AM EDT</time></small></p>
-<p><small>National / Accountability / <a href="https://popular.info/">Popular Information</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/newsletter.html">Newsletter</a><a class="lozenge" href="../tags/reader-funded.html">Reader-funded</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://popular.info/subscribe">Subscribe</a></aside>
+<p class="source"><a href="https://popular.info/"><strong>Popular Information</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-28T10:30:39+00:00" data-pub="6:30 AM EDT">Tue, Jul 28 @ 6AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Accountability">Accountability</a></p>
 <h2><a href="https://popular.info/p/the-truth-about-the-viral-911-petition">The truth about the viral 9/11 petition targeting Mamdani</a></h2>
-<p class="byline"><small>By Judd Legum</small><span class="aside"><a class="lozenge" href="../tags/newsletter.html">Newsletter</a><a class="lozenge" href="../tags/reader-funded.html">Reader-funded</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://popular.info/subscribe">Subscribe</a></span></p>
+<p class="byline">By Judd Legum</p>
 <a class="shot" href="https://popular.info/p/the-truth-about-the-viral-911-petition" tabindex="-1" aria-hidden="true"><img src="../img/302f5272f518a328e5b1871913e540680d062d8f.jpg" alt="" width="480" height="276" loading="lazy" decoding="async"></a>
-<p>“We don’t have a list”</p>
-<p class="more"><a href="https://popular.info/p/the-truth-about-the-viral-911-petition">Read more <span aria-hidden="true">→</span></a></p>
+<p>“We don’t have a list” <a class="lozenge more" href="https://popular.info/p/the-truth-about-the-viral-911-petition">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-27T21:06:16+00:00" data-pub="5:06 PM EDT">Monday, July 27, 2026 at 5:06 PM EDT</time></small></p>
-<p><small>National / Accountability / <a href="https://www.thehandbasket.co/">The Handbasket</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/newsletter.html">Newsletter</a><a class="lozenge" href="../tags/reader-funded.html">Reader-funded</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://www.thehandbasket.co/subscribe">Subscribe</a></aside>
+<p class="source"><a href="https://www.thehandbasket.co/"><strong>The Handbasket</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-27T21:06:16+00:00" data-pub="5:06 PM EDT">Mon, Jul 27 @ 5PM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Accountability">Accountability</a></p>
 <h2><a href="https://www.thehandbasket.co/p/exclusive-daniel-moraff-graham-platner-alleged-sexual-assault">Exclusive: Political operative behind Graham Platner&#x27;s rise accused of sexual assault</a></h2>
-<p class="byline"><small>By Marisa Kabas</small><span class="aside"><a class="lozenge" href="../tags/newsletter.html">Newsletter</a><a class="lozenge" href="../tags/reader-funded.html">Reader-funded</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://www.thehandbasket.co/subscribe">Subscribe</a></span></p>
+<p class="byline">By Marisa Kabas</p>
 <a class="shot" href="https://www.thehandbasket.co/p/exclusive-daniel-moraff-graham-platner-alleged-sexual-assault" tabindex="-1" aria-hidden="true"><img src="../img/5940efe38eb8e20071c1fa685db90488de7ed70a.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>A spokesperson for Daniel Moraff said: “Any suggestion that he committed a criminal offence is false and without foundation.&quot;</p>
-<p class="more"><a href="https://www.thehandbasket.co/p/exclusive-daniel-moraff-graham-platner-alleged-sexual-assault">Read more <span aria-hidden="true">→</span></a></p>
+<p>A spokesperson for Daniel Moraff said: “Any suggestion that he committed a criminal offence is false and without foundation.&quot; <a class="lozenge more" href="https://www.thehandbasket.co/p/exclusive-daniel-moraff-graham-platner-alleged-sexual-assault">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-27T20:12:09+00:00" data-pub="2:12 PM MDT">Monday, July 27, 2026 at 2:12 PM MDT</time></small></p>
-<p><small>NM / Cloudcroft / <a href="https://www.cloudcroftreader.com/">Cloudcroft Reader</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://www.cloudcroftreader.com/">Support</a></aside>
+<p class="source"><a href="https://www.cloudcroftreader.com/"><strong>Cloudcroft Reader</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-27T20:12:09+00:00" data-pub="2:12 PM MDT">Mon, Jul 27 @ 2PM MDT</time><a class="lozenge place" href="/search?state=NM">New Mexico</a><a class="lozenge place" href="/search?place=Cloudcroft&state=NM">Cloudcroft</a></p>
 <h2><a href="https://www.cloudcroftreader.com/p/a-second-life-for-farm-animals-little">VIDEO: A Second Life for Farm Animals: Little J Ranch</a></h2>
-<p class="byline"><small>By Jonny Coker</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://www.cloudcroftreader.com/">Support</a></span></p>
+<p class="byline">By Jonny Coker</p>
 <a class="shot" href="https://www.cloudcroftreader.com/p/a-second-life-for-farm-animals-little" tabindex="-1" aria-hidden="true"><img src="../img/90ec3afabc521999ff887da93f4e1b9d924ea7d6.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>At a rescue ranch east of Cloudcroft, a family, with the help of volunteers, has built the Sacramento Mountains&#x27; only farm animal sanctuary, one rescue at a time.</p>
-<p class="more"><a href="https://www.cloudcroftreader.com/p/a-second-life-for-farm-animals-little">Read more <span aria-hidden="true">→</span></a></p>
+<p>At a rescue ranch east of Cloudcroft, a family, with the help of volunteers, has built the Sacramento Mountains&#x27; only farm animal sanctuary, one rescue at a time. <a class="lozenge more" href="https://www.cloudcroftreader.com/p/a-second-life-for-farm-animals-little">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-27T19:15:19+00:00" data-pub="12:15 PM PDT">Monday, July 27, 2026 at 12:15 PM PDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>WA / Statewide / <a href="https://washingtonobserver.substack.com/">Washington Observer</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://washingtonobserver.substack.com/">Support</a></aside>
+<p class="source"><a href="https://washingtonobserver.substack.com/"><strong>Washington Observer</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-27T19:15:19+00:00" data-pub="12:15 PM PDT">Mon, Jul 27 @ 12PM PDT</time><a class="lozenge place" href="/search?state=WA">Washington</a></p>
 <h2><a href="https://washingtonobserver.substack.com/p/the-independent-money-comes-out-to">The independent money comes out to play</a></h2>
-<p class="byline"><small>By Jonathan Martin</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://washingtonobserver.substack.com/">Support</a></span></p>
+<p class="byline">By Jonathan Martin</p>
 <a class="shot" href="https://washingtonobserver.substack.com/p/the-independent-money-comes-out-to" tabindex="-1" aria-hidden="true"><img src="../img/814000057c5b33cd436809846555d0dcd315ef75.jpg" alt="" width="480" height="120" loading="lazy" decoding="async"></a>
-<p>Jewish PACs spend in the 32nd, union money against conservatives for the Supremes, and other campaign cash news.</p>
-<p class="more"><a href="https://washingtonobserver.substack.com/p/the-independent-money-comes-out-to">Read more <span aria-hidden="true">→</span></a></p>
+<p>Jewish PACs spend in the 32nd, union money against conservatives for the Supremes, and other campaign cash news. <a class="lozenge more" href="https://washingtonobserver.substack.com/p/the-independent-money-comes-out-to">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-27T10:30:48+00:00" data-pub="6:30 AM EDT">Monday, July 27, 2026 at 6:30 AM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>National / Accountability / <a href="https://popular.info/">Popular Information</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/newsletter.html">Newsletter</a><a class="lozenge" href="../tags/reader-funded.html">Reader-funded</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://popular.info/subscribe">Subscribe</a></aside>
+<p class="source"><a href="https://popular.info/"><strong>Popular Information</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-27T10:30:48+00:00" data-pub="6:30 AM EDT">Mon, Jul 27 @ 6AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Accountability">Accountability</a></p>
 <h2><a href="https://popular.info/p/taxpayers-spend-about-2-billion-annually">Taxpayers spend about $2 billion annually on Medicaid for Amazon and Walmart employees</a></h2>
-<p class="byline"><small>By Judd Legum</small><span class="aside"><a class="lozenge" href="../tags/newsletter.html">Newsletter</a><a class="lozenge" href="../tags/reader-funded.html">Reader-funded</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://popular.info/subscribe">Subscribe</a></span></p>
+<p class="byline">By Judd Legum</p>
 <a class="shot" href="https://popular.info/p/taxpayers-spend-about-2-billion-annually" tabindex="-1" aria-hidden="true"><img src="../img/6e82e7359c8d85c3e0cf66c789136444e2be7440.jpg" alt="" width="480" height="343" loading="lazy" decoding="async"></a>
-<p>American taxpayers are spending billions every year providing Medicaid benefits to hundreds of thousands of employees of Amazon and Walmart, a new analysis by Popular Information reveals.</p>
-<p class="more"><a href="https://popular.info/p/taxpayers-spend-about-2-billion-annually">Read more <span aria-hidden="true">→</span></a></p>
+<p>American taxpayers are spending billions every year providing Medicaid benefits to hundreds of thousands of employees of Amazon and Walmart, a new analysis by Popular Information reveals. <a class="lozenge more" href="https://popular.info/p/taxpayers-spend-about-2-billion-annually">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-24T10:30:44+00:00" data-pub="6:30 AM EDT">Friday, July 24, 2026 at 6:30 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>National / Accountability / <a href="https://popular.info/">Popular Information</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/newsletter.html">Newsletter</a><a class="lozenge" href="../tags/reader-funded.html">Reader-funded</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://popular.info/subscribe">Subscribe</a></aside>
+<p class="source"><a href="https://popular.info/"><strong>Popular Information</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-24T10:30:44+00:00" data-pub="6:30 AM EDT">Fri, Jul 24 @ 6AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Accountability">Accountability</a></p>
 <h2><a href="https://popular.info/p/popinfo-weekly-bankrolls-blackouts">PopInfo Weekly: Bankrolls, blackouts, and body cams</a></h2>
-<p class="byline"><small>By Rebecca Crosby</small><span class="aside"><a class="lozenge" href="../tags/newsletter.html">Newsletter</a><a class="lozenge" href="../tags/reader-funded.html">Reader-funded</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://popular.info/subscribe">Subscribe</a></span></p>
+<p class="byline">By Rebecca Crosby</p>
 <a class="shot" href="https://popular.info/p/popinfo-weekly-bankrolls-blackouts" tabindex="-1" aria-hidden="true"><img src="../img/7a3e2dbc2f6776e4ef75d3a6e5d2f4cae0176739.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Since the start of 2025, 110 House members and 37 senators have sponsored or cosponsored 40 bills to expand the power of U.S.</p>
-<p class="more"><a href="https://popular.info/p/popinfo-weekly-bankrolls-blackouts">Read more <span aria-hidden="true">→</span></a></p>
+<p>Since the start of 2025, 110 House members and 37 senators have sponsored or cosponsored 40 bills to expand the power of U.S. <a class="lozenge more" href="https://popular.info/p/popinfo-weekly-bankrolls-blackouts">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-23T10:31:19+00:00" data-pub="6:31 AM EDT">Thursday, July 23, 2026 at 6:31 AM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>National / Accountability / <a href="https://popular.info/">Popular Information</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/newsletter.html">Newsletter</a><a class="lozenge" href="../tags/reader-funded.html">Reader-funded</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://popular.info/subscribe">Subscribe</a></aside>
+<p class="source"><a href="https://popular.info/"><strong>Popular Information</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-23T10:31:19+00:00" data-pub="6:31 AM EDT">Thu, Jul 23 @ 6AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Accountability">Accountability</a></p>
 <h2><a href="https://popular.info/p/a-nuclear-deal-for-the-saudis-a-media">A nuclear deal for the Saudis. A media blackout for Kushner’s corruption.</a></h2>
-<p class="byline"><small>By Judd Legum</small><span class="aside"><a class="lozenge" href="../tags/newsletter.html">Newsletter</a><a class="lozenge" href="../tags/reader-funded.html">Reader-funded</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://popular.info/subscribe">Subscribe</a></span></p>
+<p class="byline">By Judd Legum</p>
 <a class="shot" href="https://popular.info/p/a-nuclear-deal-for-the-saudis-a-media" tabindex="-1" aria-hidden="true"><img src="../img/d3c506ff64503d6fe2404108d77193298de6cf3e.jpg" alt="" width="480" height="326" loading="lazy" decoding="async"></a>
-<p>On Wednesday, the Trump administration signed a 30-year nuclear agreement with Saudi Arabia that paves the way for the kingdom to enrich its own uranium.</p>
-<p class="more"><a href="https://popular.info/p/a-nuclear-deal-for-the-saudis-a-media">Read more <span aria-hidden="true">→</span></a></p>
+<p>On Wednesday, the Trump administration signed a 30-year nuclear agreement with Saudi Arabia that paves the way for the kingdom to enrich its own uranium. <a class="lozenge more" href="https://popular.info/p/a-nuclear-deal-for-the-saudis-a-media">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-22T17:44:06+00:00" data-pub="10:44 AM MST">Wednesday, July 22, 2026 at 10:44 AM MST</time></small></p>
-<p><small>AZ / Statewide / <a href="https://www.theborderchronicle.com">The Border Chronicle</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://www.theborderchronicle.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://www.theborderchronicle.com"><strong>The Border Chronicle</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-22T17:44:06+00:00" data-pub="10:44 AM MST">Wed, Jul 22 @ 10AM MST</time><a class="lozenge place" href="/search?state=AZ">Arizona</a></p>
 <h2><a href="https://www.theborderchronicle.com/reporting-on-buoys-and-boondoggles-plus-big-news-from-the-border-chronicle/">Reporting on Buoys and Boondoggles; Plus Big News from The Border Chronicle</a></h2>
-<p class="byline"><small>By Melissa del Bosque</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://www.theborderchronicle.com/donate/">Donate</a></span></p>
+<p class="byline">By Melissa del Bosque</p>
 <a class="shot" href="https://www.theborderchronicle.com/reporting-on-buoys-and-boondoggles-plus-big-news-from-the-border-chronicle/" tabindex="-1" aria-hidden="true"><img src="../img/6ab3b2385c0dd910dc8716936b0abf697ac50da1.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Do you have questions about the recent buoy debacle on the Rio Grande? Our reporting has you covered, plus an important new hire at The Border Chronicle, and our new project Wall Watch.</p>
-<p class="more"><a href="https://www.theborderchronicle.com/reporting-on-buoys-and-boondoggles-plus-big-news-from-the-border-chronicle/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Do you have questions about the recent buoy debacle on the Rio Grande? Our reporting has you covered, plus an important new hire at The Border Chronicle, and our new project Wall Watch. <a class="lozenge more" href="https://www.theborderchronicle.com/reporting-on-buoys-and-boondoggles-plus-big-news-from-the-border-chronicle/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-22T16:07:16+00:00" data-pub="9:07 AM PDT">Wednesday, July 22, 2026 at 9:07 AM PDT</time></small></p>
-<p><small>WA / Statewide / <a href="https://washingtonobserver.substack.com/">Washington Observer</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://washingtonobserver.substack.com/">Support</a></aside>
+<p class="source"><a href="https://washingtonobserver.substack.com/"><strong>Washington Observer</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-22T16:07:16+00:00" data-pub="9:07 AM PDT">Wed, Jul 22 @ 9AM PDT</time><a class="lozenge place" href="/search?state=WA">Washington</a></p>
 <h2><a href="https://washingtonobserver.substack.com/p/closing-in-on-the-primary">Closing in on the primary...</a></h2>
-<p class="byline"><small>By Jonathan Martin</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://washingtonobserver.substack.com/">Support</a></span></p>
+<p class="byline">By Jonathan Martin</p>
 <a class="shot" href="https://washingtonobserver.substack.com/p/closing-in-on-the-primary" tabindex="-1" aria-hidden="true"><img src="../img/5aa0d75accbc15bff2358078884665460c090da1.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>A eat-the-rich campaign in the 29th LD and a litmus test in the 17th, plus cave-diving into the budget crisis and some recommended reading</p>
-<p class="more"><a href="https://washingtonobserver.substack.com/p/closing-in-on-the-primary">Read more <span aria-hidden="true">→</span></a></p>
+<p>A eat-the-rich campaign in the 29th LD and a litmus test in the 17th, plus cave-diving into the budget crisis and some recommended reading <a class="lozenge more" href="https://washingtonobserver.substack.com/p/closing-in-on-the-primary">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-22T15:07:03+00:00" data-pub="9:07 AM MDT">Wednesday, July 22, 2026 at 9:07 AM MDT</time></small></p>
-<p><small>NM / Cloudcroft / <a href="https://www.cloudcroftreader.com/">Cloudcroft Reader</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://www.cloudcroftreader.com/">Support</a></aside>
+<p class="source"><a href="https://www.cloudcroftreader.com/"><strong>Cloudcroft Reader</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-22T15:07:03+00:00" data-pub="9:07 AM MDT">Wed, Jul 22 @ 9AM MDT</time><a class="lozenge place" href="/search?state=NM">New Mexico</a><a class="lozenge place" href="/search?place=Cloudcroft&state=NM">Cloudcroft</a></p>
 <h2><a href="https://www.cloudcroftreader.com/p/school-garden-ski-cloudcroft-update">School Garden; Ski Cloudcroft Update; RECA Amendment Proposed; U-Pick Opens Soon, and More</a></h2>
-<p class="byline"><small>By Reader Staff</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://www.cloudcroftreader.com/">Support</a></span></p>
+<p class="byline">By Reader Staff</p>
 <a class="shot" href="https://www.cloudcroftreader.com/p/school-garden-ski-cloudcroft-update" tabindex="-1" aria-hidden="true"><img src="../img/46a6259f997e16965006249cdcea9bf95822b9f4.jpg" alt="" width="480" height="277" loading="lazy" decoding="async"></a>
-<p>Follow the stories with the Reader, the Voice of the Mountain.</p>
-<p class="more"><a href="https://www.cloudcroftreader.com/p/school-garden-ski-cloudcroft-update">Read more <span aria-hidden="true">→</span></a></p>
+<p>Follow the stories with the Reader, the Voice of the Mountain. <a class="lozenge more" href="https://www.cloudcroftreader.com/p/school-garden-ski-cloudcroft-update">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-21T23:06:50+00:00" data-pub="4:06 PM MST">Tuesday, July 21, 2026 at 4:06 PM MST</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>AZ / Statewide / <a href="https://www.theborderchronicle.com">The Border Chronicle</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://www.theborderchronicle.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://www.theborderchronicle.com"><strong>The Border Chronicle</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-21T23:06:50+00:00" data-pub="4:06 PM MST">Tue, Jul 21 @ 4PM MST</time><a class="lozenge place" href="/search?state=AZ">Arizona</a></p>
 <h2><a href="https://www.theborderchronicle.com/floods-expose-dangers-of-trumps-3-billion-rio-grande-buoy-barrier-plan/">Floods Expose Dangers of Trump’s $3 Billion Rio Grande Buoy Barrier Plan</a></h2>
-<p class="byline"><small>By Melissa del Bosque</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://www.theborderchronicle.com/donate/">Donate</a></span></p>
+<p class="byline">By Melissa del Bosque</p>
 <a class="shot" href="https://www.theborderchronicle.com/floods-expose-dangers-of-trumps-3-billion-rio-grande-buoy-barrier-plan/" tabindex="-1" aria-hidden="true"><img src="../img/594dfd00f88c6aa39b3360f6ba7e5cbccfcec5c1.jpg" alt="" width="480" height="313" loading="lazy" decoding="async"></a>
-<p>As floodwaters swept hundreds of one-ton border buoys downstream, international bridges closed, commerce slowed, and officials struggled to get answers from DHS about a project advancing despite local opposition, environmental concerns, and treaty questions.</p>
-<p class="more"><a href="https://www.theborderchronicle.com/floods-expose-dangers-of-trumps-3-billion-rio-grande-buoy-barrier-plan/">Read more <span aria-hidden="true">→</span></a></p>
+<p>As floodwaters swept hundreds of one-ton border buoys downstream, international bridges closed, commerce slowed, and officials struggled to get answers from DHS about a project advancing despite local opposition, environmental concerns, and treaty questions. <a class="lozenge more" href="https://www.theborderchronicle.com/floods-expose-dangers-of-trumps-3-billion-rio-grande-buoy-barrier-plan/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-19T14:15:09+00:00" data-pub="8:15 AM MDT">Sunday, July 19, 2026 at 8:15 AM MDT</time></small></p>
-<p><small>NM / Cloudcroft / <a href="https://www.cloudcroftreader.com/">Cloudcroft Reader</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://www.cloudcroftreader.com/">Support</a></aside>
+<p class="source"><a href="https://www.cloudcroftreader.com/"><strong>Cloudcroft Reader</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-19T14:15:09+00:00" data-pub="8:15 AM MDT">Sun, Jul 19 @ 8AM MDT</time><a class="lozenge place" href="/search?state=NM">New Mexico</a><a class="lozenge place" href="/search?place=Cloudcroft&state=NM">Cloudcroft</a></p>
 <h2><a href="https://www.cloudcroftreader.com/p/video-a-garden-and-students-grow">VIDEO: A Garden, and Students, Grow at Cloudcroft Schools</a></h2>
-<p class="byline"><small>By Jonny Coker</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://www.cloudcroftreader.com/">Support</a></span></p>
+<p class="byline">By Jonny Coker</p>
 <a class="shot" href="https://www.cloudcroftreader.com/p/video-a-garden-and-students-grow" tabindex="-1" aria-hidden="true"><img src="../img/7b2b9f775bdb511d73c7dbee085f36697831bdd7.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Rachel Alm stretched a state wellness grant into a four-week summer program where kids build, plant, water, and grow together</p>
-<p class="more"><a href="https://www.cloudcroftreader.com/p/video-a-garden-and-students-grow">Read more <span aria-hidden="true">→</span></a></p>
+<p>Rachel Alm stretched a state wellness grant into a four-week summer program where kids build, plant, water, and grow together <a class="lozenge more" href="https://www.cloudcroftreader.com/p/video-a-garden-and-students-grow">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-17T20:45:36+00:00" data-pub="1:45 PM MST">Friday, July 17, 2026 at 1:45 PM MST</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>AZ / Statewide / <a href="https://www.theborderchronicle.com">The Border Chronicle</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://www.theborderchronicle.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://www.theborderchronicle.com"><strong>The Border Chronicle</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-17T20:45:36+00:00" data-pub="1:45 PM MST">Fri, Jul 17 @ 1PM MST</time><a class="lozenge place" href="/search?state=AZ">Arizona</a></p>
 <h2><a href="https://www.theborderchronicle.com/breaking-news-laredo-on-alert-as-trumps-buoys-cause-chaos-on-the-rio-grande-close-international-bridges/">Breaking News: Laredo on Alert as Trump&#x27;s Buoys Cause Chaos on the Rio Grande, Close International Bridges</a></h2>
-<p class="byline"><small>By Melissa del Bosque</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://www.theborderchronicle.com/donate/">Donate</a></span></p>
+<p class="byline">By Melissa del Bosque</p>
 <a class="shot" href="https://www.theborderchronicle.com/breaking-news-laredo-on-alert-as-trumps-buoys-cause-chaos-on-the-rio-grande-close-international-bridges/" tabindex="-1" aria-hidden="true"><img src="../img/71ba3dbb233b48f80f445b0f0646b5272f6b2157.jpg" alt="" width="480" height="205" loading="lazy" decoding="async"></a>
-<p>Hundreds of massive orange buoys staged for a controversial DHS floating barrier project broke free near Eagle Pass and are now drifting toward Laredo, threatening bridges, commerce, drinking water supplies and downstream communities.</p>
-<p class="more"><a href="https://www.theborderchronicle.com/breaking-news-laredo-on-alert-as-trumps-buoys-cause-chaos-on-the-rio-grande-close-international-bridges/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Hundreds of massive orange buoys staged for a controversial DHS floating barrier project broke free near Eagle Pass and are now drifting toward Laredo, threatening bridges, commerce, drinking water supplies and downstream communities. <a class="lozenge more" href="https://www.theborderchronicle.com/breaking-news-laredo-on-alert-as-trumps-buoys-cause-chaos-on-the-rio-grande-close-international-bridges/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-16T15:34:01+00:00" data-pub="8:34 AM MST">Thursday, July 16, 2026 at 8:34 AM MST</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>AZ / Statewide / <a href="https://www.theborderchronicle.com">The Border Chronicle</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://www.theborderchronicle.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://www.theborderchronicle.com"><strong>The Border Chronicle</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-16T15:34:01+00:00" data-pub="8:34 AM MST">Thu, Jul 16 @ 8AM MST</time><a class="lozenge place" href="/search?state=AZ">Arizona</a></p>
 <h2><a href="https://www.theborderchronicle.com/why-local-pressure-is-key-to-impacting-national-immigration-politics-a-podcast-with-john-washington-author-of-how-to-close-a-camp-2/">Why Local Pressure is Key to Impacting National Immigration Politics: A podcast with John Washington, author of &quot;How to Close a Camp.&quot;</a></h2>
-<p class="byline"><small>By Caroline Tracey</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://www.theborderchronicle.com/donate/">Donate</a></span></p>
+<p class="byline">By Caroline Tracey</p>
 <a class="shot" href="https://www.theborderchronicle.com/why-local-pressure-is-key-to-impacting-national-immigration-politics-a-podcast-with-john-washington-author-of-how-to-close-a-camp-2/" tabindex="-1" aria-hidden="true"><img src="../img/be9cc4b1bc60741afee807fef4b197cfb79095dc.jpg" alt="" width="480" height="269" loading="lazy" decoding="async"></a>
-<p>In February, the country broke an ominous record: over 68,000 people were being held in detention by Immigration and Customs Enforcement, more than ever before.</p>
-<p class="more"><a href="https://www.theborderchronicle.com/why-local-pressure-is-key-to-impacting-national-immigration-politics-a-podcast-with-john-washington-author-of-how-to-close-a-camp-2/">Read more <span aria-hidden="true">→</span></a></p>
+<p>In February, the country broke an ominous record: over 68,000 people were being held in detention by Immigration and Customs Enforcement, more than ever before. <a class="lozenge more" href="https://www.theborderchronicle.com/why-local-pressure-is-key-to-impacting-national-immigration-politics-a-podcast-with-john-washington-author-of-how-to-close-a-camp-2/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-15T17:31:27+00:00" data-pub="10:31 AM PDT">Wednesday, July 15, 2026 at 10:31 AM PDT</time></small></p>
-<p><small>WA / Statewide / <a href="https://washingtonobserver.substack.com/">Washington Observer</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://washingtonobserver.substack.com/">Support</a></aside>
+<p class="source"><a href="https://washingtonobserver.substack.com/"><strong>Washington Observer</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-15T17:31:27+00:00" data-pub="10:31 AM PDT">Wed, Jul 15 @ 10AM PDT</time><a class="lozenge place" href="/search?state=WA">Washington</a></p>
 <h2><a href="https://washingtonobserver.substack.com/p/a-surprise-bill-from-the-supremes">A surprise bill from the Supremes</a></h2>
-<p class="byline"><small>By Jonathan Martin</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://washingtonobserver.substack.com/">Support</a></span></p>
+<p class="byline">By Jonathan Martin</p>
 <a class="shot" href="https://washingtonobserver.substack.com/p/a-surprise-bill-from-the-supremes" tabindex="-1" aria-hidden="true"><img src="../img/90ef8fa2a38f9f05e908a37d9d96f2e8138d0fef.jpg" alt="" width="480" height="285" loading="lazy" decoding="async"></a>
-<p>Plus Ferguson&#x27;s cash grab for college kids, burning through campaign cash, striking worker benes, and a fond farewell. And one bad puppy.</p>
-<p class="more"><a href="https://washingtonobserver.substack.com/p/a-surprise-bill-from-the-supremes">Read more <span aria-hidden="true">→</span></a></p>
+<p>Plus Ferguson&#x27;s cash grab for college kids, burning through campaign cash, striking worker benes, and a fond farewell. And one bad puppy. <a class="lozenge more" href="https://washingtonobserver.substack.com/p/a-surprise-bill-from-the-supremes">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-15T15:18:55+00:00" data-pub="9:18 AM MDT">Wednesday, July 15, 2026 at 9:18 AM MDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>NM / Cloudcroft / <a href="https://www.cloudcroftreader.com/">Cloudcroft Reader</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://www.cloudcroftreader.com/">Support</a></aside>
+<p class="source"><a href="https://www.cloudcroftreader.com/"><strong>Cloudcroft Reader</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-15T15:18:55+00:00" data-pub="9:18 AM MDT">Wed, Jul 15 @ 9AM MDT</time><a class="lozenge place" href="/search?state=NM">New Mexico</a><a class="lozenge place" href="/search?place=Cloudcroft&state=NM">Cloudcroft</a></p>
 <h2><a href="https://www.cloudcroftreader.com/p/village-update-endangered-species">Village Update; Endangered Species Act &quot;Harm&quot; Rescission; School Budget; Vaccine Clinic, and More</a></h2>
-<p class="byline"><small>By Reader Staff</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://www.cloudcroftreader.com/">Support</a></span></p>
+<p class="byline">By Reader Staff</p>
 <a class="shot" href="https://www.cloudcroftreader.com/p/village-update-endangered-species" tabindex="-1" aria-hidden="true"><img src="../img/bcd2d48d83ef3a7d8f1fac89278a92e2736f8aac.jpg" alt="" width="480" height="255" loading="lazy" decoding="async"></a>
-<p>Follow the stories with the Reader, the Voice of the Mountain.</p>
-<p class="more"><a href="https://www.cloudcroftreader.com/p/village-update-endangered-species">Read more <span aria-hidden="true">→</span></a></p>
+<p>Follow the stories with the Reader, the Voice of the Mountain. <a class="lozenge more" href="https://www.cloudcroftreader.com/p/village-update-endangered-species">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-15T14:10:34+00:00" data-pub="8:10 AM MDT">Wednesday, July 15, 2026 at 8:10 AM MDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>NM / Cloudcroft / <a href="https://www.cloudcroftreader.com/">Cloudcroft Reader</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://www.cloudcroftreader.com/">Support</a></aside>
+<p class="source"><a href="https://www.cloudcroftreader.com/"><strong>Cloudcroft Reader</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-15T14:10:34+00:00" data-pub="8:10 AM MDT">Wed, Jul 15 @ 8AM MDT</time><a class="lozenge place" href="/search?state=NM">New Mexico</a><a class="lozenge place" href="/search?place=Cloudcroft&state=NM">Cloudcroft</a></p>
 <h2><a href="https://www.cloudcroftreader.com/p/board-openings-police-updates-and">Board Openings, Police Updates, and More at a Full Village Meeting</a></h2>
-<p class="byline"><small>By Hannah Dean</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://www.cloudcroftreader.com/">Support</a></span></p>
+<p class="byline">By Hannah Dean</p>
 <a class="shot" href="https://www.cloudcroftreader.com/p/board-openings-police-updates-and" tabindex="-1" aria-hidden="true"><img src="../img/0e438d7dbcb0244a071d0625a626358bd20c9d12.jpg" alt="" width="480" height="255" loading="lazy" decoding="async"></a>
-<p>Hires, promotions, a new Planning and Zoning Clerk/Code Enforcement Officer position, plus, at the July 14 Cloudcroft Village Council meeting</p>
-<p class="more"><a href="https://www.cloudcroftreader.com/p/board-openings-police-updates-and">Read more <span aria-hidden="true">→</span></a></p>
+<p>Hires, promotions, a new Planning and Zoning Clerk/Code Enforcement Officer position, plus, at the July 14 Cloudcroft Village Council meeting <a class="lozenge more" href="https://www.cloudcroftreader.com/p/board-openings-police-updates-and">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-14T14:36:16+00:00" data-pub="7:36 AM MST">Tuesday, July 14, 2026 at 7:36 AM MST</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>AZ / Statewide / <a href="https://www.theborderchronicle.com">The Border Chronicle</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://www.theborderchronicle.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://www.theborderchronicle.com"><strong>The Border Chronicle</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-14T14:36:16+00:00" data-pub="7:36 AM MST">Tue, Jul 14 @ 7AM MST</time><a class="lozenge place" href="/search?state=AZ">Arizona</a></p>
 <h2><a href="https://www.theborderchronicle.com/from-fear-to-hope-at-a-tucson-summer-camp-asylum-seeking-children-find-joy-again/">From Fear to Hope: At a Tucson Summer Camp, Asylum-Seeking Children Find Joy Again</a></h2>
-<p class="byline"><small>By Melissa del Bosque</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://www.theborderchronicle.com/donate/">Donate</a></span></p>
+<p class="byline">By Melissa del Bosque</p>
 <a class="shot" href="https://www.theborderchronicle.com/from-fear-to-hope-at-a-tucson-summer-camp-asylum-seeking-children-find-joy-again/" tabindex="-1" aria-hidden="true"><img src="../img/e6b0fc7dbbe96032dc81de82b31050898b5fdc26.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>As immigrant families face detention, shrinking legal protections and the threat of deportation, Camp Hope offers children a rare chance to play, heal and dream. One former camper is headed to an opera conservatory in Italy.</p>
-<p class="more"><a href="https://www.theborderchronicle.com/from-fear-to-hope-at-a-tucson-summer-camp-asylum-seeking-children-find-joy-again/">Read more <span aria-hidden="true">→</span></a></p>
+<p>As immigrant families face detention, shrinking legal protections and the threat of deportation, Camp Hope offers children a rare chance to play, heal and dream. One former camper is headed to an opera conservatory in Italy. <a class="lozenge more" href="https://www.theborderchronicle.com/from-fear-to-hope-at-a-tucson-summer-camp-asylum-seeking-children-find-joy-again/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-14T14:19:33+00:00" data-pub="9:19 AM CDT">Tuesday, July 14, 2026 at 9:19 AM CDT</time></small></p>
-<p><small>TX / Texas politics / <a href="https://www.thebarbedwire.com/">The Barbed Wire</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/newsletter.html">Newsletter</a><a class="lozenge" href="../tags/reader-funded.html">Reader-funded</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://www.thebarbedwire.com/texas-first-nonbinary-city-council-member-wants-to-make-denton-more-affordable-equitable-and-safe/">Become a member</a></aside>
+<p class="source"><a href="https://www.thebarbedwire.com/"><strong>The Barbed Wire</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-14T14:19:33+00:00" data-pub="9:19 AM CDT">Tue, Jul 14 @ 9AM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=Texas+politics&state=TX">Texas politics</a></p>
 <h2><a href="https://www.thebarbedwire.com/the-voter-fraud-tip-line-comes-for-its-founder-2/">☎️ The Voter-Fraud Tip Line Comes for Its Founder</a></h2>
-<p class="byline"><small>By Brian Gaar</small><span class="aside"><a class="lozenge" href="../tags/newsletter.html">Newsletter</a><a class="lozenge" href="../tags/reader-funded.html">Reader-funded</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://www.thebarbedwire.com/texas-first-nonbinary-city-council-member-wants-to-make-denton-more-affordable-equitable-and-safe/">Become a member</a></span></p>
+<p class="byline">By Brian Gaar</p>
 <a class="shot" href="https://www.thebarbedwire.com/the-voter-fraud-tip-line-comes-for-its-founder-2/" tabindex="-1" aria-hidden="true"><img src="../img/4ae9a784d4c4042d01a425afd7b52bc6e7a7be0f.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>Paxton&#x27;s own voting address is under scrutiny, the Bible&#x27;s headed to Texas classrooms, ICE kills a man in Houston, Democrats float $1,500 checks — and flesh-eating flies enter the feral-hog debate.</p>
-<p class="more"><a href="https://www.thebarbedwire.com/the-voter-fraud-tip-line-comes-for-its-founder-2/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Paxton&#x27;s own voting address is under scrutiny, the Bible&#x27;s headed to Texas classrooms, ICE kills a man in Houston, Democrats float $1,500 checks—and flesh-eating flies enter the feral-hog debate. <a class="lozenge more" href="https://www.thebarbedwire.com/the-voter-fraud-tip-line-comes-for-its-founder-2/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-13T23:05:00+00:00" data-pub="7:05 PM EDT">Monday, July 13, 2026 at 7:05 PM EDT</time></small></p>
-<p><small>National / Accountability / <a href="https://www.thehandbasket.co/">The Handbasket</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/newsletter.html">Newsletter</a><a class="lozenge" href="../tags/reader-funded.html">Reader-funded</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://www.thehandbasket.co/subscribe">Subscribe</a></aside>
+<p class="source"><a href="https://www.thehandbasket.co/"><strong>The Handbasket</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-13T23:05:00+00:00" data-pub="7:05 PM EDT">Mon, Jul 13 @ 7PM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Accountability">Accountability</a></p>
 <h2><a href="https://www.thehandbasket.co/p/the-handbasket-live-tpm-josh-marshall-crystal-lake-july-29">The Handbasket LIVE in NYC</a></h2>
-<p class="byline"><small>By Marisa Kabas</small><span class="aside"><a class="lozenge" href="../tags/newsletter.html">Newsletter</a><a class="lozenge" href="../tags/reader-funded.html">Reader-funded</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://www.thehandbasket.co/subscribe">Subscribe</a></span></p>
+<p class="byline">By Marisa Kabas</p>
 <a class="shot" href="https://www.thehandbasket.co/p/the-handbasket-live-tpm-josh-marshall-crystal-lake-july-29" tabindex="-1" aria-hidden="true"><img src="../img/b6e10b282233977eb50ac08fe8fd95d2f42c9b56.jpg" alt="" width="480" height="273" loading="lazy" decoding="async"></a>
-<p>Wednesday, July 29th at 6:30pm in Brooklyn. Tickets required.</p>
-<p class="more"><a href="https://www.thehandbasket.co/p/the-handbasket-live-tpm-josh-marshall-crystal-lake-july-29">Read more <span aria-hidden="true">→</span></a></p>
+<p>Wednesday, July 29th at 6:30pm in Brooklyn. Tickets required. <a class="lozenge more" href="https://www.thehandbasket.co/p/the-handbasket-live-tpm-josh-marshall-crystal-lake-july-29">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-13T14:07:17+00:00" data-pub="9:07 AM CDT">Monday, July 13, 2026 at 9:07 AM CDT</time></small></p>
-<p><small>TX / Texas politics / <a href="https://www.thebarbedwire.com/">The Barbed Wire</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/newsletter.html">Newsletter</a><a class="lozenge" href="../tags/reader-funded.html">Reader-funded</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://www.thebarbedwire.com/texas-first-nonbinary-city-council-member-wants-to-make-denton-more-affordable-equitable-and-safe/">Become a member</a></aside>
+<p class="source"><a href="https://www.thebarbedwire.com/"><strong>The Barbed Wire</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-13T14:07:17+00:00" data-pub="9:07 AM CDT">Mon, Jul 13 @ 9AM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=Texas+politics&state=TX">Texas politics</a></p>
 <h2><a href="https://www.thebarbedwire.com/the-transformative-power-of-being-weird-2/">🫠 The Transformative Power of Being Weird</a></h2>
-<p class="byline"><small>By Kit O&#x27;Connell</small><span class="aside"><a class="lozenge" href="../tags/newsletter.html">Newsletter</a><a class="lozenge" href="../tags/reader-funded.html">Reader-funded</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://www.thebarbedwire.com/texas-first-nonbinary-city-council-member-wants-to-make-denton-more-affordable-equitable-and-safe/">Become a member</a></span></p>
+<p class="byline">By Kit O&#x27;Connell</p>
 <a class="shot" href="https://www.thebarbedwire.com/the-transformative-power-of-being-weird-2/" tabindex="-1" aria-hidden="true"><img src="../img/af287d4c122bae6644ff8b21456a693edc0089db.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>🏳️‍🌈 My dear queer stars, congrats on making it through Pride Month, and welcome back to Big &amp; Bright 🌈 ⭐ 👏! I hope you’ve rehydrated and recovered. Pride may be over, but the discourse never stops, because some folks seemed determined to reheat a</p>
-<p class="more"><a href="https://www.thebarbedwire.com/the-transformative-power-of-being-weird-2/">Read more <span aria-hidden="true">→</span></a></p>
+<p>🏳️‍🌈 My dear queer stars, congrats on making it through Pride Month, and welcome back to Big &amp; Bright 🌈 ⭐ 👏! I hope you’ve rehydrated and recovered. Pride may be over, but the discourse never stops, because some folks seemed determined to reheat a <a class="lozenge more" href="https://www.thebarbedwire.com/the-transformative-power-of-being-weird-2/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://www.theborderchronicle.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://www.theborderchronicle.com"><strong>The Border Chronicle</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-10T17:56:27+00:00" data-pub="10:56 AM MST">Fri, Jul 10 @ 10AM MST</time><a class="lozenge place" href="/search?state=AZ">Arizona</a></p>
+<h2><a href="https://www.theborderchronicle.com/the-border-chronicle-weekly-roundup-july-10/">The Border Chronicle Weekly Roundup: July 10</a></h2>
+<p class="byline">By Melissa del Bosque</p>
+<a class="shot" href="https://www.theborderchronicle.com/the-border-chronicle-weekly-roundup-july-10/" tabindex="-1" aria-hidden="true"><img src="../img/56d8c630d76268e1bb54b2cab485e36d21404b5e.jpg" alt="" width="480" height="640" loading="lazy" decoding="async"></a>
+<p>Border grassroots organizing is winning in July; Who pays the price for Brownsville&#x27;s tech and industrial boom? And Tijuana Art Week and NAFTA&#x27;s lasting influence on Baja&#x27;s landscape. Plus more! <a class="lozenge more" href="https://www.theborderchronicle.com/the-border-chronicle-weekly-roundup-july-10/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 </div>
 <p><a id="more" href="newsletter-native-4.html">More stories</a></p>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="../index.html">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -411,6 +462,47 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>

@@ -13,12 +13,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(../fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -27,22 +40,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -50,19 +69,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -75,7 +126,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -93,7 +144,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="../index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="../masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -106,7 +157,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="../subjects/news.html">News</a></li><li><a href="../subjects/politics.html">Politics</a></li><li><a href="../subjects/opinion.html">Opinion</a></li><li><a href="../subjects/health.html">Health</a></li><li><a href="../subjects/environment.html">Environment</a></li><li><a href="../subjects/education.html">Education</a></li><li><a href="../subjects/business.html">Business</a></li><li><a href="../subjects/housing.html">Housing</a></li><li><a href="../subjects/sports.html">Sports</a></li><li><a href="../subjects/food.html">Food</a></li><li><a href="../subjects/arts.html">Arts</a></li></ul></nav>
@@ -121,264 +172,267 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <main id="main">
 <div id="feed-items">
 <article>
-<p class="stamp"><small><time datetime="2026-07-24T12:00:00+00:00" data-pub="7:00 AM CDT">Friday, July 24, 2026 at 7:00 AM CDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>MO / Kansas City / <a href="https://www.kccallnews.net/kansas-city-call-bxyk">Kansas City The Call</a></small></p>
-<h2><a href="https://www.kccallnews.net/articles/opinion/our-vote-is-our-only-real-power-let-us-not-abdicate-or-waste-it/">Our Vote is Our Only Real Power. Let Us Not Abdicate or Waste it</a></h2>
-<p class="byline"><small>By jjoseph@kccallnews.net</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.kccallnews.net/kansas-city-call-bxyk">Support</a></span></p>
-<p>We have some very important elections this year. Elections have consequences, and a lot is riding on how we vote, or worse, if we choose not to vote at all. There are concerted efforts at the national level and across many states to make it more difficult to exercise that power. We cannot afford to sit silently by and allow</p>
-<p class="more"><a href="https://www.kccallnews.net/articles/opinion/our-vote-is-our-only-real-power-let-us-not-abdicate-or-waste-it/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.baltimorebrew.com/membership">Become a member</a></aside>
+<p class="source"><a href="https://www.baltimorebrew.com/"><strong>Baltimore Brew</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-13T12:36:21+00:00" data-pub="8:36 AM EDT">Thu, Aug 13 @ 8AM EDT</time><a class="lozenge place" href="/search?state=MD">Maryland</a><a class="lozenge place" href="/search?place=Baltimore&state=MD">Baltimore</a></p>
+<h2><a href="https://www.baltimorebrew.com/2026/08/13/they-called-for-help-the-system-called-their-deaths-inevitable/">They called for help. The system called their deaths inevitable</a></h2>
+<p class="byline">By Brew Editors</p>
+<p>A new ACLU of Maryland report on fatal police encounters shows we must act to prevent medical or mental health emergencies from escalating into tragedies. [OP-ED] <a class="lozenge more" href="https://www.baltimorebrew.com/2026/08/13/they-called-for-help-the-system-called-their-deaths-inevitable/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-24T12:00:00+00:00" data-pub="7:00 AM CDT">Friday, July 24, 2026 at 7:00 AM CDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>MO / Kansas City / <a href="https://www.kccallnews.net/kansas-city-call-bxyk">Kansas City The Call</a></small></p>
-<h2><a href="https://www.kccallnews.net/articles/opinion/your-vote-is-your-voice-use-it-wisely/">Your Vote Is Your Voice. Use It Wisely.</a></h2>
-<p class="byline"><small>By jjoseph@kccallnews.net</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.kccallnews.net/kansas-city-call-bxyk">Support</a></span></p>
-<p>The August 4 Primary Election may not generate the excitement of a presidential race, but the decisions voters make will shape the future of Jackson County, Kansas City, and the State of Missouri for years to come. The ballot is lengthy, with contested races for Jackson County Executive, seats on the Jackson County Legislature, multiple statewide constitutional amendments, and several</p>
-<p class="more"><a href="https://www.kccallnews.net/articles/opinion/your-vote-is-your-voice-use-it-wisely/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://northdallasgazette.com/subscription/">Subscribe</a></aside>
+<p class="source"><a href="https://northdallasgazette.com/"><strong>North Dallas Gazette</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-13T02:00:24+00:00" data-pub="9:00 PM CDT">Wed, Aug 12 @ 9PM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=Dallas&state=TX">Dallas</a></p>
+<h2><a href="https://northdallasgazette.com/2026/08/12/before-we-rewrite-dallas-government-we-must-remember-why-it-was-changed/">Before We Rewrite Dallas Government, We Must Remember Why It Was Changed</a></h2>
+<p class="byline">By NDG Staff</p>
+<a class="shot" href="https://northdallasgazette.com/2026/08/12/before-we-rewrite-dallas-government-we-must-remember-why-it-was-changed/" tabindex="-1" aria-hidden="true"><img src="../img/b2b2cc5bd8c6a9c80651cfa0d72746328774b33f.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>By Carolyn King Arnold History has a way of repeating itself—especially when we forget why it was made in the first place. As conversations continue about restructuring Dallas city government, changing the balance of power at City Hall, reconsidering the role of the mayor, or even changing how members of the Dallas City Council are <a class="lozenge more" href="https://northdallasgazette.com/2026/08/12/before-we-rewrite-dallas-government-we-must-remember-why-it-was-changed/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-24T05:00:00+00:00" data-pub="11:00 PM MDT">Thursday, July 23, 2026 at 11:00 PM MDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>NM / Statewide / <a href="https://www.nmjewishjournal.com/">New Mexico Jewish Journal</a></small></p>
-<h2><a href="https://www.nmjewishjournal.com/weve-gone-viral/">We&#x27;ve Gone Viral...</a></h2>
-<p class="byline"><small>By New Mexico Jewish Journal</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.nmjewishjournal.com/donate/">Donate</a></span></p>
-<a class="shot" href="https://www.nmjewishjournal.com/weve-gone-viral/" tabindex="-1" aria-hidden="true"><img src="../img/d1fe7f13ff79650473751417cc2798b4cc495962.jpg" alt="" width="480" height="475" loading="lazy" decoding="async"></a>
-<p>The first video we posted, on the Pride Parade in Santa Fe, went viral. Just not for the right reasons.</p>
-<p class="more"><a href="https://www.nmjewishjournal.com/weve-gone-viral/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://laraza.com/">Support</a></aside>
+<p class="source"><a href="https://laraza.com/"><strong>La Raza</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-13T01:38:39+00:00" data-pub="8:38 PM CDT">Wed, Aug 12 @ 8PM CDT</time><a class="lozenge place" href="/search?state=IL">Illinois</a><a class="lozenge place" href="/search?place=Chicago&state=IL">Chicago</a></p>
+<h2><a href="https://laraza.com/2026/08/12/pequenos-negocios-del-suroeste-de-chicago-podran-recibir-hasta-4000-para-mejorar-sus-sistemas-de-seguridad/">Pequeños negocios del suroeste de Chicago podrán recibir hasta $4,000 para mejorar sus sistemas de seguridad</a></h2>
+<p class="byline">By Ashley Quincin</p>
+<a class="shot" href="https://laraza.com/2026/08/12/pequenos-negocios-del-suroeste-de-chicago-podran-recibir-hasta-4000-para-mejorar-sus-sistemas-de-seguridad/" tabindex="-1" aria-hidden="true"><img src="../img/5b6550fc0436bd7cd9c4459ee5b6fb21811026f8.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Los fondos son parte de una iniciativa apoyada por la concejala Julia Ramírez, The Southwest Collective y Latinos Progresando @latinospro <a class="lozenge more" href="https://laraza.com/2026/08/12/pequenos-negocios-del-suroeste-de-chicago-podran-recibir-hasta-4000-para-mejorar-sus-sistemas-de-seguridad/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-23T09:00:00+00:00" data-pub="2:00 AM MST">Thursday, July 23, 2026 at 2:00 AM MST</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>AZ / Statewide / <a href="https://www.votebeat.org/arizona/">Votebeat Arizona</a></small></p>
-<h2><a href="https://www.votebeat.org/michigan/2026/07/23/crossover-voting-august-primary-absentee-how-to-vote/">Why thousands of Michigan votes likely won’t be counted in this year’s primary</a></h2>
-<p class="byline"><small>By Hayley Harding</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://votebeat.fundjournalism.org/donate/?campaign=701Pc00000M3cVWIAZ">Donate</a></span></p>
-<a class="shot" href="https://www.votebeat.org/michigan/2026/07/23/crossover-voting-august-primary-absentee-how-to-vote/" tabindex="-1" aria-hidden="true"><img src="../img/c63b358510a8b847dc65b82e9e06144f86ed44f3.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>An absentee ballot from Detroit ahead of the August primary. Voters can only choose one party when voting in partisan races, or else none of their partisan selections will be counted.</p>
-<p class="more"><a href="https://www.votebeat.org/michigan/2026/07/23/crossover-voting-august-primary-absentee-how-to-vote/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.thestatehousefile.com/site/support-our-work.html">Donate</a></aside>
+<p class="source"><a href="https://www.thestatehousefile.com/"><strong>The Statehouse File</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-12T19:38:00+00:00" data-pub="3:38 PM EDT">Wed, Aug 12 @ 3PM EDT</time><a class="lozenge place" href="/search?state=IN">Indiana</a></p>
+<h2><a href="https://www.thestatehousefile.com/commentary/micah-beckwith-shoots-an-air-ball/article_5ea78fea-572b-4414-8e44-3ee97fe4101c.html">Micah Beckwith shoots an air ball</a></h2>
+<p class="byline">By By John Krull, TheStatehouseFile.com</p>
+<p>Years ago, when the classic movie “Hoosiers” came out, it had a fabulous promotional poster. <a class="lozenge more" href="https://www.thestatehousefile.com/commentary/micah-beckwith-shoots-an-air-ball/article_5ea78fea-572b-4414-8e44-3ee97fe4101c.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-22T22:22:57+00:00" data-pub="6:22 PM EDT">Wednesday, July 22, 2026 at 6:22 PM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>MI / East Lansing / <a href="http://www.tncp.net/">New Citizens Press</a></small></p>
-<h2><a href="https://tncpnews.com/st-michaels-episcopal-church-launches-planning-for-fifth-annual-gun-buyback-highlights-policy-victory-on-weapon-destruction/">St. Michael’s Episcopal Church Launches Planning for Fifth Annual Gun Buyback, Highlights Policy Victory on Weapon Destruction</a></h2>
-<p class="byline"><small>By Rina Risper</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://tncpnews.com/donate/">Donate</a></span></p>
-<p>LANSING, MI — St. Michael’s Episcopal Church, located at 6500 Amwood Dr., Lansing, MI 48911, is preparing for its fifth annual Gun Buyback event, scheduled for Saturday, October 3, 2026, as organizers build on years of advocacy that have contributed to significant changes in Michigan’s gun safety policies. According to church leaders, St. Michael’s</p>
-<p class="more"><a href="https://tncpnews.com/st-michaels-episcopal-church-launches-planning-for-fifth-annual-gun-buyback-highlights-policy-victory-on-weapon-destruction/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://donorbox.org/support-nonprofit-independent-journalism?preview=1743451927">Donate</a></aside>
+<p class="source"><a href="https://chicagoreader.com/"><strong>Chicago Reader</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-12T17:16:24+00:00" data-pub="12:16 PM CDT">Wed, Aug 12 @ 12PM CDT</time><a class="lozenge place" href="/search?state=IL">Illinois</a><a class="lozenge place" href="/search?place=Chicago&state=IL">Chicago</a></p>
+<h2><a href="https://chicagoreader.com/city-life/bud-billiken-parade-2026/">For 97 years, the Bud Billiken Parade has shown up for Chicago youth</a></h2>
+<p class="byline">By Ashley Chappell</p>
+<a class="shot" href="https://chicagoreader.com/city-life/bud-billiken-parade-2026/" tabindex="-1" aria-hidden="true"><img src="../img/04758d083405e4244a540d819ffcf10901dad931.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>Born from Chicago Defender founder Robert S. Abbott’s vision for uplifting Black youth, Bud Billiken grew from the newspaper’s children’s club into a parade in 1929. Emerging during the Great Migration, the tradition gave Black children a place to shine through music and performance while encouraging education and preparing them for the return to school. <a class="lozenge more" href="https://chicagoreader.com/city-life/bud-billiken-parade-2026/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-22T21:34:51+00:00" data-pub="2:34 PM PDT">Wednesday, July 22, 2026 at 2:34 PM PDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>OR / Portland / <a href="https://bikeportland.org/cats/frontpage">Bike Portland</a></small></p>
-<h2><a href="https://bikeportland.org/2026/07/22/bikeloud-stands-in-solidarity-with-boston-transportation-advocates-400027">BikeLoud Stands in solidarity with Boston transportation advocates</a></h2>
-<p class="byline"><small>By Guest Contributor</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://bikeportland.org/support">Donate</a></span></p>
-<a class="shot" href="https://bikeportland.org/2026/07/22/bikeloud-stands-in-solidarity-with-boston-transportation-advocates-400027" tabindex="-1" aria-hidden="true"><img src="../img/93e4172308d05afac3000614640ff8eea121ab71.jpg" alt="" width="480" height="345" loading="lazy" decoding="async"></a>
-<p>She spent her career trying to prevent tragedies like the one that claimed her life.</p>
-<p class="more"><a href="https://bikeportland.org/2026/07/22/bikeloud-stands-in-solidarity-with-boston-transportation-advocates-400027">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://harpswellanchor.org/fundraising/">Donate</a></aside>
+<p class="source"><a href="https://harpswellanchor.org/"><strong>Harpswell Anchor</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-12T16:28:42+00:00" data-pub="12:28 PM EDT">Wed, Aug 12 @ 12PM EDT</time><a class="lozenge place" href="/search?state=ME">Maine</a><a class="lozenge place" href="/search?place=Harpswell&state=ME">Harpswell</a></p>
+<h2><a href="https://harpswellanchor.org/2026/08/cooking-at-43-north-generosity-lives-here/">Cooking at 43° North: Generosity lives here</a></h2>
+<p class="byline">By Kathy D&#x27;Agostino</p>
+<p>I was 19 and in nursing school. On an impulse, I sent a resume to Trans World Airlines. Word had it they were looking for airline stewardesses and hostesses. I got a call to meet with them, and two weeks later I was off to Queens, New York. After several hours of interviewing, I was hired. Holy smokes! What started as a whim had suddenly turned into a reality. <a class="lozenge more" href="https://harpswellanchor.org/2026/08/cooking-at-43-north-generosity-lives-here/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-22T09:15:00+00:00" data-pub="5:15 AM EDT">Wednesday, July 22, 2026 at 5:15 AM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>MI / Detroit / <a href="https://outliermedia.org/">Outlier Media</a></small></p>
-<h2><a href="https://outliermedia.org/detroit-community-celebrate-events-take-action/">Be in community, celebrate life, take action: Get involved in Detroit</a></h2>
-<p class="byline"><small>By Lynelle Herndon</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://outliermedia.org/join/?utm_source=website&amp;utm_medium=homepage&amp;utm_campaign=header&amp;utm_content=button">Donate</a></span></p>
-<a class="shot" href="https://outliermedia.org/detroit-community-celebrate-events-take-action/" tabindex="-1" aria-hidden="true"><img src="../img/8f8ce39e39a7dbe7924111d9b572b11ad067b4ae.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>We can breathe again. Let’s fly a kite. Meet Detroit Documenters at Clemente Park on Thursday. Outlier Media · Lynelle Herndon · Be in community, celebrate life, take action: Get involved in Detroit</p>
-<p class="more"><a href="https://outliermedia.org/detroit-community-celebrate-events-take-action/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://laprensanewspaper.com/">Support</a></aside>
+<p class="source"><a href="https://laprensanewspaper.com/"><strong>La Prensa</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-12T15:54:50+00:00" data-pub="11:54 AM EDT">Wed, Aug 12 @ 11AM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a></p>
+<h2><a href="https://laprensanewspaper.com/index.php/2026/08/12/planned-parenthoods-closures-are-a-policy-failure/">Planned Parenthood’s Closures are a Policy Failure.</a></h2>
+<p class="byline">By LaPrensa Newspaper</p>
+<p>News from Progress Michigan MICHIGAN: July 31, 2026: Recently, Planned Parenthood of Michigan announced the closure of three more health centers in Lansing, Livonia, and Warren, a direct result of lawmakers’ decisions to cut their funding. he following statement may be attributed to Justin Mendoza, executive director of Progress Michigan: “Our lawmakers need to be serious <a class="lozenge more" href="https://laprensanewspaper.com/index.php/2026/08/12/planned-parenthoods-closures-are-a-policy-failure/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-21T19:38:31+00:00" data-pub="2:38 PM CDT">Tuesday, July 21, 2026 at 2:38 PM CDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>TX / Statewide / <a href="https://deceleration.news">Deceleration</a></small></p>
-<h2><a href="https://deceleration.news/call-for-submissions-many-worlds-celebrate/">&#x27;Many Worlds, Celebrate!&#x27; A Call for Submissions</a></h2>
-<p class="byline"><small>By Marisol Cortez</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://deceleration.news/membership/">Become a member</a></span></p>
-<a class="shot" href="https://deceleration.news/call-for-submissions-many-worlds-celebrate/" tabindex="-1" aria-hidden="true"><img src="../img/c3dbd1f22a44f22e012d0b4e4ee40b538c77eed7.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Through August 15, Deceleration invites poems, flash fic and creative nonfic, song, and art for our upcoming summer Creative Review highlighting counterimaginaries for the U.S. 250th.</p>
-<p class="more"><a href="https://deceleration.news/call-for-submissions-many-worlds-celebrate/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://the-jefferson-county-beacon.fundjournalism.org/contribute/">Donate</a></aside>
+<p class="source"><a href="https://www.jeffcobeacon.com/contact"><strong>Jefferson County Beacon</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-12T01:02:27+00:00" data-pub="6:02 PM PDT">Tue, Aug 11 @ 6PM PDT</time><a class="lozenge place" href="/search?state=WA">Washington</a><a class="lozenge place" href="/search?place=Jefferson+County&state=WA">Jefferson County</a></p>
+<h2><a href="https://www.jeffcobeacon.com/port-townsend-community-services-director-appointed-as-washington-state-librarian/">Port Townsend Community Services Director Appointed as Washington State Librarian</a></h2>
+<p class="byline">By Guest Writer</p>
+<a class="shot" href="https://www.jeffcobeacon.com/port-townsend-community-services-director-appointed-as-washington-state-librarian/" tabindex="-1" aria-hidden="true"><img src="../img/3a051670aea7cd6d64a9a1d5a4719232d559da61.jpg" alt="" width="480" height="458" loading="lazy" decoding="async"></a>
+<p>Weaver leaves the Port Townsend community after 11 years of service. <a class="lozenge more" href="https://www.jeffcobeacon.com/port-townsend-community-services-director-appointed-as-washington-state-librarian/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-21T15:00:00+00:00" data-pub="11:00 AM EDT">Tuesday, July 21, 2026 at 11:00 AM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>National / Ideas / <a href="https://jewishcurrents.org/">Jewish Currents</a></small></p>
-<h2><a href="https://jewishcurrents.org/the-absent-angel">The Absent Angel - A reflection on the Jewish Museum’s Paul Klee exhibit</a></h2>
-<p class="byline"><small>By Raphael Magarik</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://jewishcurrents.org/donate">Donate</a></span></p>
-<p class="more"><a href="https://jewishcurrents.org/the-absent-angel">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.illinoislottery.com/giving-back/education?utm_source=multicultural&amp;utm_medium=ndigo&amp;utm_campaign=awareness&amp;utm_term=education">Donate</a></aside>
+<p class="source"><a href="https://ndigo.com/"><strong>N&#x27;Digo</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-11T22:28:16+00:00" data-pub="5:28 PM CDT">Tue, Aug 11 @ 5PM CDT</time><a class="lozenge place" href="/search?state=IL">Illinois</a><a class="lozenge place" href="/search?place=Cook+County&state=IL">Cook County</a></p>
+<h2><a href="https://ndigo.com/2026/08/11/the-talk-why-black-parents-still-have-a-conversation-other-parents-may-never-have/">‘THE TALK’ – Why Black Parents Still Have a Conversation Other Parents May Never Have</a></h2>
+<p class="byline">By Dr. Hermene Hartman</p>
+<a class="shot" href="https://ndigo.com/2026/08/11/the-talk-why-black-parents-still-have-a-conversation-other-parents-may-never-have/" tabindex="-1" aria-hidden="true"><img src="../img/ef0bd2861664c357c91d62af488a5cc8c686db05.jpg" alt="" width="480" height="262" loading="lazy" decoding="async"></a>
+<p>I don’t know if all parents have “the talk” with their children. But I know Black parents do. And I am not talking about <a class="lozenge more" href="https://ndigo.com/2026/08/11/the-talk-why-black-parents-still-have-a-conversation-other-parents-may-never-have/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-21T13:54:11+00:00" data-pub="9:54 AM EDT">Tuesday, July 21, 2026 at 9:54 AM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>National / Literature / <a href="https://www.massreview.org/">The Massachusetts Review</a></small></p>
-<h2><a href="https://massreview.org/2026/07/21/where-you-find-it/">Where You Find It</a></h2>
-<p class="byline"><small>By Massachusetts Review</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/university-affiliated.html">University-affiliated</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://massreview.networkforgood.com/">Donate</a></span></p>
-<a class="shot" href="https://massreview.org/2026/07/21/where-you-find-it/" tabindex="-1" aria-hidden="true"><img src="../img/2d33876cbf28f3908ebd977ac3b4b9e44b441b2e.webp" alt="" width="480" height="640" loading="lazy" decoding="async"></a>
-<p>Editor’s note: When invited to participate in our interview series, Mathew Magro-Fry (author of “The Missing Pieces” from our Summer 2026 issue) offered to write a creative nonfiction piece on the relationship between roadtrips and his writing process: Just off the freeway between Palm Springs and San Bernardino, a Brontosaurus and a . . .</p>
-<p class="more"><a href="https://massreview.org/2026/07/21/where-you-find-it/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://pasquines.us/">Support</a></aside>
+<p class="source"><a href="https://pasquines.us/"><strong>Pasquines</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-11T21:49:35+00:00" data-pub="5:49 PM EDT">Tue, Aug 11 @ 5PM EDT</time></p>
+<h2><a href="https://pasquines.us/2026/08/11/in-puerto-rico-journalists-must-often-sue-for-public-information/">In Puerto Rico, journalists must often sue for public information</a></h2>
+<p class="byline">By Guest Author</p>
+<a class="shot" href="https://pasquines.us/2026/08/11/in-puerto-rico-journalists-must-often-sue-for-public-information/" tabindex="-1" aria-hidden="true"><img src="../img/4ee26f5d438f324d9e2f22b8d010357ce9791fa7.jpg" alt="" width="480" height="284" loading="lazy" decoding="async"></a>
+<p>By Silvia Higuera When police told journalists from the Center for Investigative Journalism (CPI) in Puerto Rico that 1,000 people go missing every year on the island –which is home to about 3.2 million people–, they wanted to investigate further. It wasn’t just a shocking number; it led to more questions. Who are these people? Where <a class="lozenge more" href="https://pasquines.us/2026/08/11/in-puerto-rico-journalists-must-often-sue-for-public-information/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-20T20:24:55+00:00" data-pub="1:24 PM PDT">Monday, July 20, 2026 at 1:24 PM PDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>OR / Portland / <a href="https://bikeportland.org/cats/frontpage">Bike Portland</a></small></p>
-<h2><a href="https://bikeportland.org/2026/07/20/guest-post-yes-river-view-cemetery-is-a-critical-cycling-route-the-data-tells-us-why-399991">Guest Post: Yes, River View Cemetery is a critical cycling route. The data tells us why</a></h2>
-<p class="byline"><small>By Guest Contributor</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://bikeportland.org/support">Donate</a></span></p>
-<a class="shot" href="https://bikeportland.org/2026/07/20/guest-post-yes-river-view-cemetery-is-a-critical-cycling-route-the-data-tells-us-why-399991" tabindex="-1" aria-hidden="true"><img src="../img/8810a0476061614efec09ee933d2cfc2e1d7c646.jpg" alt="" width="480" height="314" loading="lazy" decoding="async"></a>
-<p>The author installed his own traffic counting device to get to the bottom of this issue.</p>
-<p class="more"><a href="https://bikeportland.org/2026/07/20/guest-post-yes-river-view-cemetery-is-a-critical-cycling-route-the-data-tells-us-why-399991">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.thestatehousefile.com/site/support-our-work.html">Donate</a></aside>
+<p class="source"><a href="https://www.thestatehousefile.com/"><strong>The Statehouse File</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-11T19:47:00+00:00" data-pub="3:47 PM EDT">Tue, Aug 11 @ 3PM EDT</time><a class="lozenge place" href="/search?state=IN">Indiana</a></p>
+<h2><a href="https://www.thestatehousefile.com/commentary/referenda-and-relationships/article_2a369ce7-7242-4043-b929-fe872acbffb6.html">Referenda and relationships</a></h2>
+<p class="byline">By By Abdul-Hakim Shabazz, IndyPolitics.org</p>
+<a class="shot" href="https://www.thestatehousefile.com/commentary/referenda-and-relationships/article_2a369ce7-7242-4043-b929-fe872acbffb6.html" tabindex="-1" aria-hidden="true"><img src="../img/1ea548b42e69c7fb841014d7cbb4cf1798145dea.jpg" alt="" width="287" height="300" loading="lazy" decoding="async"></a>
+<p>In less than 100 days, Hoosiers go to the polls. They&#x27;ll vote for secretary of state, treasurer and comptroller, for Congress, half the state Senate, all 100 state representatives, and a long list of county offices most of them couldn&#x27;t <a class="lozenge more" href="https://www.thestatehousefile.com/commentary/referenda-and-relationships/article_2a369ce7-7242-4043-b929-fe872acbffb6.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-20T13:00:00+00:00" data-pub="8:00 AM CDT">Monday, July 20, 2026 at 8:00 AM CDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>SD / Rapid City / <a href="https://www.nativesunnews.today/">Native Sun News</a></small></p>
-<h2><a href="https://www.nativesunnews.today/articles/what-they-call-justice-we-call-trauma/">What they call justice, we call trauma</a></h2>
-<p class="byline"><small>By Staff</small><span class="aside"><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.nativesunnews.today/subscribe/">Subscribe</a></span></p>
-<p>To the Editor, For some reason I keep circling back to rehabilitation within the D.O.C. — the Department of Corruption. If you look up the definition of rehabilitation, it talks about bringing someone back to a normal, healthy condition after illness, injury, or addiction. It talks about teaching a criminal in prison to live a normal and productive life. It</p>
-<p class="more"><a href="https://www.nativesunnews.today/articles/what-they-call-justice-we-call-trauma/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://pridesource.com/donate">Donate</a></aside>
+<p class="source"><a href="https://pridesource.com/"><strong>Pride Source</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-11T17:09:00+00:00" data-pub="1:09 PM EDT">Tue, Aug 11 @ 1PM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=Livonia&state=MI">Livonia</a></p>
+<h2><a href="https://pridesource.com/article/creep-of-the-week-aug-11-2026">Trump is About to be Down Bad With O’Donnell Derangement Syndrome</a></h2>
+<a class="shot" href="https://pridesource.com/article/creep-of-the-week-aug-11-2026" tabindex="-1" aria-hidden="true"><img src="../img/28535fe4b696e7ae352b59a600e1d4651e91574d.jpg" alt="" width="480" height="269" loading="lazy" decoding="async"></a>
+<p>She’s back, baby! Rosie O’Donnell is back in the United States after moving to Ireland shortly after Trump was elected for the second stupid time. She was on the cover of People magazine, has a one-woman show called “Common Knowledge” that she’s performing on Broadway and she’s slated to guest-host Jimmy Kimmel Live. Oh, and she still hates Trump. As one should. The media likes to talk about Trump <a class="lozenge more" href="https://pridesource.com/article/creep-of-the-week-aug-11-2026">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-20T13:00:00+00:00" data-pub="8:00 AM CDT">Monday, July 20, 2026 at 8:00 AM CDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>SD / Rapid City / <a href="https://www.nativesunnews.today/">Native Sun News</a></small></p>
-<h2><a href="https://www.nativesunnews.today/articles/carrying-the-fire-forward/">Carrying the fire forward</a></h2>
-<p class="byline"><small>By Staff</small><span class="aside"><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.nativesunnews.today/subscribe/">Subscribe</a></span></p>
-<p>Tim Giago taught us that a Native newspaper is never just ink on paper. It is a living voice, a drumbeat, a place where truth stands its ground even when the winds of politics, pressure, or fear try to silence it. At Native Sun News Today, we feel that truth every day. It moves through our newsroom, our layout desks,</p>
-<p class="more"><a href="https://www.nativesunnews.today/articles/carrying-the-fire-forward/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://harpswellanchor.org/fundraising/">Donate</a></aside>
+<p class="source"><a href="https://harpswellanchor.org/"><strong>Harpswell Anchor</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-11T16:43:47+00:00" data-pub="12:43 PM EDT">Tue, Aug 11 @ 12PM EDT</time><a class="lozenge place" href="/search?state=ME">Maine</a><a class="lozenge place" href="/search?place=Harpswell&state=ME">Harpswell</a></p>
+<h2><a href="https://harpswellanchor.org/2026/08/intertidal-bioluminescence-is-science-but-still-feels-like-magic/">Intertidal: Bioluminescence is science, but still feels like magic</a></h2>
+<p class="byline">By Susan Olcott</p>
+<p>In the long days of summer, there is so much light that darkness holds a special magic. One of my favorite things to do on summer evenings is to be out in the darkness. And some of the most magical things about summer&#x27;s darkness are the unexpected lights. <a class="lozenge more" href="https://harpswellanchor.org/2026/08/intertidal-bioluminescence-is-science-but-still-feels-like-magic/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-19T17:36:28+00:00" data-pub="10:36 AM PDT">Sunday, July 19, 2026 at 10:36 AM PDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>CA / Bay / <a href="https://thesunreporter.com/">San Francisco Sun Reporter</a></small></p>
-<h2><a href="https://thesunreporter.com/gov-gavin-newsom-signs-law-streamlining-affordable-housing-rules/">Gov. Gavin Newsom Signs Law Streamlining Affordable Housing Rules</a></h2>
-<p class="byline"><small>By Evan Ward</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://thesunreporter.com/subscribe/">Subscribe</a></span></p>
-<p>Bo Tefu | California Black Media OAKLAND — Gov. Gavin Newsom signed Assembly Bill 179 on July 13, the state’s new housing budget trailer bill designed to reduce regulatory barriers, modernize California’s affordable housing financing system, and lower the cost of building an affordable housing unit by as much as $70,000. The legislation builds on</p>
-<p class="more"><a href="https://thesunreporter.com/gov-gavin-newsom-signs-law-streamlining-affordable-housing-rules/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://phinneywood.com/2026/08/donate-school-supplies-for-local-families/">Donate</a></aside>
+<p class="source"><a href="https://PhinneyWood.com"><strong>PhinneyWood.com</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-11T15:30:00+00:00" data-pub="8:30 AM PDT">Tue, Aug 11 @ 8AM PDT</time><a class="lozenge place" href="/search?state=WA">Washington</a><a class="lozenge place" href="/search?place=Seattle&state=WA">Seattle</a></p>
+<h2><a href="https://phinneywood.com/2026/08/more-than-a-visit-to-mopop-a-memory-loss-adventure/">More Than a Visit to MoPop: A Memory Loss Adventure</a></h2>
+<p class="byline">By Guest Writer</p>
+<a class="shot" href="https://phinneywood.com/2026/08/more-than-a-visit-to-mopop-a-memory-loss-adventure/" tabindex="-1" aria-hidden="true"><img src="../img/552d1d3de4b945c137d634557fd525049b83cf19.jpg" alt="" width="480" height="720" loading="lazy" decoding="async"></a>
+<p>By Michelle Peterson, PNA Philanthropy Director “Hi! Mike said, ‘I loved MOPOP! I loved the guitar twister!’ That’s the first thing he said!” “What’s that, Linda? I didn’t catch it, a ‘guitar twister’? Can you tell <a class="lozenge more" href="https://phinneywood.com/2026/08/more-than-a-visit-to-mopop-a-memory-loss-adventure/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-17T21:47:16+00:00" data-pub="5:47 PM EDT">Friday, July 17, 2026 at 5:47 PM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>NJ / Maplewood / <a href="https://foodbanknews.org/">Food Bank News</a></small></p>
-<h2><a href="https://foodbanknews.org/ten-years-in-neighbor-advocates-deliver/">Ten Years In: Neighbor Advocates Still Deliver</a></h2>
-<p class="byline"><small>By Chris Costanzo</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://foodbanknews.org/donate/">Donate</a></span></p>
-<a class="shot" href="https://foodbanknews.org/ten-years-in-neighbor-advocates-deliver/" tabindex="-1" aria-hidden="true"><img src="../img/56a6db6523b492cb648617849677667b18439d84.jpg" alt="" width="480" height="480" loading="lazy" decoding="async"></a>
-<p>The Food Bank of Contra Costa and Solano is celebrating ten years of lifting the voices of people who best understand what it’s like to be food insecure. For ten years, its Speaker Series program has remained focused on training community members with lived experience to become advocates in the</p>
-<p class="more"><a href="https://foodbanknews.org/ten-years-in-neighbor-advocates-deliver/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://peekskillherald.com/donation-form/">Donate</a></aside>
+<p class="source"><a href="https://peekskillherald.com/"><strong>Peekskill Herald</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-11T14:54:48+00:00" data-pub="10:54 AM EDT">Tue, Aug 11 @ 10AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Peekskill&state=NY">Peekskill</a></p>
+<h2><a href="https://peekskillherald.com/41361/news/reader-mail-peekskill-people-have-a-vibe/">Reader Mail &gt; ‘Peekskill People Have a Vibe’</a></h2>
+<p>BID&#x27;s Bill Powers shares a day-in-the-life of connecting with the city&#x27;s best asset: its current and future residents <a class="lozenge more" href="https://peekskillherald.com/41361/news/reader-mail-peekskill-people-have-a-vibe/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-16T15:11:34+00:00" data-pub="10:11 AM CDT">Thursday, July 16, 2026 at 10:11 AM CDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>TX / Statewide / <a href="https://deceleration.news">Deceleration</a></small></p>
-<h2><a href="https://deceleration.news/ai-in-defense-of-human-created-artwork/">In Defense of Human-Created Artwork</a></h2>
-<p class="byline"><small>By James Courtney</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://deceleration.news/membership/">Become a member</a></span></p>
-<a class="shot" href="https://deceleration.news/ai-in-defense-of-human-created-artwork/" tabindex="-1" aria-hidden="true"><img src="../img/f8c312d31dde525a86ef7926a539e44965f06a36.jpg" alt="" width="480" height="319" loading="lazy" decoding="async"></a>
-<p>These three South Texas artists embrace the struggle against the plague of AI art—wherever it is found.</p>
-<p class="more"><a href="https://deceleration.news/ai-in-defense-of-human-created-artwork/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.themarshallproject.org/2026/08/18/parents-immigrant-camps-children-deportation-flores">Donate</a></aside>
+<p class="source"><a href="https://www.themarshallproject.org/"><strong>The Marshall Project</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-11T10:00:00+00:00" data-pub="6:00 AM EDT">Tue, Aug 11 @ 6AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Criminal+justice">Criminal justice</a></p>
+<h2><a href="https://www.themarshallproject.org/2026/08/11/illinois-joliet-deadly-prison-fires-findings">Why Did an Illinois Prison Fail to Stop 70 Fires?</a></h2>
+<p class="byline">By Shannon Heffernan</p>
+<a class="shot" href="https://www.themarshallproject.org/2026/08/11/illinois-joliet-deadly-prison-fires-findings" tabindex="-1" aria-hidden="true"><img src="../img/c0b5bb98e970339c18ff7619dd22d4ea212fc6f3.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Three key takeaways from our investigation of the epidemic of fires at the Joliet Treatment Center. <a class="lozenge more" href="https://www.themarshallproject.org/2026/08/11/illinois-joliet-deadly-prison-fires-findings">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-16T10:00:00+00:00" data-pub="6:00 AM EDT">Thursday, July 16, 2026 at 6:00 AM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>National / Criminal justice / <a href="https://www.themarshallproject.org/">The Marshall Project</a></small></p>
-<h2><a href="https://www.themarshallproject.org/2026/07/16/newborn-drug-test-police-referral-racial-disparity">Moms of Black Babies More Likely to Be Flagged to Police Over Alleged Pregnancy Drug Use</a></h2>
-<p class="byline"><small>By Shoshana Walter</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.themarshallproject.org/2026/08/18/parents-immigrant-camps-children-deportation-flores">Donate</a></span></p>
-<a class="shot" href="https://www.themarshallproject.org/2026/07/16/newborn-drug-test-police-referral-racial-disparity" tabindex="-1" aria-hidden="true"><img src="../img/4c1e2c1d2370fad2b93a5034a8b50fbe66256c77.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Child welfare referred Black parents to law enforcement 14,000 times in 7 years, despite no findings of abuse or neglect.</p>
-<p class="more"><a href="https://www.themarshallproject.org/2026/07/16/newborn-drug-test-police-referral-racial-disparity">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://laraza.com/">Support</a></aside>
+<p class="source"><a href="https://laraza.com/"><strong>La Raza</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-10T23:16:04+00:00" data-pub="6:16 PM CDT">Mon, Aug 10 @ 6PM CDT</time><a class="lozenge place" href="/search?state=IL">Illinois</a><a class="lozenge place" href="/search?place=Chicago&state=IL">Chicago</a></p>
+<h2><a href="https://laraza.com/2026/08/10/el-rudo-costo-de-las-deportaciones-y-el-buen-paso-de-cubs-y-white-sox/">El rudo costo de las deportaciones… y el buen paso de Cubs y White Sox</a></h2>
+<p class="byline">By Ashley Quincin</p>
+<a class="shot" href="https://laraza.com/2026/08/10/el-rudo-costo-de-las-deportaciones-y-el-buen-paso-de-cubs-y-white-sox/" tabindex="-1" aria-hidden="true"><img src="../img/e0ce8f41980926adf15cf03fe2d9df33829f0857.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>En &#x27;Voces abiertas&#x27; se comenta sobre el costo de la política de detenciones y deportaciones de Trump y del buen paso de Cubs y White Sox <a class="lozenge more" href="https://laraza.com/2026/08/10/el-rudo-costo-de-las-deportaciones-y-el-buen-paso-de-cubs-y-white-sox/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-13T09:26:00+00:00" data-pub="5:26 AM EDT">Monday, July 13, 2026 at 5:26 AM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>MI / - Great Lakes Watershed / <a href="https://greatlakesecho.org/">Great Lakes Echo</a></small></p>
-<h2><a href="https://greatlakesecho.org/2026/07/13/invasive-elm-zigzag-sawfly-confirmed-in-michigan/">Invasive elm zigzag sawfly confirmed in Michigan</a></h2>
-<p class="byline"><small>By Anna Barnes</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://greatlakesecho.org/">Support</a></span></p>
-<p>By Anna Barnes The invasive elm zigzag sawfly has been confirmed in Michigan for the first time.</p>
-<p class="more"><a href="https://greatlakesecho.org/2026/07/13/invasive-elm-zigzag-sawfly-confirmed-in-michigan/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.thestatehousefile.com/site/support-our-work.html">Donate</a></aside>
+<p class="source"><a href="https://www.thestatehousefile.com/"><strong>The Statehouse File</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-10T21:58:00+00:00" data-pub="5:58 PM EDT">Mon, Aug 10 @ 5PM EDT</time><a class="lozenge place" href="/search?state=IN">Indiana</a></p>
+<h2><a href="https://www.thestatehousefile.com/commentary/a-success-for-more-than-one-night-only/article_dc5f9a6b-fc82-4dfa-992d-2d6d1db0db6f.html">A success for more than one night only</a></h2>
+<p class="byline">By By John Krull, TheStatehouseFile.com</p>
+<p>The best part—for me, anyway—of the new movie “One Night Only” comes at the end. <a class="lozenge more" href="https://www.thestatehousefile.com/commentary/a-success-for-more-than-one-night-only/article_dc5f9a6b-fc82-4dfa-992d-2d6d1db0db6f.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-09T20:20:34+00:00" data-pub="1:20 PM PDT">Thursday, July 9, 2026 at 1:20 PM PDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>CA / Bay / <a href="https://thesunreporter.com/">San Francisco Sun Reporter</a></small></p>
-<h2><a href="https://thesunreporter.com/sf-supervisor-orders-hearing-on-western-addition-evictions-housing-complaints/">SF Supervisor Orders Hearing on Western Addition Evictions, Housing Complaints</a></h2>
-<p class="byline"><small>By Evan Ward</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://thesunreporter.com/subscribe/">Subscribe</a></span></p>
-<p>SAN FRANCISCO — Supervisor Bilal Mahmood announced today that he will convene a hearing before the Government Audit and Oversight Committee this fall to examine resident concerns regarding mass evictions and property management practices at the MLK/Marcus Garvey Co-Op and Thomas Paine Square Apartments, two housing communities in the Western Addition managed by Domus Management</p>
-<p class="more"><a href="https://thesunreporter.com/sf-supervisor-orders-hearing-on-western-addition-evictions-housing-complaints/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://theactiveage.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://theactiveage.com/"><strong>The Active Age</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-10T17:29:05+00:00" data-pub="12:29 PM CDT">Mon, Aug 10 @ 12PM CDT</time><a class="lozenge place" href="/search?state=KS">Kansas</a><a class="lozenge place" href="/search?place=Sedgwick&state=KS">Sedgwick</a></p>
+<h2><a href="https://theactiveage.com/city-of-wichita-offers-cooling-centers-during-extreme-heat/">City of Wichita offers cooling centers during extreme heat</a></h2>
+<p class="byline">By Tammara Fogle</p>
+<p>The City of Wichita offers several cooling centers for residents to escape the heat this coming week. Between libraries, recreation centers and neighborhood resource centers, the City has 14 different public locations for residents to visit during extremely hot weather. All centers are open and free to the public. Beginning Monday, August 10 through Thursday, August <a class="lozenge more" href="https://theactiveage.com/city-of-wichita-offers-cooling-centers-during-extreme-heat/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-07T11:26:32+00:00" data-pub="7:26 AM EDT">Tuesday, July 7, 2026 at 7:26 AM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>FL / Jacksonville / <a href="https://www.thefloridastar.com/">The Florida Star</a></small></p>
-<h2><a href="https://www.thefloridastar.com/articles/protecting-our-water-preserving-our-communities-st-johns-riverkeepers-resilient-ribault-initiative-building-stronger-communities-through-environmental-stewardship/">Protecting Our Water, Preserving Our Communities: St. Johns Riverkeeper’s Resilient Ribault Initiative, Building Stronger Communities Through Environmental Stewardship</a></h2>
-<p class="byline"><small>By Staff 1</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.thefloridastar.com/subscribe/">Subscribe</a></span></p>
-<p>By: Vanessa Davis-Frederick, Contributing Writer Photos by Will Brown, Jacksonville Today When people think about healthy communities, they often think about good schools, safe streets, affordable housing, and economic opportunities. But there’s another important piece of the puzzle that doesn’t always get enough attention: the health of our waterways. That’s the idea behind the Resilient Ribault </p>
-<p class="more"><a href="https://www.thefloridastar.com/articles/protecting-our-water-preserving-our-communities-st-johns-riverkeepers-resilient-ribault-initiative-building-stronger-communities-through-environmental-stewardship/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.idahoednews.org/features/spelling-it-out/spelling-it-out-fund-balances/">Donate</a></aside>
+<p class="source"><a href="https://www.idahoednews.org/"><strong>Idaho Education News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-10T15:21:19+00:00" data-pub="9:21 AM MDT">Mon, Aug 10 @ 9AM MDT</time><a class="lozenge place" href="/search?state=ID">Idaho</a></p>
+<h2><a href="https://www.idahoednews.org/voices/idaho-needs-an-alternative-minimum-tax/">Idaho needs an alternative minimum tax</a></h2>
+<p class="byline">By Bob Huntley</p>
+<a class="shot" href="https://www.idahoednews.org/voices/idaho-needs-an-alternative-minimum-tax/" tabindex="-1" aria-hidden="true"><img src="../img/00e3b3e63972401c648385a1d098ddee17395b9b.jpg" alt="" width="220" height="220" loading="lazy" decoding="async"></a>
+<p>Over the last 61 years we have pirated away the sales tax base by 89 special interest exemptions. <a class="lozenge more" href="https://www.idahoednews.org/voices/idaho-needs-an-alternative-minimum-tax/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-06T23:09:54+00:00" data-pub="4:09 PM PDT">Monday, July 6, 2026 at 4:09 PM PDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>OR / Oakridge / <a href="https://highway58herald.org/">Highway 58 Herald</a></small></p>
-<h2><a href="https://highway58herald.org/opinion-the-recurring-firebomb-meme/">Opinion: The recurring firebomb meme</a></h2>
-<p class="byline"><small>By Bob Zybach</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://highway58herald.org/donations/">Donate</a></span></p>
-<p>In early August 2018, I was interviewed for an article by Michael Bastasch, an editor for The Daily Caller News Foundation. The article was titled “Decades of Mismanagement Turned US Forests into ‘Slow-Motion Time Bombs.&#x27;” The title came from this quote in the article: “While bad fires still happen on state and private lands, most</p>
-<p class="more"><a href="https://highway58herald.org/opinion-the-recurring-firebomb-meme/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://isthmus.memberful.com/">Become a member</a></aside>
+<p class="source"><a href="https://isthmus.com"><strong>Isthmus Community Media</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-10T13:00:00+00:00" data-pub="8:00 AM CDT">Mon, Aug 10 @ 8AM CDT</time><a class="lozenge place" href="/search?state=WI">Wisconsin</a><a class="lozenge place" href="/search?place=Madison&state=WI">Madison</a></p>
+<h2><a href="https://isthmus.com/opinion/from-the-editor/it-takes-a-village-and-also-a-knight/">It takes a Village,  and also a Knight</a></h2>
+<p class="byline">By Judith Davidoff</p>
+<a class="shot" href="https://isthmus.com/opinion/from-the-editor/it-takes-a-village-and-also-a-knight/" tabindex="-1" aria-hidden="true"><img src="../img/5c6cc52747ed90ef989558cee549980572601319.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Village Media, which operates more than 30 digital newsrooms in Ontario, Canada, is expanding into Wisconsin. The company expects to open its Appleton newsroom this fall. <a class="lozenge more" href="https://isthmus.com/opinion/from-the-editor/it-takes-a-village-and-also-a-knight/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-06T20:09:56+00:00" data-pub="1:09 PM PDT">Monday, July 6, 2026 at 1:09 PM PDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>CA / Statewide / <a href="https://www.calhealthreport.org/who-we-are/">California Health Report</a></small></p>
-<h2><a href="https://www.calhealthreport.org/2026/07/06/opinion-california-measures-falls-in-nursing-homes-it-still-doesnt-measure-whether-residents-can-walk/">Opinion: California Measures Falls in Nursing Homes. It Still Doesn’t Measure Whether Residents Can Walk</a></h2>
-<p class="byline"><small>By Neha Sabharwal</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.calhealthreport.org/donate/">Donate</a></span></p>
-<p>California closely monitors whether nursing home residents fall. Regulators track incidents, facilities report them and safety policies revolve around preventing them. Yet a more fundamental question often goes unasked: Can residents walk? When safety becomes the only measurable outcome, unintended consequences can follow.Opinion: California Measures Falls in Nursing Homes. It Still Doesn’t Measur</p>
-<p class="more"><a href="https://www.calhealthreport.org/2026/07/06/opinion-california-measures-falls-in-nursing-homes-it-still-doesnt-measure-whether-residents-can-walk/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://fundrazr.com/NotiVisionGA?ref=cr_4ElvE8">Donate</a></aside>
+<p class="source"><a href="https://notivisiongeorgia.com/"><strong>NotiVisión Georgia</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-10T12:30:34+00:00" data-pub="8:30 AM EDT">Mon, Aug 10 @ 8AM EDT</time><a class="lozenge place" href="/search?state=GA">Georgia</a><a class="lozenge place" href="/search?place=Warner+Robins&state=GA">Warner Robins</a></p>
+<h2><a href="https://notivisiongeorgia.com/2026/08/10/ice-camaras-corporales-publicacion-videos-operativos/">ICE implementará cámaras corporales en sus operativos, pero la agencia decidirá cuándo divulgar los videos</a></h2>
+<p class="byline">By Monica Pirela</p>
+<a class="shot" href="https://notivisiongeorgia.com/2026/08/10/ice-camaras-corporales-publicacion-videos-operativos/" tabindex="-1" aria-hidden="true"><img src="../img/6dce6b2d05f311d1637b533c89535f43e93ea222.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>El Servicio de Inmigración y Control de Aduanas de Estados Unidos (ICE) continúa con la implementación de cámaras corporales (Body-Worn Cameras o BWC) para sus agentes durante operativos de cumplimiento de las leyes migratorias. La medida forma parte de una política adoptada en febrero de 2025 que exige el uso de estos dispositivos en diversas <a class="lozenge more" href="https://notivisiongeorgia.com/2026/08/10/ice-camaras-corporales-publicacion-videos-operativos/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-06T01:27:24+00:00" data-pub="9:27 PM EDT">Sunday, July 5, 2026 at 9:27 PM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>NY / New York City / <a href="https://newyorkparrot.com/">New York Parrot</a></small></p>
-<h2><a href="https://newyorkparrot.com/2026/07/america250-problems-america-must-stop-calling-permanent/">America@250: Problems America Must Stop Calling Permanent</a></h2>
-<p class="byline"><small>By muslimmediacorporation</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://wordpress.org/support/forums/">Donate</a></span></p>
-<a class="shot" href="https://newyorkparrot.com/2026/07/america250-problems-america-must-stop-calling-permanent/" tabindex="-1" aria-hidden="true"><img src="../img/d59a838c312f8ff247d823f72c5237aac4c7f8fa.jpg" alt="" width="480" height="480" loading="lazy" decoding="async"></a>
-<p>Lawrence Seiler argues that America at 250 must confront food insecurity, obesity, unsafe housing, low wages and public health failures through dignity-centered reform.</p>
-<p class="more"><a href="https://newyorkparrot.com/2026/07/america250-problems-america-must-stop-calling-permanent/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://scdailygazette.com/">Support</a></aside>
+<p class="source"><a href="https://scdailygazette.com/"><strong>South Carolina Daily Gazette</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-10T11:30:58+00:00" data-pub="7:30 AM EDT">Mon, Aug 10 @ 7AM EDT</time><a class="lozenge place" href="/search?state=SC">South Carolina</a></p>
+<h2><a href="https://scdailygazette.com/2026/08/10/the-jericho-road-in-sc-who-is-my-neighbor/">The Jericho Road in SC: Who is my neighbor?</a></h2>
+<p class="byline">By Jessica Kaneft</p>
+<a class="shot" href="https://scdailygazette.com/2026/08/10/the-jericho-road-in-sc-who-is-my-neighbor/" tabindex="-1" aria-hidden="true"><img src="../img/5361c07b4b2f9477ad42fd7f030e6416e4b15fc1.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>“True compassion is more than flinging a coin to a beggar. It comes to see that an edifice which produces beggars needs restructuring.”—Martin Luther King Jr. Not long ago, I received a text from a friend, a CarePortal volunteer: “Hey, a family friend has some bedding she’d love to give to a family <a class="lozenge more" href="https://scdailygazette.com/2026/08/10/the-jericho-road-in-sc-who-is-my-neighbor/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-02T19:11:23+00:00" data-pub="12:11 PM PDT">Thursday, July 2, 2026 at 12:11 PM PDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>CA / Berkeley / <a href="https://thestreetspirit.org/">Street Spirit</a></small></p>
-<h2><a href="https://thestreetspirit.org/2026/07/02/from-the-archives-east-bay-hospital-is-closed-for-good/">From the archives: East Bay Hospital is closed for good</a></h2>
-<p class="byline"><small>By Bradley Penner</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/street-paper.html">Street paper</a><a class="lozenge give" href="https://donate.mazloweb.com/donate/7seh1VCmicdJxv3BAa62bK">Donate</a></span></p>
-<p>&#x27;Now and then, poetic justice breaks through the walls of oppression.&#x27;</p>
-<p class="more"><a href="https://thestreetspirit.org/2026/07/02/from-the-archives-east-bay-hospital-is-closed-for-good/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/college.html">College</a><a class="lozenge give" href="https://mndaily.com/donate">Donate</a></aside>
+<p class="source"><a href="https://mndaily.com/"><strong>Minnesota Daily</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-08T05:14:33+00:00" data-pub="12:14 AM CDT">Sat, Aug 8 @ 12AM CDT</time><a class="lozenge place" href="/search?state=MN">Minnesota</a><a class="lozenge place" href="/search?place=Minneapolis&state=MN">Minneapolis</a></p>
+<h2><a href="https://mndaily.com/opinion/opinion-public-newsrooms-to-keep-our-media-diets-balanced/08/08/2026/eicmndaily-com/">Opinion: Public newsrooms to keep our media diets balanced</a></h2>
+<p class="byline">By by  Matthew Jegers</p>
+<p>One of the very first skills drilled into all journalism and strategic communication majors is media literacy. I will always remember the practice drills from my mass communication course, debating angles and biases with my classmates, and deciding which sources are trustworthy. In today’s world, being aware of the sources of the information we see <a class="lozenge more" href="https://mndaily.com/opinion/opinion-public-newsrooms-to-keep-our-media-diets-balanced/08/08/2026/eicmndaily-com/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-02T09:00:00+00:00" data-pub="5:00 AM EDT">Thursday, July 2, 2026 at 5:00 AM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>NY / New York / <a href="https://nysfocus.com/">New York Focus</a></small></p>
-<h2><a href="https://nysfocus.com/2026/07/02/ny-state-budget-hochul-contract-review">Budget Allows Hochul to Spend $1.5 Billion Without Normal Review</a></h2>
-<p class="byline"><small>By Chris Bragg</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://nysfocus.com/donate">Donate</a></span></p>
-<a class="shot" href="https://nysfocus.com/2026/07/02/ny-state-budget-hochul-contract-review" tabindex="-1" aria-hidden="true"><img src="../img/976dfe77f903c6a590d7a19592b4b766c517a5b3.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Fiscal watchdog says independent oversight is needed to avoid waste and fraud.</p>
-<p class="more"><a href="https://nysfocus.com/2026/07/02/ny-state-budget-hochul-contract-review">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/college.html">College</a><a class="lozenge give" href="https://mndaily.com/donate">Donate</a></aside>
+<p class="source"><a href="https://mndaily.com/"><strong>Minnesota Daily</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-08T05:03:25+00:00" data-pub="12:03 AM CDT">Sat, Aug 8 @ 12AM CDT</time><a class="lozenge place" href="/search?state=MN">Minnesota</a><a class="lozenge place" href="/search?place=Minneapolis&state=MN">Minneapolis</a></p>
+<h2><a href="https://mndaily.com/opinion/opinion-in-the-wake-of-operation-metro-surge-art-offers-transparency/08/08/2026/eicmndaily-com/">Opinion: In the wake of Operation Metro Surge, art offers transparency</a></h2>
+<p class="byline">By by  Andrew Godes</p>
+<p>Soon, thousands of students will travel far from home to embark on new chapters of their lives at the University of Minnesota. Navigating this change, it’s crucial they not only gain an understanding of the campus culture but also of the broader community. In recent memory, the Twin Cities have suffered immensely from the brutality <a class="lozenge more" href="https://mndaily.com/opinion/opinion-in-the-wake-of-operation-metro-surge-art-offers-transparency/08/08/2026/eicmndaily-com/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-02T07:07:00+00:00" data-pub="3:07 AM EDT">Thursday, July 2, 2026 at 3:07 AM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>National / Science / <a href="https://undark.org/">Undark</a></small></p>
-<h2><a href="https://undark.org/2026/07/02/opinion-biologists-leiden-declaration/">Biologists Should Articulate Their Position on AI</a></h2>
-<p class="byline"><small>By C. Brandon Ogbunu</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://undark.org/">Support</a></span></p>
-<p>Last month, mathematics researchers released the Leiden Declaration, a treatise on how to handle the challenges that artificial intelligence poses to their field. C. Brandon Ogbunu argues that biologists should learn from the mathematics community and work on their own version.</p>
-<p class="more"><a href="https://undark.org/2026/07/02/opinion-biologists-leiden-declaration/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://givebutter.com/binj">Donate</a></aside>
+<p class="source"><a href="https://binj.news/"><strong>Boston Institute for Nonprofit Journalism</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-07T01:28:22+00:00" data-pub="9:28 PM EDT">Thu, Aug 6 @ 9PM EDT</time><a class="lozenge place" href="/search?state=MA">Massachusetts</a><a class="lozenge place" href="/search?place=Boston&state=MA">Boston</a></p>
+<h2><a href="https://binj.news/2026/08/06/editors-note-binj-news-launching-new-newsletter-format/">Editor’s Note: BINJ.News Launching New Newsletter Format</a></h2>
+<p class="byline">By JASON PRAMAS</p>
+<p>Pretty wild that the Boston Institute for Nonprofit Journalism is about to start the fourth year of publishing our weekly newsletter next week! And my BINJ colleagues and I figured that milestone would be a perfect excuse to give it a new look and feel—since we’re moving over to MailChimp from another platform for our <a class="lozenge more" href="https://binj.news/2026/08/06/editors-note-binj-news-launching-new-newsletter-format/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-01T19:24:07+00:00" data-pub="3:24 PM EDT">Wednesday, July 1, 2026 at 3:24 PM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>NY / New York City / <a href="https://newyorkparrot.com/">New York Parrot</a></small></p>
-<h2><a href="https://newyorkparrot.com/2026/07/beyond-infrastructure-and-jobs-experts-say-africas-development-story-needs-a-human-wellbeing-strategy/">Beyond Infrastructure and Jobs: Experts Say Africa’s Development Story Needs a Human Wellbeing Strategy</a></h2>
-<p class="byline"><small>By New York Parrot</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://wordpress.org/support/forums/">Donate</a></span></p>
-<p>By Ridwan Oyenuga For decades, discussions about Africa’s development have focused on infrastructure, trade, technology,</p>
-<p class="more"><a href="https://newyorkparrot.com/2026/07/beyond-infrastructure-and-jobs-experts-say-africas-development-story-needs-a-human-wellbeing-strategy/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://temponewsflorida.com/">Support</a></aside>
+<p class="source"><a href="https://temponewsflorida.com/"><strong>Tempo News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-07T00:14:26+00:00" data-pub="8:14 PM EDT">Thu, Aug 6 @ 8PM EDT</time><a class="lozenge place" href="/search?state=FL">Florida</a><a class="lozenge place" href="/search?place=Sarasota&state=FL">Sarasota</a></p>
+<h2><a href="https://temponewsflorida.com/pathways-to-faith-seek-real-joy/">PATHWAYS TO FAITH: Seek Real Joy?</a></h2>
+<p class="byline">By admin</p>
+<p>At Psalm 51:12 (NKJV), we hear David, in his prayer of repentance, pleading with God: “Restore to me the joy <a class="lozenge more" href="https://temponewsflorida.com/pathways-to-faith-seek-real-joy/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-01T11:00:00+00:00" data-pub="7:00 AM EDT">Wednesday, July 1, 2026 at 7:00 AM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>National / Military / <a href="https://thewarhorse.org/">The War Horse</a></small></p>
-<h2><a href="https://thewarhorse.org/vietnam-execution-terrorist-patriot/">I Watched an Execution. Was She a Viet Cong Spy—or Just Fighting for Her Country?</a></h2>
-<p class="byline"><small>By Dennis White</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://thewarhorse.org/disabled-veteran-organization-funds/">Donate</a></span></p>
-<a class="shot" href="https://thewarhorse.org/vietnam-execution-terrorist-patriot/" tabindex="-1" aria-hidden="true"><img src="../img/1510309f3310f5702febdd2e8a2d5191f950b551.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>The sun was a physical weight that afternoon, an oppressive, wet heat that seemed to pin everything to the red dust of our base camp in Kon Tum, Vietnam. I was 19, a supply sergeant, and my world was defined by our perimeter wire and the daily inventory of survival. “Notice anything strange about her,</p>
-<p class="more"><a href="https://thewarhorse.org/vietnam-execution-terrorist-patriot/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://baltimorebeat.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://baltimorebeat.com/"><strong>Baltimore Beat</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-06T19:43:40+00:00" data-pub="3:43 PM EDT">Thu, Aug 6 @ 3PM EDT</time><a class="lozenge place" href="/search?state=MD">Maryland</a><a class="lozenge place" href="/search?place=Baltimore&state=MD">Baltimore</a></p>
+<h2><a href="https://baltimorebeat.com/op-ed-care-is-our-economy-baltimore-must-invest-in-it/">OP-ED: Care Is Our Economy. Baltimore Must Invest in It.</a></h2>
+<p class="byline">By Jamye Wooten</p>
+<a class="shot" href="https://baltimorebeat.com/op-ed-care-is-our-economy-baltimore-must-invest-in-it/" tabindex="-1" aria-hidden="true"><img src="../img/c2bb8c41a8daa43e1a6d10e36fcc4eea37c9cb52.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Editor’s note: Baltimore Beat has fundraised through CLLCTIVGive. Across generations, Black communities have pooled what we had to build churches, schools, businesses, freedom movements, and systems of care. We formed burial societies and building funds, mutual aid networks and susus. When institutions would not hold resources for us, we held them for one another. We <a class="lozenge more" href="https://baltimorebeat.com/op-ed-care-is-our-economy-baltimore-must-invest-in-it/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-06-30T19:15:40+00:00" data-pub="2:15 PM CDT">Tuesday, June 30, 2026 at 2:15 PM CDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>MN / Statewide / <a href="https://www.inaajimowin.com/news-blog">OjibweInaajimowin</a></small></p>
-<h2><a href="https://www.inaajimowin.com/news-blog/maadaginzo-ceremony-1">MAADAGINZO CEREMONY</a></h2>
-<p class="byline"><small>By Design Red Circle</small><span class="aside"><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.inaajimowin.com/bandmembervoices">Become a member</a></span></p>
-<a class="shot" href="https://www.inaajimowin.com/news-blog/maadaginzo-ceremony-1" tabindex="-1" aria-hidden="true"><img src="../img/34efc54daa56e9f1cdd28b48067a7d9eff8df12e.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>Jun 30, 2026 The Office of Chief Wind invites all Mille Lacs Band of Ojibwe employees to join us on Monday, July 6, 2026. We will be hosting the July Maadaginzo Ceremony to start the month off in a good way. We&#x27;ll gather in the foyer of the Government Center at 8 a.m. Let&#x27;s come together to offer tobacco, smudge, and listen to a song from the drum. Please bring a dish to share as this will also be</p>
-<p class="more"><a href="https://www.inaajimowin.com/news-blog/maadaginzo-ceremony-1">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://ladatanews.com/">Support</a></aside>
+<p class="source"><a href="https://ladatanews.com/"><strong>Data News Weekly</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-06T17:11:42+00:00" data-pub="12:11 PM CDT">Thu, Aug 6 @ 12PM CDT</time><a class="lozenge place" href="/search?state=LA">Louisiana</a><a class="lozenge place" href="/search?place=New+Orleans&state=LA">New Orleans</a></p>
+<h2><a href="https://ladatanews.com/james-j-carter-installed-as-84th-president-of-the-national-bar-association/">James J. Carter Installed as 84th President of the National Bar Association</a></h2>
+<p class="byline">By LA Data News</p>
+<a class="shot" href="https://ladatanews.com/james-j-carter-installed-as-84th-president-of-the-national-bar-association/" tabindex="-1" aria-hidden="true"><img src="../img/141f5b4886586655685cd99f2bf558615512daab.jpg" alt="" width="248" height="320" loading="lazy" decoding="async"></a>
+<p>After a rousing introduction by Stellar New Orleans Attorney James Williams and swearing in by the Legendary Judge Kern Reese, the National Bar Association on July 30, 2026 installed nationally accomplished Trial Attorney and Civic <a class="lozenge more" href="https://ladatanews.com/james-j-carter-installed-as-84th-president-of-the-national-bar-association/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-06-30T03:31:37+00:00" data-pub="8:31 PM PDT">Monday, June 29, 2026 at 8:31 PM PDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>CA / Modesto / <a href="https://www.latinotimes.org/">Latino Times</a></small></p>
-<h2><a href="https://www.latinotimes.org/2026/06/becerra-will-be-a-workhorse-not-a-show-horse/">Becerra will be a workhorse, not a show horse</a></h2>
-<p class="byline"><small>By latinotimes</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://lp.constantcontactpages.com/sl/4qYPsCn">Subscribe</a></span></p>
-<p>In the eight decades since the end of World War II, 11 men have served as governor of California — counting Jerry Brown twice. Six, beginning with Earl Warren, have been Republicans and the remaining</p>
-<p class="more"><a href="https://www.latinotimes.org/2026/06/becerra-will-be-a-workhorse-not-a-show-horse/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://gradynewsource.uga.edu/plasma-donation-rising-among-college-students/">Donate</a></aside>
+<p class="source"><a href="https://gradynewsource.uga.edu/"><strong>Grady Newsource</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-06T13:00:35+00:00" data-pub="9:00 AM EDT">Thu, Aug 6 @ 9AM EDT</time><a class="lozenge place" href="/search?state=GA">Georgia</a><a class="lozenge place" href="/search?place=Athens-Clarke+County&state=GA">Athens-Clarke County</a></p>
+<h2><a href="https://gradynewsource.uga.edu/building-your-hawaii-itinerary-four-locations-experiences-on-the-islands/">Building Your Hawai’i Itinerary: Four Locations, Experiences on the Islands</a></h2>
+<p class="byline">By Grady Newsource</p>
+<a class="shot" href="https://gradynewsource.uga.edu/building-your-hawaii-itinerary-four-locations-experiences-on-the-islands/" tabindex="-1" aria-hidden="true"><img src="../img/7fb77f44ee57de1c970f960fa8848f6652cc22cb.jpg" alt="" width="480" height="458" loading="lazy" decoding="async"></a>
+<p>These four stories about specific Hawai’i experiences, by Anna Franklin, Grace Clark, Lucy Kelly and Autumn Luke, were created as part of the Travel Journalism in Hawaii program through the Grady College of Journalism and Mass Communication. One Ocean Diving Emphasizes Shark Conservation Efforts By Anna Franklin For decades, public perception of sharks has been shaped <a class="lozenge more" href="https://gradynewsource.uga.edu/building-your-hawaii-itinerary-four-locations-experiences-on-the-islands/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 </div>
 <p><a id="more" href="opinion-17.html">More stories</a></p>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="../index.html">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -394,6 +448,47 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>

@@ -14,12 +14,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -28,22 +41,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -51,19 +70,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -76,7 +127,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -94,7 +145,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -107,7 +158,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="subjects/news.html">News</a></li><li><a href="subjects/politics.html">Politics</a></li><li><a href="subjects/opinion.html">Opinion</a></li><li><a href="subjects/health.html">Health</a></li><li><a href="subjects/environment.html">Environment</a></li><li><a href="subjects/education.html">Education</a></li><li><a href="subjects/business.html">Business</a></li><li><a href="subjects/housing.html">Housing</a></li><li><a href="subjects/sports.html">Sports</a></li><li><a href="subjects/food.html">Food</a></li><li><a href="subjects/arts.html">Arts</a></li></ul></nav>
@@ -123,30 +174,30 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <h1>Big stories</h1>
 <p>Stories running in several newsrooms at once, most-carried first.</p>
 <ul>
-<li><a href="https://stateline.org/2026/08/25/cheaper-health-insurance-changed-their-lives-then-it-went-away/">Cheaper health insurance changed their lives. Then it went away.</a><br><span class="meta">in 7 newsrooms: <a href="https://stateline.org/2026/08/25/cheaper-health-insurance-changed-their-lives-then-it-went-away/">Stateline</a> &middot; <a href="https://mississippitoday.org/2026/08/25/cheaper-health-insurance-went-away/">Mississippi Today</a> &middot; <a href="https://michiganadvance.com/2026/08/25/repub/cheaper-health-insurance-changed-their-lives-then-it-went-away/">Michigan Advance</a> &middot; <a href="https://penncapital-star.com/2026/08/25/repub/cheaper-health-insurance-changed-their-lives-then-it-went-away/">Pennsylvania Capital-Star</a> &middot; <a href="https://lailluminator.com/2026/08/25/repub/health-insurance-3/">Lousiana Illuminator</a> &middot; <a href="https://sourcenm.com/2026/08/25/repub/cheaper-health-insurance-changed-their-lives-then-it-went-away/">Source New Mexico</a> &middot; <a href="https://kentuckylantern.com/2026/08/25/repub/cheaper-health-insurance-changed-their-lives-then-it-went-away/">Kentucky Lantern</a></span></li>
-<li><a href="https://eldiariony.com/2026/08/25/pronostico-del-tiempo-en-nueva-york-para-este-martes-25-de-agosto/">Pronóstico del tiempo en Nueva York para este martes 25 de agosto</a><br><span class="meta">in 6 newsrooms: <a href="https://eldiariony.com/2026/08/25/pronostico-del-tiempo-en-nueva-york-para-este-martes-25-de-agosto/">El Diario NY</a> &middot; <a href="https://laopinion.com/2026/08/25/pronostico-del-clima-en-miami-para-este-martes-25-de-agosto/">La Opinión</a> &middot; <a href="https://eldiariony.com/2026/08/25/chicago-pronostico-del-tiempo-para-este-martes-25-de-agosto/">El Diario NY</a> &middot; <a href="https://laopinion.com/2026/08/25/pronostico-del-clima-en-houston-para-este-martes-25-de-agosto/">La Opinión</a> &middot; <a href="https://laopinion.com/2026/08/25/dallas-el-tiempo-para-hoy-martes-25-de-agosto/">La Opinión</a> &middot; <a href="https://laopinion.com/2026/08/25/san-antonio-texas-el-tiempo-para-hoy-martes-25-de-agosto/">La Opinión</a></span></li>
-<li><a href="https://idahocapitalsun.com/2026/08/21/repub/abortion-could-return-to-supreme-court-this-time-with-a-focus-on-womens-health/">Abortion could return to Supreme Court, this time with a focus on women’s health</a><br><span class="meta">in 4 newsrooms: <a href="https://idahocapitalsun.com/2026/08/21/repub/abortion-could-return-to-supreme-court-this-time-with-a-focus-on-womens-health/">Idaho Capital Sun</a> &middot; <a href="https://ohiocapitaljournal.com/2026/08/24/repub/abortion-could-return-to-supreme-court-this-time-with-a-focus-on-womens-health/">Ohio Capital Journal</a> &middot; <a href="https://wisconsinexaminer.com/2026/08/24/repub/abortion-could-return-to-supreme-court-this-time-with-a-focus-on-womens-health/">Wisconsin Examiner</a> &middot; <a href="https://iowacapitaldispatch.com/2026/08/25/repub/abortion-could-return-to-supreme-court-this-time-with-a-focus-on-womens-health/">Iowa Capital Dispatch</a></span></li>
-<li><a href="https://kentuckylantern.com/2026/08/24/kentucky-mom-advocates-for-more-social-media-regulations-as-state-leads-court-case-against-meta/">Kentucky mom advocates for more social media regulations as state leads court case against Meta</a><br><span class="meta">in 4 newsrooms: <a href="https://kentuckylantern.com/2026/08/24/kentucky-mom-advocates-for-more-social-media-regulations-as-state-leads-court-case-against-meta/">Kentucky Lantern</a> &middot; <a href="https://rhodeislandcurrent.com/2026/08/24/kentucky-mom-advocates-for-more-social-media-regulations-as-state-leads-court-case-against-meta/">Rhode Island Current</a> &middot; <a href="https://penncapital-star.com/2026/08/24/repub/kentucky-mom-advocates-for-more-social-media-regulations-as-state-leads-court-case-against-meta/">Pennsylvania Capital-Star</a> &middot; <a href="https://lailluminator.com/2026/08/25/repub/social-media-addiction/">Lousiana Illuminator</a></span></li>
-<li><a href="https://michiganadvance.com/2026/08/24/repub/sanctuary-policies-are-keeping-prisoners-in-local-jails-away-from-ice/">Sanctuary policies are keeping prisoners in local jails away from ICE</a><br><span class="meta">in 4 newsrooms: <a href="https://michiganadvance.com/2026/08/24/repub/sanctuary-policies-are-keeping-prisoners-in-local-jails-away-from-ice/">Michigan Advance</a> &middot; <a href="https://wisconsinexaminer.com/2026/08/25/repub/sanctuary-policies-are-keeping-prisoners-in-local-jails-away-from-ice/">Wisconsin Examiner</a> &middot; <a href="https://indianacapitalchronicle.com/2026/08/25/repub/sanctuary-policies-are-keeping-prisoners-in-local-jails-away-from-ice/">Indiana Capital Chronicle</a> &middot; <a href="https://washingtonstatestandard.com/2026/08/25/repub/sanctuary-policies-are-keeping-prisoners-in-local-jails-away-from-ice/">Washington State Standard</a></span></li>
-<li><a href="https://sourcenm.com/2026/08/24/repub/sanctuary-policies-are-keeping-prisoners-in-local-jails-away-from-ice/">Sanctuary policies are keeping prisoners in local jails away from ICE</a><br><span class="meta">in 4 newsrooms: <a href="https://sourcenm.com/2026/08/24/repub/sanctuary-policies-are-keeping-prisoners-in-local-jails-away-from-ice/">Source New Mexico</a> &middot; <a href="https://penncapital-star.com/2026/08/24/repub/sanctuary-policies-are-keeping-prisoners-in-local-jails-away-from-ice/">Pennsylvania Capital-Star</a> &middot; <a href="https://oregoncapitalchronicle.com/2026/08/24/repub/sanctuary-policies-are-keeping-prisoners-in-local-jails-away-from-ice/">Oregon Capital Chronicle</a> &middot; <a href="https://newjerseymonitor.com/2026/08/25/repub/sanctuary-policies-prisoners-ice/">New Jersey Monitor</a></span></li>
-<li><a href="https://utahnewsdispatch.com/2026/08/24/national-labs-eye-cybersecurity-threats-to-smaller-nuclear-reactors/">National labs eye cybersecurity threats to smaller nuclear reactors</a><br><span class="meta">in 4 newsrooms: <a href="https://utahnewsdispatch.com/2026/08/24/national-labs-eye-cybersecurity-threats-to-smaller-nuclear-reactors/">Utah News Dispatch</a> &middot; <a href="https://penncapital-star.com/2026/08/24/repub/national-labs-eye-cybersecurity-threats-to-smaller-nuclear-reactors/">Pennsylvania Capital-Star</a> &middot; <a href="https://sourcenm.com/2026/08/24/repub/national-labs-eye-cybersecurity-threats-to-smaller-nuclear-reactors/">Source New Mexico</a> &middot; <a href="https://idahocapitalsun.com/2026/08/25/repub/national-labs-eye-cybersecurity-threats-to-smaller-nuclear-reactors/">Idaho Capital Sun</a></span></li>
-<li><a href="https://www.theobserver.media/national/nothing-changes-yet-with-the-supreme-courts-order-on-elections-but-it-could-open-door-to-chaos-226458c3">Nothing Changes Yet With The Supreme Court’s Order on Elections. But It Could Open Door to ‘Chaos’</a><br><span class="meta">in 3 newsrooms: <a href="https://www.theobserver.media/national/nothing-changes-yet-with-the-supreme-courts-order-on-elections-but-it-could-open-door-to-chaos-226458c3">Sacramento Observer</a> &middot; <a href="https://madison365.com/nothing-changes-yet-with-the-supreme-courts-order-on-elections-but-it-could-open-door-to-chaos/">Madison365</a> &middot; <a href="https://www.spotlightpa.org/news/2026/08/trump-supreme-court-mail-voting-prelim-approval-elections/">Spotlight PA</a></span></li>
-<li><a href="https://elpasomatters.org/2026/08/24/trump-mass-visa-revocation-asylum-b1-and-b2-visas/">U.S. set for largest mass visa revocation in history targeting up to 200,000 foreigners, officials say</a><br><span class="meta">in 3 newsrooms: <a href="https://elpasomatters.org/2026/08/24/trump-mass-visa-revocation-asylum-b1-and-b2-visas/">El Paso Matters</a> &middot; <a href="https://kbindependent.org/2026/08/24/us-set-for-largest-mass-visa-revocation-in-history-targeting-up-to-200000-foreigners-officials-say/">Key Biscayne Independent</a> &middot; <a href="https://www.gpb.org/news/2026/08/25/us-set-for-largest-mass-visa-revocation-in-history-200000-foreigners-officials-say">Georgia News Lab</a></span></li>
+<li><a href="https://nebraskaexaminer.com/2026/08/24/repub/trump-mcmahon-promote-school-voucher-program-as-students-return-to-class/">Trump, McMahon promote school voucher program as students return to class</a><br><span class="meta">in 5 newsrooms: <a href="https://nebraskaexaminer.com/2026/08/24/repub/trump-mcmahon-promote-school-voucher-program-as-students-return-to-class/">Nebraska Examiner</a> &middot; <a href="https://iowacapitaldispatch.com/2026/08/24/repub/trump-mcmahon-promote-school-voucher-program-as-students-return-to-class/">Iowa Capital Dispatch</a> &middot; <a href="https://michiganadvance.com/2026/08/24/repub/trump-mcmahon-promote-school-voucher-program-as-students-return-to-class/">Michigan Advance</a> &middot; <a href="https://newhampshirebulletin.com/2026/08/25/repub/trump-mcmahon-promote-school-voucher-program-as-students-return-to-class/">New Hampshire Bulletin</a> &middot; <a href="https://scdailygazette.com/2026/08/25/repub/trump-mcmahon-promote-school-voucher-program-as-students-return-to-class/">South Carolina Daily Gazette</a></span></li>
+<li><a href="https://arkansasadvocate.com/2026/08/24/repub/abortion-could-return-to-supreme-court-this-time-with-a-focus-on-womens-health/">Abortion could return to Supreme Court, this time with a focus on women’s health</a><br><span class="meta">in 4 newsrooms: <a href="https://arkansasadvocate.com/2026/08/24/repub/abortion-could-return-to-supreme-court-this-time-with-a-focus-on-womens-health/">Arkansas Advocate</a> &middot; <a href="https://westvirginiawatch.com/2026/08/24/repub/abortion-could-return-to-supreme-court-this-time-with-a-focus-on-womens-health/">West Virginia Watch</a> &middot; <a href="https://iowacapitaldispatch.com/2026/08/25/repub/abortion-could-return-to-supreme-court-this-time-with-a-focus-on-womens-health/">Iowa Capital Dispatch</a> &middot; <a href="https://www.thelundreport.org/content/abortion-could-return-supreme-court-time-focus-womens-health">The Lund Report</a></span></li>
+<li><a href="https://michiganadvance.com/2026/08/25/repub/cheaper-health-insurance-changed-their-lives-then-it-went-away/">Cheaper health insurance changed their lives. Then it went away.</a><br><span class="meta">in 4 newsrooms: <a href="https://michiganadvance.com/2026/08/25/repub/cheaper-health-insurance-changed-their-lives-then-it-went-away/">Michigan Advance</a> &middot; <a href="https://kentuckylantern.com/2026/08/25/repub/cheaper-health-insurance-changed-their-lives-then-it-went-away/">Kentucky Lantern</a> &middot; <a href="https://nebraskaexaminer.com/2026/08/25/repub/cheaper-health-insurance-changed-their-lives-then-it-went-away/">Nebraska Examiner</a> &middot; <a href="https://www.thelundreport.org/content/cheaper-health-insurance-changed-their-lives-then-it-went-away">The Lund Report</a></span></li>
+<li><a href="https://michiganadvance.com/2026/08/24/repub/us-senate-map-trending-toward-democrats-though-gop-retains-slim-advantage/">US Senate map trending toward Democrats, though GOP retains slim advantage</a><br><span class="meta">in 4 newsrooms: <a href="https://michiganadvance.com/2026/08/24/repub/us-senate-map-trending-toward-democrats-though-gop-retains-slim-advantage/">Michigan Advance</a> &middot; <a href="https://alabamareflector.com/2026/08/25/repub/us-senate-map-trending-toward-democrats-though-gop-retains-slim-advantage/">Alabama Reflector</a> &middot; <a href="https://ohiocapitaljournal.com/2026/08/25/repub/us-senate-map-trending-toward-democrats-though-gop-retains-slim-advantage/">Ohio Capital Journal</a> &middot; <a href="https://ncnewsline.com/2026/08/25/repub/us-senate-map-trending-toward-democrats-though-gop-retains-slim-advantage/">NC Newsline</a></span></li>
+<li><a href="https://sourcenm.com/2026/08/24/repub/sanctuary-policies-are-keeping-prisoners-in-local-jails-away-from-ice/">Sanctuary policies are keeping prisoners in local jails away from ICE</a><br><span class="meta">in 4 newsrooms: <a href="https://sourcenm.com/2026/08/24/repub/sanctuary-policies-are-keeping-prisoners-in-local-jails-away-from-ice/">Source New Mexico</a> &middot; <a href="https://michiganadvance.com/2026/08/24/repub/sanctuary-policies-are-keeping-prisoners-in-local-jails-away-from-ice/">Michigan Advance</a> &middot; <a href="https://oregoncapitalchronicle.com/2026/08/24/repub/sanctuary-policies-are-keeping-prisoners-in-local-jails-away-from-ice/">Oregon Capital Chronicle</a> &middot; <a href="https://azmirror.com/2026/08/25/repub/sanctuary-policies-are-keeping-prisoners-in-local-jails-away-from-ice/">Arizona Mirror</a></span></li>
+<li><a href="https://nevadacurrent.com/2026/08/24/nevada-sues-feds-over-colorado-river-cuts/">Nevada sues feds over Colorado River cuts</a><br><span class="meta">in 4 newsrooms: <a href="https://nevadacurrent.com/2026/08/24/nevada-sues-feds-over-colorado-river-cuts/">Nevada Current</a> &middot; <a href="https://utahnewsdispatch.com/2026/08/24/repub/nevada-sues-feds-over-colorado-river-cuts/">Utah News Dispatch</a> &middot; <a href="https://washingtonstatestandard.com/2026/08/24/repub/nevada-sues-feds-over-colorado-river-cuts/">Washington State Standard</a> &middot; <a href="https://sourcenm.com/2026/08/25/repub/nevada-sues-feds-over-colorado-river-cuts/">Source New Mexico</a></span></li>
+<li><a href="https://www.washingtonblade.com/2026/08/25/monument-to-lgbtq-canadians-officially-unveiled/">Monument to LGBTQ Canadians officially unveiled</a><br><span class="meta">in 3 newsrooms: <a href="https://www.washingtonblade.com/2026/08/25/monument-to-lgbtq-canadians-officially-unveiled/">Washington Blade</a> &middot; <a href="https://www.losangelesblade.com/2026/08/25/monument-to-lgbtq-canadians-officially-unveiled/">Los Angeles Blade</a> &middot; <a href="https://watermarkoutnews.com/2026/08/25/monument-to-lgbtq-canadians-officially-unveiled/">Watermark Out News</a></span></li>
+<li><a href="https://noticel.com/noticias/20260825/venezuela-supera-los-6500-muertos-despues-de-dos-meses-de-los-terremotos/">Venezuela supera los 6,500 muertos después de dos meses de los terremotos</a><br><span class="meta">in 3 newsrooms: <a href="https://noticel.com/noticias/20260825/venezuela-supera-los-6500-muertos-despues-de-dos-meses-de-los-terremotos/">Noticel</a> &middot; <a href="https://www.elvenezolanohouston.com/venezuela-supera-los-6-500-muertos-despues-de-dos-meses-de-los-terremotos/">EV Houston Newspaper</a> &middot; <a href="https://laopinion.com/2026/08/25/venezuela-supera-los-6-500-muertos-a-dos-meses-de-los-terremotos/">La Opinión</a></span></li>
+<li><a href="https://noticel.com/ultima-hora/20260825/trump-amaga-con-llamar-lago-america-al-lago-ontario-en-medio-de-choque-con-canada/">Trump amaga con llamar «Lago América» al Lago Ontario en medio de choque con Canadá</a><br><span class="meta">in 2 newsrooms: <a href="https://noticel.com/ultima-hora/20260825/trump-amaga-con-llamar-lago-america-al-lago-ontario-en-medio-de-choque-con-canada/">Noticel</a> &middot; <a href="https://www.elvenezolanohouston.com/trump-amaga-con-llamar-lago-america-a-un-lago-que-bordea-canada-en-pleno-pulso-comercial/">EV Houston Newspaper</a></span></li>
+<li><a href="https://oregoncapitalchronicle.com/2026/08/25/northwest-late-summer-days-marred-in-historic-drought-exacerbating-wildfires/">Northwest late summer days marred by historic drought, exacerbating wildfires</a><br><span class="meta">in 2 newsrooms: <a href="https://oregoncapitalchronicle.com/2026/08/25/northwest-late-summer-days-marred-in-historic-drought-exacerbating-wildfires/">Oregon Capital Chronicle</a> &middot; <a href="https://idahocapitalsun.com/2026/08/25/repub/northwest-late-summer-days-marred-by-historic-drought-exacerbating-wildfires/">Idaho Capital Sun</a></span></li>
+<li><a href="https://utahnewsdispatch.com/2026/08/25/after-firefighting-deaths-advocates-raise-concerns-wildfire-crisis/">After firefighting deaths, advocates alarmed by ‘deepening wildfire crisis,’ agencies’ strategies</a><br><span class="meta">in 2 newsrooms: <a href="https://utahnewsdispatch.com/2026/08/25/after-firefighting-deaths-advocates-raise-concerns-wildfire-crisis/">Utah News Dispatch</a> &middot; <a href="https://idahocapitalsun.com/2026/08/25/repub/after-firefighting-deaths-advocates-alarmed-by-deepening-wildfire-crisis-agencies-strategies/">Idaho Capital Sun</a></span></li>
+<li><a href="https://www.gpb.org/news/2026/08/25/canada-announces-retaliatory-tariffs-on-the-us-the-countries-trade-fight-deepens">Canada announces retaliatory tariffs on the U.S. as the countries&#x27; trade fight deepens</a><br><span class="meta">in 2 newsrooms: <a href="https://www.gpb.org/news/2026/08/25/canada-announces-retaliatory-tariffs-on-the-us-the-countries-trade-fight-deepens">Georgia News Lab</a> &middot; <a href="https://laist.com/news/canada-announces-retaliatory-tariffs-on-the-us-as-the-countries-trade-fight-deepens">LAist</a></span></li>
+<li><a href="https://washingtonstatestandard.com/2026/08/20/repub/oregon-weighs-enrollment-caps-paying-for-claims-as-double-digit-insurance-hikes-set-for-2027/">Oregon weighs enrollment caps, paying for claims as double-digit insurance hikes set for 2027</a><br><span class="meta">in 2 newsrooms: <a href="https://washingtonstatestandard.com/2026/08/20/repub/oregon-weighs-enrollment-caps-paying-for-claims-as-double-digit-insurance-hikes-set-for-2027/">Washington State Standard</a> &middot; <a href="https://www.thelundreport.org/content/oregon-weighs-enrollment-caps-paying-claims-double-digit-insurance-hikes-set-2027">The Lund Report</a></span></li>
+<li><a href="https://www.propublica.org/article/craig-towers-knoxville-tennessee-newborn-withdrawal-study">His Research on Pregnant Opioid Users Was Widely Celebrated. Auditors and Experts Found Major Flaws.</a><br><span class="meta">in 2 newsrooms: <a href="https://www.propublica.org/article/craig-towers-knoxville-tennessee-newborn-withdrawal-study">Pro Publica - South</a> &middot; <a href="https://www.thelundreport.org/content/his-research-pregnant-opioid-users-was-widely-celebrated-auditors-and-experts-found-major">The Lund Report</a></span></li>
+<li><a href="https://www.elnuevodia.com/noticias/estados-unidos/notas/servicio-secreto-investiga-video-irani-que-amenaza-a-barron-trump/">Servicio Secreto investiga video iraní que amenaza a Barron Trump</a><br><span class="meta">in 2 newsrooms: <a href="https://www.elnuevodia.com/noticias/estados-unidos/notas/servicio-secreto-investiga-video-irani-que-amenaza-a-barron-trump/">El Nuevo Dia</a> &middot; <a href="https://laopinion.com/2026/08/25/el-servicio-secreto-investiga-video-irani-que-coloca-a-barron-trump-en-el-centro-de-una-amenaza/">La Opinión</a></span></li>
 <li><a href="https://chi.streetsblog.org/2026/08/25/todays-headlines-for-tuesday-august-25-3">Today’s Headlines for Tuesday, August 25</a><br><span class="meta">in 2 newsrooms: <a href="https://chi.streetsblog.org/2026/08/25/todays-headlines-for-tuesday-august-25-3">Streetsblog - Chicago</a> &middot; <a href="https://sf.streetsblog.org/2026/08/25/headlines-august-25-3">Streetsblog - San Francisco</a></span></li>
-<li><a href="https://noticel.com/noticias/20260825/venezuela-supera-los-6500-muertos-despues-de-dos-meses-de-los-terremotos/">Venezuela supera los 6,500 muertos después de dos meses de los terremotos</a><br><span class="meta">in 2 newsrooms: <a href="https://noticel.com/noticias/20260825/venezuela-supera-los-6500-muertos-despues-de-dos-meses-de-los-terremotos/">Noticel</a> &middot; <a href="https://laopinion.com/2026/08/25/venezuela-supera-los-6-500-muertos-a-dos-meses-de-los-terremotos/">La Opinión</a></span></li>
+<li><a href="https://thelandcle.org/stories/trumps-trade-war-with-canada-could-rattle-economy-in-ohio-other-states-with-key-senate-races/">Trump’s trade war with Canada could rattle economy in Ohio, other states with key Senate races</a><br><span class="meta">in 2 newsrooms: <a href="https://thelandcle.org/stories/trumps-trade-war-with-canada-could-rattle-economy-in-ohio-other-states-with-key-senate-races/">The Land</a> &middot; <a href="https://www.miamitimesonline.com/news/world_national/trump-s-trade-war-with-canada-could-rattle-economies-in-states-with-key-senate-races/article_05e443e0-81ca-4b59-90b2-040f27b2fcb2.html">The Miami Times</a></span></li>
+<li><a href="https://madison365.com/nothing-changes-yet-with-the-supreme-courts-order-on-elections-but-it-could-open-door-to-chaos/">Nothing changes yet with the Supreme Court’s order on elections. But it could open door to ‘chaos’</a><br><span class="meta">in 2 newsrooms: <a href="https://madison365.com/nothing-changes-yet-with-the-supreme-courts-order-on-elections-but-it-could-open-door-to-chaos/">Madison365</a> &middot; <a href="https://www.spotlightpa.org/news/2026/08/trump-supreme-court-mail-voting-prelim-approval-elections/">Spotlight PA</a></span></li>
 <li><a href="https://www.chalkbeat.org/chicago/2026/08/20/chicago-board-of-education-guide-for-historic-2026-election/">Chicago Board of Education 101: Know the basics of the soon-to-be elected board guiding Chicago Public Schools</a><br><span class="meta">in 2 newsrooms: <a href="https://www.chalkbeat.org/chicago/2026/08/20/chicago-board-of-education-guide-for-historic-2026-election/">Chalkbeat</a> &middot; <a href="https://borderlessmag.org/2026/08/25/chicago-board-of-education-101-know-the-basics-of-the-soon-to-be-elected-board-guiding-chicago-public-schools/">Borderless Magazine</a></span></li>
-<li><a href="https://www.losangelesblade.com/2026/08/21/singer-tiffany-returns-to-pop-life-with-new-cookbook/">Singer Tiffany returns to pop life with new cookbook</a><br><span class="meta">in 2 newsrooms: <a href="https://www.losangelesblade.com/2026/08/21/singer-tiffany-returns-to-pop-life-with-new-cookbook/">Los Angeles Blade</a> &middot; <a href="https://watermarkoutnews.com/2026/08/25/singer-tiffany-returns-to-pop-life-with-new-cookbook/">Watermark Out News</a></span></li>
-<li><a href="https://www.washingtonblade.com/2026/08/25/monument-to-lgbtq-canadians-officially-unveiled/">Monument to LGBTQ Canadians officially unveiled</a><br><span class="meta">in 2 newsrooms: <a href="https://www.washingtonblade.com/2026/08/25/monument-to-lgbtq-canadians-officially-unveiled/">Washington Blade</a> &middot; <a href="https://www.losangelesblade.com/2026/08/25/monument-to-lgbtq-canadians-officially-unveiled/">Los Angeles Blade</a></span></li>
-<li><a href="https://wisconsinexaminer.com/briefs/wisconsin-joins-lawsuit-against-trump-threatening-safety-grants-over-immigration-compliance/">Wisconsin joins lawsuit against Trump threatening safety grants over immigration compliance</a><br><span class="meta">in 2 newsrooms: <a href="https://wisconsinexaminer.com/briefs/wisconsin-joins-lawsuit-against-trump-threatening-safety-grants-over-immigration-compliance/">Wisconsin Examiner</a> &middot; <a href="https://stateline.org/2026/08/25/repub/20-states-sue-trump-administration-for-threatening-safety-grants-over-immigration-compliance/">Stateline</a></span></li>
-<li><a href="https://grist.org/global-indigenous-affairs-desk/living-with-drought-has-taught-pastoralists-lessons-the-world-needs/">Living with drought has taught pastoralists lessons the world needs</a><br><span class="meta">in 2 newsrooms: <a href="https://grist.org/global-indigenous-affairs-desk/living-with-drought-has-taught-pastoralists-lessons-the-world-needs/">Grist</a> &middot; <a href="https://ictnews.org/news/living-with-drought-has-taught-pastoralists-lessons-the-world-needs/">Indian Country Today</a></span></li>
-<li><a href="https://thewarhorse.org/military-sexual-trauma-surviviors-bill/">Military Sexual Trauma Survivors Can’t Sue the Government. A New Bill Could Change That</a><br><span class="meta">in 2 newsrooms: <a href="https://thewarhorse.org/military-sexual-trauma-surviviors-bill/">The War Horse</a> &middot; <a href="https://alaskabeacon.com/2026/08/25/military-sexual-trauma-survivors-cant-sue-the-government-a-new-bill-could-change-that/">Alaska Beacon</a></span></li>
-<li><a href="https://www.thebanner.com/community/local-news/leons-baltimore-gay-bar-queer-history-5JULAEXDLRAIHH6WWK3JZTBDU4/">The fight to save one of Baltimore’s last gay bars</a><br><span class="meta">in 2 newsrooms: <a href="https://www.thebanner.com/community/local-news/leons-baltimore-gay-bar-queer-history-5JULAEXDLRAIHH6WWK3JZTBDU4/">The Baltimore Banner</a> &middot; <a href="https://www.washingtonblade.com/2026/08/25/the-fight-to-save-one-of-baltimores-last-gay-bars/">Washington Blade</a></span></li>
-<li><a href="https://www.washingtonblade.com/2026/08/25/when-home-becomes-a-journey-migration-memory-and-the-african-diaspora/">When home becomes a journey: migration, memory, and the African diaspora</a><br><span class="meta">in 2 newsrooms: <a href="https://www.washingtonblade.com/2026/08/25/when-home-becomes-a-journey-migration-memory-and-the-african-diaspora/">Washington Blade</a> &middot; <a href="https://www.losangelesblade.com/2026/08/25/when-home-becomes-a-journey-migration-memory-and-the-african-diaspora/">Los Angeles Blade</a></span></li>
 </ul>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="index.html">Today&#x27;s news</a> · <a href="map.html">Map</a> · <a href="catalog.html">Newsrooms</a> · <a href="big-stories.html">Big Stories</a> · <a href="story-links.html">Story Links</a> · <a href="resources.html">Resources</a> · <a href="text/">Plain text edition</a> · <a href="feeds.html">RSS Feeds</a> · <a href="about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="map.html">Map</a> · <a href="catalog.html">Newsrooms</a> · <a href="big-stories.html">Big Stories</a> · <a href="story-links.html">Story Links</a> · <a href="resources.html">Resources</a> · <a href="text/">Plain text edition</a> · <a href="feeds.html">RSS Feeds</a> · <a href="about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -162,6 +213,47 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>

@@ -14,12 +14,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -28,22 +41,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -51,19 +70,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -76,7 +127,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -94,7 +145,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -107,7 +158,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="subjects/news.html">News</a></li><li><a href="subjects/politics.html">Politics</a></li><li><a href="subjects/opinion.html">Opinion</a></li><li><a href="subjects/health.html">Health</a></li><li><a href="subjects/environment.html">Environment</a></li><li><a href="subjects/education.html">Education</a></li><li><a href="subjects/business.html">Business</a></li><li><a href="subjects/housing.html">Housing</a></li><li><a href="subjects/sports.html">Sports</a></li><li><a href="subjects/food.html">Food</a></li><li><a href="subjects/arts.html">Arts</a></li></ul></nav>
@@ -123,51 +174,51 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <h1>Story links</h1>
 <p>Separate newsrooms, separate reporting, the same pressure landing in two places. Paired by the vector index.</p>
 <ul>
-<li><a href="https://eldiariony.com/2026/08/25/chicago-pronostico-del-tiempo-para-este-martes-25-de-agosto/">Chicago: pronóstico del tiempo para este martes 25 de agosto</a><br><span class="meta"><a href="orgs/el-diario-ny.html">El Diario NY</a> (New York)</span><br><a href="https://laopinion.com/2026/08/25/clima-de-hoy-en-austin-para-este-martes-25-de-agosto/">Clima de hoy en Austin para este martes 25 de agosto</a><br><span class="meta"><a href="orgs/la-opini-n.html">La Opinión</a> (California)</span></li>
-<li><a href="https://eldiariony.com/2026/08/25/chicago-pronostico-del-tiempo-para-este-martes-25-de-agosto/">Chicago: pronóstico del tiempo para este martes 25 de agosto</a><br><span class="meta"><a href="orgs/el-diario-ny.html">El Diario NY</a> (New York)</span><br><a href="https://laopinion.com/2026/08/25/clima-de-hoy-en-los-angeles-para-este-martes-25-de-agosto/">Clima de hoy en Los Ángeles para este martes 25 de agosto</a><br><span class="meta"><a href="orgs/la-opini-n.html">La Opinión</a> (California)</span></li>
 <li><a href="https://www.miamitimesonline.com/sports/angel-reese-breaks-wnba-single-game-and-season-rebounding-records-as-dream-beat-sparks-78/article_7ef530f8-65c8-4548-85ae-b0af30c164aa.html">Angel Reese breaks WNBA single-game and season rebounding records as Dream beat Sparks 78-71</a><br><span class="meta"><a href="orgs/the-miami-times.html">The Miami Times</a> (Florida)</span><br><a href="https://albanyherald.com/sports/angel-reese-grabs-wnba-record-26-rebounds-sets-season-mark-too/">Angel Reese grabs WNBA-record 26 rebounds; sets season mark, too</a><br><span class="meta"><a href="orgs/albany-herald.html">Albany Herald</a> (Georgia)</span></li>
 <li><a href="https://texasmetronews.com/129614/my-home-is-a-house-august-25/">MY HOME IS A HOUSE – August 25</a><br><span class="meta"><a href="orgs/texas-metro-news.html">Texas Metro News</a> (Texas)</span><br><a href="https://sf.streetsblog.org/2026/08/25/headlines-august-25-3">Headlines, August 25</a><br><span class="meta"><a href="orgs/streetsblog-san-francisco.html">Streetsblog - San Francisco</a> (California)</span></li>
-<li><a href="https://www.deseret.com/politics/2026/08/24/supreme-court-reverses-lower-court-ruling-in-president-trump-mail-in-ballot-order/">Supreme Court pauses lower court ruling on Trump’s mail-in voting order</a><br><span class="meta"><a href="orgs/deseret-news.html">Deseret News</a> (Utah)</span><br><a href="https://saobserver.com/supreme-court-clears-path-for-trump-mail-voting-restrictions-before-midterms/">Supreme Court Clears Path for Trump Mail Voting Restrictions Before Midterms</a><br><span class="meta"><a href="orgs/san-antonio-observer.html">San Antonio Observer</a> (Texas)</span></li>
-<li><a href="https://kbindependent.org/2026/08/24/us-set-for-largest-mass-visa-revocation-in-history-targeting-up-to-200000-foreigners-officials-say/">US set for largest mass visa revocation in history targeting up to 200,000 foreigners, officials say</a><br><span class="meta"><a href="orgs/key-biscayne-independent.html">Key Biscayne Independent</a> (Florida)</span><br><a href="https://nycaribnews.com/us-plans-historic-mass-revocation-of-visas-for-asylum-seekers/">US Plans Historic Mass Revocation of Visas for Asylum Seekers</a><br><span class="meta"><a href="orgs/new-york-carib-news.html">New York Carib News</a> (New York)</span></li>
-<li><a href="https://www.mississippifreepress.org/supreme-court-clears-way-for-trump-mail-voting-order-in-advance-of-midterms/">Supreme Court Clears Way for Trump Mail Voting Order in Advance of Midterms</a><br><span class="meta"><a href="orgs/mississippi-free-press.html">Mississippi Free Press</a> (Mississippi)</span><br><a href="https://saobserver.com/supreme-court-clears-path-for-trump-mail-voting-restrictions-before-midterms/">Supreme Court Clears Path for Trump Mail Voting Restrictions Before Midterms</a><br><span class="meta"><a href="orgs/san-antonio-observer.html">San Antonio Observer</a> (Texas)</span></li>
-<li><a href="https://eldiariony.com/2026/08/24/trump-prepara-revocacion-de-hasta-200000-visas-de-extranjeros-que-solicitaron-asilo-en-ee-uu/">Trump prepara revocación de hasta 200,000 visas de extranjeros que solicitaron asilo en EE.UU.</a><br><span class="meta"><a href="orgs/el-diario-ny.html">El Diario NY</a> (New York)</span><br><a href="https://identidadlatina.com/2026/08/estados-unidos-prepara-la-revocacion-de-hasta-200-000-visas-de-turismo-y-negocios-vinculadas-a-solicitudes-de-asilo/">Estados Unidos prepara la revocación de hasta 200.000 visas de turismo y negocios vinculadas a solicitudes de asilo</a><br><span class="meta"><a href="orgs/identidad-latina.html">Identidad Latina</a> (Connecticut)</span></li>
-<li><a href="https://thelansingjournal.org/2026/08/23/corrected-lansing-library-board-meeting-includes-support-for-fully-certified-school-librarians/">Corrected: Lansing Library Board meeting includes support for fully certified school librarians</a><br><span class="meta"><a href="orgs/lansing-journal.html">Lansing Journal</a> (Illinois)</span><br><a href="https://nowruzmedia.com/court-ruling-afghan-travel-ban-remains-in-effect/">ممنوعیت سفر شهروندان افغانستان لغو نشده است؛ مشوره‌های یک وکیل مهاجرت درباره حکم اخیر دادگاه</a><br><span class="meta"><a href="orgs/nowruz-media.html">Nowruz Media</a> (California)</span></li>
-<li><a href="https://madison365.com/nothing-changes-yet-with-the-supreme-courts-order-on-elections-but-it-could-open-door-to-chaos/">Nothing changes yet with the Supreme Court’s order on elections. But it could open door to ‘chaos’</a><br><span class="meta"><a href="orgs/madison365.html">Madison365</a> (Wisconsin)</span><br><a href="https://ctmirror.org/2026/08/25/us-supreme-court-order-elections/">Nothing changes yet with SCOTUS elections order. But it could open door to ‘chaos’</a><br><span class="meta"><a href="orgs/ct-mirror.html">The Connecticut Mirror</a> (Connecticut)</span></li>
-<li><a href="https://nashvillenoticias.com/eeuu-revoca-200000-visas-solicitantes-asilo/">USA se prepara para revocar hasta 200,000 visas de personas que solicitaron asilo, en lo que sería la mayor cancelación masiva en la historia del país</a><br><span class="meta"><a href="orgs/nashville-notacias.html">Nashville Notacias</a> (Tennessee)</span><br><a href="https://identidadlatina.com/2026/08/estados-unidos-prepara-la-revocacion-de-hasta-200-000-visas-de-turismo-y-negocios-vinculadas-a-solicitudes-de-asilo/">Estados Unidos prepara la revocación de hasta 200.000 visas de turismo y negocios vinculadas a solicitudes de asilo</a><br><span class="meta"><a href="orgs/identidad-latina.html">Identidad Latina</a> (Connecticut)</span></li>
-<li><a href="https://eldiariony.com/2026/08/24/corte-suprema-de-ee-uu-permite-a-trump-avanzar-con-restricciones-al-voto-por-correo-antes-de-las-elecciones-de-medio-mandato/">Corte Suprema de EE.UU. permite a Trump avanzar con restricciones al voto por correo antes de las elecciones de medio mandato</a><br><span class="meta"><a href="orgs/el-diario-ny.html">El Diario NY</a> (New York)</span><br><a href="https://www.mundonow.com/trump-corte-suprema-voto-por-correo">Trump gana batalla en Corte Suprema por voto por correo</a><br><span class="meta"><a href="orgs/mundo-now.html">Mundo Now</a> (Georgia)</span></li>
-<li><a href="https://sf.streetsblog.org/2026/08/24/headlines-august-24-2">Headlines, August 24</a><br><span class="meta"><a href="orgs/streetsblog-san-francisco.html">Streetsblog - San Francisco</a> (California)</span><br><a href="https://chi.streetsblog.org/2026/08/25/todays-headlines-for-tuesday-august-25-3">Today’s Headlines for Tuesday, August 25</a><br><span class="meta"><a href="orgs/streetsblog-chicago.html">Streetsblog - Chicago</a> (Illinois)</span></li>
-<li><a href="https://lasentinel.net/angel-reese-breaks-records-as-sparks-lose-to-dream.html">Angel Reese Breaks Records as Sparks Lose to Dream</a><br><span class="meta"><a href="orgs/los-angeles-sentinel.html">Los Angeles Sentinel</a> (California)</span><br><a href="https://www.miamitimesonline.com/sports/angel-reese-breaks-wnba-single-game-and-season-rebounding-records-as-dream-beat-sparks-78/article_7ef530f8-65c8-4548-85ae-b0af30c164aa.html">Angel Reese breaks WNBA single-game and season rebounding records as Dream beat Sparks 78-71</a><br><span class="meta"><a href="orgs/the-miami-times.html">The Miami Times</a> (Florida)</span></li>
+<li><a href="https://www.metroviet.com/trong-boi-canh-so-ca-mac-soi-o-pennsylvania-van-tiep-dien-cac-no-luc-tiem-chung-cho-hoc-sinh-truoc-mua-tuu-truong-dang-duoc-day-manh/">Trong bối cảnh số ca mắc sởi ở Pennsylvania vẫn tiếp diễn, các nỗ lực tiêm chủng cho học sinh trước mùa tựu trường đang được đẩy mạnh.</a><br><span class="meta"><a href="orgs/metro-viet-news.html">Metro Viet News</a> (Pennsylvania)</span><br><a href="https://www.nguoi-viet.com/viet-nam/gia-lai-lai-ngo-doc-sau-khi-an-banh-mi-hon-100-nguoi-nhap-vien/">Gia Lai: Lại ngộ độc sau khi ăn bánh mì, hơn 100 người nhập viện</a><br><span class="meta"><a href="orgs/nguoi-viet.html">Nguoi Viet</a> (California)</span></li>
 <li><a href="https://courierheraldtoday.com/the-johnson-journal-august-25-2026/">The Johnson Journal – August 25, 2026</a><br><span class="meta"><a href="orgs/tri-county-connector.html">Tri-County Connector</a> (Georgia)</span><br><a href="https://sf.streetsblog.org/2026/08/25/headlines-august-25-3">Headlines, August 25</a><br><span class="meta"><a href="orgs/streetsblog-san-francisco.html">Streetsblog - San Francisco</a> (California)</span></li>
-<li><a href="https://saobserver.com/supreme-court-clears-path-for-trump-mail-voting-restrictions-before-midterms/">Supreme Court Clears Path for Trump Mail Voting Restrictions Before Midterms</a><br><span class="meta"><a href="orgs/san-antonio-observer.html">San Antonio Observer</a> (Texas)</span><br><a href="https://www.votebeat.org/national/2026/08/03/trump-supreme-court-mail-ballot-restrictions-executive-order-usps/">Trump is asking the U.S. Supreme Court to allow new mail ballot restrictions in the 2026 midterms</a><br><span class="meta"><a href="orgs/votebeat-arizona.html">Votebeat Arizona</a> (Arizona)</span></li>
-<li><a href="https://www.gpb.org/news/2026/08/25/trump-calls-leaders-isolate-iran-and-scotus-backs-trump-for-now-on-mail-in-voting">Trump calls leaders to isolate Iran. And, SCOTUS backs Trump for now on mail-in voting</a><br><span class="meta"><a href="orgs/georgia-news-lab.html">Georgia News Lab</a> (Georgia)</span><br><a href="https://www.votebeat.org/national/2026/08/24/supreme-court-lifts-stay-trump-executive-order-on-elections-mail-ballot-restrictions/">Supreme Court lifts 1 of 2 blocks on Trump’s mail-voting executive order</a><br><span class="meta"><a href="orgs/votebeat-arizona.html">Votebeat Arizona</a> (Arizona)</span></li>
+<li><a href="https://www.metroviet.com/phi-cong-thiet-mang-2-canh-sat-bang-pennsylvania-bi-thuong-trong-vu-tai-nan-may-bay-giua-khong-trung-tai-san-bay-carlisle/">Phi công thiệt mạng, 2 cảnh sát bang Pennsylvania bị thương trong vụ tai nạn máy bay giữa không trung tại sân bay Carlisle.</a><br><span class="meta"><a href="orgs/metro-viet-news.html">Metro Viet News</a> (Pennsylvania)</span><br><a href="https://www.nguoi-viet.com/the-thao/2-vo-si-viet-nam-bi-danh-hoi-dong-trong-long-sat-tai-tran-mma-o-trung-quoc/">2 võ sĩ Việt Nam bị đánh ‘hội đồng’ trong ‘lồng sắt’ tại trận MMA ở Trung Quốc</a><br><span class="meta"><a href="orgs/nguoi-viet.html">Nguoi Viet</a> (California)</span></li>
+<li><a href="https://www.elnuevodia.com/deportes/beisbol/notas/el-dueno-de-los-padres-se-canta-fanatico-de-clemente-y-bromea-por-tener-el-mismo-nombre-del-cantante-jose-feliciano/">El dueño de los Padres se canta fanático de Clemente y bromea por tener el mismo nombre del cantante José Feliciano</a><br><span class="meta"><a href="orgs/el-nuevo-dia.html">El Nuevo Dia</a> (PR)</span><br><a href="https://timesofsandiego.com/business/2026/08/25/nuevos-duenos-padres-jose-feliciano-kwanza-jones/">Uno aporta confianza, la otra carisma. De cualquier forma, los nuevos dueños de los Padres quieren ganar</a><br><span class="meta"><a href="orgs/times-of-san-diego.html">Times of San Diego</a> (California)</span></li>
+<li><a href="https://laraza.com/2026/08/12/colombianos-en-chicago-siguen-con-angustia-la-situacion-en-colombia-tras-el-terremoto/">Colombianos en Chicago siguen con angustia la situación en Colombia tras el terremoto</a><br><span class="meta"><a href="orgs/la-raza-chicago.html">La Raza</a> (Illinois)</span><br><a href="https://nashvillenoticias.com/llegan-mas-de-80-toneladas-de-ayuda-internacional-a-colombia-tras-el-terremoto/">Llegan más de 80 toneladas de ayuda internacional a Colombia tras el terremoto</a><br><span class="meta"><a href="orgs/nashville-notacias.html">Nashville Notacias</a> (Tennessee)</span></li>
+<li><a href="https://www.mundonow.com/trump-lago-ontario-lago-america">Trump quiere cambiar lago Ontario a “Lago América”</a><br><span class="meta"><a href="orgs/mundo-now.html">Mundo Now</a> (Georgia)</span><br><a href="https://www.elvenezolanohouston.com/trump-amaga-con-llamar-lago-america-a-un-lago-que-bordea-canada-en-pleno-pulso-comercial/">Trump amaga con llamar “Lago América” a un lago que bordea Canadá en pleno pulso comercial</a><br><span class="meta"><a href="orgs/ev-houston-newspaper.html">EV Houston Newspaper</a> (Texas)</span></li>
 <li><a href="https://www.metroviet.com/trong-boi-canh-so-ca-mac-soi-o-pennsylvania-van-tiep-dien-cac-no-luc-tiem-chung-cho-hoc-sinh-truoc-mua-tuu-truong-dang-duoc-day-manh/">Trong bối cảnh số ca mắc sởi ở Pennsylvania vẫn tiếp diễn, các nỗ lực tiêm chủng cho học sinh trước mùa tựu trường đang được đẩy mạnh.</a><br><span class="meta"><a href="orgs/metro-viet-news.html">Metro Viet News</a> (Pennsylvania)</span><br><a href="https://www.nguoi-viet.com/hoa-ky/hai-ca-tu-vong-vi-benh-soi-dau-tien-o-pennsylvanie-trong-35-nam/">Hai ca tử vong vì bệnh sởi đầu tiên ở Pennsylvanie trong 35 năm</a><br><span class="meta"><a href="orgs/nguoi-viet.html">Nguoi Viet</a> (California)</span></li>
-<li><a href="https://alianzanews.com/2026/08/13/mirna-ruiz-de-la-organizacion-mujeres-unidas-y-activas-explica-sobre-la-salud-mental-y-prevencion/">Mirna Ruíz de la organización Mujeres Unidas y Activas explica sobre la salud mental y prevención</a><br><span class="meta"><a href="orgs/alianza-metropolitan-news.html">Alianza Metropolitan News</a> (California)</span><br><a href="https://noticel.com/noticias/20260825/abre-puerto-rico-revela-avances-y-retos-en-la-salud-fiscal-de-los-municipios/">ABRE Puerto Rico revela avances y retos en la salud fiscal de los municipios</a><br><span class="meta"><a href="orgs/noticel.html">Noticel</a> (PR)</span></li>
-<li><a href="https://www.nrcolumbus.com/northbrunswicknews/leland-police-reports-aug-7-13/article_740a18be-932d-4672-b92f-16f1a58cc6ed.html">Leland police reports: Aug. 7–13</a><br><span class="meta"><a href="orgs/news-reporter.html">The News Reporter</a> (North Carolina)</span><br><a href="https://kewaneevoice.com/kewanee-police-blotter-for-aug-24/">Kewanee police blotter for Aug. 24</a><br><span class="meta"><a href="orgs/the-kewanee-voice.html">The Kewanee Voice</a> (Illinois)</span></li>
-<li><a href="https://laopinion.com/2026/08/25/target-retira-disfraz-de-halloween-tras-acusaciones-de-racismo-que-paso/">Target retira disfraz de Halloween tras acusaciones de racismo: qué pasó</a><br><span class="meta"><a href="orgs/la-opini-n.html">La Opinión</a> (California)</span><br><a href="https://www.mundonow.com/target-retira-disfraz-infantil-racismo-halloween">Target retira disfraz infantil tras acusaciones de racismo y pide disculpas</a><br><span class="meta"><a href="orgs/mundo-now.html">Mundo Now</a> (Georgia)</span></li>
-<li><a href="https://rinewstoday.com/rhode-island-weather-august-25-2026/">Rhode Island Weather for August 25, 2026</a><br><span class="meta"><a href="orgs/rinewstoday-com.html">RINewsToday.com</a> (Rhode Island)</span><br><a href="https://chi.streetsblog.org/2026/08/25/todays-headlines-for-tuesday-august-25-3">Today’s Headlines for Tuesday, August 25</a><br><span class="meta"><a href="orgs/streetsblog-chicago.html">Streetsblog - Chicago</a> (Illinois)</span></li>
+<li><a href="https://www.metroviet.com/canh-bao-ve-viec-tam-bien-da-duoc-ban-hanh-tai-12-bai-bien-thuoc-vung-jersey-shore-sau-khi-tien-hanh-xet-nghiem-vi-khuan/">Cảnh báo về việc tắm biển đã được ban hành tại 12 bãi biển thuộc vùng Jersey Shore sau khi tiến hành xét nghiệm vi khuẩn.</a><br><span class="meta"><a href="orgs/metro-viet-news.html">Metro Viet News</a> (Pennsylvania)</span><br><a href="https://www.nguoi-viet.com/viet-nam/gia-lai-lai-ngo-doc-sau-khi-an-banh-mi-hon-100-nguoi-nhap-vien/">Gia Lai: Lại ngộ độc sau khi ăn bánh mì, hơn 100 người nhập viện</a><br><span class="meta"><a href="orgs/nguoi-viet.html">Nguoi Viet</a> (California)</span></li>
 <li><a href="https://www.elvenezolanohouston.com/mexico-celebra-reapertura-de-la-frontera-de-eeuu-a-su-ganado-y-refuerza-medidas-sanitarias/">México celebra reapertura de la frontera de EEUU a su ganado y refuerza medidas sanitarias</a><br><span class="meta"><a href="orgs/ev-houston-newspaper.html">EV Houston Newspaper</a> (Texas)</span><br><a href="https://laopinion.com/2026/08/25/mexico-reanuda-exportacion-de-ganado-en-pie-a-estados-unidos/">México reanuda exportación de ganado a Estados Unidos</a><br><span class="meta"><a href="orgs/la-opini-n.html">La Opinión</a> (California)</span></li>
-<li><a href="https://hispanonewjersey.com/horoscopo-25-agosto/">🔮 Horóscopo – 25 de agosto</a><br><span class="meta"><a href="orgs/new-jersery-hispano.html">New Jersery Hispano</a> (New Jersey)</span><br><a href="https://www.westchesterhispano.net/horoscopo-23-agosto/">🔮 Horóscopo – 23 de Agosto</a><br><span class="meta"><a href="orgs/westchester-hispano.html">Westchester Hispano</a> (New York)</span></li>
-<li><a href="https://www.deseret.com/politics/2026/08/24/supreme-court-reverses-lower-court-ruling-in-president-trump-mail-in-ballot-order/">Supreme Court pauses lower court ruling on Trump’s mail-in voting order</a><br><span class="meta"><a href="orgs/deseret-news.html">Deseret News</a> (Utah)</span><br><a href="https://www.gpb.org/news/2026/08/25/trump-calls-leaders-isolate-iran-and-scotus-backs-trump-for-now-on-mail-in-voting">Trump calls leaders to isolate Iran. And, SCOTUS backs Trump for now on mail-in voting</a><br><span class="meta"><a href="orgs/georgia-news-lab.html">Georgia News Lab</a> (Georgia)</span></li>
+<li><a href="https://www.metroviet.com/luigi-mangione-du-kien-se-nhan-toi-trong-vu-an-lien-bang-o-new-york/">Luigi Mangione dự kiến ​​sẽ nhận tội trong vụ án liên bang ở New York.</a><br><span class="meta"><a href="orgs/metro-viet-news.html">Metro Viet News</a> (Pennsylvania)</span><br><a href="https://www.nguoi-viet.com/the-thao/2-vo-si-viet-nam-bi-danh-hoi-dong-trong-long-sat-tai-tran-mma-o-trung-quoc/">2 võ sĩ Việt Nam bị đánh ‘hội đồng’ trong ‘lồng sắt’ tại trận MMA ở Trung Quốc</a><br><span class="meta"><a href="orgs/nguoi-viet.html">Nguoi Viet</a> (California)</span></li>
+<li><a href="https://trabajadorinmigrante.com/2026/08/trump-considera-renombrar-el-lago-ontario-como-lago-america-en-plena-guerra-comercial-con-canada/">Trump considera renombrar el lago Ontario como “lago América” en plena guerra comercial con Canadá</a><br><span class="meta"><a href="orgs/trabajador-inmigrante.html">Trabajador Inmigrante</a> (New York)</span><br><a href="https://www.elvenezolanohouston.com/trump-amaga-con-llamar-lago-america-a-un-lago-que-bordea-canada-en-pleno-pulso-comercial/">Trump amaga con llamar “Lago América” a un lago que bordea Canadá en pleno pulso comercial</a><br><span class="meta"><a href="orgs/ev-houston-newspaper.html">EV Houston Newspaper</a> (Texas)</span></li>
+<li><a href="https://latino-news.com/ee-uu-revocaria-visas-a-quienes-pidan-asilo-en-el-pais/">EE. UU. revocaría visas a quienes pidan asilo en el país</a><br><span class="meta"><a href="orgs/latino-alabama.html">Latino Alabama</a> (Alabama)</span><br><a href="https://www.mundonow.com/trump-endurece-la-presion-migratoria-ni-visas-ni-permisos-frenan-el-riesgo-de-detencion">Trump endurece la presión migratoria: Ni visas ni permisos frenan el riesgo de detención</a><br><span class="meta"><a href="orgs/mundo-now.html">Mundo Now</a> (Georgia)</span></li>
 <li><a href="https://www.metroviet.com/phi-cong-thiet-mang-2-canh-sat-bang-pennsylvania-bi-thuong-trong-vu-tai-nan-may-bay-giua-khong-trung-tai-san-bay-carlisle/">Phi công thiệt mạng, 2 cảnh sát bang Pennsylvania bị thương trong vụ tai nạn máy bay giữa không trung tại sân bay Carlisle.</a><br><span class="meta"><a href="orgs/metro-viet-news.html">Metro Viet News</a> (Pennsylvania)</span><br><a href="https://www.nguoi-viet.com/hoa-ky/hai-ca-tu-vong-vi-benh-soi-dau-tien-o-pennsylvanie-trong-35-nam/">Hai ca tử vong vì bệnh sởi đầu tiên ở Pennsylvanie trong 35 năm</a><br><span class="meta"><a href="orgs/nguoi-viet.html">Nguoi Viet</a> (California)</span></li>
 <li><a href="https://laraza.com/2026/08/21/empresa-de-chicago-busca-llenar-vacio-de-libros-infantiles-bilingues-para-ninos-latinos/">Empresa de Chicago busca llenar vacío de libros infantiles bilingües para niños latinos</a><br><span class="meta"><a href="orgs/la-raza-chicago.html">La Raza</a> (Illinois)</span><br><a href="https://lavozhispanact.com/natura-nail-salon-nueva-alternativa-para-embellecer-las-unas/">“Natura Nail Salon”, nueva alternativa para embellecer las uñas</a><br><span class="meta"><a href="orgs/la-voz-hispana.html">La Voz Hispana</a> (Connecticut)</span></li>
 <li><a href="https://laraza.com/2026/08/03/cada-evento-de-el-nino-tiene-caracteristicas-unicas-lo-que-sabemos-y-no-sobre-el-fenomeno-de-este-ano/">“Cada evento de El Niño tiene características únicas”: lo que sabemos -y no- sobre el fenómeno de este año</a><br><span class="meta"><a href="orgs/la-raza-chicago.html">La Raza</a> (Illinois)</span><br><a href="https://peninsula360press.com/en/el-nino-y-su-efecto-mundial/">El Niño y su efecto mundial que será el más fuerte en la historia: climatólogo Daniel Swain</a><br><span class="meta"><a href="orgs/pennisula-360-press.html">Pennisula 360 Press</a> (California)</span></li>
-<li><a href="https://www.deseret.com/politics/2026/08/24/supreme-court-reverses-lower-court-ruling-in-president-trump-mail-in-ballot-order/">Supreme Court pauses lower court ruling on Trump’s mail-in voting order</a><br><span class="meta"><a href="orgs/deseret-news.html">Deseret News</a> (Utah)</span><br><a href="https://wisconsinwatch.org/2026/08/us-supreme-court-ruling-trump-mail-ballot-election-voting-restrictions-what-to-know-wisconsin/">What to know about the US Supreme Court ruling on Trump’s mail ballot restrictions</a><br><span class="meta"><a href="orgs/wisconsin-watch.html">Wisconsin Watch</a> (Wisconsin)</span></li>
-<li><a href="https://laopinion.com/2026/08/25/trump-planteo-rebautizar-el-lago-ontario-como-lago-america-mientras-escala-la-tension-con-canada/">Trump planteó rebautizar el Lago Ontario como “Lago América”, mientras escala la tensión con Canadá</a><br><span class="meta"><a href="orgs/la-opini-n.html">La Opinión</a> (California)</span><br><a href="https://www.mundonow.com/trump-lago-ontario-lago-america">Trump quiere cambiar lago Ontario a “Lago América”</a><br><span class="meta"><a href="orgs/mundo-now.html">Mundo Now</a> (Georgia)</span></li>
-<li><a href="https://texasmetronews.com/129617/whats-cooking-august-25/">What’s Cooking – August 25</a><br><span class="meta"><a href="orgs/texas-metro-news.html">Texas Metro News</a> (Texas)</span><br><a href="https://sf.streetsblog.org/2026/08/25/headlines-august-25-3">Headlines, August 25</a><br><span class="meta"><a href="orgs/streetsblog-san-francisco.html">Streetsblog - San Francisco</a> (California)</span></li>
-<li><a href="https://www.aldiaenamerica.com/2026/08/23/el-bienestar-financiero-es-una-cosa-de-practica/">El bienestar financiero es cosa de práctica: Erin Ray supervisora comunitaria de Louisville no como crear una rutina que dure</a><br><span class="meta"><a href="orgs/al-dia-en-america-llc.html">Al Dia en America LLC</a> (Kentucky)</span><br><a href="https://www.elnuevodia.com/noticias/seguridad/notas/hallan-el-cuerpo-baleado-de-una-mujer-en-san-german/">Hallan el cuerpo baleado de una mujer en San Germán</a><br><span class="meta"><a href="orgs/el-nuevo-dia.html">El Nuevo Dia</a> (PR)</span></li>
-<li><a href="https://www.elvenezolanohouston.com/hrw-pide-a-de-la-espriella-que-frene-el-aumento-del-reclutamiento-infantil-en-colombia/">HRW pide a De la Espriella que frene el aumento del reclutamiento infantil en Colombia</a><br><span class="meta"><a href="orgs/ev-houston-newspaper.html">EV Houston Newspaper</a> (Texas)</span><br><a href="https://elsolnewsmedia.com/colombia-deportaciones-migrantes-irregulares/">Presidente de Colombia ordena deportaciones de migrantes irregulares</a><br><span class="meta"><a href="orgs/el-sol-latino-newspaper.html">El Sol Latino Newspaper</a> (Florida)</span></li>
-<li><a href="https://texasmetronews.com/129614/my-home-is-a-house-august-25/">MY HOME IS A HOUSE – August 25</a><br><span class="meta"><a href="orgs/texas-metro-news.html">Texas Metro News</a> (Texas)</span><br><a href="https://courierheraldtoday.com/the-courier-herald-august-25-2026/">The Courier Herald – August 25, 2026</a><br><span class="meta"><a href="orgs/tri-county-connector.html">Tri-County Connector</a> (Georgia)</span></li>
-<li><a href="https://www.gpb.org/news/2026/08/25/trump-calls-leaders-isolate-iran-and-scotus-backs-trump-for-now-on-mail-in-voting">Trump calls leaders to isolate Iran. And, SCOTUS backs Trump for now on mail-in voting</a><br><span class="meta"><a href="orgs/georgia-news-lab.html">Georgia News Lab</a> (Georgia)</span><br><a href="https://www.mississippifreepress.org/supreme-court-clears-way-for-trump-mail-voting-order-in-advance-of-midterms/">Supreme Court Clears Way for Trump Mail Voting Order in Advance of Midterms</a><br><span class="meta"><a href="orgs/mississippi-free-press.html">Mississippi Free Press</a> (Mississippi)</span></li>
-<li><a href="https://hispanonewjersey.com/horoscopo-25-agosto/">🔮 Horóscopo – 25 de agosto</a><br><span class="meta"><a href="orgs/new-jersery-hispano.html">New Jersery Hispano</a> (New Jersey)</span><br><a href="https://newyorkhispano.net/horoscopo-20-agosto/">🔮 Horóscopo – 20 de agosto</a><br><span class="meta"><a href="orgs/new-york-hispano.html">New York Hispano</a> (New York)</span></li>
-<li><a href="https://newhampshirebulletin.com/2026/08/12/repub/trump-press-secretary-leavitt-to-leave-white-house/">Trump press secretary Leavitt to leave White House</a><br><span class="meta"><a href="orgs/new-hampshire-bulletin.html">New Hampshire Bulletin</a> (New Hampshire)</span><br><a href="https://atlantablackstar.com/2026/08/25/karoline-leavitt-humiliated-twice-in-one-day/">‘Very Angry With Her’: Trump Calls Out Karoline Leavitt to Her Face for Leaving Him—Then Twists the Knife by Bringing Up His Former Press Secretary</a><br><span class="meta"><a href="orgs/atlanta-black-star.html">Atlanta Black Star</a> (Georgia)</span></li>
-<li><a href="https://www.miwisconsin.org/2026/08/24/va-por-primera-vez-a-la-universidad/">¿Va por primera vez a la universidad?</a><br><span class="meta"><a href="orgs/mi-wisconsin.html">Mi Wisconsin</a> (Wisconsin)</span><br><a href="https://laopinion.com/2026/08/25/maxwell-vuelve-a-perder-en-tribunales-y-seguira-presa-por-su-condena-de-20-anos/">Maxwell vuelve a perder en tribunales y seguirá presa por su condena de 20 años</a><br><span class="meta"><a href="orgs/la-opini-n.html">La Opinión</a> (California)</span></li>
-<li><a href="https://elsolnewsmedia.com/gustavo-dudamel-concierto-venezuela/">Gustavo Dudamel se despide de la Filarmónica de Los Ángeles con un concierto por Venezuela</a><br><span class="meta"><a href="orgs/el-sol-latino-newspaper.html">El Sol Latino Newspaper</a> (Florida)</span><br><a href="https://laopinion.com/2026/08/25/maxwell-vuelve-a-perder-en-tribunales-y-seguira-presa-por-su-condena-de-20-anos/">Maxwell vuelve a perder en tribunales y seguirá presa por su condena de 20 años</a><br><span class="meta"><a href="orgs/la-opini-n.html">La Opinión</a> (California)</span></li>
-<li><a href="https://hispanonewjersey.com/horoscopo-25-agosto/">🔮 Horóscopo – 25 de agosto</a><br><span class="meta"><a href="orgs/new-jersery-hispano.html">New Jersery Hispano</a> (New Jersey)</span><br><a href="https://www.westchesterhispano.net/horoscopo-20-agosto/">🔮 Horóscopo – 20 de agosto</a><br><span class="meta"><a href="orgs/westchester-hispano.html">Westchester Hispano</a> (New York)</span></li>
+<li><a href="https://elsolnewsmedia.com/colombia-deportaciones-migrantes-irregulares/">Presidente de Colombia ordena deportaciones de migrantes irregulares</a><br><span class="meta"><a href="orgs/el-sol-latino-newspaper.html">El Sol Latino Newspaper</a> (Florida)</span><br><a href="https://nashvillenoticias.com/llegan-mas-de-80-toneladas-de-ayuda-internacional-a-colombia-tras-el-terremoto/">Llegan más de 80 toneladas de ayuda internacional a Colombia tras el terremoto</a><br><span class="meta"><a href="orgs/nashville-notacias.html">Nashville Notacias</a> (Tennessee)</span></li>
+<li><a href="https://www.elvocero.com/el-mundo/ponen-precio-a-la-vida-del-hijo-menor-de-donald-trump/article_248a1c01-9bde-4974-82eb-660af137b959.html">Ponen precio a la vida del hijo menor de Donald Trump</a><br><span class="meta"><a href="orgs/el-vocero.html">El Vocero</a> (PR)</span><br><a href="https://laopinion.com/2026/08/25/el-servicio-secreto-investiga-video-irani-que-coloca-a-barron-trump-en-el-centro-de-una-amenaza/">El Servicio Secreto investiga video iraní que coloca a Barron Trump en el centro de una amenaza</a><br><span class="meta"><a href="orgs/la-opini-n.html">La Opinión</a> (California)</span></li>
+<li><a href="https://www.miamitimesonline.com/news/world_national/trump-floats-renaming-lake-ontario-as-lake-america-as-trade-war-with-canada-escalates/article_3003ff1d-5815-45a4-a464-9f8547c7685c.html">Trump floats renaming Lake Ontario as ‘Lake America’ as trade war with Canada escalates</a><br><span class="meta"><a href="orgs/the-miami-times.html">The Miami Times</a> (Florida)</span><br><a href="https://wausaupilotandreview.com/2026/08/25/the-latest-canada-announces-retaliatory-tariffs-against-the-us/">The Latest: Canada announces retaliatory tariffs against the US</a><br><span class="meta"><a href="orgs/wausau-pilot-review.html">Wausau Pilot &amp; Review</a> (Wisconsin)</span></li>
+<li><a href="https://laopinion.com/2026/08/25/maxwell-vuelve-a-perder-en-tribunales-y-seguira-presa-por-su-condena-de-20-anos/">Maxwell vuelve a perder en tribunales y seguirá presa por su condena de 20 años</a><br><span class="meta"><a href="orgs/la-opini-n.html">La Opinión</a> (California)</span><br><a href="https://eldiariony.com/2026/08/25/juez-federal-rechaza-intento-de-ghislaine-maxwell-de-anular-su-condena/">Juez federal rechaza intento de Ghislaine Maxwell de anular su condena</a><br><span class="meta"><a href="orgs/el-diario-ny.html">El Diario NY</a> (New York)</span></li>
+<li><a href="https://laopinion.com/2026/08/25/san-antonio-texas-el-tiempo-para-hoy-martes-25-de-agosto/">San Antonio, Texas: el tiempo para hoy martes 25 de agosto</a><br><span class="meta"><a href="orgs/la-opini-n.html">La Opinión</a> (California)</span><br><a href="https://eldiariony.com/2026/08/25/dunkin-regala-un-millon-de-bebidas-gratis-este-25-de-agosto/">Dunkin regala un millón de bebidas gratis este 25 de agosto</a><br><span class="meta"><a href="orgs/el-diario-ny.html">El Diario NY</a> (New York)</span></li>
+<li><a href="https://mixteco.org/amontonados-por-necesidad-el-precio-de-la-vivienda-en-california/">Amontonados por necesidad: el precio de la vivienda en California.</a><br><span class="meta"><a href="orgs/mixteco-indigena-community-organizing-project-micop.html">Mixteco/Indigena Community Organizing Project (MICOP)</a> (California)</span><br><a href="https://nashvillenoticias.com/pelea-en-un-autobus-wego-termina-en-arresto-por-supuesto-ataque-con-un-objeto-punzante/">Pelea en un autobús WeGo termina en arresto por supuesto ataque con un objeto punzante</a><br><span class="meta"><a href="orgs/nashville-notacias.html">Nashville Notacias</a> (Tennessee)</span></li>
+<li><a href="https://www.mundonow.com/alerta-seguridad-mexicali-eeuu">EEUU advierte de posible amenaza en Mexicali y ordena evitar edificios gubernamentales</a><br><span class="meta"><a href="orgs/mundo-now.html">Mundo Now</a> (Georgia)</span><br><a href="https://www.elnuevodia.com/noticias/estados-unidos/notas/tension-en-mexicali-estados-unidos-emite-alerta-por-posible-amenaza-y-suspende-actividades/">Tensión en Mexicali: Estados Unidos emite alerta por “posible amenaza” y suspende actividades</a><br><span class="meta"><a href="orgs/el-nuevo-dia.html">El Nuevo Dia</a> (PR)</span></li>
+<li><a href="https://conectaarizona.com/elecciones-del-3-de-noviembre-en-arizona-todas-las-candidaturas-y-propuestas-en-el-distrito-legislativo-16-2/">Elecciones del 3 de noviembre en Arizona: todas las candidaturas y propuestas en el Distrito Legislativo 16</a><br><span class="meta"><a href="orgs/conecta-arizona.html">Conecta Arizona</a> (Arizona)</span><br><a href="https://elsolnewsmedia.com/registro-electoral-elecciones-generales/">19 de octubre: último día para registrarse para votar en elecciones del 3 de noviembre</a><br><span class="meta"><a href="orgs/el-sol-latino-newspaper.html">El Sol Latino Newspaper</a> (Florida)</span></li>
+<li><a href="https://www.aldiaenamerica.com/2026/08/23/el-bienestar-financiero-es-una-cosa-de-practica/">El bienestar financiero es cosa de práctica: Erin Ray supervisora comunitaria de Louisville no como crear una rutina que dure</a><br><span class="meta"><a href="orgs/al-dia-en-america-llc.html">Al Dia en America LLC</a> (Kentucky)</span><br><a href="https://eldiariony.com/2026/08/25/arrestan-a-joven-de-19-anos-por-cobrar-boletos-de-loteria-robados-en-una-tienda-de-carolina-del-sur/">Arrestan a joven de 19 años por cobrar boletos de lotería robados en una tienda de Carolina del Sur</a><br><span class="meta"><a href="orgs/el-diario-ny.html">El Diario NY</a> (New York)</span></li>
+<li><a href="https://eldiariony.com/2026/08/25/servicio-secreto-afirma-estar-al-tanto-de-la-amenaza-de-iran-contra-barron-trump/">Servicio Secreto afirma estar al tanto de la amenaza de Irán contra Barron Trump</a><br><span class="meta"><a href="orgs/el-diario-ny.html">El Diario NY</a> (New York)</span><br><a href="https://laopinion.com/2026/08/25/el-servicio-secreto-investiga-video-irani-que-coloca-a-barron-trump-en-el-centro-de-una-amenaza/">El Servicio Secreto investiga video iraní que coloca a Barron Trump en el centro de una amenaza</a><br><span class="meta"><a href="orgs/la-opini-n.html">La Opinión</a> (California)</span></li>
+<li><a href="https://marylandmatters.org/2026/08/20/repub/federal-judge-halts-proposed-hhs-changes-to-teen-pregnancy-prevention-program/">Federal judge halts proposed HHS changes to teen pregnancy prevention program</a><br><span class="meta"><a href="orgs/maryland-matters.html">Maryland Matters</a> (Maryland)</span><br><a href="https://eplocalnews.org/2026/08/25/hennepin-notches-a-legal-victory-against-federal-abstinence-only-effort/">Hennepin notches a legal victory against federal ‘abstinence only’ effort</a><br><span class="meta"><a href="orgs/eden-prairie-local.html">Eden Prairie Local</a> (Minnesota)</span></li>
+<li><a href="https://www.metroviet.com/trong-boi-canh-so-ca-mac-soi-o-pennsylvania-van-tiep-dien-cac-no-luc-tiem-chung-cho-hoc-sinh-truoc-mua-tuu-truong-dang-duoc-day-manh/">Trong bối cảnh số ca mắc sởi ở Pennsylvania vẫn tiếp diễn, các nỗ lực tiêm chủng cho học sinh trước mùa tựu trường đang được đẩy mạnh.</a><br><span class="meta"><a href="orgs/metro-viet-news.html">Metro Viet News</a> (Pennsylvania)</span><br><a href="https://www.nguoi-viet.com/the-thao/2-vo-si-viet-nam-bi-danh-hoi-dong-trong-long-sat-tai-tran-mma-o-trung-quoc/">2 võ sĩ Việt Nam bị đánh ‘hội đồng’ trong ‘lồng sắt’ tại trận MMA ở Trung Quốc</a><br><span class="meta"><a href="orgs/nguoi-viet.html">Nguoi Viet</a> (California)</span></li>
+<li><a href="https://isthmus.com/news/news/guia-para-el-votante-para-las-elecciones-primaria-2026/">Guía para el votante de Isthmus para las elecciones primarias de agosto de 2026</a><br><span class="meta"><a href="orgs/isthmus-community-media.html">Isthmus Community Media</a> (Wisconsin)</span><br><a href="https://laopinion.com/2026/08/25/precio-del-dolar-en-mexico-hoy-25-de-agosto-del-2026/">Precio del dólar en México hoy, 25 de agosto del 2026</a><br><span class="meta"><a href="orgs/la-opini-n.html">La Opinión</a> (California)</span></li>
+<li><a href="https://laopinion.com/2026/08/25/trump-prepara-revocacion-masiva-de-visas-de-turismo-y-negocios-a-solicitantes-de-asilo/">Trump prepara revocación masiva de visas de turismo y negocios a solicitantes de asilo</a><br><span class="meta"><a href="orgs/la-opini-n.html">La Opinión</a> (California)</span><br><a href="https://www.mundonow.com/trump-endurece-la-presion-migratoria-ni-visas-ni-permisos-frenan-el-riesgo-de-detencion">Trump endurece la presión migratoria: Ni visas ni permisos frenan el riesgo de detención</a><br><span class="meta"><a href="orgs/mundo-now.html">Mundo Now</a> (Georgia)</span></li>
+<li><a href="https://calmatters.org/calmatters-en-espanol/2026/08/turners-outdoorsman-armas-california/">En las ciudades más grandes de California, Turner’s Outdoorsman es de las principales fuentes de armas usadas en delitos</a><br><span class="meta"><a href="orgs/calmatters.html">CalMatters</a> (California)</span><br><a href="https://lavozhispanact.com/cinco-cosas-que-los-conductores-de-connecticut-deben-saber-sobre-las-camaras-de-matriculas/">Cinco cosas que los conductores de Connecticut deben saber sobre las cámaras de matrículas</a><br><span class="meta"><a href="orgs/la-voz-hispana.html">La Voz Hispana</a> (Connecticut)</span></li>
+<li><a href="https://elplaneta.com/2026/08/21/deportes/el-new-england-revolution-tendra-su-primera-noche-de-marvel-el-10-de-octubre/">El New England Revolution tendrá su primera Noche de Marvel el 10 de octubre</a><br><span class="meta"><a href="orgs/mastv-el-planeta-llc.html">MasTV/El Planeta LLC</a> (Massachusetts)</span><br><a href="https://www.metro.pr/noticias/2026/08/25/upr-tendra-vinculos-con-israel-reunion-entre-consul-y-zayira-jordan-desata-controversia-en-la-comunidad-universitaria/">¿UPR tendrá vínculos con Israel? Reunión entre cónsul y Zayira Jordán desata controversia en la comunidad universitaria</a><br><span class="meta"><a href="orgs/metro-puerto-rico.html">Metro Puerto Rico</a> (PR)</span></li>
+<li><a href="https://laopinion.com/2026/08/25/venezuela-supera-los-6-500-muertos-a-dos-meses-de-los-terremotos/">Venezuela supera los 6,500 muertos a dos meses de los terremotos</a><br><span class="meta"><a href="orgs/la-opini-n.html">La Opinión</a> (California)</span><br><a href="https://www.elnuevodia.com/noticias/mundo/notas/aumenta-a-mas-de-6500-el-numero-de-fallecidos-por-los-terremotos-en-venezuela/">Aumenta a más de 6,500 el número de fallecidos por los terremotos en Venezuela</a><br><span class="meta"><a href="orgs/el-nuevo-dia.html">El Nuevo Dia</a> (PR)</span></li>
+<li><a href="https://vidanewspaper.com/2026/08/24/los-latinos-podemos-hacer-historia-en-las-elecciones/">En menos de 100 días los latinos podemos hacer historia en las elecciones</a><br><span class="meta"><a href="orgs/vida.html">Vida</a> (California)</span><br><a href="https://elsolnewsmedia.com/registro-electoral-elecciones-generales/">19 de octubre: último día para registrarse para votar en elecciones del 3 de noviembre</a><br><span class="meta"><a href="orgs/el-sol-latino-newspaper.html">El Sol Latino Newspaper</a> (Florida)</span></li>
+<li><a href="https://www.periodicolaperla.com/seguridad/policia-investiga-incidente-con-herido-de-bala-en-la-pr-10-de-ponce/">Policía investiga incidente con herido de bala en la PR-10 de Ponce</a><br><span class="meta"><a href="orgs/la-perla-de-sur.html">La Perla de Sur</a> (PR)</span><br><a href="https://laopinion.com/2026/08/25/3-signos-del-zodiaco-tendran-suerte-en-el-dinero-con-mercurio-en-virgo-2026/">3 signos del zodiaco tendrán suerte en el dinero con Mercurio en Virgo 2026</a><br><span class="meta"><a href="orgs/la-opini-n.html">La Opinión</a> (California)</span></li>
+<li><a href="https://eldiariony.com/2026/08/24/powerball-en-vivo-resultados-y-ganadores-del-lunes-24-de-agosto-de-2026/">Powerball en vivo: resultados y ganadores del lunes 24 de agosto de 2026</a><br><span class="meta"><a href="orgs/el-diario-ny.html">El Diario NY</a> (New York)</span><br><a href="https://laopinion.com/2026/08/25/precio-del-dolar-en-mexico-hoy-25-de-agosto-del-2026/">Precio del dólar en México hoy, 25 de agosto del 2026</a><br><span class="meta"><a href="orgs/la-opini-n.html">La Opinión</a> (California)</span></li>
+<li><a href="https://laopinion.com/2026/08/24/televisaunivision-celebra-el-exito-de-rating-de-la-casa-de-los-famosos-mexico-2026/">TelevisaUnivisión celebra el éxito de rating de “La Casa de los Famosos México” 2026</a><br><span class="meta"><a href="orgs/la-opini-n.html">La Opinión</a> (California)</span><br><a href="https://noticel.com/deportes/20260825/con-fecha-de-inicio-la-temporada-2026-de-la-coliceba/">Con fecha de inicio la temporada 2026 de la Coliceba</a><br><span class="meta"><a href="orgs/noticel.html">Noticel</a> (PR)</span></li>
+<li><a href="https://elplaneta.com/2026/08/21/guia-de-recursos/a-pesar-de-la-necesidad-de-apoyo-de-salud-mental-para-los-inmigrantes-massachusetts-carece-de-recursos/">A pesar de la necesidad de apoyo de salud mental para los inmigrantes, Massachusetts carece de recursos</a><br><span class="meta"><a href="orgs/mastv-el-planeta-llc.html">MasTV/El Planeta LLC</a> (Massachusetts)</span><br><a href="https://www.metro.pr/noticias/2026/08/25/presentan-observatorio-global-para-medir-la-resiliencia-de-los-paises-frente-a-la-sequia/">Presentan observatorio global para medir la resiliencia de los países frente a la sequía</a><br><span class="meta"><a href="orgs/metro-puerto-rico.html">Metro Puerto Rico</a> (PR)</span></li>
+<li><a href="https://elpopularnews.com/2026/08/18/demoras-en-renovaciones-de-daca-dejan-en-limbo-a-educadores-de-california/">Demoras en renovaciones de DACA dejan en el limbo a educadores de California con estatus migratorio temporal</a><br><span class="meta"><a href="orgs/el-popular.html">El Popular</a> (California)</span><br><a href="https://eldiariony.com/2026/08/25/policias-y-gobiernos-locales-de-ny-ya-no-podran-cooperar-con-ice-se-cumplira-la-ley/">Policías y gobiernos locales de NY ya no podrán cooperar con ICE: ¿Se cumplirá la ley?</a><br><span class="meta"><a href="orgs/el-diario-ny.html">El Diario NY</a> (New York)</span></li>
 </ul>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="index.html">Today&#x27;s news</a> · <a href="map.html">Map</a> · <a href="catalog.html">Newsrooms</a> · <a href="big-stories.html">Big Stories</a> · <a href="story-links.html">Story Links</a> · <a href="resources.html">Resources</a> · <a href="text/">Plain text edition</a> · <a href="feeds.html">RSS Feeds</a> · <a href="about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="map.html">Map</a> · <a href="catalog.html">Newsrooms</a> · <a href="big-stories.html">Big Stories</a> · <a href="story-links.html">Story Links</a> · <a href="resources.html">Resources</a> · <a href="text/">Plain text edition</a> · <a href="feeds.html">RSS Feeds</a> · <a href="about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -183,6 +234,47 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>

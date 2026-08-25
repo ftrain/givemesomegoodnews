@@ -13,12 +13,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(../fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -27,22 +40,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -50,19 +69,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -75,7 +126,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -93,7 +144,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="../index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="../masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -106,7 +157,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="../subjects/news.html">News</a></li><li><a href="../subjects/politics.html">Politics</a></li><li><a href="../subjects/opinion.html">Opinion</a></li><li><a href="../subjects/health.html">Health</a></li><li><a href="../subjects/environment.html">Environment</a></li><li><a href="../subjects/education.html">Education</a></li><li><a href="../subjects/business.html">Business</a></li><li><a href="../subjects/housing.html">Housing</a></li><li><a href="../subjects/sports.html">Sports</a></li><li><a href="../subjects/food.html">Food</a></li><li><a href="../subjects/arts.html">Arts</a></li></ul></nav>
@@ -121,268 +172,265 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <main id="main">
 <div id="feed-items">
 <article>
-<p class="stamp"><small><time datetime="2026-08-18T11:00:00+00:00" data-pub="7:00 AM EDT">Tuesday, August 18, 2026 at 7:00 AM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>MA / Easthampton / <a href="https://theshoestring.org/">The Shoestring</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://the-jefferson-county-beacon.fundjournalism.org/contribute/">Donate</a></aside>
+<p class="source"><a href="https://www.jeffcobeacon.com/contact"><strong>Jefferson County Beacon</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T23:06:24+00:00" data-pub="4:06 PM PDT">Tue, Aug 18 @ 4PM PDT</time><a class="lozenge place" href="/search?state=WA">Washington</a><a class="lozenge place" href="/search?place=Jefferson+County&state=WA">Jefferson County</a></p>
+<h2><a href="https://www.jeffcobeacon.com/bayside-housing-services-celebrates-groundbreaking-and-hosts-fundraising-gala/">Bayside Housing &amp; Services Celebrates Groundbreaking and Hosts Fundraising Gala</a></h2>
+<p class="byline">By Rachael Nutting</p>
+<a class="shot" href="https://www.jeffcobeacon.com/bayside-housing-services-celebrates-groundbreaking-and-hosts-fundraising-gala/" tabindex="-1" aria-hidden="true"><img src="../img/2cc1a85e34b4c5c7fdd8b7388d510a0f46f415c4.jpg" alt="" width="480" height="294" loading="lazy" decoding="async"></a>
+<p>Vince’s Village will add 32 housing units in Port Townsend, while annual gala event raises $325,000. <a class="lozenge more" href="https://www.jeffcobeacon.com/bayside-housing-services-celebrates-groundbreaking-and-hosts-fundraising-gala/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://the-jefferson-county-beacon.fundjournalism.org/contribute/">Donate</a></aside>
+<p class="source"><a href="https://www.jeffcobeacon.com/contact"><strong>Jefferson County Beacon</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T23:05:37+00:00" data-pub="4:05 PM PDT">Tue, Aug 18 @ 4PM PDT</time><a class="lozenge place" href="/search?state=WA">Washington</a><a class="lozenge place" href="/search?place=Jefferson+County&state=WA">Jefferson County</a></p>
+<h2><a href="https://www.jeffcobeacon.com/superior-criminal-court-august-14-2026-negotiated-alternatives/">Superior Criminal Court August 14, 2026: Negotiated Alternatives</a></h2>
+<p class="byline">By Angela Michelle Downs</p>
+<a class="shot" href="https://www.jeffcobeacon.com/superior-criminal-court-august-14-2026-negotiated-alternatives/" tabindex="-1" aria-hidden="true"><img src="../img/cfa44a9e3dd451a12a9c3505fb1c47cd4eae278b.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>How local courts are reckoning with “tough on crime” narratives. <a class="lozenge more" href="https://www.jeffcobeacon.com/superior-criminal-court-august-14-2026-negotiated-alternatives/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://the-jefferson-county-beacon.fundjournalism.org/contribute/">Donate</a></aside>
+<p class="source"><a href="https://www.jeffcobeacon.com/contact"><strong>Jefferson County Beacon</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T23:03:47+00:00" data-pub="4:03 PM PDT">Tue, Aug 18 @ 4PM PDT</time><a class="lozenge place" href="/search?state=WA">Washington</a><a class="lozenge place" href="/search?place=Jefferson+County&state=WA">Jefferson County</a></p>
+<h2><a href="https://www.jeffcobeacon.com/as-wa-caregiver-union-pushes-for-pay-hike-state-seeks-wage-freeze/">As WA caregiver union pushes for pay hike, state seeks wage freeze</a></h2>
+<p class="byline">By The Washington State Standard</p>
+<a class="shot" href="https://www.jeffcobeacon.com/as-wa-caregiver-union-pushes-for-pay-hike-state-seeks-wage-freeze/" tabindex="-1" aria-hidden="true"><img src="../img/6d2d6d70a68d1c4acdb4b4c207ea3fe3d78fda99.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Negotiations between the two sides will affect pay for about 80,000 workers and come as the state is grappling with budget trouble. <a class="lozenge more" href="https://www.jeffcobeacon.com/as-wa-caregiver-union-pushes-for-pay-hike-state-seeks-wage-freeze/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://the-jefferson-county-beacon.fundjournalism.org/contribute/">Donate</a></aside>
+<p class="source"><a href="https://www.jeffcobeacon.com/contact"><strong>Jefferson County Beacon</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T23:01:41+00:00" data-pub="4:01 PM PDT">Tue, Aug 18 @ 4PM PDT</time><a class="lozenge place" href="/search?state=WA">Washington</a><a class="lozenge place" href="/search?place=Jefferson+County&state=WA">Jefferson County</a></p>
+<h2><a href="https://www.jeffcobeacon.com/wtf-just-happened-this-week-14/">WTF Just Happened This Week</a></h2>
+<p class="byline">By WTF Just Happened Today</p>
+<a class="shot" href="https://www.jeffcobeacon.com/wtf-just-happened-this-week-14/" tabindex="-1" aria-hidden="true"><img src="../img/3b10f69638df79517ea95890d7c9966d9a77866d.jpg" alt="" width="480" height="480" loading="lazy" decoding="async"></a>
+<p>Republished from WTF Just Happened Today, a daily newsletter breaking down national news. <a class="lozenge more" href="https://www.jeffcobeacon.com/wtf-just-happened-this-week-14/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://highlandscurrent.org/membership/short-form">Donate</a></aside>
+<p class="source"><a href="https://highlandscurrent.org/"><strong>The Highlands Current</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T22:27:23+00:00" data-pub="6:27 PM EDT">Tue, Aug 18 @ 6PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Cold+Spring&state=NY">Cold Spring</a></p>
+<h2><a href="https://highlandscurrent.org/2026/08/18/hackers-hit-city-of-beacon/">Hackers Hit City of Beacon</a></h2>
+<p class="byline">By Chip Rowe</p>
+<p>Post personnel files on ‘dark web’ after ransom demand <a class="lozenge more" href="https://highlandscurrent.org/2026/08/18/hackers-hit-city-of-beacon/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://dcwitness.org/">Support</a></aside>
+<p class="source"><a href="https://dcwitness.org/"><strong>D.C. Witness</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T19:35:20+00:00" data-pub="3:35 PM EDT">Tue, Aug 18 @ 3PM EDT</time><a class="lozenge place" href="/search?state=DC">Washington, D.C.</a><a class="lozenge place" href="/search?place=Washington&state=DC">Washington</a></p>
+<h2><a href="https://dcwitness.org/everything-we-know-about-brain-science-explains-shooting-defense-asserts-at-sentencing/">‘Everything We Know About Brain Science,’ Explains Shooting, Defense Asserts at Sentencing</a></h2>
+<p class="byline">By Olivia Wood</p>
+<p>DC Superior Court Judge Michael Ryan sentenced a defendant on Aug. 14 to suspended prison time, in favor of two years probation, for a shooting committed when he was a juvenile. Cedric Brockington, 21, pleaded guilty to assault with a dangerous weapon and carrying a pistol without a license outside a home or business on <a class="lozenge more" href="https://dcwitness.org/everything-we-know-about-brain-science-explains-shooting-defense-asserts-at-sentencing/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://eastlansinginfo.news/donate/">Donate</a></aside>
+<p class="source"><a href="https://eastlansinginfo.news/"><strong>East Lansing Info</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T17:00:00+00:00" data-pub="1:00 PM EDT">Tue, Aug 18 @ 1PM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=East+Lansing&state=MI">East Lansing</a></p>
+<h2><a href="https://eastlansinginfo.news/national-politics-are-driving-anti-muslim-hate-in-east-lansing-islamic-center-leaders-say/">National Politics Are Driving Anti-Muslim Hate in East Lansing, Islamic Center Leaders Say</a></h2>
+<p class="byline">By Ayah Imran</p>
+<p>There has been an increase in hateful posts made targeting the East Lansing Islamic Center since Abdul El-Sayed secured the Democratic senate nomination at the August primary election. <a class="lozenge more" href="https://eastlansinginfo.news/national-politics-are-driving-anti-muslim-hate-in-east-lansing-islamic-center-leaders-say/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://therapidian.org/">Support</a></aside>
+<p class="source"><a href="https://therapidian.org/"><strong>The Rapidian</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T16:19:00+00:00" data-pub="12:19 PM EDT">Tue, Aug 18 @ 12PM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=Grand+Rapids&state=MI">Grand Rapids</a></p>
+<h2><a href="https://therapidian.org/rip-smidgeon-aims-to-make-good-sounds-with-third-album-sounds-good">Q&amp;A: Rip Smidgeon aims to make good sounds with third album ‘Sounds Good’</a></h2>
+<p class="byline">By roundaboutmonkey@gmail.com (Simon Scheer)</p>
+<a class="shot" href="https://therapidian.org/rip-smidgeon-aims-to-make-good-sounds-with-third-album-sounds-good" tabindex="-1" aria-hidden="true"><img src="../img/a404f020caffa812b1c202e31902881c4224c95f.jpg" alt="" width="480" height="324" loading="lazy" decoding="async"></a>
+<p>Rip Smidgeon&#x27;s third studio album, &quot;Sounds Good,&quot; drops on Aug. 22. The band will headline their album release show on Aug. 21 at The Pyramid Scheme. <a class="lozenge more" href="https://therapidian.org/rip-smidgeon-aims-to-make-good-sounds-with-third-album-sounds-good">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://peekskillherald.com/donation-form/">Donate</a></aside>
+<p class="source"><a href="https://peekskillherald.com/"><strong>Peekskill Herald</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T14:50:42+00:00" data-pub="10:50 AM EDT">Tue, Aug 18 @ 10AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Peekskill&state=NY">Peekskill</a></p>
+<h2><a href="https://peekskillherald.com/41526/news/buchanan-residents-organize-against-pace-of-village-development/">Buchanan Residents Organize Against Pace of Village Development</a></h2>
+<p class="byline">By By Jeffrey Merchan, jeff@peekskillherald.com</p>
+<a class="shot" href="https://peekskillherald.com/41526/news/buchanan-residents-organize-against-pace-of-village-development/" tabindex="-1" aria-hidden="true"><img src="../img/0742ac1b14553bd8f5d698f71c4f34ef94e5665a.jpg" alt="" width="480" height="211" loading="lazy" decoding="async"></a>
+<p>A growing group of residents is calling for a two-year pause on large-scale projects, citing concerns about infrastructure, emergency services and the village’s future character <a class="lozenge more" href="https://peekskillherald.com/41526/news/buchanan-residents-organize-against-pace-of-village-development/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://peekskillherald.com/donation-form/">Donate</a></aside>
+<p class="source"><a href="https://peekskillherald.com/"><strong>Peekskill Herald</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T14:45:08+00:00" data-pub="10:45 AM EDT">Tue, Aug 18 @ 10AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Peekskill&state=NY">Peekskill</a></p>
+<h2><a href="https://peekskillherald.com/41510/news/floating-patio-is-newest-option-for-rolling-on-the-river/">‘Floating Patio’ Is Newest Option for Rolling on the River</a></h2>
+<p class="byline">By By Eric Harvey, eric@peekskillherald.com</p>
+<a class="shot" href="https://peekskillherald.com/41510/news/floating-patio-is-newest-option-for-rolling-on-the-river/" tabindex="-1" aria-hidden="true"><img src="../img/5a89e8ec8ef3d42202dc0b148acbe9e6de2ee942.jpg" alt="" width="450" height="600" loading="lazy" decoding="async"></a>
+<p>Pontoon boat is making its debut at Fleischmann Pier, offering private excursions to small groups <a class="lozenge more" href="https://peekskillherald.com/41510/news/floating-patio-is-newest-option-for-rolling-on-the-river/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://peekskillherald.com/donation-form/">Donate</a></aside>
+<p class="source"><a href="https://peekskillherald.com/"><strong>Peekskill Herald</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T14:40:01+00:00" data-pub="10:40 AM EDT">Tue, Aug 18 @ 10AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Peekskill&state=NY">Peekskill</a></p>
+<h2><a href="https://peekskillherald.com/41538/news/ice-uses-peekskill-police-lot-for-12-minutes-department-says-officers-did-not-assist-with-pursuit-and-detention-of-man/">ICE Used Peekskill Police Lot for 12 Minutes</a></h2>
+<p class="byline">By By Eric Harvey, eric@peekskillherald.com</p>
+<a class="shot" href="https://peekskillherald.com/41538/news/ice-uses-peekskill-police-lot-for-12-minutes-department-says-officers-did-not-assist-with-pursuit-and-detention-of-man/" tabindex="-1" aria-hidden="true"><img src="../img/4fbf9f5267294fc3f798e95e11b7ac8fe49f7cfa.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Department says Peekskill officers did not assist federal agents with Aug. 15 pursuit and detention of man <a class="lozenge more" href="https://peekskillherald.com/41538/news/ice-uses-peekskill-police-lot-for-12-minutes-department-says-officers-did-not-assist-with-pursuit-and-detention-of-man/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://highlandscurrent.org/membership/short-form">Donate</a></aside>
+<p class="source"><a href="https://highlandscurrent.org/"><strong>The Highlands Current</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T13:02:38+00:00" data-pub="9:02 AM EDT">Tue, Aug 18 @ 9AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Cold+Spring&state=NY">Cold Spring</a></p>
+<h2><a href="https://highlandscurrent.org/2026/08/18/a-touching-display-holly-mccabe/">A Touching Display</a></h2>
+<p class="byline">By Marc Ferris</p>
+<p>Artist turns discarded fashion into soft sculpture <a class="lozenge more" href="https://highlandscurrent.org/2026/08/18/a-touching-display-holly-mccabe/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://highlandscurrent.org/membership/short-form">Donate</a></aside>
+<p class="source"><a href="https://highlandscurrent.org/"><strong>The Highlands Current</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T12:54:44+00:00" data-pub="8:54 AM EDT">Tue, Aug 18 @ 8AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Cold+Spring&state=NY">Cold Spring</a></p>
+<h2><a href="https://highlandscurrent.org/2026/08/18/old-school-masters/">Old-School Masters</a></h2>
+<p class="byline">By Marc Ferris</p>
+<p>Lattimore students return to Howland <a class="lozenge more" href="https://highlandscurrent.org/2026/08/18/old-school-masters/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://thelensnola.org/donate">Donate</a></aside>
+<p class="source"><a href="https://thelensnola.org"><strong>The Lens NOLA</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T11:01:00+00:00" data-pub="6:01 AM CDT">Tue, Aug 18 @ 6AM CDT</time><a class="lozenge place" href="/search?state=LA">Louisiana</a><a class="lozenge place" href="/search?place=New+Orleans&state=LA">New Orleans</a></p>
+<h2><a href="https://thelensnola.org/2026/08/18/meta-louisiana-data-center-ratepayer-costs/">Meta hides data center info as it pushes more risks to Entergy’s customers</a></h2>
+<p class="byline">By Paul Arbaje, The Equation</p>
+<p>Despite last Wednesday&#x27;s procedural setback, the PSC&#x27;s final decision on all these new gas plants is not scheduled to take place until December 16th. &quot;The fight isn’t over, writes Paul Arbaje, as he outlines the substance of Meta&#x27;s proposal and why it’s a risky proposition for Louisiana ratepayers. [...] Read More... from Meta hides data center info as it pushes more risks to Entergy’s customers <a class="lozenge more" href="https://thelensnola.org/2026/08/18/meta-louisiana-data-center-ratepayer-costs/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://theshoestring.org/give/">Donate</a></aside>
+<p class="source"><a href="https://theshoestring.org/"><strong>The Shoestring</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T11:00:00+00:00" data-pub="7:00 AM EDT">Tue, Aug 18 @ 7AM EDT</time><a class="lozenge place" href="/search?state=MA">Massachusetts</a><a class="lozenge place" href="/search?place=Easthampton&state=MA">Easthampton</a></p>
 <h2><a href="https://theshoestring.org/2026/08/18/get-the-flock-out-western-massachusetts-residents-push-back-against-automated-license-plate-readers/">“Get the Flock Out”: Western Massachusetts residents push back against automated license plate readers</a></h2>
-<p class="byline"><small>By divina cordeiro&amp;nbsp;and&amp;nbsp;Dusty Christensen</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://theshoestring.org/give/">Donate</a></span></p>
+<p class="byline">By divina cordeiro&amp;nbsp;and&amp;nbsp;Dusty Christensen</p>
 <a class="shot" href="https://theshoestring.org/2026/08/18/get-the-flock-out-western-massachusetts-residents-push-back-against-automated-license-plate-readers/" tabindex="-1" aria-hidden="true"><img src="../img/7c766d41498596787bf6d1e398d24dc2c772927c.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>In Massachusetts and across the country, a movement is growing around the demand to kick Flock — and other license plate readers — out of town.</p>
-<p class="more"><a href="https://theshoestring.org/2026/08/18/get-the-flock-out-western-massachusetts-residents-push-back-against-automated-license-plate-readers/">Read more <span aria-hidden="true">→</span></a></p>
+<p>In Massachusetts and across the country, a movement is growing around the demand to kick Flock—and other license plate readers—out of town. <a class="lozenge more" href="https://theshoestring.org/2026/08/18/get-the-flock-out-western-massachusetts-residents-push-back-against-automated-license-plate-readers/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-18T09:00:18+00:00" data-pub="4:00 AM CDT">Tuesday, August 18, 2026 at 4:00 AM CDT</time></small></p>
-<p><small>SD / Statewide / <a href="https://www.sdnewswatch.org/">South Dakota News Watch</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://www.sdnewswatch.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://www.sdnewswatch.org/"><strong>South Dakota News Watch</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T09:00:18+00:00" data-pub="4:00 AM CDT">Tue, Aug 18 @ 4AM CDT</time><a class="lozenge place" href="/search?state=SD">South Dakota</a></p>
 <h2><a href="https://www.sdnewswatch.org/fact-brief-south-dakota-poll-trump-approval/">Fact brief: Did a recent poll specifically ask South Dakotans whether they approve of Trump?</a></h2>
-<p class="byline"><small>By Michael Klinski</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://www.sdnewswatch.org/donate/">Donate</a></span></p>
+<p class="byline">By Michael Klinski</p>
 <a class="shot" href="https://www.sdnewswatch.org/fact-brief-south-dakota-poll-trump-approval/" tabindex="-1" aria-hidden="true"><img src="../img/c5e33e45f3304157f10ef08f2904cc6a59bd5a5b.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>A check of recent reports on the president&#x27;s popularity.</p>
-<p class="more"><a href="https://www.sdnewswatch.org/fact-brief-south-dakota-poll-trump-approval/">Read more <span aria-hidden="true">→</span></a></p>
+<p>A check of recent reports on the president&#x27;s popularity. <a class="lozenge more" href="https://www.sdnewswatch.org/fact-brief-south-dakota-poll-trump-approval/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-18T01:16:58+00:00" data-pub="8:16 PM CDT">Monday, August 17, 2026 at 8:16 PM CDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>TX / Austin / <a href="https://theaustinbulldog.org">The Austin Bulldog</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://theaustinbulldog.org">Support</a></aside>
+<p class="source"><a href="https://theaustinbulldog.org"><strong>The Austin Bulldog</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T01:16:58+00:00" data-pub="8:16 PM CDT">Mon, Aug 17 @ 8PM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=Austin&state=TX">Austin</a></p>
 <h2><a href="https://theaustinbulldog.org/field-set-for-november-council-election/">Field set for November Council election</a></h2>
-<p class="byline"><small>By Editor Ken Martin</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://theaustinbulldog.org">Support</a></span></p>
-<p>The deadline for filing a ballot application ended at 5pm today. Twenty-five people have filed ballot applications with the City Clerk to run for one of the five council seats on the November 3rd ballot. District 1 an open seat Natasha Harper-Madison is term-limited and chose not to seek signatures to get on the ballot</p>
-<p class="more"><a href="https://theaustinbulldog.org/field-set-for-november-council-election/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Editor Ken Martin</p>
+<p>The deadline for filing a ballot application ended at 5pm today. Twenty-five people have filed ballot applications with the City Clerk to run for one of the five council seats on the November 3rd ballot. District 1 an open seat Natasha Harper-Madison is term-limited and chose not to seek signatures to get on the ballot <a class="lozenge more" href="https://theaustinbulldog.org/field-set-for-november-council-election/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T23:54:25+00:00" data-pub="4:54 PM PDT">Monday, August 17, 2026 at 4:54 PM PDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>CA / Solano County / <a href="https://www.vallejosun.com">Vallejo Sun</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://www.vallejosun.com/membership/">Become a member</a></aside>
+<p class="source"><a href="https://www.vallejosun.com"><strong>Vallejo Sun</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-17T23:54:25+00:00" data-pub="4:54 PM PDT">Mon, Aug 17 @ 4PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Solano+County&state=CA">Solano County</a></p>
 <h2><a href="https://www.vallejosun.com/developers-planning-data-center-for-fairfield-industrial-park/">Developers planning data center for Fairfield industrial park</a></h2>
-<p class="byline"><small>By Ryan Geller</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://www.vallejosun.com/membership/">Become a member</a></span></p>
+<p class="byline">By Ryan Geller</p>
 <a class="shot" href="https://www.vallejosun.com/developers-planning-data-center-for-fairfield-industrial-park/" tabindex="-1" aria-hidden="true"><img src="../img/16fe42ae7c6fcd0c40298c5384206f2e9ed39751.jpg" alt="" width="480" height="248" loading="lazy" decoding="async"></a>
-<p>The project would be built between Vanden Road and North Gate Road just within Fairfield’s northeastern boundary.</p>
-<p class="more"><a href="https://www.vallejosun.com/developers-planning-data-center-for-fairfield-industrial-park/">Read more <span aria-hidden="true">→</span></a></p>
+<p>The project would be built between Vanden Road and North Gate Road just within Fairfield’s northeastern boundary. <a class="lozenge more" href="https://www.vallejosun.com/developers-planning-data-center-for-fairfield-industrial-park/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T21:00:00+00:00" data-pub="5:00 PM EDT">Monday, August 17, 2026 at 5:00 PM EDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>MI / East Lansing / <a href="https://eastlansinginfo.news/">East Lansing Info</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://eastlansinginfo.news/donate/">Donate</a></aside>
+<p class="source"><a href="https://eastlansinginfo.news/"><strong>East Lansing Info</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-17T21:00:00+00:00" data-pub="5:00 PM EDT">Mon, Aug 17 @ 5PM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=East+Lansing&state=MI">East Lansing</a></p>
 <h2><a href="https://eastlansinginfo.news/developer-sues-east-lansing-after-apartment-rejection/">Developer Sues East Lansing After Apartment Rejection</a></h2>
-<p class="byline"><small>By Lucas Day</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://eastlansinginfo.news/donate/">Donate</a></span></p>
-<p>While the scope of the lawsuit is not yet known, concerns about litigation were raised at a Planning Commission meeting before the City Council denied the proposal.</p>
-<p class="more"><a href="https://eastlansinginfo.news/developer-sues-east-lansing-after-apartment-rejection/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Lucas Day</p>
+<p>While the scope of the lawsuit is not yet known, concerns about litigation were raised at a Planning Commission meeting before the City Council denied the proposal. <a class="lozenge more" href="https://eastlansinginfo.news/developer-sues-east-lansing-after-apartment-rejection/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T14:00:29+00:00" data-pub="10:00 AM EDT">Monday, August 17, 2026 at 10:00 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>NY / Peekskill / <a href="https://peekskillherald.com/">Peekskill Herald</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://peekskillherald.com/donation-form/">Donate</a></aside>
+<p class="source"><a href="https://peekskillherald.com/"><strong>Peekskill Herald</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-17T14:00:29+00:00" data-pub="10:00 AM EDT">Mon, Aug 17 @ 10AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Peekskill&state=NY">Peekskill</a></p>
 <h2><a href="https://peekskillherald.com/41477/news/newsworthy-notes-80/">Newsworthy Notes</a></h2>
-<p class="byline"><small>By By Eric Harvey, eric@peekskillherald.com</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://peekskillherald.com/donation-form/">Donate</a></span></p>
+<p class="byline">By By Eric Harvey, eric@peekskillherald.com</p>
 <a class="shot" href="https://peekskillherald.com/41477/news/newsworthy-notes-80/" tabindex="-1" aria-hidden="true"><img src="../img/6e612f7b39c647ae287c5eeea4444f582cc17051.jpg" alt="" width="300" height="225" loading="lazy" decoding="async"></a>
-<p>Covering &gt; August 11 - August 17</p>
-<p class="more"><a href="https://peekskillherald.com/41477/news/newsworthy-notes-80/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Covering &gt; August 11 - August 17 <a class="lozenge more" href="https://peekskillherald.com/41477/news/newsworthy-notes-80/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T12:08:59+00:00" data-pub="8:08 AM EDT">Monday, August 17, 2026 at 8:08 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>NY / Pelham / <a href="https://pelhamexaminer.com/">Pelham Examiner</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://pelhamexaminer.com/ads/daronco-donation-ad/">Donate</a></aside>
+<p class="source"><a href="https://pelhamexaminer.com/"><strong>Pelham Examiner</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-17T12:08:59+00:00" data-pub="8:08 AM EDT">Mon, Aug 17 @ 8AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Pelham&state=NY">Pelham</a></p>
 <h2><a href="https://pelhamexaminer.com/84235/schools/vandals-deface-lynn-sabia-way-sign-at-corner-of-nyac-avenue-and-franklin-place-in-two-separate-late-night-incidents-one-week-apart/">Vandals deface ‘Lynn Sabia Way’ sign at corner of Nyac Avenue and Franklin Place in two separate late-night incidents one week apart</a></h2>
-<p class="byline"><small>By By  Ciara Lynch and Greg Farrell</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://pelhamexaminer.com/ads/daronco-donation-ad/">Donate</a></span></p>
-<p>The vandals first struck just before 11 PM on the night of August 4, using red spray paint to deface the sidewalk at the corner of Nyac Avenue and Franklin Place, as well as a commemorative sign paying tribute to Lynn Sabia, the former principal of Pelham Middle School. A police report indicated that red</p>
-<p class="more"><a href="https://pelhamexaminer.com/84235/schools/vandals-deface-lynn-sabia-way-sign-at-corner-of-nyac-avenue-and-franklin-place-in-two-separate-late-night-incidents-one-week-apart/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By By  Ciara Lynch and Greg Farrell</p>
+<p>The vandals first struck just before 11 PM on the night of August 4, using red spray paint to deface the sidewalk at the corner of Nyac Avenue and Franklin Place, as well as a commemorative sign paying tribute to Lynn Sabia, the former principal of Pelham Middle School. A police report indicated that red <a class="lozenge more" href="https://pelhamexaminer.com/84235/schools/vandals-deface-lynn-sabia-way-sign-at-corner-of-nyac-avenue-and-franklin-place-in-two-separate-late-night-incidents-one-week-apart/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T11:00:00+00:00" data-pub="7:00 AM EDT">Monday, August 17, 2026 at 7:00 AM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>MA / Easthampton / <a href="https://theshoestring.org/">The Shoestring</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://theshoestring.org/give/">Donate</a></aside>
+<p class="source"><a href="https://theshoestring.org/"><strong>The Shoestring</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-17T11:00:00+00:00" data-pub="7:00 AM EDT">Mon, Aug 17 @ 7AM EDT</time><a class="lozenge place" href="/search?state=MA">Massachusetts</a><a class="lozenge place" href="/search?place=Easthampton&state=MA">Easthampton</a></p>
 <h2><a href="https://theshoestring.org/2026/08/17/automated-license-plate-readers-flock-to-western-massachusetts/">Automated license plate readers Flock to western Massachusetts</a></h2>
-<p class="byline"><small>By divina cordeiro&amp;nbsp;and&amp;nbsp;Dusty Christensen</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://theshoestring.org/give/">Donate</a></span></p>
+<p class="byline">By divina cordeiro&amp;nbsp;and&amp;nbsp;Dusty Christensen</p>
 <a class="shot" href="https://theshoestring.org/2026/08/17/automated-license-plate-readers-flock-to-western-massachusetts/" tabindex="-1" aria-hidden="true"><img src="../img/c287183727ab1c6772cf2edf51d9f0986deaedaa.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>At least 15 police departments in the Connecticut River Valley have used the company Flock Safety’s controversial surveillance tech, records show. But it’s not the only company selling them to local police.</p>
-<p class="more"><a href="https://theshoestring.org/2026/08/17/automated-license-plate-readers-flock-to-western-massachusetts/">Read more <span aria-hidden="true">→</span></a></p>
+<p>At least 15 police departments in the Connecticut River Valley have used the company Flock Safety’s controversial surveillance tech, records show. But it’s not the only company selling them to local police. <a class="lozenge more" href="https://theshoestring.org/2026/08/17/automated-license-plate-readers-flock-to-western-massachusetts/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T10:00:00+00:00" data-pub="6:00 AM EDT">Monday, August 17, 2026 at 6:00 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>MI / East Lansing / <a href="https://eastlansinginfo.news/">East Lansing Info</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://eastlansinginfo.news/donate/">Donate</a></aside>
+<p class="source"><a href="https://eastlansinginfo.news/"><strong>East Lansing Info</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-17T10:00:00+00:00" data-pub="6:00 AM EDT">Mon, Aug 17 @ 6AM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=East+Lansing&state=MI">East Lansing</a></p>
 <h2><a href="https://eastlansinginfo.news/east-lansing-insider-podcast-listen-to-the-highlights-from-city-councils-meeting/">East Lansing Insider Podcast: Listen to the Highlights From City Council’s Meeting</a></h2>
-<p class="byline"><small>By Anna Liz Nichols</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://eastlansinginfo.news/donate/">Donate</a></span></p>
-<p>Hear directly from residents and city leaders who reacted to a video of an ELPD officer punching a restrained woman.</p>
-<p class="more"><a href="https://eastlansinginfo.news/east-lansing-insider-podcast-listen-to-the-highlights-from-city-councils-meeting/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Anna Liz Nichols</p>
+<p>Hear directly from residents and city leaders who reacted to a video of an ELPD officer punching a restrained woman. <a class="lozenge more" href="https://eastlansinginfo.news/east-lansing-insider-podcast-listen-to-the-highlights-from-city-councils-meeting/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T09:00:37+00:00" data-pub="4:00 AM CDT">Monday, August 17, 2026 at 4:00 AM CDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>SD / Statewide / <a href="https://www.sdnewswatch.org/">South Dakota News Watch</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://www.sdnewswatch.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://www.sdnewswatch.org/"><strong>South Dakota News Watch</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-17T09:00:37+00:00" data-pub="4:00 AM CDT">Mon, Aug 17 @ 4AM CDT</time><a class="lozenge place" href="/search?state=SD">South Dakota</a></p>
 <h2><a href="https://www.sdnewswatch.org/south-dakota-cyberattacks-government-spending/">SD taxpayers spend millions on cyberattacks after federal grant rejected</a></h2>
-<p class="byline"><small>By Bart Pfankuch</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://www.sdnewswatch.org/donate/">Donate</a></span></p>
+<p class="byline">By Bart Pfankuch</p>
 <a class="shot" href="https://www.sdnewswatch.org/south-dakota-cyberattacks-government-spending/" tabindex="-1" aria-hidden="true"><img src="../img/96de81d393fd8cce45037e6de884aa32ada6aac2.jpg" alt="" width="480" height="276" loading="lazy" decoding="async"></a>
-<p>Recent security hacks on local governments in South Dakota are latest of more than 1,000 in the state over past five years.</p>
-<p class="more"><a href="https://www.sdnewswatch.org/south-dakota-cyberattacks-government-spending/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Recent security hacks on local governments in South Dakota are latest of more than 1,000 in the state over past five years. <a class="lozenge more" href="https://www.sdnewswatch.org/south-dakota-cyberattacks-government-spending/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-16T22:23:24+00:00" data-pub="6:23 PM EDT">Sunday, August 16, 2026 at 6:23 PM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>NY / Cold Spring / <a href="https://highlandscurrent.org/">The Highlands Current</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://highlandscurrent.org/membership/short-form">Donate</a></aside>
+<p class="source"><a href="https://highlandscurrent.org/"><strong>The Highlands Current</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-16T22:23:24+00:00" data-pub="6:23 PM EDT">Sun, Aug 16 @ 6PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Cold+Spring&state=NY">Cold Spring</a></p>
 <h2><a href="https://highlandscurrent.org/2026/08/16/parking-still-main-cold-spring-issue/">Parking Still ‘Main’ Cold Spring Issue</a></h2>
-<p class="byline"><small>By Michael Turton</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://highlandscurrent.org/membership/short-form">Donate</a></span></p>
-<p>Chamber repeats ticketing, signage concerns</p>
-<p class="more"><a href="https://highlandscurrent.org/2026/08/16/parking-still-main-cold-spring-issue/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Michael Turton</p>
+<p>Chamber repeats ticketing, signage concerns <a class="lozenge more" href="https://highlandscurrent.org/2026/08/16/parking-still-main-cold-spring-issue/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-16T21:39:16+00:00" data-pub="5:39 PM EDT">Sunday, August 16, 2026 at 5:39 PM EDT</time></small></p>
-<p><small>NY / Cold Spring / <a href="https://highlandscurrent.org/">The Highlands Current</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://highlandscurrent.org/membership/short-form">Donate</a></aside>
+<p class="source"><a href="https://highlandscurrent.org/"><strong>The Highlands Current</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-16T21:39:16+00:00" data-pub="5:39 PM EDT">Sun, Aug 16 @ 5PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Cold+Spring&state=NY">Cold Spring</a></p>
 <h2><a href="https://highlandscurrent.org/2026/08/16/couple-sentenced-to-life-in-beacon-murder/">Couple Sentenced to Life in Beacon Murder</a></h2>
-<p class="byline"><small>By Chip Rowe</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://highlandscurrent.org/membership/short-form">Donate</a></span></p>
-<p>Convicted of killing wife’s ex-husband in 2020</p>
-<p class="more"><a href="https://highlandscurrent.org/2026/08/16/couple-sentenced-to-life-in-beacon-murder/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Chip Rowe</p>
+<p>Convicted of killing wife’s ex-husband in 2020 <a class="lozenge more" href="https://highlandscurrent.org/2026/08/16/couple-sentenced-to-life-in-beacon-murder/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-15T16:17:42+00:00" data-pub="12:17 PM EDT">Saturday, August 15, 2026 at 12:17 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>NY / Cold Spring / <a href="https://highlandscurrent.org/">The Highlands Current</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://highlandscurrent.org/membership/short-form">Donate</a></aside>
+<p class="source"><a href="https://highlandscurrent.org/"><strong>The Highlands Current</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-15T16:17:42+00:00" data-pub="12:17 PM EDT">Sat, Aug 15 @ 12PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Cold+Spring&state=NY">Cold Spring</a></p>
 <h2><a href="https://highlandscurrent.org/2026/08/15/how-they-voted-congress-08-14-26/">How They Voted (Congress)</a></h2>
-<p class="byline"><small>By Myron Struck</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://highlandscurrent.org/membership/short-form">Donate</a></span></p>
-<p>Select votes by our Senate members through Aug. 14</p>
-<p class="more"><a href="https://highlandscurrent.org/2026/08/15/how-they-voted-congress-08-14-26/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Myron Struck</p>
+<p>Select votes by our Senate members through Aug. 14 <a class="lozenge more" href="https://highlandscurrent.org/2026/08/15/how-they-voted-congress-08-14-26/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-15T13:35:32+00:00" data-pub="9:35 AM EDT">Saturday, August 15, 2026 at 9:35 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>NY / Cold Spring / <a href="https://highlandscurrent.org/">The Highlands Current</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://highlandscurrent.org/membership/short-form">Donate</a></aside>
+<p class="source"><a href="https://highlandscurrent.org/"><strong>The Highlands Current</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-15T13:35:32+00:00" data-pub="9:35 AM EDT">Sat, Aug 15 @ 9AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Cold+Spring&state=NY">Cold Spring</a></p>
 <h2><a href="https://highlandscurrent.org/2026/08/15/beacon-high-school-pool-reopens/">Beacon High School Pool Reopens</a></h2>
-<p class="byline"><small>By Staff</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://highlandscurrent.org/membership/short-form">Donate</a></span></p>
-<p>April rescue forced closure</p>
-<p class="more"><a href="https://highlandscurrent.org/2026/08/15/beacon-high-school-pool-reopens/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Staff</p>
+<p>April rescue forced closure <a class="lozenge more" href="https://highlandscurrent.org/2026/08/15/beacon-high-school-pool-reopens/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-15T12:58:48+00:00" data-pub="8:58 AM EDT">Saturday, August 15, 2026 at 8:58 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>NY / Cold Spring / <a href="https://highlandscurrent.org/">The Highlands Current</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://highlandscurrent.org/membership/short-form">Donate</a></aside>
+<p class="source"><a href="https://highlandscurrent.org/"><strong>The Highlands Current</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-15T12:58:48+00:00" data-pub="8:58 AM EDT">Sat, Aug 15 @ 8AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Cold+Spring&state=NY">Cold Spring</a></p>
 <h2><a href="https://highlandscurrent.org/2026/08/15/price-at-the-pump-august-2026/">Price at the Pump (August)</a></h2>
-<p class="byline"><small>By Staff</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://highlandscurrent.org/membership/short-form">Donate</a></span></p>
-<p>The latest local, state and national prices per gallon</p>
-<p class="more"><a href="https://highlandscurrent.org/2026/08/15/price-at-the-pump-august-2026/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Staff</p>
+<p>The latest local, state and national prices per gallon <a class="lozenge more" href="https://highlandscurrent.org/2026/08/15/price-at-the-pump-august-2026/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-15T12:57:56+00:00" data-pub="8:57 AM EDT">Saturday, August 15, 2026 at 8:57 AM EDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>NY / Cold Spring / <a href="https://highlandscurrent.org/">The Highlands Current</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://highlandscurrent.org/membership/short-form">Donate</a></aside>
+<p class="source"><a href="https://highlandscurrent.org/"><strong>The Highlands Current</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-15T12:57:56+00:00" data-pub="8:57 AM EDT">Sat, Aug 15 @ 8AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Cold+Spring&state=NY">Cold Spring</a></p>
 <h2><a href="https://highlandscurrent.org/2026/08/15/real-estate-market-report-july-2026/">Real Estate Market Report (July)</a></h2>
-<p class="byline"><small>By Staff</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://highlandscurrent.org/membership/short-form">Donate</a></span></p>
-<p>The latest data on home sales, listings and prices in the Highlands</p>
-<p class="more"><a href="https://highlandscurrent.org/2026/08/15/real-estate-market-report-july-2026/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-15T03:31:07+00:00" data-pub="11:31 PM EDT">Friday, August 14, 2026 at 11:31 PM EDT</time></small></p>
-<p><small>MA / Worcester / <a href="https://www.worcestersucks.email">Worcester Sucks and I Love It(MA)</a></small></p>
-<h2><a href="https://www.worcestersucks.email/p/imposing-ignorance-on-the-system">Imposing ignorance on the system</a></h2>
-<p class="byline"><small>By Bill Shaner</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://www.worcestersucks.email">Support</a></span></p>
-<a class="shot" href="https://www.worcestersucks.email/p/imposing-ignorance-on-the-system" tabindex="-1" aria-hidden="true"><img src="../img/0fee9b4f11c736c635fccae78e5fdb038182822e.jpg" alt="" width="480" height="599" loading="lazy" decoding="async"></a>
-<p>City manager lies to the public big time</p>
-<p class="more"><a href="https://www.worcestersucks.email/p/imposing-ignorance-on-the-system">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-15T01:39:26+00:00" data-pub="9:39 PM EDT">Friday, August 14, 2026 at 9:39 PM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>MA / Worcester / <a href="https://www.worcestersucks.email">Worcester Sucks and I Love It(MA)</a></small></p>
-<h2><a href="https://www.worcestersucks.email/p/wps-in-brief-first-redistricting">WPS in Brief: First Redistricting Scenario</a></h2>
-<p class="byline"><small>By Aislinn Doyle</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://www.worcestersucks.email">Support</a></span></p>
-<a class="shot" href="https://www.worcestersucks.email/p/wps-in-brief-first-redistricting" tabindex="-1" aria-hidden="true"><img src="../img/d5691abfe237cfce829adaa594dfc2a5de8f033b.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>What to know about the initial scenario for redistricting school boundaries.</p>
-<p class="more"><a href="https://www.worcestersucks.email/p/wps-in-brief-first-redistricting">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-14T20:08:00+00:00" data-pub="4:08 PM EDT">Friday, August 14, 2026 at 4:08 PM EDT</time></small></p>
-<p><small>MI / Grand Rapids / <a href="https://therapidian.org/">The Rapidian</a></small></p>
-<h2><a href="https://therapidian.org/grand-rapids-public-museum-science-curator-takes-part-in-international-megafan-taphonomy-study">Grand Rapids Public Museum science curator takes part in international megafan taphonomy study</a></h2>
-<p class="byline"><small>By forestphotographer1@gmail.com (Alex Matusik)</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://therapidian.org/">Support</a></span></p>
-<a class="shot" href="https://therapidian.org/grand-rapids-public-museum-science-curator-takes-part-in-international-megafan-taphonomy-study" tabindex="-1" aria-hidden="true"><img src="../img/7370a84efede8e0581acf0d0ed5b62907644324b.jpg" alt="" width="480" height="362" loading="lazy" decoding="async"></a>
-<p>Cory Redman, GRPM&#x27;s science curator, took part in an international team to study the process of fossilization in Paraguay&#x27;s Pilcomayo River system.</p>
-<p class="more"><a href="https://therapidian.org/grand-rapids-public-museum-science-curator-takes-part-in-international-megafan-taphonomy-study">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-14T18:57:20+00:00" data-pub="11:57 AM PDT">Friday, August 14, 2026 at 11:57 AM PDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>CA / Solano County / <a href="https://www.vallejosun.com">Vallejo Sun</a></small></p>
-<h2><a href="https://www.vallejosun.com/vallejo-officials-and-advocates-clash-over-badge-bending-police-reform-during-town-hall-meeting/">Vallejo officials and advocates clash over badge bending, police reform during town hall meeting</a></h2>
-<p class="byline"><small>By Natalie Hanson</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://www.vallejosun.com/membership/">Become a member</a></span></p>
-<a class="shot" href="https://www.vallejosun.com/vallejo-officials-and-advocates-clash-over-badge-bending-police-reform-during-town-hall-meeting/" tabindex="-1" aria-hidden="true"><img src="../img/424c97b6730d8b80af46182d1032f6ba8bc1e1e0.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Promises of reform from city leaders drew criticism from families of people killed by Vallejo police officers.</p>
-<p class="more"><a href="https://www.vallejosun.com/vallejo-officials-and-advocates-clash-over-badge-bending-police-reform-during-town-hall-meeting/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-14T14:53:21+00:00" data-pub="10:53 AM EDT">Friday, August 14, 2026 at 10:53 AM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>NY / Peekskill / <a href="https://peekskillherald.com/">Peekskill Herald</a></small></p>
-<h2><a href="https://peekskillherald.com/41462/news/lets-go-retro-paramount-takes-lps-for-a-spin-with-vinyl-vault/">Let’s Go Retro: Paramount Takes LPs for a Spin with Vinyl Vault</a></h2>
-<p class="byline"><small>By By Alexa Schwartzberg</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://peekskillherald.com/donation-form/">Donate</a></span></p>
-<a class="shot" href="https://peekskillherald.com/41462/news/lets-go-retro-paramount-takes-lps-for-a-spin-with-vinyl-vault/" tabindex="-1" aria-hidden="true"><img src="../img/b000253283d597b6e6461b50bc70a967091a6473.jpg" alt="" width="450" height="600" loading="lazy" decoding="async"></a>
-<p>New pop-up shop at landmark theater joins Bruised Apple Books as Peekskill purveyors of music’s throwback format</p>
-<p class="more"><a href="https://peekskillherald.com/41462/news/lets-go-retro-paramount-takes-lps-for-a-spin-with-vinyl-vault/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-14T14:30:00+00:00" data-pub="10:30 AM EDT">Friday, August 14, 2026 at 10:30 AM EDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>MI / East Lansing / <a href="https://eastlansinginfo.news/">East Lansing Info</a></small></p>
-<h2><a href="https://eastlansinginfo.news/east-lansing-extends-data-center-moratorium-as-city-develops-new-regulations/">East Lansing Extends Data Center Moratorium as City Develops New Regulations</a></h2>
-<p class="byline"><small>By Ayah Imran</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://eastlansinginfo.news/donate/">Donate</a></span></p>
-<p>The city has received some interest from developers since the moratorium went into place in March.</p>
-<p class="more"><a href="https://eastlansinginfo.news/east-lansing-extends-data-center-moratorium-as-city-develops-new-regulations/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-14T11:01:00+00:00" data-pub="6:01 AM CDT">Friday, August 14, 2026 at 6:01 AM CDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>LA / New Orleans / <a href="https://thelensnola.org">The Lens NOLA</a></small></p>
-<h2><a href="https://thelensnola.org/2026/08/14/voting-rights-act-commemoration-comes-with-warnings-after-supreme-court-rulings/">Louisiana and Alabama map battles renew voting rights fight after 61 years</a></h2>
-<p class="byline"><small>By Ralph Chapoco - Louisiana Illuminator</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://thelensnola.org/donate">Donate</a></span></p>
-<p>Advocates celebrated the 61st anniversary of the Voting Rights Act, even after Supreme Court rulings gutted key federal protections and threw Southern congressional maps into chaos. [...] Read More... from Louisiana and Alabama map battles renew voting rights fight after 61 years</p>
-<p class="more"><a href="https://thelensnola.org/2026/08/14/voting-rights-act-commemoration-comes-with-warnings-after-supreme-court-rulings/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-14T09:00:57+00:00" data-pub="4:00 AM CDT">Friday, August 14, 2026 at 4:00 AM CDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>SD / Statewide / <a href="https://www.sdnewswatch.org/">South Dakota News Watch</a></small></p>
-<h2><a href="https://www.sdnewswatch.org/south-dakota-special-education-federal-shift-civil-rights/">Special education federal shift: commitment remains, but future is unclear</a></h2>
-<p class="byline"><small>By Elena Tittel</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://www.sdnewswatch.org/donate/">Donate</a></span></p>
-<a class="shot" href="https://www.sdnewswatch.org/south-dakota-special-education-federal-shift-civil-rights/" tabindex="-1" aria-hidden="true"><img src="../img/0d13b3a78920a01ee7fc1a51801960f2a321dc0d.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>A recent federal shift in special education oversight raises uncertainty in future handling of civil cases involving discrimination based on disability.</p>
-<p class="more"><a href="https://www.sdnewswatch.org/south-dakota-special-education-federal-shift-civil-rights/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-13T23:40:23+00:00" data-pub="4:40 PM PDT">Thursday, August 13, 2026 at 4:40 PM PDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>CA / Solano County / <a href="https://www.vallejosun.com">Vallejo Sun</a></small></p>
-<h2><a href="https://www.vallejosun.com/several-incumbents-decline-to-run-again-in-november-elections-for-vallejo-benicia/">Several incumbents decline to run again in November elections for Vallejo, Benicia</a></h2>
-<p class="byline"><small>By Ryan Geller</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://www.vallejosun.com/membership/">Become a member</a></span></p>
-<a class="shot" href="https://www.vallejosun.com/several-incumbents-decline-to-run-again-in-november-elections-for-vallejo-benicia/" tabindex="-1" aria-hidden="true"><img src="../img/eb11e068b7c3946a8b1f8321d630094086bc0085.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Some fresh faces will join the Vallejo City Council, Vallejo Board of Education and Benicia Board of Education after the Nov. 3 election. Two incumbents are seeking reelection to the Benicia City Council.</p>
-<p class="more"><a href="https://www.vallejosun.com/several-incumbents-decline-to-run-again-in-november-elections-for-vallejo-benicia/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-13T17:00:25+00:00" data-pub="12:00 PM CDT">Thursday, August 13, 2026 at 12:00 PM CDT</time></small></p>
-<p><small>SD / Statewide / <a href="https://www.sdnewswatch.org/">South Dakota News Watch</a></small></p>
-<h2><a href="https://www.sdnewswatch.org/south-dakota-job-corps-nemo-government-funding/">Job Corps program in Black Hills open and fully funded</a></h2>
-<p class="byline"><small>By Bart Pfankuch</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://www.sdnewswatch.org/donate/">Donate</a></span></p>
-<a class="shot" href="https://www.sdnewswatch.org/south-dakota-job-corps-nemo-government-funding/" tabindex="-1" aria-hidden="true"><img src="../img/03d24fb1083326ba69f71b410ba3c0b104a8130c.jpg" alt="" width="480" height="254" loading="lazy" decoding="async"></a>
-<p>The job-training facility for low-income youths and young adults at Nemo was under threat of closure by the Trump administration for nearly a year.</p>
-<p class="more"><a href="https://www.sdnewswatch.org/south-dakota-job-corps-nemo-government-funding/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-13T16:23:00+00:00" data-pub="12:23 PM EDT">Thursday, August 13, 2026 at 12:23 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>MI / Grand Rapids / <a href="https://therapidian.org/">The Rapidian</a></small></p>
-<h2><a href="https://therapidian.org/navigating-the-local-court-system">Voter Guide 2026: Navigating the local court system</a></h2>
-<p class="byline"><small>By alaynna@grcmc.org (Alaynna Dressler)</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://therapidian.org/">Support</a></span></p>
-<a class="shot" href="https://therapidian.org/navigating-the-local-court-system" tabindex="-1" aria-hidden="true"><img src="../img/db23adbb257c85e8d6e7f0dc54b2e5491b555d7b.jpg" alt="" width="480" height="399" loading="lazy" decoding="async"></a>
-<p>Michigan judges, unlike their federal counterparts, are elected to their positions. Candidates vying for seats on various state and local courts will appear on the November ballot.</p>
-<p class="more"><a href="https://therapidian.org/navigating-the-local-court-system">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-13T14:45:40+00:00" data-pub="10:45 AM EDT">Thursday, August 13, 2026 at 10:45 AM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>NY / Peekskill / <a href="https://peekskillherald.com/">Peekskill Herald</a></small></p>
-<h2><a href="https://peekskillherald.com/41422/news/first-responders-bulletin/">First Responders Bulletin®</a></h2>
-<p class="byline"><small>By By Eric Harvey</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://peekskillherald.com/donation-form/">Donate</a></span></p>
-<a class="shot" href="https://peekskillherald.com/41422/news/first-responders-bulletin/" tabindex="-1" aria-hidden="true"><img src="../img/ac35f8aab6f67421f4d8746cbcd9fb30edfd26aa.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>Separate Drug Busts Yield Heroin and Cocaine; Three residents arrested for strong-arm robbery; 20-year-old male’s body recovered from Hudson River; Tractor trailer accident in front of Peekskill Firehouse</p>
-<p class="more"><a href="https://peekskillherald.com/41422/news/first-responders-bulletin/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-13T11:01:00+00:00" data-pub="6:01 AM CDT">Thursday, August 13, 2026 at 6:01 AM CDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>LA / New Orleans / <a href="https://thelensnola.org">The Lens NOLA</a></small></p>
-<h2><a href="https://thelensnola.org/2026/08/13/community-violence-intervention-funding-louisiana/">While New Orleans invested in violence intervention, Baton Rouge made crippling cuts</a></h2>
-<p class="byline"><small>By Sateria Tate-Alexander and Danny Allen</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://thelensnola.org/donate">Donate</a></span></p>
-<p>Louisiana&#x27;s two biggest cities took different paths: New Orleans funded community programs to historic success, while Baton Rouge shifted its priorities, leaving the program with little to no funding. [...] Read More... from While New Orleans invested in violence intervention, Baton Rouge made crippling cuts</p>
-<p class="more"><a href="https://thelensnola.org/2026/08/13/community-violence-intervention-funding-louisiana/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-13T09:00:25+00:00" data-pub="4:00 AM CDT">Thursday, August 13, 2026 at 4:00 AM CDT</time></small></p>
-<p><small>SD / Statewide / <a href="https://www.sdnewswatch.org/">South Dakota News Watch</a></small></p>
-<h2><a href="https://www.sdnewswatch.org/south-dakota-fact-brief-body-paint-sturgis-rally/">Fact brief: Is it legal to wear only body paint as clothing at the Sturgis Motorcycle Rally?</a></h2>
-<p class="byline"><small>By Emily DeCock</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://www.sdnewswatch.org/donate/">Donate</a></span></p>
-<a class="shot" href="https://www.sdnewswatch.org/south-dakota-fact-brief-body-paint-sturgis-rally/" tabindex="-1" aria-hidden="true"><img src="../img/9d95ebdbe5ff2f9c492990000e4c74eb36b30408.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>The rally started Aug. 7 and runs through Aug. 16 in the Black Hills town.</p>
-<p class="more"><a href="https://www.sdnewswatch.org/south-dakota-fact-brief-body-paint-sturgis-rally/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Staff</p>
+<p>The latest data on home sales, listings and prices in the Highlands <a class="lozenge more" href="https://highlandscurrent.org/2026/08/15/real-estate-market-report-july-2026/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 </div>
 <p><a id="more" href="anno-member-7.html">More stories</a></p>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="../index.html">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -398,6 +446,47 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>

@@ -13,12 +13,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(../fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -27,22 +40,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -50,19 +69,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -75,7 +126,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -93,7 +144,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="../index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="../masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -106,7 +157,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="../subjects/news.html">News</a></li><li><a href="../subjects/politics.html">Politics</a></li><li><a href="../subjects/opinion.html">Opinion</a></li><li><a href="../subjects/health.html">Health</a></li><li><a href="../subjects/environment.html">Environment</a></li><li><a href="../subjects/education.html">Education</a></li><li><a href="../subjects/business.html">Business</a></li><li><a href="../subjects/housing.html">Housing</a></li><li><a href="../subjects/sports.html">Sports</a></li><li><a href="../subjects/food.html">Food</a></li><li><a href="../subjects/arts.html">Arts</a></li></ul></nav>
@@ -121,191 +172,126 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <main id="main">
 <div id="feed-items">
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T11:00:00+00:00" data-pub="7:00 AM EDT">Monday, August 17, 2026 at 7:00 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>National / Education / <a href="https://www.chalkbeat.org/">Chalkbeat</a></small></p>
-<h2><a href="https://www.chalkbeat.org/indiana/2026/08/17/indiana-school-district-referendum-voter-guide-2026-ballot-question/">Indiana school district referendum guide 2026: What to know about your district’s requested tax increase</a></h2>
-<p class="byline"><small>By Amelia Pak-Harvey, Eric Weddle</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://chalkbeat.fundjournalism.org/donate/?campaign=701Pc00000M3hQLIAZ">Donate</a></span></p>
-<a class="shot" href="https://www.chalkbeat.org/indiana/2026/08/17/indiana-school-district-referendum-voter-guide-2026-ballot-question/" tabindex="-1" aria-hidden="true"><img src="../img/f51e215c512fa1906714a48c5a2356a32f387464.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Arsenal Technical High School band students practice in April 2026. A record number of districts are seeking property tax increases at the polls in November to help fund operating expenses, such as academic programs and teacher salaries.</p>
-<p class="more"><a href="https://www.chalkbeat.org/indiana/2026/08/17/indiana-school-district-referendum-voter-guide-2026-ballot-question/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.matternews.org/contactus">Support</a></aside>
+<p class="source"><a href="https://www.matternews.org/contactus"><strong>Matter News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T12:21:57+00:00" data-pub="8:21 AM EDT">Tue, Aug 18 @ 8AM EDT</time><a class="lozenge place" href="/search?state=OH">Ohio</a><a class="lozenge place" href="/search?place=Columbus&state=OH">Columbus</a></p>
+<h2><a href="https://matternews.org/community/policing/we-were-once-a-school-that-allowed-voices-on-campus-now-no-voices-are-allowed/">‘We were once a school that allowed voices on campus. Now, no voices are allowed.’</a></h2>
+<p class="byline">By Mariam Abaza</p>
+<a class="shot" href="https://matternews.org/community/policing/we-were-once-a-school-that-allowed-voices-on-campus-now-no-voices-are-allowed/" tabindex="-1" aria-hidden="true"><img src="../img/0d3b941ecffe72f4ad5034e8d772cad6c9404b6f.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Compared with protests at neighboring colleges, the administrative crackdown on the 2024 pro-Palestine encampment at Ohio State stands out for its severity, causing reverberations that continue to this day. <a class="lozenge more" href="https://matternews.org/community/policing/we-were-once-a-school-that-allowed-voices-on-campus-now-no-voices-are-allowed/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T10:04:12+00:00" data-pub="6:04 AM EDT">Monday, August 17, 2026 at 6:04 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>VT / Hinesburg / <a href="https://www.hinesburgrecord.org/">Hinesburg Record</a></small></p>
-<h2><a href="https://www.hinesburgrecord.org/p/the-making-of-the-pavillion">The Making of the Pavilion</a></h2>
-<p class="byline"><small>By The Hinesburg Record</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.hinesburgrecord.org/">Support</a></span></p>
-<a class="shot" href="https://www.hinesburgrecord.org/p/the-making-of-the-pavillion" tabindex="-1" aria-hidden="true"><img src="../img/7789901d3cbf040114ab4572327cd6402eab9aa1.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Town Common Committee releases time-lapse video of construction of new pavilion on the Town Common ... and other news about the project.</p>
-<p class="more"><a href="https://www.hinesburgrecord.org/p/the-making-of-the-pavillion">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.paypal.com/donate/?hosted_button_id=ZNELVLGVZKUEC">Donate</a></aside>
+<p class="source"><a href="https://www.fauquier.com"><strong>Fauquier Times</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T12:13:00+00:00" data-pub="8:13 AM EDT">Tue, Aug 18 @ 8AM EDT</time><a class="lozenge place" href="/search?state=VA">Virginia</a><a class="lozenge place" href="/search?place=Fauquier&state=VA">Fauquier</a></p>
+<h2><a href="https://www.fauquier.com/localnews/alongside-kiggans-u-s-house-speaker-says-va-s-2nd-district-will-determine-the-fate/article_26ba7a9c-4ada-4b35-8a38-2c0084ca5c66.html">Alongside Kiggans, U.S. House Speaker says Va.’s 2nd District ‘will determine the fate of the country’</a></h2>
+<p class="byline">By Charlotte Rene Woods Virginia Mercury</p>
+<a class="shot" href="https://www.fauquier.com/localnews/alongside-kiggans-u-s-house-speaker-says-va-s-2nd-district-will-determine-the-fate/article_26ba7a9c-4ada-4b35-8a38-2c0084ca5c66.html" tabindex="-1" aria-hidden="true"><img src="../img/1252e4865887919f510cc7a3a2420b3ac8264e38.webp" alt="" width="300" height="213" loading="lazy" decoding="async"></a>
+<p>As part of an 18-state tour through more than 30 congressional districts, U.S. House Speaker Mike Johnson, R-Louisiana, said Monday that “Virginia’s 2nd District will determine the fate of the country because this will be a close election.” <a class="lozenge more" href="https://www.fauquier.com/localnews/alongside-kiggans-u-s-house-speaker-says-va-s-2nd-district-will-determine-the-fate/article_26ba7a9c-4ada-4b35-8a38-2c0084ca5c66.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T09:30:21+00:00" data-pub="5:30 AM EDT">Monday, August 17, 2026 at 5:30 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>KY / Statewide / <a href="https://kentuckylantern.com/">Kentucky Lantern</a></small></p>
-<h2><a href="https://kentuckylantern.com/2026/08/17/moratoriums-a-mugshot-and-tax-breaks-catch-up-on-kentucky-data-center-news/">Moratoriums, a mugshot and tax breaks. Catch up on Kentucky data center news.</a></h2>
-<p class="byline"><small>By Liam Niemeyer</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://kentuckylantern.com/">Support</a></span></p>
-<a class="shot" href="https://kentuckylantern.com/2026/08/17/moratoriums-a-mugshot-and-tax-breaks-catch-up-on-kentucky-data-center-news/" tabindex="-1" aria-hidden="true"><img src="../img/1cbab7b9858d543f86d9316818cd3803798c9b1a.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Editor’s Note: Data center news is coming at us every day. This is the first in an occasional series of stories to keep Lantern readers up to date on the big and small events of an issue that could affect every region of the state. Louisville passed a data center pause, where a data center</p>
-<p class="more"><a href="https://kentuckylantern.com/2026/08/17/moratoriums-a-mugshot-and-tax-breaks-catch-up-on-kentucky-data-center-news/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://thelandcle.org/membership/">Donate</a></aside>
+<p class="source"><a href="https://thelandcle.org/"><strong>The Land</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T12:02:28+00:00" data-pub="8:02 AM EDT">Tue, Aug 18 @ 8AM EDT</time><a class="lozenge place" href="/search?state=OH">Ohio</a><a class="lozenge place" href="/search?place=Cleveland&state=OH">Cleveland</a></p>
+<h2><a href="https://thelandcle.org/stories/beyond-ill-make-them-pay-tim-misny-on-leadership-legacy-and-life/">Beyond “I’ll make them pay”: Tim Misny on leadership, legacy and life</a></h2>
+<p class="byline">By Tim Zaun</p>
+<a class="shot" href="https://thelandcle.org/stories/beyond-ill-make-them-pay-tim-misny-on-leadership-legacy-and-life/" tabindex="-1" aria-hidden="true"><img src="../img/23429b374dd6015006e54f59ec5f798d18420555.jpg" alt="" width="480" height="396" loading="lazy" decoding="async"></a>
+<p>Personal injury lawyer and Cleveland icon, Tim Misny, will eternally be known for the tagline, “I’ll make them pay.” Misny’s new book, “The Misny Method,” chronicles his journey to success and offers a blueprint for others to achieve their personal best. The Land met up with Misny on Zoom, where he shared a glimpse of the man behind the billboard, bus and television advertising. <a class="lozenge more" href="https://thelandcle.org/stories/beyond-ill-make-them-pay-tim-misny-on-leadership-legacy-and-life/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T09:00:40+00:00" data-pub="5:00 AM EDT">Monday, August 17, 2026 at 5:00 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>IN / Statewide / <a href="https://indianacapitalchronicle.com/">Indiana Capital Chronicle</a></small></p>
-<h2><a href="https://indianacapitalchronicle.com/2026/08/17/from-crisis-to-five-years-of-gains-indianas-reading-success-story/">From crisis to five years of gains: Indiana’s reading success story</a></h2>
-<p class="byline"><small>By Katie Jenner</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://indianacapitalchronicle.com/">Support</a></span></p>
-<a class="shot" href="https://indianacapitalchronicle.com/2026/08/17/from-crisis-to-five-years-of-gains-indianas-reading-success-story/" tabindex="-1" aria-hidden="true"><img src="../img/7adb1b19deed98a1bc5caee9f7d27c16d025bced.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Only a few short years ago, Indiana faced a literacy crisis. Nearly one in five third grade students were not able to read. Today in Indiana, we have a much brighter story to tell. For the fifth consecutive year, more and more Hoosier students are mastering reading with nearly nine out 10 third grade students</p>
-<p class="more"><a href="https://indianacapitalchronicle.com/2026/08/17/from-crisis-to-five-years-of-gains-indianas-reading-success-story/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://alabamareflector.com/">Support</a></aside>
+<p class="source"><a href="https://alabamareflector.com/"><strong>Alabama Reflector</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T11:30:12+00:00" data-pub="6:30 AM CDT">Tue, Aug 18 @ 6AM CDT</time><a class="lozenge place" href="/search?state=AL">Alabama</a></p>
+<h2><a href="https://alabamareflector.com/2026/08/18/alabama-community-college-system-to-join-network-expanding-broadband/">Alabama Community College System to join network expanding broadband</a></h2>
+<p class="byline">By Andrea Tinker</p>
+<a class="shot" href="https://alabamareflector.com/2026/08/18/alabama-community-college-system-to-join-network-expanding-broadband/" tabindex="-1" aria-hidden="true"><img src="../img/65bd4c8a98edf59b5943c657c512112bb6b52f78.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>The Alabama Community College System Board of Trustees said Wednesday that the system has joined a network that works with rural electric cooperatives to expand broadband service around the state. Gadsden State, Lurleen B. Wallace, Northwest Shoals, Shelton State, Snead State, Southern Union and Wallace Community College-Selma are the first schools within the system to <a class="lozenge more" href="https://alabamareflector.com/2026/08/18/alabama-community-college-system-to-join-network-expanding-broadband/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T08:00:00+00:00" data-pub="4:00 AM EDT">Monday, August 17, 2026 at 4:00 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>PA / Harrisburg / <a href="https://www.spotlightpa.org/">Spotlight PA</a></small></p>
-<h2><a href="https://www.spotlightpa.org/news/2026/08/charter-public-school-bus-transportation-pennsylvania-supreme-court-students-education/">Some Pa. schools are cutting off charter students’ access to yellow buses after court ruling</a></h2>
-<p class="byline"><small>By Jaxon White</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.spotlightpa.org/donate">Donate</a></span></p>
-<a class="shot" href="https://www.spotlightpa.org/news/2026/08/charter-public-school-bus-transportation-pennsylvania-supreme-court-students-education/" tabindex="-1" aria-hidden="true"><img src="../img/8cf62b8c1cd64e0e0d320f7cdc6239ff61de09b1.jpg" alt="" width="480" height="480" loading="lazy" decoding="async"></a>
-<p>HARRISBURG — Two weeks before the start of classes at his all-boys charter school near Pittsburgh, founder Darryl Canady received an email from his local public school district saying it wouldn’t provide traditional bus rides to his students this year. Instead, Woodland Hills School District said it would supply each of the more than 140 students at LIFE Male STEAM Academy with Pittsburgh Regional</p>
-<p class="more"><a href="https://www.spotlightpa.org/news/2026/08/charter-public-school-bus-transportation-pennsylvania-supreme-court-students-education/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.idahoednews.org/features/spelling-it-out/spelling-it-out-fund-balances/">Donate</a></aside>
+<p class="source"><a href="https://www.idahoednews.org/"><strong>Idaho Education News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T11:00:40+00:00" data-pub="5:00 AM MDT">Tue, Aug 18 @ 5AM MDT</time><a class="lozenge place" href="/search?state=ID">Idaho</a></p>
+<h2><a href="https://www.idahoednews.org/top-news/idahos-top-insurance-regulator-knew-school-trust-was-in-trouble-before-it-ran-out-of-money/">Idaho’s top insurance regulator knew school trust was in trouble before it ran out of money</a></h2>
+<p class="byline">By Sean Dolan</p>
+<a class="shot" href="https://www.idahoednews.org/top-news/idahos-top-insurance-regulator-knew-school-trust-was-in-trouble-before-it-ran-out-of-money/" tabindex="-1" aria-hidden="true"><img src="../img/35faaa3889b1490c46c37ed5e94c17a113a0bce8.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>Dean Cameron told the state superintendent that the Idaho School Benefit Trust had been &quot;walking a tight line&quot; for as long as he could remember. <a class="lozenge more" href="https://www.idahoednews.org/top-news/idahos-top-insurance-regulator-knew-school-trust-was-in-trouble-before-it-ran-out-of-money/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T07:03:00+00:00" data-pub="12:03 AM MST">Monday, August 17, 2026 at 12:03 AM MST</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>AZ / Statewide / <a href="https://www.zocalopublicsquare.org/new-at-zocalo/">Zocalo Public Square</a></small></p>
-<h2><a href="https://www.zocalopublicsquare.org/why-are-mexican-students-still-coming-to-the-u-s/">Why Are Mexican Students Still Coming to the U.S.?</a></h2>
-<p class="byline"><small>By Rachel Newman</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.zocalopublicsquare.org/support-zocalo/">Donate</a></span></p>
-<a class="shot" href="https://www.zocalopublicsquare.org/why-are-mexican-students-still-coming-to-the-u-s/" tabindex="-1" aria-hidden="true"><img src="../img/77f99afa70da8f0bc0158b1175c52279c5fe9f13.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>Concepción Reza grew up in a middle-class family in Mexico City and studied economics at UCLA from 1952 to 1953. She was the recipient of two scholarships, one from Mexico’s central bank and the other from the U.S. Department of State. During Reza’s yearlong stint at UCLA, a research team studying the experiences of Mexican students in the United States interviewed her. Why did she pursue the oppo</p>
-<p class="more"><a href="https://www.zocalopublicsquare.org/why-are-mexican-students-still-coming-to-the-u-s/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://north-dakota-news-cooperative.fundjournalism.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://www.newscoopnd.org/"><strong>North Dakota News Cooperative</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T11:00:24+00:00" data-pub="6:00 AM CDT">Tue, Aug 18 @ 6AM CDT</time><a class="lozenge place" href="/search?state=ND">North Dakota</a></p>
+<h2><a href="https://www.newscoopnd.org/school-districts-struggle-to-sell-bond-measures/">School districts struggle to sell bond measures</a></h2>
+<p class="byline">By Michael Standaert</p>
+<a class="shot" href="https://www.newscoopnd.org/school-districts-struggle-to-sell-bond-measures/" tabindex="-1" aria-hidden="true"><img src="../img/b7769d21d5a816bbca569074e9e67546dbe0f9a0.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Failed votes raise questions about 60% supermajority and voting rules <a class="lozenge more" href="https://www.newscoopnd.org/school-districts-struggle-to-sell-bond-measures/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T05:30:00+00:00" data-pub="1:30 AM EDT">Monday, August 17, 2026 at 1:30 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>National / Education / <a href="https://hechingerreport.org/">The Hechinger Report</a></small></p>
-<h2><a href="https://hechingerreport.org/in-new-york-most-kids-miss-recommended-screening-for-autism-speech-delays/">Most kids miss recommended screening for autism, speech delays</a></h2>
-<p class="byline"><small>By Sarah Carr</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://hechingerreport.org/support-the-hechinger-report/?utm_source=website&amp;utm_medium=homepage&amp;utm_campaign=header">Donate</a></span></p>
-<a class="shot" href="https://hechingerreport.org/in-new-york-most-kids-miss-recommended-screening-for-autism-speech-delays/" tabindex="-1" aria-hidden="true"><img src="../img/909a660f6c8926a0c98fcf040eed2c86cfd13c05.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>SYRACUSE, N.Y. — During the first year and a half of her son’s life, Valerie Gregory did everything she could to help him thrive: She read to him, talked to him, showed up for wellness checks, and whenever possible took him to a weekly playgroup, where both mother and son had the chance to socialize</p>
-<p class="more"><a href="https://hechingerreport.org/in-new-york-most-kids-miss-recommended-screening-for-autism-speech-delays/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://oklahomawatch.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://oklahomawatch.org/"><strong>Oklahoma Watch</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T11:00:00+00:00" data-pub="6:00 AM CDT">Tue, Aug 18 @ 6AM CDT</time><a class="lozenge place" href="/search?state=OK">Oklahoma</a></p>
+<h2><a href="https://oklahomawatch.org/2026/08/18/oklahoma-kids-use-drugs-at-higher-rates-than-the-national-average-a-new-initiative-wants-to-change-that/">Oklahoma Kids Use Drugs at Higher Rates Than the National Average. A New Initiative Wants to Change That.</a></h2>
+<p class="byline">By Brenna Witchey</p>
+<a class="shot" href="https://oklahomawatch.org/2026/08/18/oklahoma-kids-use-drugs-at-higher-rates-than-the-national-average-a-new-initiative-wants-to-change-that/" tabindex="-1" aria-hidden="true"><img src="../img/ba2e1670bf214fd6acd55ff32ac8d40d81dd7d72.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Oklahoma&#x27;s attorney general is offering school districts a free, evidence-based drug prevention curriculum through a new initiative funded by opioid abatement grants. But educators and substance abuse experts warn the program alone cannot address the state&#x27;s youth substance use crisis, which exceeds national averages in most drug categories, without adequate counseling staff. <a class="lozenge more" href="https://oklahomawatch.org/2026/08/18/oklahoma-kids-use-drugs-at-higher-rates-than-the-national-average-a-new-initiative-wants-to-change-that/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T04:33:19+00:00" data-pub="11:33 PM CDT">Sunday, August 16, 2026 at 11:33 PM CDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>LA / Baton Rouge / <a href="https://www.brweeklypress.com/">Weekly Press</a></small></p>
-<h2><a href="https://www.brweeklypress.com/scotlandville-high-class-of-1979-turns-a-weekend-get-together-into-a-celebration-of-friendship-and-faith/">Scotlandville High Class of 1979 Turns a Weekend Get-Together Into a Celebration of Friendship and Faith</a></h2>
-<p class="byline"><small>By Ivory D. Payne</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.brweeklypress.com/subscribe">Subscribe</a></span></p>
-<a class="shot" href="https://www.brweeklypress.com/scotlandville-high-class-of-1979-turns-a-weekend-get-together-into-a-celebration-of-friendship-and-faith/" tabindex="-1" aria-hidden="true"><img src="../img/30c225d97e8812c1a1836bb5d50bf7cc79c580f1.jpg" alt="" width="480" height="273" loading="lazy" decoding="async"></a>
-<p>The Class of 1979 spent the weekend reconnecting, sharing memories and celebrating faith.</p>
-<p class="more"><a href="https://www.brweeklypress.com/scotlandville-high-class-of-1979-turns-a-weekend-get-together-into-a-celebration-of-friendship-and-faith/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://chalkbeat.fundjournalism.org/donate/?campaign=701Pc00000M3hQLIAZ">Donate</a></aside>
+<p class="source"><a href="https://www.chalkbeat.org/"><strong>Chalkbeat</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T11:00:00+00:00" data-pub="7:00 AM EDT">Tue, Aug 18 @ 7AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Education">Education</a></p>
+<h2><a href="https://www.chalkbeat.org/indiana/2026/08/18/how-much-money-charter-schools-could-receive-from-2026-referendums/">Indiana charter schools could receive over $49 million in new revenue from proposed tax increases</a></h2>
+<p class="byline">By Amelia Pak-Harvey</p>
+<a class="shot" href="https://www.chalkbeat.org/indiana/2026/08/18/how-much-money-charter-schools-could-receive-from-2026-referendums/" tabindex="-1" aria-hidden="true"><img src="../img/02b19a193d2fac4f67a93a488b7288148f89ccdb.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Kindergartners in class at Herron Prep Academy in Indianapolis in September 2023. The school is one of about 60 schools statewide that could receive funding from ballot questions if voters pass them in November. <a class="lozenge more" href="https://www.chalkbeat.org/indiana/2026/08/18/how-much-money-charter-schools-could-receive-from-2026-referendums/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T03:17:18+00:00" data-pub="10:17 PM CDT">Sunday, August 16, 2026 at 10:17 PM CDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>LA / Baton Rouge / <a href="https://www.brweeklypress.com/">Weekly Press</a></small></p>
-<h2><a href="https://www.brweeklypress.com/louisiana-snap-rolls-plunge-by-170-000-as-procedural-closures-dominate/">Louisiana SNAP rolls plunge by 170,000 as procedural closures dominate</a></h2>
-<p class="byline"><small>By Deasia Grant</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.brweeklypress.com/subscribe">Subscribe</a></span></p>
-<a class="shot" href="https://www.brweeklypress.com/louisiana-snap-rolls-plunge-by-170-000-as-procedural-closures-dominate/" tabindex="-1" aria-hidden="true"><img src="../img/1bed6b60cae9cf40a8617a335f747a66e9cefb7e.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>State records show a 21% decline in food assistance participation, with children accounting for nearly half of the drop</p>
-<p class="more"><a href="https://www.brweeklypress.com/louisiana-snap-rolls-plunge-by-170-000-as-procedural-closures-dominate/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://alabamareflector.com/">Support</a></aside>
+<p class="source"><a href="https://alabamareflector.com/"><strong>Alabama Reflector</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T10:01:19+00:00" data-pub="5:01 AM CDT">Tue, Aug 18 @ 5AM CDT</time><a class="lozenge place" href="/search?state=AL">Alabama</a></p>
+<h2><a href="https://alabamareflector.com/2026/08/18/alabama-commission-studying-students-screen-time-holds-first-meeting/">Alabama commission studying students’ screen time holds first meeting</a></h2>
+<p class="byline">By Andrea Tinker</p>
+<a class="shot" href="https://alabamareflector.com/2026/08/18/alabama-commission-studying-students-screen-time-holds-first-meeting/" tabindex="-1" aria-hidden="true"><img src="../img/d2c65ac4cc911318dc050abd448ccff0eab98b4d.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>A state commission charged with studying the risks and benefits of screens in classroom instruction held its first meeting Monday. The Commission on Screen-Based Instruction, created by Gov. Kay Ivey through an executive order last month, discussed goals and heard research-based presentations from two fellow commissioners. Rep. Jeana Ross, R-Guntersville, the chair of the commission <a class="lozenge more" href="https://alabamareflector.com/2026/08/18/alabama-commission-studying-students-screen-time-holds-first-meeting/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T01:13:23+00:00" data-pub="9:13 PM EDT">Sunday, August 16, 2026 at 9:13 PM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>VA / Rappahannock County / <a href="https://foothills-forum.org/">Foothills Forum</a></small></p>
-<h2><a href="https://foothillsforum.org/2026/08/16/school-board-continues-review-of-facility-use-policy-after-concealed-carry-class-controversy/">School board continues review of facility use policy after concealed carry class controversy</a></h2>
-<p class="byline"><small>By Ireland Hayes</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://foothillsforum.app.neoncrm.com/forms/8">Donate</a></span></p>
-<p>The Rappahannock County School Board revisited its facilities use regulations Tuesday, continuing a conversation that began after a July concealed carry class hosted by the Rappahannock County Republican Committee raised questions about political groups renting school space. The schools’ attorney had been asked to weigh in on possible policy changes. The proposed changes rewrite the</p>
-<p class="more"><a href="https://foothillsforum.org/2026/08/16/school-board-continues-review-of-facility-use-policy-after-concealed-carry-class-controversy/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://flatwaterfreepress.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://flatwaterfreepress.org/"><strong>Flatwater Free Press</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T10:00:00+00:00" data-pub="5:00 AM CDT">Tue, Aug 18 @ 5AM CDT</time><a class="lozenge place" href="/search?state=NE">Nebraska</a><a class="lozenge place" href="/search?place=Omaha&state=NE">Omaha</a></p>
+<h2><a href="https://flatwaterfreepress.org/state-generates-new-rules-and-anxiety-with-medicaid-work-changes/">Questions remain unanswered as Medicaid work changes take effect</a></h2>
+<p class="byline">By Destiny Herbers</p>
+<a class="shot" href="https://flatwaterfreepress.org/state-generates-new-rules-and-anxiety-with-medicaid-work-changes/" tabindex="-1" aria-hidden="true"><img src="../img/5dd82ccbf6fad0d6f22030a3af722ae516af6dc2.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Nebraska becomes the first in the nation to implement new federal work requirements, but healthcare advocates say details have been sparse. <a class="lozenge more" href="https://flatwaterfreepress.org/state-generates-new-rules-and-anxiety-with-medicaid-work-changes/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-16T22:23:24+00:00" data-pub="6:23 PM EDT">Sunday, August 16, 2026 at 6:23 PM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>NY / Cold Spring / <a href="https://highlandscurrent.org/">The Highlands Current</a></small></p>
-<h2><a href="https://highlandscurrent.org/2026/08/16/parking-still-main-cold-spring-issue/">Parking Still ‘Main’ Cold Spring Issue</a></h2>
-<p class="byline"><small>By Michael Turton</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://highlandscurrent.org/membership/short-form">Donate</a></span></p>
-<p>Chamber repeats ticketing, signage concerns</p>
-<p class="more"><a href="https://highlandscurrent.org/2026/08/16/parking-still-main-cold-spring-issue/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://thephiladelphiacitizen.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://thephiladelphiacitizen.org/about/"><strong>The Philadelphia Citizen</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T09:50:09+00:00" data-pub="5:50 AM EDT">Tue, Aug 18 @ 5AM EDT</time><a class="lozenge place" href="/search?state=PA">Pennsylvania</a><a class="lozenge place" href="/search?place=Philadelphia&state=PA">Philadelphia</a></p>
+<h2><a href="https://thephiladelphiacitizen.org/citizen-of-the-week-joel-austin-daddy-university/">Citizen of the Week: Joel Austin, Dean of Daddy University</a></h2>
+<p class="byline">By Ashleigh N. DeLuca</p>
+<a class="shot" href="https://thephiladelphiacitizen.org/citizen-of-the-week-joel-austin-daddy-university/" tabindex="-1" aria-hidden="true"><img src="../img/6c27f8ce51eee8b91e86fffd41fce3921bbd986c.jpg" alt="" width="480" height="240" loading="lazy" decoding="async"></a>
+<p>Cliff Skinner walked into the Philadelphia Family Court building in 2022 determined to regain custody of his daughter. When the proceedings began, his court-appointed lawyer introduced himself and then immediately fell silent—something Skinner had demanded of him. Then Skinner politely introduced himself, informed the judge that he wanted his daughter back, and proceeded … Continue reading Citiz <a class="lozenge more" href="https://thephiladelphiacitizen.org/citizen-of-the-week-joel-austin-daddy-university/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-16T11:00:00+00:00" data-pub="7:00 AM EDT">Sunday, August 16, 2026 at 7:00 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>CT / Hartford / <a href="https://hartfordtimes.com/">The Hartford Times</a></small></p>
-<h2><a href="https://www.hartfordtimes.com/inside-the-connecticut-high-school-where-students-study-the-systems-that-power-it/">Inside The Connecticut High School Where Students Study The Systems That Power It</a></h2>
-<p class="byline"><small>By News</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://hartfordtimes.com/">Support</a></span></p>
-<p>Through visible infrastructure, hands-on training spaces, and high-performance design strategies, the campus gives students firsthand experience with the systems and practices influencing today’s vocational landscape.</p>
-<p class="more"><a href="https://www.hartfordtimes.com/inside-the-connecticut-high-school-where-students-study-the-systems-that-power-it/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.virginiamercury.com/">Support</a></aside>
+<p class="source"><a href="https://www.virginiamercury.com/"><strong>Virginia Mercury</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T09:05:09+00:00" data-pub="5:05 AM EDT">Tue, Aug 18 @ 5AM EDT</time><a class="lozenge place" href="/search?state=VA">Virginia</a></p>
+<h2><a href="https://virginiamercury.com/briefs/virginia-ranks-among-worst-states-for-womens-equality-and-more-headlines/">Virginia ranks among worst states for women’s equality and more headlines</a></h2>
+<p class="byline">By Staff Report</p>
+<p>• “Virginia ranks among worst states for women’s equality.”—WAVY • “Virginia childhood vaccines schedule unchanged after new Trump EO.”—VPM News • “Trump’s shipbuilding plan can’t come at expense of Hampton Roads, Virginia lawmakers say.”—The Virginian-Pilot • “Court documents reveal Instagram messages from alleged VSU shooter: ‘It was us.&#x27;”— <a class="lozenge more" href="https://virginiamercury.com/briefs/virginia-ranks-among-worst-states-for-womens-equality-and-more-headlines/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-16T08:13:18+00:00" data-pub="3:13 AM CDT">Sunday, August 16, 2026 at 3:13 AM CDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>AL / Birmingham / <a href="https://birminghamwatch.org/">Birmingham Watch</a></small></p>
-<h2><a href="https://birminghamwatch.org/2026/08/16/bw-recommends-august-16-2026/">BW Recommends | August 16, 2026</a></h2>
-<p class="byline"><small>By Virginia Martin</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://birminghamwatch.org/donate-to-birminghamwatch/">Donate</a></span></p>
-<p>News and features you might have missed this week from around the region.</p>
-<p class="more"><a href="https://birminghamwatch.org/2026/08/16/bw-recommends-august-16-2026/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-16T00:02:25+00:00" data-pub="7:02 PM CDT">Saturday, August 15, 2026 at 7:02 PM CDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>IL / Chicago / <a href="https://www.changeil.org/">CHANGE Illinois</a></small></p>
-<h2><a href="https://www.changeil.org/2026/08/dushaun-branch-takes-the-lead-as-the-interim-executive-director-at-change-illinois-and-change-illinois-action-fund/">DuShaun Branch takes the lead as the  Interim Executive Director at CHANGE Illinois and CHANGE Illinois Action Fund.</a></h2>
-<p class="byline"><small>By DuShaun Branch</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.changeil.org/donate/">Donate</a></span></p>
-<p>CHICAGO, IL – CHANGE Illinois and CHANGE Illinois Action Fund board members are excited to announce that DuShaun Branch will serve as the organizations’ Interim</p>
-<p class="more"><a href="https://www.changeil.org/2026/08/dushaun-branch-takes-the-lead-as-the-interim-executive-director-at-change-illinois-and-change-illinois-action-fund/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-15T18:30:09+00:00" data-pub="11:30 AM PDT">Saturday, August 15, 2026 at 11:30 AM PDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>CA / Oakland / <a href="https://www.postnewsgroup.com/">Oakland Post</a></small></p>
-<h2><a href="https://www.postnewsgroup.com/essay-california-can-close-its-colorectal-cancer-gap/">ESSAY: California Can Close Its Colorectal Cancer Gap</a></h2>
-<p class="byline"><small>By bpusa-syndication</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.postnewsgroup.com/donate/">Donate</a></span></p>
-<a class="shot" href="https://www.postnewsgroup.com/essay-california-can-close-its-colorectal-cancer-gap/" tabindex="-1" aria-hidden="true"><img src="../img/3e0516be46fabcc261be37f8d5517a4876d39d06.jpg" alt="" width="480" height="251" loading="lazy" decoding="async"></a>
-<p>POST NEWS GROUP — The numbers are stark. From 2014 through 2018, the age-adjusted colorectal cancer incidence rate was 40.2 cases per 100,000 Black Californians, compared with 35.8 among non-Hispanic White Californians. The mortality rate was 25.3 deaths per 100,000 among Black Californians and 17.7 among White Californians—a 43% difference.</p>
-<p class="more"><a href="https://www.postnewsgroup.com/essay-california-can-close-its-colorectal-cancer-gap/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-15T13:35:32+00:00" data-pub="9:35 AM EDT">Saturday, August 15, 2026 at 9:35 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>NY / Cold Spring / <a href="https://highlandscurrent.org/">The Highlands Current</a></small></p>
-<h2><a href="https://highlandscurrent.org/2026/08/15/beacon-high-school-pool-reopens/">Beacon High School Pool Reopens</a></h2>
-<p class="byline"><small>By Staff</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://highlandscurrent.org/membership/short-form">Donate</a></span></p>
-<p>April rescue forced closure</p>
-<p class="more"><a href="https://highlandscurrent.org/2026/08/15/beacon-high-school-pool-reopens/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-15T11:41:15+00:00" data-pub="6:41 AM CDT">Saturday, August 15, 2026 at 6:41 AM CDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>MO / St. Louis / <a href="https://www.stlargusnews.com">St. Louis Argus</a></small></p>
-<h2><a href="https://stlargusnews.com/2026/08/15/agc-of-missouri-2026-advancement-summitfocuses-on-opportunity-workforce-and-regionalcollaboration/">AGC of Missouri 2026 Advancement Summit Focuses on Opportunity, Workforce and Regional Collaboration</a></h2>
-<p class="byline"><small>By ArgusStaff</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://stlargusnews.com/donate/">Donate</a></span></p>
-<a class="shot" href="https://stlargusnews.com/2026/08/15/agc-of-missouri-2026-advancement-summitfocuses-on-opportunity-workforce-and-regionalcollaboration/" tabindex="-1" aria-hidden="true"><img src="../img/ee200944dd97e6606e9000a799cf9a4809f8b88f.jpg" alt="" width="441" height="567" loading="lazy" decoding="async"></a>
-<p>“Advancement for All, Not Just the Few” Brings Construction, Business and Community Leaders Together ST. LOUIS — The Associated General Contractors of Missouri (AGC-MO) will bring together leaders from across the construction industry, public sector, business community and workforce development arena for its 2026 Advancement Summit, September 2 at the Knight Center at Washington UniversityUnder</p>
-<p class="more"><a href="https://stlargusnews.com/2026/08/15/agc-of-missouri-2026-advancement-summitfocuses-on-opportunity-workforce-and-regionalcollaboration/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-15T09:29:48+00:00" data-pub="5:29 AM EDT">Saturday, August 15, 2026 at 5:29 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>MD / Baltimore / <a href="https://baltimoretimes-online.com/">The Baltimore Times</a></small></p>
-<h2><a href="https://baltimoretimes-online.com/detail/back-to-school-giveaways-resources-2026">Back to School Giveaways, Resources 2026</a></h2>
-<p class="byline"><small>By The Baltimore Times</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://givebutter.com/40Forward">Donate</a></span></p>
-<a class="shot" href="https://baltimoretimes-online.com/detail/back-to-school-giveaways-resources-2026" tabindex="-1" aria-hidden="true"><img src="../img/91b1e425a125adb87b3b3895e54c04de8637e22a.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>It is almost time for school to resume in Maryland. Locate events and resources to help youth begin the school year with a last opportunity to have</p>
-<p class="more"><a href="https://baltimoretimes-online.com/detail/back-to-school-giveaways-resources-2026">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-15T09:00:00+00:00" data-pub="2:00 AM PDT">Saturday, August 15, 2026 at 2:00 AM PDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>NV / Las Vegas / <a href="https://thenevadaindependent.com/">The Nevada Independent</a></small></p>
-<h2><a href="https://thenevadaindependent.com/article/nevadas-only-native-high-school-sees-a-50-percent-hike-in-graduation-rates/">Nevada&#x27;s only Native high school sees a 50 percent hike in graduation rates</a></h2>
-<p class="byline"><small>By Associated Press</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://nevadaindependent.fundjournalism.org/donate/?campaign=7013i000000tKk8AAE">Donate</a></span></p>
-<p>Innovative local programs and a change in how rates are reported to a flawed system have boosted grad rates across the nation.</p>
-<p class="more"><a href="https://thenevadaindependent.com/article/nevadas-only-native-high-school-sees-a-50-percent-hike-in-graduation-rates/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-15T07:03:11+00:00" data-pub="3:03 AM EDT">Saturday, August 15, 2026 at 3:03 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>NY / Westchester County / <a href="https://blackwestchester.com/">Black Westchester</a></small></p>
-<h2><a href="https://blackwestchester.com/eloc-celebrates-the-next-generation-of-environmental-leaders-at-2026-student-summer-program-showcase-graduation/">ELOC Celebrates the Next Generation of Environmental Leaders at 2026 Student Summer Program Showcase &amp; Graduation</a></h2>
-<p class="byline"><small>By DAMON K JONES</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://blackwestchester.com/giving-children-fun-scholarly-reasons-to-smile/#respond">Donate</a></span></p>
-<a class="shot" href="https://blackwestchester.com/eloc-celebrates-the-next-generation-of-environmental-leaders-at-2026-student-summer-program-showcase-graduation/" tabindex="-1" aria-hidden="true"><img src="../img/fe7f23c2f8e97e2ca3a7c5bb51c7029fec924833.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Black Westchester ELOC Celebrates the Next Generation of Environmental Leaders at 2026 Student Summer Program Showcase &amp; Graduation ELOC Celebrates the Next Generation of Environmental Leaders at 2026 Student Summer Program Showcase &amp; Graduation YONKERS, NY — Environmental Leaders of Color (ELOC) celebrated education, innovation, and youth leadership at its 2026 Student Summer Program Showcase &amp; G</p>
-<p class="more"><a href="https://blackwestchester.com/eloc-celebrates-the-next-generation-of-environmental-leaders-at-2026-student-summer-program-showcase-graduation/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-15T04:03:06+00:00" data-pub="12:03 AM EDT">Saturday, August 15, 2026 at 12:03 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>DE / Statewide / <a href="https://hoyendelaware.com/">Hoy en Delaware</a></small></p>
-<h2><a href="https://hoyendelaware.com/2026-elections-op-ed-the-delaware-attorney-general-must-fight-for-immigrant-communities-elecciones-2026-op-ed-el-fiscal-general-de-delaware-debe-luchar-por-las-comunidades-inmi/">2026 ELECTIONS: Op-Ed – The Delaware Attorney General Must Fight for Immigrant Communities / ELECCIONES 2026: Op-Ed – El Fiscal General de Delaware debe luchar por las comunidades inmigrantes</a></h2>
-<p class="byline"><small>By Hoy en Delaware</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://hoyendelaware.com/">Support</a></span></p>
-<p>(Below Spanish version) (Editor’s Note: The Democratic and Republican parties will hold primary elections in Delaware on September 15. Within the Democratic Party, the race for the nomination for Delaware Attorney General will be contested by the incumbent, Kathy Jennings, and two challengers: Dwayne Bensing, Legal Director of the ACLU of Delaware, and Patty Rickman,</p>
-<p class="more"><a href="https://hoyendelaware.com/2026-elections-op-ed-the-delaware-attorney-general-must-fight-for-immigrant-communities-elecciones-2026-op-ed-el-fiscal-general-de-delaware-debe-luchar-por-las-comunidades-inmi/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://votebeat.fundjournalism.org/donate/?campaign=701Pc00000M3cVWIAZ">Donate</a></aside>
+<p class="source"><a href="https://www.votebeat.org/arizona/"><strong>Votebeat Arizona</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T09:05:00+00:00" data-pub="2:05 AM MST">Tue, Aug 18 @ 2AM MST</time><a class="lozenge place" href="/search?state=AZ">Arizona</a></p>
+<h2><a href="https://www.votebeat.org/national/2026/08/18/will-the-midterms-happen-questions-answered-live-event-part-two/">You’re invited: Will the midterms happen? Your election questions, answered, Part 2</a></h2>
+<p class="byline">By Lauren Aguirre</p>
+<a class="shot" href="https://www.votebeat.org/national/2026/08/18/will-the-midterms-happen-questions-answered-live-event-part-two/" tabindex="-1" aria-hidden="true"><img src="../img/5986b29131a881d6c110afd90f74e9fcb61aa649.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>&quot;Will the midterms happen? Your election questions, answered, Part 2&quot; is an event hosted by Votebeat. Join us on Sept. 15 at 1 p.m. ET by RSVPing for free on Eventbrite. <a class="lozenge more" href="https://www.votebeat.org/national/2026/08/18/will-the-midterms-happen-questions-answered-live-event-part-two/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 </div>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="../index.html">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -321,6 +307,47 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>

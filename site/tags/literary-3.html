@@ -13,12 +13,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(../fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -27,22 +40,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -50,19 +69,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -75,7 +126,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -93,7 +144,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="../index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="../masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -106,7 +157,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="../subjects/news.html">News</a></li><li><a href="../subjects/politics.html">Politics</a></li><li><a href="../subjects/opinion.html">Opinion</a></li><li><a href="../subjects/health.html">Health</a></li><li><a href="../subjects/environment.html">Environment</a></li><li><a href="../subjects/education.html">Education</a></li><li><a href="../subjects/business.html">Business</a></li><li><a href="../subjects/housing.html">Housing</a></li><li><a href="../subjects/sports.html">Sports</a></li><li><a href="../subjects/food.html">Food</a></li><li><a href="../subjects/arts.html">Arts</a></li></ul></nav>
@@ -121,253 +172,260 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <main id="main">
 <div id="feed-items">
 <article>
-<p class="stamp"><small><time datetime="2026-08-06T16:00:37+00:00" data-pub="12:00 PM EDT">Thursday, August 6, 2026 at 12:00 PM EDT</time></small></p>
-<p><small>National / Literature / <a href="https://coloradoreview.colostate.edu/">Colorado Review</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/university-affiliated.html">University-affiliated</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://coloradoreview.colostate.edu/colorado-review/#donate">Donate</a></aside>
+<p class="source"><a href="https://coloradoreview.colostate.edu/"><strong>Colorado Review</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-06T16:00:37+00:00" data-pub="12:00 PM EDT">Thu, Aug 6 @ 12PM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Literature">Literature</a></p>
 <h2><a href="https://coloradoreview.colostate.edu/2026/08/a-conversation-with-yvette-dechavez/">A Conversation with Yvette DeChavez</a></h2>
-<p class="byline"><small>By Josephine Gawtry</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/university-affiliated.html">University-affiliated</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://coloradoreview.colostate.edu/colorado-review/#donate">Donate</a></span></p>
+<p class="byline">By Josephine Gawtry</p>
 <a class="shot" href="https://coloradoreview.colostate.edu/2026/08/a-conversation-with-yvette-dechavez/" tabindex="-1" aria-hidden="true"><img src="../img/61291870b650cb6f41c7eb0de197180674d58bc6.webp" alt="yvette dechavez" width="300" height="299" loading="lazy" decoding="async"></a>
-<p>Yvette DeChavez discusses “Two by Two,” her story featured in the Summer 2025 issue of Colorado Review, with associate editor Tyra Lechner. Yvette DeChavez was born and raised in San Antonio, TX. She earned a PhD from the University of Texas at Austin. Her writing has appeared in American Short Fiction, Passages North, and Los</p>
-<p class="more"><a href="https://coloradoreview.colostate.edu/2026/08/a-conversation-with-yvette-dechavez/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Yvette DeChavez discusses “Two by Two,” her story featured in the Summer 2025 issue of Colorado Review, with associate editor Tyra Lechner. Yvette DeChavez was born and raised in San Antonio, TX. She earned a PhD from the University of Texas at Austin. Her writing has appeared in American Short Fiction, Passages North, and Los <a class="lozenge more" href="https://coloradoreview.colostate.edu/2026/08/a-conversation-with-yvette-dechavez/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-06T12:00:00+00:00" data-pub="8:00 AM EDT">Thursday, August 6, 2026 at 8:00 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>National / Literature / <a href="https://www.thecommononline.org/">The Common</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/university-affiliated.html">University-affiliated</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://thecommon.app.neoncrm.com/np/clients/thecommon/membershipJoin.jsp?q=subscribe&amp;">Subscribe</a></aside>
+<p class="source"><a href="https://www.thecommononline.org/"><strong>The Common</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-06T12:00:00+00:00" data-pub="8:00 AM EDT">Thu, Aug 6 @ 8AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Literature">Literature</a></p>
 <h2><a href="https://www.thecommononline.org/excerpts-from-khanandihi/">Excerpts from Khanandihi</a></h2>
-<p class="byline"><small>By Mila Massaki Gomes</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/university-affiliated.html">University-affiliated</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://thecommon.app.neoncrm.com/np/clients/thecommon/membershipJoin.jsp?q=subscribe&amp;">Subscribe</a></span></p>
-<p>SHATADAL MITRA This is how it has always been and will continue to be as long as our prodigal lizard agrees—“thik-thik-thik.” So here in Khanyadi, people still cried in obeisance—“Oh hail, Mother Khana!” Khanyadi believed in her heart that it was a righteous namesake</p>
-<p class="more"><a href="https://www.thecommononline.org/excerpts-from-khanandihi/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Mila Massaki Gomes</p>
+<p>SHATADAL MITRA This is how it has always been and will continue to be as long as our prodigal lizard agrees—“thik-thik-thik.” So here in Khanyadi, people still cried in obeisance—“Oh hail, Mother Khana!” Khanyadi believed in her heart that it was a righteous namesake <a class="lozenge more" href="https://www.thecommononline.org/excerpts-from-khanandihi/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-05T20:04:00+00:00" data-pub="4:04 PM EDT">Wednesday, August 5, 2026 at 4:04 PM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>National / Ideas / <a href="https://jewishcurrents.org/">Jewish Currents</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://jewishcurrents.org/donate">Donate</a></aside>
+<p class="source"><a href="https://jewishcurrents.org/"><strong>Jewish Currents</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-05T20:04:00+00:00" data-pub="4:04 PM EDT">Wed, Aug 5 @ 4PM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Ideas">Ideas</a></p>
 <h2><a href="https://jewishcurrents.org/general-election-fight-looms-after-abdul-el-sayeds-narrow-win-in-michigan">General Election Fight Looms After Abdul El-Sayed’s Narrow Win in Michigan - The Democratic candidate survived record spending by AIPAC.</a></h2>
-<p class="byline"><small>By Alex Kane</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://jewishcurrents.org/donate">Donate</a></span></p>
-<p class="more"><a href="https://jewishcurrents.org/general-election-fight-looms-after-abdul-el-sayeds-narrow-win-in-michigan">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Alex Kane</p>
+<p><a class="lozenge more" href="https://jewishcurrents.org/general-election-fight-looms-after-abdul-el-sayeds-narrow-win-in-michigan">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-05T20:03:00+00:00" data-pub="4:03 PM EDT">Wednesday, August 5, 2026 at 4:03 PM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>National / Ideas / <a href="https://jewishcurrents.org/">Jewish Currents</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://jewishcurrents.org/donate">Donate</a></aside>
+<p class="source"><a href="https://jewishcurrents.org/"><strong>Jewish Currents</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-05T20:03:00+00:00" data-pub="4:03 PM EDT">Wed, Aug 5 @ 4PM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Ideas">Ideas</a></p>
 <h2><a href="https://jewishcurrents.org/israeli-prosecutors-will-file-charges-against-settler-who-shot-activist-awdah-hathaleen">Israeli Prosecutors Will File Charges Against Settler Who Shot Activist Awdah Hathaleen - In a rare prosecution for settler violence, Yinon Levi will face manslaughter charges.</a></h2>
-<p class="byline"><small>By Maya Rosen</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://jewishcurrents.org/donate">Donate</a></span></p>
-<p class="more"><a href="https://jewishcurrents.org/israeli-prosecutors-will-file-charges-against-settler-who-shot-activist-awdah-hathaleen">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Maya Rosen</p>
+<p><a class="lozenge more" href="https://jewishcurrents.org/israeli-prosecutors-will-file-charges-against-settler-who-shot-activist-awdah-hathaleen">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-05T17:21:36+00:00" data-pub="1:21 PM EDT">Wednesday, August 5, 2026 at 1:21 PM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>National / Literature / <a href="https://www.nereview.com/">New England Review</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/university-affiliated.html">University-affiliated</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://nereview.com/support-ner/">Donate</a></aside>
+<p class="source"><a href="https://www.nereview.com/"><strong>New England Review</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-05T17:21:36+00:00" data-pub="1:21 PM EDT">Wed, Aug 5 @ 1PM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Literature">Literature</a></p>
 <h2><a href="https://nereview.com/staging-style-a-plug-into-the-wall-the-role-of-memory-forgetting-in-the-personal-essay/">A Plug into the Wall: The Role of Memory &amp; Forgetting in the Personal Essay</a></h2>
-<p class="byline"><small>By Eliza Tiles</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/university-affiliated.html">University-affiliated</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://nereview.com/support-ner/">Donate</a></span></p>
-<p>&quot;Which details are considered to be &#x27;at the edges&#x27; and therefore acceptable to the auspices of invention is left up to the writer, who can wield this power responsibly or irresponsibly . . .&quot;</p>
-<p class="more"><a href="https://nereview.com/staging-style-a-plug-into-the-wall-the-role-of-memory-forgetting-in-the-personal-essay/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Eliza Tiles</p>
+<p>&quot;Which details are considered to be &#x27;at the edges&#x27; and therefore acceptable to the auspices of invention is left up to the writer, who can wield this power responsibly or irresponsibly . . .&quot; <a class="lozenge more" href="https://nereview.com/staging-style-a-plug-into-the-wall-the-role-of-memory-forgetting-in-the-personal-essay/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-05T14:40:15+00:00" data-pub="10:40 AM EDT">Wednesday, August 5, 2026 at 10:40 AM EDT</time></small></p>
-<p><small>National / Literature / <a href="https://www.massreview.org/">The Massachusetts Review</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/university-affiliated.html">University-affiliated</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://massreview.networkforgood.com/">Donate</a></aside>
+<p class="source"><a href="https://www.massreview.org/"><strong>The Massachusetts Review</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-05T14:40:15+00:00" data-pub="10:40 AM EDT">Wed, Aug 5 @ 10AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Literature">Literature</a></p>
 <h2><a href="https://massreview.org/2026/08/05/interview-with-charlene-tzu-hsien-huang/">Interview with Charlene Tzu Hsien Huang</a></h2>
-<p class="byline"><small>By Massachusetts Review</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/university-affiliated.html">University-affiliated</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://massreview.networkforgood.com/">Donate</a></span></p>
+<p class="byline">By Massachusetts Review</p>
 <a class="shot" href="https://massreview.org/2026/08/05/interview-with-charlene-tzu-hsien-huang/" tabindex="-1" aria-hidden="true"><img src="../img/d9328458a98aefca8cb56b0abaea4bd9b573ca02.webp" alt="" width="480" height="359" loading="lazy" decoding="async"></a>
-<p>Who have been the most influential writers in your life? The most influential stories/collections? What’s been inspiring you lately?Lately, I have been running more consistently. This is really my cordoned off time, where all I have are my body, my thoughts, and no obligations to others. After graduate school when I began . . .</p>
-<p class="more"><a href="https://massreview.org/2026/08/05/interview-with-charlene-tzu-hsien-huang/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Who have been the most influential writers in your life? The most influential stories/collections? What’s been inspiring you lately?Lately, I have been running more consistently. This is really my cordoned off time, where all I have are my body, my thoughts, and no obligations to others. After graduate school when I began . . . <a class="lozenge more" href="https://massreview.org/2026/08/05/interview-with-charlene-tzu-hsien-huang/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-04T13:52:33+00:00" data-pub="9:52 AM EDT">Tuesday, August 4, 2026 at 9:52 AM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>National / Ideas / <a href="https://www.dissentmagazine.org/">Dissent</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://www.dissentmagazine.org/donate">Donate</a></aside>
+<p class="source"><a href="https://www.dissentmagazine.org/"><strong>Dissent</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-04T13:52:33+00:00" data-pub="9:52 AM EDT">Tue, Aug 4 @ 9AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Ideas">Ideas</a></p>
 <h2><a href="https://dissentmagazine.org/online_articles/who-owns-american-history/">Who Owns American History?</a></h2>
-<p class="byline"><small>By Beth English</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://www.dissentmagazine.org/donate">Donate</a></span></p>
+<p class="byline">By Beth English</p>
 <a class="shot" href="https://dissentmagazine.org/online_articles/who-owns-american-history/" tabindex="-1" aria-hidden="true"><img src="../img/01e9197f3fc8036b7d2c6e7dc59d349329522ebe.webp" alt="" width="480" height="288" loading="lazy" decoding="async"></a>
-<p>Under the second Trump administration, the fight over history has become a fight over democracy. Who deserves to be trusted with the country’s memory?</p>
-<p class="more"><a href="https://dissentmagazine.org/online_articles/who-owns-american-history/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Under the second Trump administration, the fight over history has become a fight over democracy. Who deserves to be trusted with the country’s memory? <a class="lozenge more" href="https://dissentmagazine.org/online_articles/who-owns-american-history/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-03T18:32:07+00:00" data-pub="2:32 PM EDT">Monday, August 3, 2026 at 2:32 PM EDT</time></small></p>
-<p><small>National / Literature / <a href="https://www.nereview.com/">New England Review</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/university-affiliated.html">University-affiliated</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://nereview.com/support-ner/">Donate</a></aside>
+<p class="source"><a href="https://www.nereview.com/"><strong>New England Review</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-03T18:32:07+00:00" data-pub="2:32 PM EDT">Mon, Aug 3 @ 2PM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Literature">Literature</a></p>
 <h2><a href="https://nereview.com/behind-the-byline-leath-tonino/">Leath Tonino</a></h2>
-<p class="byline"><small>By Eliza Tiles</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/university-affiliated.html">University-affiliated</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://nereview.com/support-ner/">Donate</a></span></p>
-<p>Staff reader Thomas Nath speaks over the phone with NER 47.2 contributor Leath Tonino about constellations, gossip ladders, and why you should write down quotes when you read.</p>
-<p class="more"><a href="https://nereview.com/behind-the-byline-leath-tonino/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Eliza Tiles</p>
+<p>Staff reader Thomas Nath speaks over the phone with NER 47.2 contributor Leath Tonino about constellations, gossip ladders, and why you should write down quotes when you read. <a class="lozenge more" href="https://nereview.com/behind-the-byline-leath-tonino/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-03T11:00:33+00:00" data-pub="7:00 AM EDT">Monday, August 3, 2026 at 7:00 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>National / Literature / <a href="https://bwr.ua.edu/">Black Warrior Review</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/university-affiliated.html">University-affiliated</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://bwr.ua.edu/about/donate/">Donate</a></aside>
+<p class="source"><a href="https://bwr.ua.edu/"><strong>Black Warrior Review</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-03T11:00:33+00:00" data-pub="7:00 AM EDT">Mon, Aug 3 @ 7AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Literature">Literature</a></p>
 <h2><a href="https://bwr.ua.edu/empire-works-to-disenchant-us-an-interview-with-kaveh-akbar/">“Empire works to disenchant us”: An Interview with Kaveh Akbar</a></h2>
-<p class="byline"><small>By Noah Powers</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/university-affiliated.html">University-affiliated</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://bwr.ua.edu/about/donate/">Donate</a></span></p>
-<p class="more"><a href="https://bwr.ua.edu/empire-works-to-disenchant-us-an-interview-with-kaveh-akbar/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Noah Powers</p>
+<p><a class="lozenge more" href="https://bwr.ua.edu/empire-works-to-disenchant-us-an-interview-with-kaveh-akbar/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-02T09:00:26+00:00" data-pub="5:00 AM EDT">Sunday, August 2, 2026 at 5:00 AM EDT</time></small></p>
-<p><small>National / Ideas / <a href="https://thepointmag.com/">The Point</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://thepointmag.com/donate">Donate</a></aside>
+<p class="source"><a href="https://thepointmag.com/"><strong>The Point</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-02T09:00:26+00:00" data-pub="5:00 AM EDT">Sun, Aug 2 @ 5AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Ideas">Ideas</a></p>
 <h2><a href="https://thepointmag.com/letter/on-radical-preservation/">On Radical Preservation</a></h2>
-<p class="byline"><small>By Anastasia Berg</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://thepointmag.com/donate">Donate</a></span></p>
-<p>Our contention is that, if we fail to think through and delimit the role of AI in our lives, we risk undermining the intelligibility of our own guiding cultural concepts, and thus initiating a period in our own society of which it may someday be possible to say that “nothing happened.”</p>
-<p class="more"><a href="https://thepointmag.com/letter/on-radical-preservation/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Anastasia Berg</p>
+<p>Our contention is that, if we fail to think through and delimit the role of AI in our lives, we risk undermining the intelligibility of our own guiding cultural concepts, and thus initiating a period in our own society of which it may someday be possible to say that “nothing happened.” <a class="lozenge more" href="https://thepointmag.com/letter/on-radical-preservation/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-02T08:40:49+00:00" data-pub="4:40 AM EDT">Sunday, August 2, 2026 at 4:40 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>National / Ideas / <a href="https://thepointmag.com/">The Point</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://thepointmag.com/donate">Donate</a></aside>
+<p class="source"><a href="https://thepointmag.com/"><strong>The Point</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-02T08:40:49+00:00" data-pub="4:40 AM EDT">Sun, Aug 2 @ 4AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Ideas">Ideas</a></p>
 <h2><a href="https://thepointmag.com/examined-life/girls-wrestling/">Girls Wrestling</a></h2>
-<p class="byline"><small>By Laura Baudot</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://thepointmag.com/donate">Donate</a></span></p>
-<p>My daughter joined her school’s newly formed girls’ wrestling team in the seventh grade. Her first tournament was at a high school in Oak Harbor, Ohio.</p>
-<p class="more"><a href="https://thepointmag.com/examined-life/girls-wrestling/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Laura Baudot</p>
+<p>My daughter joined her school’s newly formed girls’ wrestling team in the seventh grade. Her first tournament was at a high school in Oak Harbor, Ohio. <a class="lozenge more" href="https://thepointmag.com/examined-life/girls-wrestling/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-02T08:35:59+00:00" data-pub="4:35 AM EDT">Sunday, August 2, 2026 at 4:35 AM EDT</time></small></p>
-<p><small>National / Ideas / <a href="https://thepointmag.com/">The Point</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://thepointmag.com/donate">Donate</a></aside>
+<p class="source"><a href="https://thepointmag.com/"><strong>The Point</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-02T08:35:59+00:00" data-pub="4:35 AM EDT">Sun, Aug 2 @ 4AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Ideas">Ideas</a></p>
 <h2><a href="https://thepointmag.com/criticism/after-the-post-avant-garde/">After the Post-Avant-Garde</a></h2>
-<p class="byline"><small>By Sean Tatol</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://thepointmag.com/donate">Donate</a></span></p>
-<p>When the art market can get by with flashy and ineffectual figurative paintings that are easy to sell on Instagram, it no longer has any reason to care about what’s going on in artistic subcultures. Indeed, those subcultures no longer have any reason to care about themselves.</p>
-<p class="more"><a href="https://thepointmag.com/criticism/after-the-post-avant-garde/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Sean Tatol</p>
+<p>When the art market can get by with flashy and ineffectual figurative paintings that are easy to sell on Instagram, it no longer has any reason to care about what’s going on in artistic subcultures. Indeed, those subcultures no longer have any reason to care about themselves. <a class="lozenge more" href="https://thepointmag.com/criticism/after-the-post-avant-garde/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-02T08:30:23+00:00" data-pub="4:30 AM EDT">Sunday, August 2, 2026 at 4:30 AM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>National / Ideas / <a href="https://thepointmag.com/">The Point</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://thepointmag.com/donate">Donate</a></aside>
+<p class="source"><a href="https://thepointmag.com/"><strong>The Point</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-02T08:30:23+00:00" data-pub="4:30 AM EDT">Sun, Aug 2 @ 4AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Ideas">Ideas</a></p>
 <h2><a href="https://thepointmag.com/criticism/student-of-desire/">Student of Desire</a></h2>
-<p class="byline"><small>By Adelle Waldman</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://thepointmag.com/donate">Donate</a></span></p>
-<p>It’s one thing to think abstractly about what men want, as a literary or philosophical question, or even to decry sexism as a social phenomenon; it’s another to be a single woman in New York City seeking love and partnership, and to worry that what you have to offer is not especially desired by those you are attracted to.</p>
-<p class="more"><a href="https://thepointmag.com/criticism/student-of-desire/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Adelle Waldman</p>
+<p>It’s one thing to think abstractly about what men want, as a literary or philosophical question, or even to decry sexism as a social phenomenon; it’s another to be a single woman in New York City seeking love and partnership, and to worry that what you have to offer is not especially desired by those you are attracted to. <a class="lozenge more" href="https://thepointmag.com/criticism/student-of-desire/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-02T08:25:35+00:00" data-pub="4:25 AM EDT">Sunday, August 2, 2026 at 4:25 AM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>National / Ideas / <a href="https://thepointmag.com/">The Point</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://thepointmag.com/donate">Donate</a></aside>
+<p class="source"><a href="https://thepointmag.com/"><strong>The Point</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-02T08:25:35+00:00" data-pub="4:25 AM EDT">Sun, Aug 2 @ 4AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Ideas">Ideas</a></p>
 <h2><a href="https://thepointmag.com/politics/we-were-the-99-percent/">We Were the 99 Percent</a></h2>
-<p class="byline"><small>By Jeffrey Lawrence</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://thepointmag.com/donate">Donate</a></span></p>
-<p>As the global tides have continued to shift rightward, I’ve found myself going back to those initial days of Occupy, looking for clues. What was it about the movement that captured the imagination of an entire generation?</p>
-<p class="more"><a href="https://thepointmag.com/politics/we-were-the-99-percent/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Jeffrey Lawrence</p>
+<p>As the global tides have continued to shift rightward, I’ve found myself going back to those initial days of Occupy, looking for clues. What was it about the movement that captured the imagination of an entire generation? <a class="lozenge more" href="https://thepointmag.com/politics/we-were-the-99-percent/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-02T08:24:50+00:00" data-pub="4:24 AM EDT">Sunday, August 2, 2026 at 4:24 AM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>National / Literature / <a href="https://www.zyzzyva.org/">ZYZZYVA</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://www.zyzzyva.org/about/support/">Donate</a></aside>
+<p class="source"><a href="https://www.zyzzyva.org/"><strong>ZYZZYVA</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-02T08:24:50+00:00" data-pub="4:24 AM EDT">Sun, Aug 2 @ 4AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Literature">Literature</a></p>
 <h2><a href="https://www.zyzzyva.org/2026/08/02/on-front-street-resistance-and-rebirth-in-the-tent-cities-of-techlandia-by-brian-barth/">On ‘Front Street: Resistance and Rebirth in the Tent Cities of Techlandia’ by Brian Barth</a></h2>
-<p class="byline"><small>By editor</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://www.zyzzyva.org/about/support/">Donate</a></span></p>
-<p>The Bay Area was a groundswell for experiments in communal living during the 1960s and ’70s. Few would associate the utopian spirit of those projects, which were often motivated by the desire to leave the city and its ills, with the urban encampments that have come to shape the region’s public landscape in more recent years. In Front Street: Resistance and Rebirth in the Tent Cities of Techlandia </p>
-<p class="more"><a href="https://www.zyzzyva.org/2026/08/02/on-front-street-resistance-and-rebirth-in-the-tent-cities-of-techlandia-by-brian-barth/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By editor</p>
+<p>The Bay Area was a groundswell for experiments in communal living during the 1960s and ’70s. Few would associate the utopian spirit of those projects, which were often motivated by the desire to leave the city and its ills, with the urban encampments that have come to shape the region’s public landscape in more recent years. In Front Street: Resistance and Rebirth in the Tent Cities of Techlandia  <a class="lozenge more" href="https://www.zyzzyva.org/2026/08/02/on-front-street-resistance-and-rebirth-in-the-tent-cities-of-techlandia-by-brian-barth/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-02T08:20:26+00:00" data-pub="4:20 AM EDT">Sunday, August 2, 2026 at 4:20 AM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>National / Ideas / <a href="https://thepointmag.com/">The Point</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://thepointmag.com/donate">Donate</a></aside>
+<p class="source"><a href="https://thepointmag.com/"><strong>The Point</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-02T08:20:26+00:00" data-pub="4:20 AM EDT">Sun, Aug 2 @ 4AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Ideas">Ideas</a></p>
 <h2><a href="https://thepointmag.com/examined-life/goodbye-west-orange/">Goodbye, West Orange</a></h2>
-<p class="byline"><small>By David Sugarman</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://thepointmag.com/donate">Donate</a></span></p>
-<p>On November 13, 2024, about fifty people gathered on a corner in West Orange, New Jersey, a quiet suburb an hour’s drive from Manhattan. The plan was to march down the block to protest in front of Moshe Glick’s home.</p>
-<p class="more"><a href="https://thepointmag.com/examined-life/goodbye-west-orange/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By David Sugarman</p>
+<p>On November 13, 2024, about fifty people gathered on a corner in West Orange, New Jersey, a quiet suburb an hour’s drive from Manhattan. The plan was to march down the block to protest in front of Moshe Glick’s home. <a class="lozenge more" href="https://thepointmag.com/examined-life/goodbye-west-orange/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-02T08:10:27+00:00" data-pub="4:10 AM EDT">Sunday, August 2, 2026 at 4:10 AM EDT</time></small></p>
-<p><small>National / Ideas / <a href="https://thepointmag.com/">The Point</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://thepointmag.com/donate">Donate</a></aside>
+<p class="source"><a href="https://thepointmag.com/"><strong>The Point</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-02T08:10:27+00:00" data-pub="4:10 AM EDT">Sun, Aug 2 @ 4AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Ideas">Ideas</a></p>
 <h2><a href="https://thepointmag.com/correspondence/a-vital-education/">A Vital Education</a></h2>
-<p class="byline"><small>By Franklin Tucker Eccher</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://thepointmag.com/donate">Donate</a></span></p>
-<p>This past January, I traveled to a small town in Wisconsin’s Driftless region, the southwest corner of the state the glaciers missed, to join a summit of representatives from the far-flung universe of “microcolleges.”</p>
-<p class="more"><a href="https://thepointmag.com/correspondence/a-vital-education/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Franklin Tucker Eccher</p>
+<p>This past January, I traveled to a small town in Wisconsin’s Driftless region, the southwest corner of the state the glaciers missed, to join a summit of representatives from the far-flung universe of “microcolleges.” <a class="lozenge more" href="https://thepointmag.com/correspondence/a-vital-education/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-31T15:19:49+00:00" data-pub="11:19 AM EDT">Friday, July 31, 2026 at 11:19 AM EDT</time></small></p>
-<p><small>National / Literature / <a href="https://nightboat.org/">Nightboat Books</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge" href="../tags/small-press.html">Small press</a><a class="lozenge give" href="https://nightboat.org/support/">Donate</a></aside>
+<p class="source"><a href="https://nightboat.org/"><strong>Nightboat Books</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-31T15:19:49+00:00" data-pub="11:19 AM EDT">Fri, Jul 31 @ 11AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Literature">Literature</a></p>
 <h2><a href="https://nightboat.org/an-interview-with-nightboat-editorial-fellow-terrance-hudson/">An Interview with Nightboat Editorial Fellow Terrance Hudson</a></h2>
-<p class="byline"><small>By Lina Bergamini</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge" href="../tags/small-press.html">Small press</a><a class="lozenge give" href="https://nightboat.org/support/">Donate</a></span></p>
-<p>We recently spoke with Nightboat’s 2025 Editorial Fellow, Terrance Hudson, about writing like they’ve got nothing to lose, discovering Lesbian Peoples, and the differences between working in a bookstore versus</p>
-<p class="more"><a href="https://nightboat.org/an-interview-with-nightboat-editorial-fellow-terrance-hudson/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Lina Bergamini</p>
+<p>We recently spoke with Nightboat’s 2025 Editorial Fellow, Terrance Hudson, about writing like they’ve got nothing to lose, discovering Lesbian Peoples, and the differences between working in a bookstore versus <a class="lozenge more" href="https://nightboat.org/an-interview-with-nightboat-editorial-fellow-terrance-hudson/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-31T11:00:00+00:00" data-pub="7:00 AM EDT">Friday, July 31, 2026 at 7:00 AM EDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>National / Literature / <a href="https://www.cincinnatireview.com/">The Cincinnati Review</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/university-affiliated.html">University-affiliated</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://secure.touchnet.net/C21575_ustores/web/store_main.jsp?STOREID=19&amp;SINGLESTORE=true">Subscribe</a></aside>
+<p class="source"><a href="https://www.cincinnatireview.com/"><strong>The Cincinnati Review</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-31T11:00:00+00:00" data-pub="7:00 AM EDT">Fri, Jul 31 @ 7AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Literature">Literature</a></p>
 <h2><a href="https://www.cincinnatireview.com/contributor/the-moonbeam-elf/">The Moonbeam Elf</a></h2>
-<p class="byline"><small>By Gordon Taylor</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/university-affiliated.html">University-affiliated</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://secure.touchnet.net/C21575_ustores/web/store_main.jsp?STOREID=19&amp;SINGLESTORE=true">Subscribe</a></span></p>
+<p class="byline">By Gordon Taylor</p>
 <a class="shot" href="https://www.cincinnatireview.com/contributor/the-moonbeam-elf/" tabindex="-1" aria-hidden="true"><img src="../img/8ae9bfce9a01db0a7804734c0adee61c93a0dc63.webp" alt="Hand-typed title on typewriter paper: &quot;The Moonbeam Elf,&quot; underlined many times until the underlines become an upside-down triangle." width="360" height="480" loading="lazy" decoding="async"></a>
-<p>Today, contributor Gordon Taylor, whose “Memory Foam” is free to read on our site, sends us this delightful dispatch from his family archives. The Moonbeam Elf In a recent conversation with my mother, we discussed my passion for poetry in spite of how other members of our family are not overtly literary. My mother is</p>
-<p class="more"><a href="https://www.cincinnatireview.com/contributor/the-moonbeam-elf/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Today, contributor Gordon Taylor, whose “Memory Foam” is free to read on our site, sends us this delightful dispatch from his family archives. The Moonbeam Elf In a recent conversation with my mother, we discussed my passion for poetry in spite of how other members of our family are not overtly literary. My mother is <a class="lozenge more" href="https://www.cincinnatireview.com/contributor/the-moonbeam-elf/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-30T20:25:00+00:00" data-pub="4:25 PM EDT">Thursday, July 30, 2026 at 4:25 PM EDT</time></small></p>
-<p><small>National / Ideas / <a href="https://jewishcurrents.org/">Jewish Currents</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://jewishcurrents.org/donate">Donate</a></aside>
+<p class="source"><a href="https://jewishcurrents.org/"><strong>Jewish Currents</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-30T20:25:00+00:00" data-pub="4:25 PM EDT">Thu, Jul 30 @ 4PM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Ideas">Ideas</a></p>
 <h2><a href="https://jewishcurrents.org/a-year-after-a-killing-the-siege-worsens-in-umm-al-khair">A Year After a Killing, the Siege Worsens in Umm al-Khair - Police raid a memorial for the slain Palestinian activist Awdah Hathaleen.</a></h2>
-<p class="byline"><small>By Maya Rosen</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://jewishcurrents.org/donate">Donate</a></span></p>
-<p class="more"><a href="https://jewishcurrents.org/a-year-after-a-killing-the-siege-worsens-in-umm-al-khair">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Maya Rosen</p>
+<p><a class="lozenge more" href="https://jewishcurrents.org/a-year-after-a-killing-the-siege-worsens-in-umm-al-khair">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-30T15:02:00+00:00" data-pub="11:02 AM EDT">Thursday, July 30, 2026 at 11:02 AM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>National / Literature / <a href="https://www.poetrynw.org/">Poetry Northwest</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://www.poetrynw.org/about/donate/">Donate</a></aside>
+<p class="source"><a href="https://www.poetrynw.org/"><strong>Poetry Northwest</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-30T15:02:00+00:00" data-pub="11:02 AM EDT">Thu, Jul 30 @ 11AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Literature">Literature</a></p>
 <h2><a href="https://www.poetrynw.org/interview-on-forsaking-invoking-grieving-a-conversation-with-kelly-hoffer/">Interview// “On Forsaking / Invoking / Grieving”: A Conversation with Kelly Hoffer</a></h2>
-<p class="byline"><small>By Alexa Luborsky</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://www.poetrynw.org/about/donate/">Donate</a></span></p>
+<p class="byline">By Alexa Luborsky</p>
 <a class="shot" href="https://www.poetrynw.org/interview-on-forsaking-invoking-grieving-a-conversation-with-kelly-hoffer/" tabindex="-1" aria-hidden="true"><img src="../img/870dacfcbaf38603abdb56d84dd0dddf3525c2bc.webp" alt="" width="381" height="435" loading="lazy" decoding="async"></a>
-<p>&quot;Naming grief might risk forsaking it, but naming can also be an invocation. I write about my mother and so here she is, brightening the pain I thought I put to bed.&quot;—Kelly Rose Hoffer</p>
-<p class="more"><a href="https://www.poetrynw.org/interview-on-forsaking-invoking-grieving-a-conversation-with-kelly-hoffer/">Read more <span aria-hidden="true">→</span></a></p>
+<p>&quot;Naming grief might risk forsaking it, but naming can also be an invocation. I write about my mother and so here she is, brightening the pain I thought I put to bed.&quot;—Kelly Rose Hoffer <a class="lozenge more" href="https://www.poetrynw.org/interview-on-forsaking-invoking-grieving-a-conversation-with-kelly-hoffer/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-30T12:00:56+00:00" data-pub="8:00 AM EDT">Thursday, July 30, 2026 at 8:00 AM EDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>National / Literature / <a href="https://www.thecommononline.org/">The Common</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/university-affiliated.html">University-affiliated</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://thecommon.app.neoncrm.com/np/clients/thecommon/membershipJoin.jsp?q=subscribe&amp;">Subscribe</a></aside>
+<p class="source"><a href="https://www.thecommononline.org/"><strong>The Common</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-30T12:00:56+00:00" data-pub="8:00 AM EDT">Thu, Jul 30 @ 8AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Literature">Literature</a></p>
 <h2><a href="https://www.thecommononline.org/july-poetry-feature-new-poems-by-our-contributors/">July 2026 Poetry Feature</a></h2>
-<p class="byline"><small>By Aidan Cahill</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/university-affiliated.html">University-affiliated</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://thecommon.app.neoncrm.com/np/clients/thecommon/membershipJoin.jsp?q=subscribe&amp;">Subscribe</a></span></p>
-<p>AMIYA MORETTA Magnolia tree in the window, hammock, / a loop in hours, a cradle of light we swing inside, / naming what we’re afraid of. / In this version, he is from halfway around the world. / Some net caught the curve of us in the dark, / gathered what it could, his hand, my pulse.</p>
-<p class="more"><a href="https://www.thecommononline.org/july-poetry-feature-new-poems-by-our-contributors/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Aidan Cahill</p>
+<p>AMIYA MORETTA Magnolia tree in the window, hammock, / a loop in hours, a cradle of light we swing inside, / naming what we’re afraid of. / In this version, he is from halfway around the world. / Some net caught the curve of us in the dark, / gathered what it could, his hand, my pulse. <a class="lozenge more" href="https://www.thecommononline.org/july-poetry-feature-new-poems-by-our-contributors/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-29T14:57:23+00:00" data-pub="10:57 AM EDT">Wednesday, July 29, 2026 at 10:57 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>National / Literature / <a href="https://swamp-pink.cofc.edu/">Swamp Pink</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/university-affiliated.html">University-affiliated</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://swamp-pink.cofc.edu/">Support</a></aside>
+<p class="source"><a href="https://swamp-pink.cofc.edu/"><strong>Swamp Pink</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-29T14:57:23+00:00" data-pub="10:57 AM EDT">Wed, Jul 29 @ 10AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Literature">Literature</a></p>
 <h2><a href="https://swamp-pink.charleston.edu/letters-from-donbas-translating-silence-and-fury/">Letters from Donbas: Translating Silence and Fury</a></h2>
-<p class="byline"><small>By Jon Bohr Heinen</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/university-affiliated.html">University-affiliated</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://swamp-pink.cofc.edu/">Support</a></span></p>
+<p class="byline">By Jon Bohr Heinen</p>
 <a class="shot" href="https://swamp-pink.charleston.edu/letters-from-donbas-translating-silence-and-fury/" tabindex="-1" aria-hidden="true"><img src="../img/df6c38dd8b876c636c22f114021dc903b52dc80f.webp" alt="" width="480" height="747" loading="lazy" decoding="async"></a>
-<p>Review by Todd Larkin Tremble, MFA ‘27 Silence Dressed in Cyrillic Letters280 pp. Harvard Ukrainian Research Institute. $29.95 Furious Harvests200 pp. Harvard Ukrainian Research Institute. $29.95 Locomoting in both space and time, Iya Kiva recons with the trauma of her family and her nation’s artillery-pocked history in Silence Dressed in Cyrillic Letters. Displaced by Russia’s</p>
-<p class="more"><a href="https://swamp-pink.charleston.edu/letters-from-donbas-translating-silence-and-fury/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Review by Todd Larkin Tremble, MFA ‘27 Silence Dressed in Cyrillic Letters280 pp. Harvard Ukrainian Research Institute. $29.95 Furious Harvests200 pp. Harvard Ukrainian Research Institute. $29.95 Locomoting in both space and time, Iya Kiva recons with the trauma of her family and her nation’s artillery-pocked history in Silence Dressed in Cyrillic Letters. Displaced by Russia’s <a class="lozenge more" href="https://swamp-pink.charleston.edu/letters-from-donbas-translating-silence-and-fury/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-29T12:00:33+00:00" data-pub="8:00 AM EDT">Wednesday, July 29, 2026 at 8:00 AM EDT</time></small></p>
-<p><small>National / Literature / <a href="https://www.thecommononline.org/">The Common</a></small></p>
-<h2><a href="https://www.thecommononline.org/an-exercise-in-loneliness/">An Exercise in Loneliness</a></h2>
-<p class="byline"><small>By Aidan Cahill</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/university-affiliated.html">University-affiliated</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://thecommon.app.neoncrm.com/np/clients/thecommon/membershipJoin.jsp?q=subscribe&amp;">Subscribe</a></span></p>
-<p>AIDAN CAHILL It would seem the Earth is always in flux, whether it be the monthly succumbings of the cabbage white butterflies or the water with its winter sleep, yet for the longest time I had challenged this. In the wake of blurring seasons and rotations of the sun, I had come back here, ages 15, 16, 17, now 19, always to the same place</p>
-<p class="more"><a href="https://www.thecommononline.org/an-exercise-in-loneliness/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-07-28T19:49:00+00:00" data-pub="3:49 PM EDT">Tuesday, July 28, 2026 at 3:49 PM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>National / Ideas / <a href="https://jewishcurrents.org/">Jewish Currents</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://jewishcurrents.org/donate">Donate</a></aside>
+<p class="source"><a href="https://jewishcurrents.org/"><strong>Jewish Currents</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-28T19:49:00+00:00" data-pub="3:49 PM EDT">Tue, Jul 28 @ 3PM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Ideas">Ideas</a></p>
 <h2><a href="https://jewishcurrents.org/in-rhode-island-a-mayoral-candidate-borrows-the-mamdani-playbook">In Rhode Island, a Mayoral Candidate Borrows From the Mamdani Playbook - Activists say the small state offers a path to power for the pro-Palestine left.</a></h2>
-<p class="byline"><small>By Alex Kane</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://jewishcurrents.org/donate">Donate</a></span></p>
-<p class="more"><a href="https://jewishcurrents.org/in-rhode-island-a-mayoral-candidate-borrows-the-mamdani-playbook">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Alex Kane</p>
+<p><a class="lozenge more" href="https://jewishcurrents.org/in-rhode-island-a-mayoral-candidate-borrows-the-mamdani-playbook">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-28T13:35:00+00:00" data-pub="9:35 AM EDT">Tuesday, July 28, 2026 at 9:35 AM EDT</time></small></p>
-<p><small>National / Literature / <a href="https://www.massreview.org/">The Massachusetts Review</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/university-affiliated.html">University-affiliated</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://massreview.networkforgood.com/">Donate</a></aside>
+<p class="source"><a href="https://www.massreview.org/"><strong>The Massachusetts Review</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-28T13:35:00+00:00" data-pub="9:35 AM EDT">Tue, Jul 28 @ 9AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Literature">Literature</a></p>
 <h2><a href="https://massreview.org/2026/07/28/interview-with-caroline-crew/">Interview with Caroline Crew</a></h2>
-<p class="byline"><small>By Massachusetts Review</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/university-affiliated.html">University-affiliated</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://massreview.networkforgood.com/">Donate</a></span></p>
+<p class="byline">By Massachusetts Review</p>
 <a class="shot" href="https://massreview.org/2026/07/28/interview-with-caroline-crew/" tabindex="-1" aria-hidden="true"><img src="../img/8b2ea4fd42a1b7bc8bda8fc9ea3868715f06e214.webp" alt="" width="480" height="387" loading="lazy" decoding="async"></a>
-<p>Crew, at “her tree” on the farm, after her dad’s death. I’m interested in how “Feast: Fruits of the Land” came to exist. How did you decide on the format (namely: the altered sonnet structure, and the beginnings of passages picking up the preceding last lines)? This piece is one “course” of . . .</p>
-<p class="more"><a href="https://massreview.org/2026/07/28/interview-with-caroline-crew/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Crew, at “her tree” on the farm, after her dad’s death. I’m interested in how “Feast: Fruits of the Land” came to exist. How did you decide on the format (namely: the altered sonnet structure, and the beginnings of passages picking up the preceding last lines)? This piece is one “course” of . . . <a class="lozenge more" href="https://massreview.org/2026/07/28/interview-with-caroline-crew/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-27T17:38:01+00:00" data-pub="1:38 PM EDT">Monday, July 27, 2026 at 1:38 PM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>National / Literature / <a href="https://www.nereview.com/">New England Review</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/university-affiliated.html">University-affiliated</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://nereview.com/support-ner/">Donate</a></aside>
+<p class="source"><a href="https://www.nereview.com/"><strong>New England Review</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-27T17:38:01+00:00" data-pub="1:38 PM EDT">Mon, Jul 27 @ 1PM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Literature">Literature</a></p>
 <h2><a href="https://nereview.com/where-are-they-now-j-p-allen/">J. P. Allen</a></h2>
-<p class="byline"><small>By New England Review</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/university-affiliated.html">University-affiliated</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://nereview.com/support-ner/">Donate</a></span></p>
-<p>Editorial intern Josue Solis &#x27;26 speaks with former NER intern JP Allen &#x27;11 about removing career from personhood, lessons learned during Allen&#x27;s time at Middlebury, and what drew him to Clementine Suárez&#x27;s work.</p>
-<p class="more"><a href="https://nereview.com/where-are-they-now-j-p-allen/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By New England Review</p>
+<p>Editorial intern Josue Solis &#x27;26 speaks with former NER intern JP Allen &#x27;11 about removing career from personhood, lessons learned during Allen&#x27;s time at Middlebury, and what drew him to Clementine Suárez&#x27;s work. <a class="lozenge more" href="https://nereview.com/where-are-they-now-j-p-allen/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-27T14:00:12+00:00" data-pub="10:00 AM EDT">Monday, July 27, 2026 at 10:00 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>National / Ideas / <a href="https://www.dissentmagazine.org/">Dissent</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://www.dissentmagazine.org/donate">Donate</a></aside>
+<p class="source"><a href="https://www.dissentmagazine.org/"><strong>Dissent</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-27T14:00:12+00:00" data-pub="10:00 AM EDT">Mon, Jul 27 @ 10AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Ideas">Ideas</a></p>
 <h2><a href="https://dissentmagazine.org/article/public-education-funding-tax-revolt/">Public Education and the Long Tax Revolt</a></h2>
-<p class="byline"><small>By Advait Arun</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://www.dissentmagazine.org/donate">Donate</a></span></p>
+<p class="byline">By Advait Arun</p>
 <a class="shot" href="https://dissentmagazine.org/article/public-education-funding-tax-revolt/" tabindex="-1" aria-hidden="true"><img src="../img/e22843dd0a1ed402447700c851ee3cb677880f3c.webp" alt="" width="480" height="220" loading="lazy" decoding="async"></a>
-<p>Public schools are in need of major funding reforms, but any egalitarian vision for the American education system will need to overcome a right-wing crusade to dismantle it altogether.</p>
-<p class="more"><a href="https://dissentmagazine.org/article/public-education-funding-tax-revolt/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Public schools are in need of major funding reforms, but any egalitarian vision for the American education system will need to overcome a right-wing crusade to dismantle it altogether. <a class="lozenge more" href="https://dissentmagazine.org/article/public-education-funding-tax-revolt/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-27T10:00:00+00:00" data-pub="6:00 AM EDT">Monday, July 27, 2026 at 6:00 AM EDT</time></small></p>
-<p><small>National / Literature / <a href="https://www.frontierpoetry.com/">Frontier Poetry</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://www.frontierpoetry.com/">Support</a></aside>
+<p class="source"><a href="https://www.frontierpoetry.com/"><strong>Frontier Poetry</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-27T10:00:00+00:00" data-pub="6:00 AM EDT">Mon, Jul 27 @ 6AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Literature">Literature</a></p>
 <h2><a href="https://www.frontierpoetry.com/2026/07/27/julia-alvarez-interview/">In Retrospect: An Interview with Julia Alvarez, Author of Visitations</a></h2>
-<p class="byline"><small>By Frontier Poetry</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://www.frontierpoetry.com/">Support</a></span></p>
-<p>This month’s “In Retrospect” interview is with Julia Alvarez, who has returned to her “first love”—poetry—with her new collection, Visitations. In this series, we ask renowned poets to look back over their poems and collections, mapping out their poetic processes.</p>
-<p class="more"><a href="https://www.frontierpoetry.com/2026/07/27/julia-alvarez-interview/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Frontier Poetry</p>
+<p>This month’s “In Retrospect” interview is with Julia Alvarez, who has returned to her “first love”—poetry—with her new collection, Visitations. In this series, we ask renowned poets to look back over their poems and collections, mapping out their poetic processes. <a class="lozenge more" href="https://www.frontierpoetry.com/2026/07/27/julia-alvarez-interview/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-24T21:16:00+00:00" data-pub="5:16 PM EDT">Friday, July 24, 2026 at 5:16 PM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>National / Ideas / <a href="https://jewishcurrents.org/">Jewish Currents</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://jewishcurrents.org/donate">Donate</a></aside>
+<p class="source"><a href="https://jewishcurrents.org/"><strong>Jewish Currents</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-24T21:16:00+00:00" data-pub="5:16 PM EDT">Fri, Jul 24 @ 5PM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Ideas">Ideas</a></p>
 <h2><a href="https://jewishcurrents.org/jewish-leaders-blame-mamdanis-criticism-of-netanyahu-for-a-manhattan-stabbing">Jewish Leaders Blame Mamdani’s Criticism of Netanyahu for a Manhattan Stabbing - The establishment wants to paint anti-genocide politics as anti-Jewish.</a></h2>
-<p class="byline"><small>By Josh Nathan-Kazis</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://jewishcurrents.org/donate">Donate</a></span></p>
-<p class="more"><a href="https://jewishcurrents.org/jewish-leaders-blame-mamdanis-criticism-of-netanyahu-for-a-manhattan-stabbing">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Josh Nathan-Kazis</p>
+<p><a class="lozenge more" href="https://jewishcurrents.org/jewish-leaders-blame-mamdanis-criticism-of-netanyahu-for-a-manhattan-stabbing">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/university-affiliated.html">University-affiliated</a><a class="lozenge" href="../tags/literary.html">Literary</a><a class="lozenge give" href="https://nereview.com/support-ner/">Donate</a></aside>
+<p class="source"><a href="https://www.nereview.com/"><strong>New England Review</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-24T15:59:46+00:00" data-pub="11:59 AM EDT">Fri, Jul 24 @ 11AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Literature">Literature</a></p>
+<h2><a href="https://nereview.com/matthew-olzmann-joins-ner-as-poetry-editor/">Matthew Olzmann Joins NER as Poetry Editor</a></h2>
+<p class="byline">By CK</p>
+<a class="shot" href="https://nereview.com/matthew-olzmann-joins-ner-as-poetry-editor/" tabindex="-1" aria-hidden="true"><img src="../img/c02b9337cc24b86dccc48da114eef73b31b010df.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>New England Review is delighted to announce that Matthew Olzmann has joined our staff as poetry editor! Matthew is an accomplished poet, editor, and educator with strong ties to various poetry communities, including Kundiman and Bread Loaf, Warren Wilson and Dartmouth College. <a class="lozenge more" href="https://nereview.com/matthew-olzmann-joins-ner-as-poetry-editor/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 </div>
 <p><a id="more" href="literary-4.html">More stories</a></p>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="../index.html">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -383,6 +441,47 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>

@@ -13,12 +13,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(../fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -27,22 +40,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -50,19 +69,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -75,7 +126,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -93,7 +144,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="../index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="../masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -106,7 +157,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="../subjects/news.html">News</a></li><li><a href="../subjects/politics.html">Politics</a></li><li><a href="../subjects/opinion.html">Opinion</a></li><li><a href="../subjects/health.html">Health</a></li><li><a href="../subjects/environment.html">Environment</a></li><li><a href="../subjects/education.html">Education</a></li><li><a href="../subjects/business.html">Business</a></li><li><a href="../subjects/housing.html">Housing</a></li><li><a href="../subjects/sports.html">Sports</a></li><li><a href="../subjects/food.html">Food</a></li><li><a href="../subjects/arts.html">Arts</a></li></ul></nav>
@@ -121,277 +172,275 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <main id="main">
 <div id="feed-items">
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T17:50:58+00:00" data-pub="1:50 PM EDT">Thursday, August 20, 2026 at 1:50 PM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>NY / Rochester / <a href="https://rochesterbeacon.com/">Rochester Beacon</a></small></p>
-<h2><a href="https://rochesterbeacon.com/2026/08/20/rpd-contracts-with-city-schools-renewed/">RPD contracts with city schools renewed</a></h2>
-<p class="byline"><small>By JACOB SCHERMERHORN</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://rochesterbeacon.com/donate/">Donate</a></span></p>
-<a class="shot" href="https://rochesterbeacon.com/2026/08/20/rpd-contracts-with-city-schools-renewed/" tabindex="-1" aria-hidden="true"><img src="../img/bbe9ec4306731eb2f3ac19e4ab4075a54ab9bab2.jpg" alt="" width="480" height="306" loading="lazy" decoding="async"></a>
-<p>The Rochester school board approved contracts for officers to be on-site at certain high schools during arrival and dismissal and at special events. The contract renewals had failed to pass last month.</p>
-<p class="more"><a href="https://rochesterbeacon.com/2026/08/20/rpd-contracts-with-city-schools-renewed/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.idahoednews.org/features/spelling-it-out/spelling-it-out-fund-balances/">Donate</a></aside>
+<p class="source"><a href="https://www.idahoednews.org/"><strong>Idaho Education News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T00:36:10+00:00" data-pub="6:36 PM MDT">Thu, Aug 20 @ 6PM MDT</time><a class="lozenge place" href="/search?state=ID">Idaho</a></p>
+<h2><a href="https://www.idahoednews.org/top-news/benefit-trust-tells-members-they-have-to-cover-13-million-shortfall-first-payment-is-due-in-september/">Benefit trust tells members they have to cover $13 million shortfall—first payment is due in September</a></h2>
+<p class="byline">By Sean Dolan</p>
+<a class="shot" href="https://www.idahoednews.org/top-news/benefit-trust-tells-members-they-have-to-cover-13-million-shortfall-first-payment-is-due-in-september/" tabindex="-1" aria-hidden="true"><img src="../img/9ecd4fed827e5e704e65150a60d595b3747b0ac6.jpg" alt="" width="480" height="283" loading="lazy" decoding="async"></a>
+<p>Member school districts and charters can either pay a lump sum or make monthly payments. <a class="lozenge more" href="https://www.idahoednews.org/top-news/benefit-trust-tells-members-they-have-to-cover-13-million-shortfall-first-payment-is-due-in-september/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T17:43:45+00:00" data-pub="12:43 PM CDT">Thursday, August 20, 2026 at 12:43 PM CDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>LA / Lafayette / <a href="https://thecurrentla.com/">The Current (LA)</a></small></p>
-<h2><a href="https://thecurrentla.com/2026/on-the-road-with-lafayette-superintendent-francis-touchet/">On the road with Lafayette Superintendent Francis Touchet</a></h2>
-<p class="byline"><small>By Anna Oakes</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://thecurrentla.com/support-us/">Donate</a></span></p>
-<p>On his three-day tour of the district’s 44 schools, Superintendent Francis Touchet showed off construction projects and new facilities. Competition with charter schools was a hot topic, while questions about Comeaux prompted a cold shoulder.</p>
-<p class="more"><a href="https://thecurrentla.com/2026/on-the-road-with-lafayette-superintendent-francis-touchet/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://lailluminator.com/">Support</a></aside>
+<p class="source"><a href="https://lailluminator.com/"><strong>Lousiana Illuminator</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T00:28:30+00:00" data-pub="7:28 PM CDT">Thu, Aug 20 @ 7PM CDT</time><a class="lozenge place" href="/search?state=LA">Louisiana</a></p>
+<h2><a href="https://lailluminator.com/2026/08/20/lsu-records-public/">Appellate court rules LSU has to make employee investigation records public</a></h2>
+<p class="byline">By Piper Hutchinson</p>
+<a class="shot" href="https://lailluminator.com/2026/08/20/lsu-records-public/" tabindex="-1" aria-hidden="true"><img src="../img/a157344d3bd9360d03e40b92b31a08e71ff10413.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>A state appellate court has ruled LSU must release its investigative records about a former administrator accused of catfishing students to the former editor of its student paper. <a class="lozenge more" href="https://lailluminator.com/2026/08/20/lsu-records-public/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T17:43:33+00:00" data-pub="12:43 PM CDT">Thursday, August 20, 2026 at 12:43 PM CDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>LA / Statewide / <a href="https://lailluminator.com/">Lousiana Illuminator</a></small></p>
-<h2><a href="https://lailluminator.com/2026/08/20/ul-monroe-nursing/">State health department gives UL Monroe $2 million to address rural nursing shortage</a></h2>
-<p class="byline"><small>By Piper Hutchinson</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://lailluminator.com/">Support</a></span></p>
-<a class="shot" href="https://lailluminator.com/2026/08/20/ul-monroe-nursing/" tabindex="-1" aria-hidden="true"><img src="../img/447c3ab479d3cf9e6d5067c81cb50d33a1eb4594.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>The Louisiana Board of Regents projects the state will have a shortfall of approximately 6,000 nurses by 2030.</p>
-<p class="more"><a href="https://lailluminator.com/2026/08/20/ul-monroe-nursing/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://donate.stripe.com/4gw4h6f7o6MObcIfZ2">Donate</a></aside>
+<p class="source"><a href="https://www.richmonder.org/"><strong>The Richmonder</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T00:19:46+00:00" data-pub="8:19 PM EDT">Thu, Aug 20 @ 8PM EDT</time><a class="lozenge place" href="/search?state=VA">Virginia</a><a class="lozenge place" href="/search?place=Richmond&state=VA">Richmond</a></p>
+<h2><a href="https://www.richmonder.org/a-new-era-for-richmond-high-school-for-the-arts-begins-with-a-140m-building-take-a-look-inside/">A new era for Richmond High School for the Arts begins with a $140M building. Take a look inside</a></h2>
+<p class="byline">By Victoria A. Ifatusin</p>
+<a class="shot" href="https://www.richmonder.org/a-new-era-for-richmond-high-school-for-the-arts-begins-with-a-140m-building-take-a-look-inside/" tabindex="-1" aria-hidden="true"><img src="../img/a760648105720b03a184d2625284cff1eded1450.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>RHSA will have a primary focus on the arts, offering classes like dance, fashion, theater and film studies. <a class="lozenge more" href="https://www.richmonder.org/a-new-era-for-richmond-high-school-for-the-arts-begins-with-a-140m-building-take-a-look-inside/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T17:40:00+00:00" data-pub="1:40 PM EDT">Thursday, August 20, 2026 at 1:40 PM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>GA / Athens / <a href="https://www.redandblack.com/">The Red &amp; Black</a></small></p>
-<h2><a href="https://www.redandblack.com/athensnews/car-lodged-underneath-athens-school-bus-no-injuries-on-bus/article_d87c2c52-5230-46a9-a326-3a110da4147a.html">Car lodged underneath Athens school bus, no injuries on bus</a></h2>
-<p class="byline"><small>By Hannah Silver</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.redandblack.com/">Support</a></span></p>
-<a class="shot" href="https://www.redandblack.com/athensnews/car-lodged-underneath-athens-school-bus-no-injuries-on-bus/article_d87c2c52-5230-46a9-a326-3a110da4147a.html" tabindex="-1" aria-hidden="true"><img src="../img/ab42a3cfc59c8db8851731ea7abe55cd5b5d670a.webp" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
-<p>A car got lodged underneath a Clarke County School District school bus after crashing into it on Thursday morning. No one on the bus was injured but the Athens-Clarke County Fire Department (ACCFD) has not commented on the condition of</p>
-<p class="more"><a href="https://www.redandblack.com/athensnews/car-lodged-underneath-athens-school-bus-no-injuries-on-bus/article_d87c2c52-5230-46a9-a326-3a110da4147a.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.washingtoninformer.com/support-our-publication/">Donate</a></aside>
+<p class="source"><a href="http://www.washingtoninformer.com/"><strong>The Washington Informer</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T23:17:00+00:00" data-pub="7:17 PM EDT">Thu, Aug 20 @ 7PM EDT</time><a class="lozenge place" href="/search?state=DC">Washington, D.C.</a><a class="lozenge place" href="/search?place=Washington&state=DC">Washington</a></p>
+<h2><a href="https://www.washingtoninformer.com/pgcps-accelerates-learning-growth/">Superintendent Shawn Joseph Shares Plans, Goals for the Future of PGCPS</a></h2>
+<p class="byline">By Micha Green and Richard D. Elliott</p>
+<a class="shot" href="https://www.washingtoninformer.com/pgcps-accelerates-learning-growth/" tabindex="-1" aria-hidden="true"><img src="../img/f7aebf0dc3930898a79307e8b9a0252579ba08eb.jpg" alt="" width="480" height="312" loading="lazy" decoding="async"></a>
+<p>Prince George&#x27;s County Public Schools Superintendent Dr. Shawn Joseph aims to drive student growth during the 2026-2027 school year through new literacy and math initiatives, behavioral programs, and the introduction of generative AI technology for high schoolers. <a class="lozenge more" href="https://www.washingtoninformer.com/pgcps-accelerates-learning-growth/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T16:44:23+00:00" data-pub="11:44 AM CDT">Thursday, August 20, 2026 at 11:44 AM CDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>WI / Milwaukee / <a href="https://milwaukeetimesnews.com//">Milwaukee Times Weekly</a></small></p>
-<h2><a href="https://milwaukeetimesnews.com/digital-editions/milwaukee-times-digital-edition-issue-august-20-2026">Milwaukee Times Digital Edition Issue August 20, 2026</a></h2>
-<p class="byline"><small>By Milwaukee Times</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://milwaukeetimesnews.com//">Support</a></span></p>
-<p>Hallowed Missionary Baptist Church&#x27;s Annual Community Outreach; Beckum-Stapleton Little League celebrates photojournalist Yvonne Kemp&#x27;s birthday; National Weather Service to assess damage after Tuesday&#x27;s severe storms in Southeast Wisconsin; Christy Knowings, former &#x27;All That&#x27; star, dies at 46; Buffalo Soldiers/Trooper M.C. host &#x27;Back-to-School Giveaway&#x27;; Five MPS schools are ranked among the nati</p>
-<p class="more"><a href="https://milwaukeetimesnews.com/digital-editions/milwaukee-times-digital-edition-issue-august-20-2026">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://chalkbeat.fundjournalism.org/donate/?campaign=701Pc00000M3hQLIAZ">Donate</a></aside>
+<p class="source"><a href="https://www.chalkbeat.org/"><strong>Chalkbeat</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T23:06:27+00:00" data-pub="7:06 PM EDT">Thu, Aug 20 @ 7PM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Education">Education</a></p>
+<h2><a href="https://www.chalkbeat.org/colorado/2026/08/20/denver-test-scores-fall-short-of-goals-in-marrero-strategic-plan/">Denver’s test scores are up, but not high enough to meet all of the superintendent’s strategic plan goals</a></h2>
+<p class="byline">By Melanie Asmar</p>
+<a class="shot" href="https://www.chalkbeat.org/colorado/2026/08/20/denver-test-scores-fall-short-of-goals-in-marrero-strategic-plan/" tabindex="-1" aria-hidden="true"><img src="../img/f99bb818cd876b62cc04226c57faecb187a8858b.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Denver Public Schools Superintendent Alex Marrero listens to school board members as they speak during a board retreat Monday. Marrero&#x27;s first strategic plan, released in 2022, called for increasing test scores by 10 percentage points by 2026. <a class="lozenge more" href="https://www.chalkbeat.org/colorado/2026/08/20/denver-test-scores-fall-short-of-goals-in-marrero-strategic-plan/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T16:41:33+00:00" data-pub="12:41 PM EDT">Thursday, August 20, 2026 at 12:41 PM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>NY / Yonkers / <a href="https://www.theyonkersledger.com/">The Yonkers Ledger</a></small></p>
-<h2><a href="https://www.theyonkersledger.com/news/my-brothers-keeper-yonkers-city-hall-partner-on-paid-youth-jobs/60748/">My Brother’s Keeper, Yonkers City Hall Partner on Paid Youth Jobs</a></h2>
-<p class="byline"><small>By Mashiat Azmi</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.theyonkersledger.com/donate/">Donate</a></span></p>
-<a class="shot" href="https://www.theyonkersledger.com/news/my-brothers-keeper-yonkers-city-hall-partner-on-paid-youth-jobs/60748/" tabindex="-1" aria-hidden="true"><img src="../img/e53ad339132f72e329077ce15cd320fd24c77844.jpg" alt="" width="480" height="272" loading="lazy" decoding="async"></a>
-<p>Yonkers Public Schools‘ My Brother’s Keeper is partnering with the city to provide Yonkers youth with work experience this summer. MBK is a long-standing school-based program that supports students of color through mentorship and community partnerships. For the summer program, MBK is connecting students 16 and older with paid jobs disposing of trash throughout the</p>
-<p class="more"><a href="https://www.theyonkersledger.com/news/my-brothers-keeper-yonkers-city-hall-partner-on-paid-youth-jobs/60748/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://carolinapublicpress.fundjournalism.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://carolinapublicpress.org/"><strong>Carolina Public Press</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T23:03:45+00:00" data-pub="7:03 PM EDT">Thu, Aug 20 @ 7PM EDT</time><a class="lozenge place" href="/search?state=NC">North Carolina</a><a class="lozenge place" href="/search?place=Asheville&state=NC">Asheville</a></p>
+<h2><a href="https://carolinapublicpress.org/80409/unc-gets-to-keep-report-on-controversial-program-secret-judge-says/">UNC gets to keep report on controversial program secret, judge says</a></h2>
+<p class="byline">By Kate Denning</p>
+<a class="shot" href="https://carolinapublicpress.org/80409/unc-gets-to-keep-report-on-controversial-program-secret-judge-says/" tabindex="-1" aria-hidden="true"><img src="../img/65f232cf76b7213f6bb0ae4dc5886b8575a2b519.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Lawyer shocked that judge found every page in long UNC document covered by attorney-client privilege. News media coalition may appeal. UNC gets to keep report on controversial program secret, judge says is a story from Carolina Public Press, an award-winning independent newsroom. Our breakthrough journalism shines a light on the critical overlooked and under-reported issues facing North Carolina’s <a class="lozenge more" href="https://carolinapublicpress.org/80409/unc-gets-to-keep-report-on-controversial-program-secret-judge-says/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T16:34:22+00:00" data-pub="12:34 PM EDT">Thursday, August 20, 2026 at 12:34 PM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>WV / Statewide / <a href="https://blackbygod.org/">Black by God</a></small></p>
-<h2><a href="https://blackbygod.org/articles/news/aclu-west-virginia-lincoln-county-school-funding-lawsuit/">ACLU notifies state officials of intent to file lawsuit over ‘unconstitutional underfunding’ of Lincoln County Schools</a></h2>
-<p class="byline"><small>By Matthew Young</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://blackbygod.org/support-us/">Donate</a></span></p>
-<a class="shot" href="https://blackbygod.org/articles/news/aclu-west-virginia-lincoln-county-school-funding-lawsuit/" tabindex="-1" aria-hidden="true"><img src="../img/65d8a59a348a37cbbb3243cda187b92e8065aa59.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>The ACLU of West Virginia issued a formal lawsuit notification on behalf of Lincoln County, alleging the state&#x27;s school funding formula is unconstitutional.</p>
-<p class="more"><a href="https://blackbygod.org/articles/news/aclu-west-virginia-lincoln-county-school-funding-lawsuit/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://checkout.fundjournalism.org/memberform?org_id=berkeleyside&amp;campaign=7010b000001RTqU&amp;amount=15&amp;installmentPeriod=monthly">Donate</a></aside>
+<p class="source"><a href="https://www.berkeleyside.org/"><strong>Berkeleyside</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T22:28:00+00:00" data-pub="3:28 PM PDT">Thu, Aug 20 @ 3PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Berkeley&state=CA">Berkeley</a></p>
+<h2><a href="https://www.berkeleyside.org/2026/08/20/beatriz-leyva-cutler-appointed-to-busd-school-board">Berkeley Unified appoints former board member Beatriz Leyva‑Cutler to fill vacant seat</a></h2>
+<p class="byline">By Vanessa Arredondo</p>
+<a class="shot" href="https://www.berkeleyside.org/2026/08/20/beatriz-leyva-cutler-appointed-to-busd-school-board" tabindex="-1" aria-hidden="true"><img src="../img/1436323fd9b453282219c852d608713de98c55b4.jpg" alt="" width="480" height="388" loading="lazy" decoding="async"></a>
+<p>The BUSD board had been without a fifth member since July, when Ana Vasudeo stepped down to join the county. Leyva-Cutler will serve out the remainder of her term, until November 2028. <a class="lozenge more" href="https://www.berkeleyside.org/2026/08/20/beatriz-leyva-cutler-appointed-to-busd-school-board">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T16:05:43+00:00" data-pub="12:05 PM EDT">Thursday, August 20, 2026 at 12:05 PM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>NJ / South Jersey / <a href="https://frontrunnernewjersey.com">Front Runner</a></small></p>
-<h2><a href="https://frontrunnernewjersey.com/2026/08/20/atlantic-city-schools-emerge-from-state-fiscal-monitoring/">Atlantic City Schools Emerge From State Fiscal Monitoring</a></h2>
-<p class="byline"><small>By AC Joseph Media</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://frontrunnernewjersey.com/support-frnj/">Donate</a></span></p>
-<a class="shot" href="https://frontrunnernewjersey.com/2026/08/20/atlantic-city-schools-emerge-from-state-fiscal-monitoring/" tabindex="-1" aria-hidden="true"><img src="../img/8d13a4b3f250806d2a79b21a64365db52041df7e.jpg" alt="" width="300" height="250" loading="lazy" decoding="async"></a>
-<p>AC JosepH Media ATLANTIC CITY — Citing that the Atlantic City Public Schools District “has</p>
-<p class="more"><a href="https://frontrunnernewjersey.com/2026/08/20/atlantic-city-schools-emerge-from-state-fiscal-monitoring/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://www.westchesterhispano.net/">Support</a></aside>
+<p class="source"><a href="https://www.westchesterhispano.net/"><strong>Westchester Hispano</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T22:27:47+00:00" data-pub="6:27 PM EDT">Thu, Aug 20 @ 6PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Westchester+County&state=NY">Westchester County</a></p>
+<h2><a href="https://www.westchesterhispano.net/suny-wcc-programa-formacion-maestros-secundaria-ny/">SUNY WCC lanza programa para formar maestros</a></h2>
+<p class="byline">By Edwin Mazae</p>
+<p>Preparan a futuros docentes de secundaria en inglés, historia, matemáticas y español, en momentos en que Nueva York y el país enfrentan escasez de maestros calificados Sala de Redacción | Westchester Hispano Valhalla, NY SUNY Westchester Community College (SUNY WCC) anunció el lanzamiento de un nuevo programa académico enfocado en la formación de futuros maestros <a class="lozenge more" href="https://www.westchesterhispano.net/suny-wcc-programa-formacion-maestros-secundaria-ny/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T16:00:00+00:00" data-pub="12:00 PM EDT">Thursday, August 20, 2026 at 12:00 PM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>NJ / Statewide / <a href="https://njurbannews.com/">NJ Urban News</a></small></p>
-<h2><a href="https://njurbannews.com/2026/08/20/75k-in-grants-will-help-new-jersey-students-and-adults-build-workforce-skills/">$75K in Grants Will Help New Jersey Students and Adults Build Workforce Skills</a></h2>
-<p class="byline"><small>By Sydney Salomon</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://njurbannews.com/support-us/">Donate</a></span></p>
-<a class="shot" href="https://njurbannews.com/2026/08/20/75k-in-grants-will-help-new-jersey-students-and-adults-build-workforce-skills/" tabindex="-1" aria-hidden="true"><img src="../img/50810f0d984b99a670096a24363f5c36bcdc1b90.jpg" alt="" width="434" height="326" loading="lazy" decoding="async"></a>
-<p>Four NJ nonprofits will receive funding to expand career training, STEM education, and hands-on learning opportunities for students and adults.</p>
-<p class="more"><a href="https://njurbannews.com/2026/08/20/75k-in-grants-will-help-new-jersey-students-and-adults-build-workforce-skills/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.idahoednews.org/features/spelling-it-out/spelling-it-out-fund-balances/">Donate</a></aside>
+<p class="source"><a href="https://www.idahoednews.org/"><strong>Idaho Education News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T22:20:35+00:00" data-pub="4:20 PM MDT">Thu, Aug 20 @ 4PM MDT</time><a class="lozenge place" href="/search?state=ID">Idaho</a></p>
+<h2><a href="https://www.idahoednews.org/news/charter-commission-approves-final-gem-prep-school/">Charter commission approves ‘final’ Gem Prep school</a></h2>
+<p class="byline">By Kaeden Lincoln</p>
+<a class="shot" href="https://www.idahoednews.org/news/charter-commission-approves-final-gem-prep-school/" tabindex="-1" aria-hidden="true"><img src="../img/39551aaa5d1f89d31ad88b201d9e9b869d05eb11.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Gem Prep Caldwell will be allowed to open roughly three miles northwest of the Vallivue School District&#x27;s Ridgevue High. <a class="lozenge more" href="https://www.idahoednews.org/news/charter-commission-approves-final-gem-prep-school/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T15:44:35+00:00" data-pub="11:44 AM EDT">Thursday, August 20, 2026 at 11:44 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>National / Music / <a href="https://www.hearingthings.co/">Hearing Things</a></small></p>
-<h2><a href="https://www.hearingthings.co/the-twink-robin-to-charlis-batman/">The Twink Robin to Charli&#x27;s Batman</a></h2>
-<p class="byline"><small>By Andy Cush</small><span class="aside"><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://www.hearingthings.co/membership/">Become a member</a></span></p>
-<a class="shot" href="https://www.hearingthings.co/the-twink-robin-to-charlis-batman/" tabindex="-1" aria-hidden="true"><img src="../img/835aba16b7f4450452ada7d856232255f7ddf6e3.jpg" alt="" width="480" height="480" loading="lazy" decoding="async"></a>
-<p>Presenting one of the year&#x27;s best pop singles</p>
-<p class="more"><a href="https://www.hearingthings.co/the-twink-robin-to-charlis-batman/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://form-renderer-app.donorperfect.io/give/new-pine-plains-herald/support-the-new-pine-plains-herald">Donate</a></aside>
+<p class="source"><a href="https://www.newpineplainsherald.org"><strong>The New Pine Plains Herald</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T22:18:59+00:00" data-pub="6:18 PM EDT">Thu, Aug 20 @ 6PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Pine+Plains&state=NY">Pine Plains</a></p>
+<h2><a href="https://www.newpineplainsherald.org/bus-safety-loopholes-and-special-education-challenges-dominate-pine-plains-school-board-meeting/">Bus Safety Loopholes and Special Education Challenges Dominate Pine Plains School Board Meeting</a></h2>
+<p class="byline">By Mary Jenkins</p>
+<a class="shot" href="https://www.newpineplainsherald.org/bus-safety-loopholes-and-special-education-challenges-dominate-pine-plains-school-board-meeting/" tabindex="-1" aria-hidden="true"><img src="../img/55fe56f28b96a6bdbec1ad58dfc3464fc070bf5e.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>An Ancram grandparent pleaded with the board to find ways to keep motorists from speeding past stopped school buses on Poole Hill Road. <a class="lozenge more" href="https://www.newpineplainsherald.org/bus-safety-loopholes-and-special-education-challenges-dominate-pine-plains-school-board-meeting/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T15:30:00+00:00" data-pub="8:30 AM PDT">Thursday, August 20, 2026 at 8:30 AM PDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>WA / Seattle / <a href="https://PhinneyWood.com">PhinneyWood.com</a></small></p>
-<h2><a href="https://phinneywood.com/2026/08/donate-school-supplies-for-local-families/">Donate School Supplies for Local Families</a></h2>
-<p class="byline"><small>By Chad Frerichs</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://phinneywood.com/2026/08/donate-school-supplies-for-local-families/">Donate</a></span></p>
-<p>As families prepare for the start of the 2026-27 school year, FamilyWorks is once again collecting school supplies to help local students head back to class ready to learn. Last</p>
-<p class="more"><a href="https://phinneywood.com/2026/08/donate-school-supplies-for-local-families/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://chalkbeat.fundjournalism.org/donate/?campaign=701Pc00000M3hQLIAZ">Donate</a></aside>
+<p class="source"><a href="https://www.chalkbeat.org/"><strong>Chalkbeat</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T22:10:34+00:00" data-pub="6:10 PM EDT">Thu, Aug 20 @ 6PM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Education">Education</a></p>
+<h2><a href="https://www.chalkbeat.org/philadelphia/2026/08/20/school-closure-process-moves-forward-with-transition-committees/">Philly schools ask communities to help shape transition plan as controversial closures move ahead</a></h2>
+<p class="byline">By Carly Sitrin</p>
+<a class="shot" href="https://www.chalkbeat.org/philadelphia/2026/08/20/school-closure-process-moves-forward-with-transition-committees/" tabindex="-1" aria-hidden="true"><img src="../img/37ab2fbcf5506c556923d6c39a268471f9409a7d.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>School district officials announced they are opening applications for school-specific transition committees starting on Aug. 31. <a class="lozenge more" href="https://www.chalkbeat.org/philadelphia/2026/08/20/school-closure-process-moves-forward-with-transition-committees/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T15:25:10+00:00" data-pub="11:25 AM EDT">Thursday, August 20, 2026 at 11:25 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>MD / Hyattsville / <a href="https://streetcarsuburbs.news/">Streetcar Suburbs News</a></small></p>
-<h2><a href="https://streetcarsuburbs.news/63053/laurel/pallotti-high-splits-leadership-roles-names-first-female-lay-principal/">Pallotti High splits leadership roles, names first female lay principal</a></h2>
-<p class="byline"><small>By RORY CAHILL</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://streetcarsuburbs.news/donate/">Donate</a></span></p>
-<p>St. Vincent Pallotti High School has adopted a new leadership structure with separate principal and president roles, a major change for the 105-year-old private Catholic school. Jeffrey Palumbo, who held both offices for the past 14 years, is president under the new structure, while assistant principal Catherine Edwards has been promoted to principal. Edwards is</p>
-<p class="more"><a href="https://streetcarsuburbs.news/63053/laurel/pallotti-high-splits-leadership-roles-names-first-female-lay-principal/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/college.html">College</a><a class="lozenge give" href="https://tritonscall.substack.com/">Support</a></aside>
+<p class="source"><a href="https://tritonscall.substack.com/"><strong>The Triton&#x27;s Call</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T22:00:51+00:00" data-pub="6:00 PM EDT">Thu, Aug 20 @ 6PM EDT</time><a class="lozenge place" href="/search?place=Mangilao">Mangilao</a></p>
+<h2><a href="https://tritonscall.substack.com/p/end-of-summer-nutrition-workshop">End-of-summer nutrition workshop at UOG to help residents shift into healthier habits</a></h2>
+<a class="shot" href="https://tritonscall.substack.com/p/end-of-summer-nutrition-workshop" tabindex="-1" aria-hidden="true"><img src="../img/9eef69d60dbf9ed54cdb55a20bbb0842cd4fd641.jpg" alt="" width="480" height="679" loading="lazy" decoding="async"></a>
+<p>The SNAP-Ed Program under the University of Guam Land Grant Extension Service invites adults ages 18 and older to attend “Ready, Set, Eat: Prepare for Healthier Days Ahead,” a free nutrition education workshop series designed to help participants prepare healthy, budget-friendly meals. <a class="lozenge more" href="https://tritonscall.substack.com/p/end-of-summer-nutrition-workshop">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T15:22:00+00:00" data-pub="11:22 AM EDT">Thursday, August 20, 2026 at 11:22 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>NC / Raleigh / <a href="https://enlacelatinonc.org/">Enlace Latino NC</a></small></p>
-<h2><a href="https://enlacelatinonc.org/helene-what-the-706-million-in-the-new-state-budget-means-for-buncombe/">Helene: What the $706 Million in the New State Budget Means for Buncombe</a></h2>
-<p class="byline"><small>By Patricia Serrano</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge" href="../tags/latino.html">Latino</a><a class="lozenge give" href="https://enlacelatinonc.org/support-our-publication/">Donate</a></span></p>
-<a class="shot" href="https://enlacelatinonc.org/helene-what-the-706-million-in-the-new-state-budget-means-for-buncombe/" tabindex="-1" aria-hidden="true"><img src="../img/6f267d4b41e2568bb425071d36ff092c421dedec.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>The money covers temporary housing, private roads and bridges, and the state share of FEMA programs. But the group assisting county families case by case warns they will need much more. La entrada Helene: What the $706 Million in the New State Budget Means for Buncombe se publicó primero en Enlace Latino NC. Helene: What the $706 Million in the New State Budget Means for Buncombe was first posted </p>
-<p class="more"><a href="https://enlacelatinonc.org/helene-what-the-706-million-in-the-new-state-budget-means-for-buncombe/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://www.thedailycatch.org/donations/">Donate</a></aside>
+<p class="source"><a href="https://www.thedailycatch.org/"><strong>The Red Hook Daily Catch</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T21:55:41+00:00" data-pub="5:55 PM EDT">Thu, Aug 20 @ 5PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Red+Hook&state=NY">Red Hook</a></p>
+<h2><a href="https://www.thedailycatch.org/articles/red-hook-soars-and-rhinebeck-drops-in-new-best-high-schools-list-but-methodology-change-muddles-results/">Red Hook Soars and Rhinebeck Drops in New Best High Schools List, But Methodology Change Muddles Results</a></h2>
+<p class="byline">By Emily Sachar, Editor</p>
+<p>In the latest U.S. News &amp; World Report high school ranking, Red Hook soared to a place among the best in the State, while Rhinebeck fell behind. <a class="lozenge more" href="https://www.thedailycatch.org/articles/red-hook-soars-and-rhinebeck-drops-in-new-best-high-schools-list-but-methodology-change-muddles-results/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T15:20:08+00:00" data-pub="11:20 AM EDT">Thursday, August 20, 2026 at 11:20 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>FL / Broward County / <a href="http://www.thewestsidegazette.com/">Westside Gazette</a></small></p>
-<h2><a href="https://thewestsidegazette.com/her-story-juanita-hankerson-avant-gray/">Her Story Juanita Hankerson Avant–Gray</a></h2>
-<p class="byline"><small>By Carma Henry</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://thewestsidegazette.com/friends-of-aarlcc-pillars-of-giving-campaign/">Donate</a></span></p>
-<a class="shot" href="https://thewestsidegazette.com/her-story-juanita-hankerson-avant-gray/" tabindex="-1" aria-hidden="true"><img src="../img/1100a237ce35b40a5e6f248cd3e3ec77cd601d1a.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>After returning to Fort Lauderdale, she and her sisters attended the Old Dillard School. She loved playing basketball and singing with the Chorus. In 1955, history was made by her performance to sing on the PBS Channel accompanied by her chorus teacher Mrs. Rhoda Snead. Because of her academics acumen - Class of 1955 - she was chosen as Salutatorian.</p>
-<p class="more"><a href="https://thewestsidegazette.com/her-story-juanita-hankerson-avant-gray/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://scdailygazette.com/">Support</a></aside>
+<p class="source"><a href="https://scdailygazette.com/"><strong>South Carolina Daily Gazette</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T21:53:12+00:00" data-pub="5:53 PM EDT">Thu, Aug 20 @ 5PM EDT</time><a class="lozenge place" href="/search?state=SC">South Carolina</a></p>
+<h2><a href="https://scdailygazette.com/2026/08/20/usc-among-top-college-users-of-chatgpt-renews-openai-contract-for-2-5m/">USC among top college users of ChatGPT, renews OpenAI contract for $2.5M</a></h2>
+<p class="byline">By Jessica Holdman</p>
+<a class="shot" href="https://scdailygazette.com/2026/08/20/usc-among-top-college-users-of-chatgpt-renews-openai-contract-for-2-5m/" tabindex="-1" aria-hidden="true"><img src="../img/d81d10c589b173966f7a8dfc9ccaf1bbf4ba88b5.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>University of South Carolina gobbled up 30 million credits on ChatGPT last school year, one of the top college users in the country <a class="lozenge more" href="https://scdailygazette.com/2026/08/20/usc-among-top-college-users-of-chatgpt-renews-openai-contract-for-2-5m/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T15:15:26+00:00" data-pub="11:15 AM EDT">Thursday, August 20, 2026 at 11:15 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>FL / Broward County / <a href="http://www.thewestsidegazette.com/">Westside Gazette</a></small></p>
-<h2><a href="https://thewestsidegazette.com/alston-seeks-court-intervention-as-broward-college-leadership-crisis-deepens/">Alston Seeks Court Intervention as Broward College Leadership Crisis Deepens</a></h2>
-<p class="byline"><small>By Carma Henry</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://thewestsidegazette.com/friends-of-aarlcc-pillars-of-giving-campaign/">Donate</a></span></p>
-<a class="shot" href="https://thewestsidegazette.com/alston-seeks-court-intervention-as-broward-college-leadership-crisis-deepens/" tabindex="-1" aria-hidden="true"><img src="../img/7b45a599c32de96c347c0de3ee4ab466300db86a.jpg" alt="" width="400" height="275" loading="lazy" decoding="async"></a>
-<p>The battle over the future of Broward College President and CEO Torey Alston has moved beyond the boardroom and into the courts, as Alston pushes back against an effort to remove him from the leadership of one of South Florida’s largest institutions of higher education.</p>
-<p class="more"><a href="https://thewestsidegazette.com/alston-seeks-court-intervention-as-broward-college-leadership-crisis-deepens/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://checkout.fundjournalism.org/memberform?org_id=oakland&amp;campaign=7010b0000014AXMAA2">Donate</a></aside>
+<p class="source"><a href="https://oaklandside.org/"><strong>The Oaklandside</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T21:40:07+00:00" data-pub="2:40 PM PDT">Thu, Aug 20 @ 2PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Oakland&state=CA">Oakland</a></p>
+<h2><a href="https://oaklandside.org/2026/08/20/fight-castlemont-high-school-stabbing/">Fight at Castlemont High campus leaves teenager injured</a></h2>
+<p class="byline">By Ashley McBride and Roselyn Romero</p>
+<a class="shot" href="https://oaklandside.org/2026/08/20/fight-castlemont-high-school-stabbing/" tabindex="-1" aria-hidden="true"><img src="../img/5ff488fd86e1a2f704af36f8938b80ff696075bb.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Fight at Castlemont High campus leaves teenager injured The victim—who was stabbed—was taken to the hospital with non-life-threatening injuries. <a class="lozenge more" href="https://oaklandside.org/2026/08/20/fight-castlemont-high-school-stabbing/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T15:00:00+00:00" data-pub="11:00 AM EDT">Thursday, August 20, 2026 at 11:00 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>NJ / Statewide / <a href="https://njurbannews.com/">NJ Urban News</a></small></p>
-<h2><a href="https://njurbannews.com/2026/08/20/kean-stage-fall-2026-preview/">Kean Stage Fall 2026 Preview</a></h2>
-<p class="byline"><small>By Kevin Modeszto</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://njurbannews.com/support-us/">Donate</a></span></p>
-<a class="shot" href="https://njurbannews.com/2026/08/20/kean-stage-fall-2026-preview/" tabindex="-1" aria-hidden="true"><img src="../img/13e1e50a0f6ffe4940ee877978a3cb564b277121.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>Kean Stage is a series of professional shows at Kean University. From family shows to musicians of color to musicals, Kean Stage provides a vast and diverse collection of shows.</p>
-<p class="more"><a href="https://njurbannews.com/2026/08/20/kean-stage-fall-2026-preview/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://checkout.fundjournalism.org/memberform?org_id=oakland&amp;campaign=7010b0000014AXMAA2">Donate</a></aside>
+<p class="source"><a href="https://oaklandside.org/"><strong>The Oaklandside</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T21:30:26+00:00" data-pub="2:30 PM PDT">Thu, Aug 20 @ 2PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Oakland&state=CA">Oakland</a></p>
+<h2><a href="https://oaklandside.org/2026/08/20/chronic-absenteeism-attendance-peer-mentoring-oakland/">Can peer mentoring keep Oakland kids in school?</a></h2>
+<p class="byline">By Ashley McBride</p>
+<a class="shot" href="https://oaklandside.org/2026/08/20/chronic-absenteeism-attendance-peer-mentoring-oakland/" tabindex="-1" aria-hidden="true"><img src="../img/131330916d82f2cf14b23637a35971446d8e39a1.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Can peer mentoring keep Oakland kids in school? Oakland schools have a problem with chronic absenteeism. The Greenlight Fund is investing $1 million to expand peer interventions that appear to work. <a class="lozenge more" href="https://oaklandside.org/2026/08/20/chronic-absenteeism-attendance-peer-mentoring-oakland/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T14:43:03+00:00" data-pub="10:43 AM EDT">Thursday, August 20, 2026 at 10:43 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>NY / Rochester / <a href="https://www.minorityreporter.net/">Minority Reporter</a></small></p>
-<h2><a href="https://www.minorityreporter.net/post/rcsd-back-to-school-jam">RCSD Back-to-School Jam</a></h2>
-<p class="byline"><small>By Community Submission</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.minorityreporter.net/post/subscribe-to-minority-reporter">Subscribe</a></span></p>
-<p>Who: All RCSD students, families, and staff What: Back-to-School Jam When: Saturday, August 22, 2026, 11 a.m. – 2 p.m. Where: Loretta Johnson Middle School200 Genesee StreetRochester, NY 14611 Details: The Rochester City School District will host its annual Back-to-School Jam to help local students and families prepare for a successful school year. The community celebration offers free backpack an</p>
-<p class="more"><a href="https://www.minorityreporter.net/post/rcsd-back-to-school-jam">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://ncnewsline.com">Support</a></aside>
+<p class="source"><a href="https://ncnewsline.com"><strong>NC Newsline</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T21:30:07+00:00" data-pub="5:30 PM EDT">Thu, Aug 20 @ 5PM EDT</time><a class="lozenge place" href="/search?state=NC">North Carolina</a></p>
+<h2><a href="https://ncnewsline.com/2026/08/20/as-back-to-school-prices-rise-donations-fill-the-gap-for-north-carolina-teachers-families/">As back-to-school prices rise, donations fill the gap for North Carolina teachers, families</a></h2>
+<p class="byline">By Clayton Henkel</p>
+<a class="shot" href="https://ncnewsline.com/2026/08/20/as-back-to-school-prices-rise-donations-fill-the-gap-for-north-carolina-teachers-families/" tabindex="-1" aria-hidden="true"><img src="../img/90b3ce872556a060882f621c85dd41d3c4c5cc25.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>There is perhaps no clearer sign that summer is drawing to a close than the arrival of school supplies in big box stores and school supply drives in most counties. On Wednesday, Gov. Josh Stein delivered school supplies collected over the summer to W.M. Irvin Elementary School in Concord. It’s the eighth year the governor’s <a class="lozenge more" href="https://ncnewsline.com/2026/08/20/as-back-to-school-prices-rise-donations-fill-the-gap-for-north-carolina-teachers-families/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T14:23:29+00:00" data-pub="10:23 AM EDT">Thursday, August 20, 2026 at 10:23 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>OH / Columbus / <a href="https://www.thelantern.com/">The Lantern</a></small></p>
-<h2><a href="https://www.thelantern.com/2026/08/pochettely-and-the-fruit-stand-to-host-jewelry-and-smoothie-bowl-themed-pop-up-shop-saturday/">Pochettely and The Fruit Stand to host jewelry and smoothie bowl-themed pop-up shop Saturday</a></h2>
-<p class="byline"><small>By Helena Hennessy</small><span class="aside"><a class="lozenge" href="../tags/college.html">College</a><a class="lozenge give" href="https://www.giveto.osu.edu/makeagift/OnlineGivingDonation.aspx?Source_Code=WA&amp;Fund=312878">Donate</a></span></p>
-<a class="shot" href="https://www.thelantern.com/2026/08/pochettely-and-the-fruit-stand-to-host-jewelry-and-smoothie-bowl-themed-pop-up-shop-saturday/" tabindex="-1" aria-hidden="true"><img src="../img/06c2602841ed7681506a2614b782db313f52eac3.jpg" alt="" width="480" height="640" loading="lazy" decoding="async"></a>
-<p>Local businesses pochettely, an Italian-style jewelry shop and charm bar, and The Fruit Stand, an eatery serving build-your-own smoothie bowls, are offering the ultimate customizable experience at their collaborative pop-up shop Saturday. Located at 1589 N. High St., pochettely will collaborate for a first-of-its-kind shopping and dining experience with The Fruit Stand, located at 1130</p>
-<p class="more"><a href="https://www.thelantern.com/2026/08/pochettely-and-the-fruit-stand-to-host-jewelry-and-smoothie-bowl-themed-pop-up-shop-saturday/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.ednc.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://www.ednc.org/"><strong>EdNC (EducationNC)</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T21:30:00+00:00" data-pub="5:30 PM EDT">Thu, Aug 20 @ 5PM EDT</time><a class="lozenge place" href="/search?state=NC">North Carolina</a></p>
+<h2><a href="https://www.ednc.org/learn-more-about-the-nc-coalition-for-global-education/">Learn more about the NC Coalition for Global Education</a></h2>
+<p class="byline">By Mebane Rash</p>
+<p>The NC Coalition for Global Education kicked off in February 2026 and has been meeting throughout the year with the goal of creating a statewide network that unites public/private partnerships and maximizes global education opportunities across North Carolina. At the <a class="lozenge more" href="https://www.ednc.org/learn-more-about-the-nc-coalition-for-global-education/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T13:49:26+00:00" data-pub="9:49 AM EDT">Thursday, August 20, 2026 at 9:49 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>SC / Statewide / <a href="https://scdailygazette.com/">South Carolina Daily Gazette</a></small></p>
-<h2><a href="https://scdailygazette.com/2026/08/20/repub/insect-fans-are-all-abuzz-about-this-weeks-pollinator-count-which-helps-the-ag-industry-bloom/">Insect fans are all abuzz about this week’s pollinator count, which helps the ag industry bloom</a></h2>
-<p class="byline"><small>By Ross Williams</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://scdailygazette.com/">Support</a></span></p>
-<a class="shot" href="https://scdailygazette.com/2026/08/20/repub/insect-fans-are-all-abuzz-about-this-weeks-pollinator-count-which-helps-the-ag-industry-bloom/" tabindex="-1" aria-hidden="true"><img src="../img/da31544f9f9cfee379769716b70af60db3cb2913.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>Started eight years ago in Georgia, the counting is now also open to residents of South Carolina, North Carolina, Florida, Alabama and Mississippi.</p>
-<p class="more"><a href="https://scdailygazette.com/2026/08/20/repub/insect-fans-are-all-abuzz-about-this-weeks-pollinator-count-which-helps-the-ag-industry-bloom/">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Also in <a href="https://georgiarecorder.com/briefs/insect-enthusiasts-are-all-abuzz-about-this-weeks-pollinator-census-which-helps-ag-industry-bloom/">Georgia Recorder</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.ednc.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://www.ednc.org/"><strong>EdNC (EducationNC)</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T21:30:00+00:00" data-pub="5:30 PM EDT">Thu, Aug 20 @ 5PM EDT</time><a class="lozenge place" href="/search?state=NC">North Carolina</a></p>
+<h2><a href="https://www.ednc.org/how-a-federal-grant-brought-mental-health-services-into-schools-across-6-north-carolina-school-districts/">How a federal grant brought mental health services into schools across 6 North Carolina school districts</a></h2>
+<p class="byline">By Sophia Luna</p>
+<p>Editor’s note: This article discusses mental health and suicide. If you or someone you know needs help, reach out to the National Suicide and Crisis Lifeline by calling 988. Teri Putnam has worked in mental health and school-based mental health <a class="lozenge more" href="https://www.ednc.org/how-a-federal-grant-brought-mental-health-services-into-schools-across-6-north-carolina-school-districts/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T13:30:00+00:00" data-pub="9:30 AM EDT">Thursday, August 20, 2026 at 9:30 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>CT / Hartford / <a href="https://ctmirror.org/">The Connecticut Mirror</a></small></p>
-<h2><a href="https://ctmirror.org/2026/08/20/state-tax-dollars-college-sports/">States pour taxpayer dollars into college sports as athlete pay and costs soar</a></h2>
-<p class="byline"><small>By Associated Press</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://ctmirror.donorsupport.co/page/FUNDVURKCRQ">Donate</a></span></p>
-<a class="shot" href="https://ctmirror.org/2026/08/20/state-tax-dollars-college-sports/" tabindex="-1" aria-hidden="true"><img src="../img/9348e40e9bc45c576ff3e77bc0b901ca096707ee.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>CT lawmakers authorized UConn to issue vouchers for tax credits equal to half the amount of donations, sponsorships, licensing endorsements.</p>
-<p class="more"><a href="https://ctmirror.org/2026/08/20/state-tax-dollars-college-sports/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://claremont-courier.com/payments/">Donate</a></aside>
+<p class="source"><a href="https://claremont-courier.com/"><strong>Claremont Courier</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T21:14:35+00:00" data-pub="2:14 PM PDT">Thu, Aug 20 @ 2PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Claremont&state=CA">Claremont</a></p>
+<h2><a href="https://claremontcourier.com/schools/cusd-goes-back-to-school-89806/">CUSD goes back to school</a></h2>
+<p class="byline">By mickrhodes@claremontcourier.com</p>
+<p>Summer vacation ended for Claremont Unified School District students on Wednesday when some 5,800 of them returned to the district’s 10 campuses for the first day of the 2026-27 academic year, including (L-R, foreground) 15-year-old Claremont High sophomores Steven Flores and Avery Hartman. Courier photo/Andrew Alonzo <a class="lozenge more" href="https://claremontcourier.com/schools/cusd-goes-back-to-school-89806/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T13:14:11+00:00" data-pub="9:14 AM EDT">Thursday, August 20, 2026 at 9:14 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>MA / Brookline / <a href="https://brookline.news/news/">Brookline News</a></small></p>
-<h2><a href="https://brookline.news/new-teen-led-summer-debate-club-aims-to-open-minds-and-train-confident-speakers/">New teen-led summer debate club aims to open minds and train confident speakers</a></h2>
-<p class="byline"><small>By Zane Razzaq</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://brookline.news/support-our-publication/">Donate</a></span></p>
-<a class="shot" href="https://brookline.news/new-teen-led-summer-debate-club-aims-to-open-minds-and-train-confident-speakers/" tabindex="-1" aria-hidden="true"><img src="../img/a8e4af5f1661c57adccf80f96c42edc959e0e23c.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>In its first year, the Brookline Summer Debate Club brought in about 50 students to learn from teen debate leaders Daphne Spunt and Vasily Morozov.</p>
-<p class="more"><a href="https://brookline.news/new-teen-led-summer-debate-club-aims-to-open-minds-and-train-confident-speakers/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://eastgreenwichnews.com/">Support</a></aside>
+<p class="source"><a href="https://eastgreenwichnews.com/"><strong>East Greenwich News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T20:59:35+00:00" data-pub="4:59 PM EDT">Thu, Aug 20 @ 4PM EDT</time><a class="lozenge place" href="/search?state=RI">Rhode Island</a><a class="lozenge place" href="/search?place=East+Greenwich&state=RI">East Greenwich</a></p>
+<h2><a href="https://eastgreenwichnews.com/new-schools-will-have-hybrid-heating-cooling-system/">New Schools Will Have Hybrid Heating-Cooling System</a></h2>
+<p class="byline">By Brandy Muz</p>
+<a class="shot" href="https://eastgreenwichnews.com/new-schools-will-have-hybrid-heating-cooling-system/" tabindex="-1" aria-hidden="true"><img src="../img/42ac79c4fe823ff941e140599e4565f0102fb904.jpg" alt="" width="300" height="225" loading="lazy" decoding="async"></a>
+<p>Above: The new Hanaford Elementary School under construction in August. Common areas will have traditional A/C; classrooms will have ‘tempered air’ but ‘not like Cole’ With additional reporting by Elizabeth McNamara Concerns about the hybrid air conditioning system planned for Frenchtown and Hanaford Elementary’s new buildings erupted on social media over the past week and <a class="lozenge more" href="https://eastgreenwichnews.com/new-schools-will-have-hybrid-heating-cooling-system/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T12:18:27+00:00" data-pub="8:18 AM EDT">Thursday, August 20, 2026 at 8:18 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>MD / Columbia / <a href="https://marylandreporter.com">Maryland Reporter</a></small></p>
-<h2><a href="https://marylandreporter.com/2026/08/20/states-roundup-corrections-officers-now-have-body-cams-counties-struggle-to-fund-emts-moore-spends-1-in-5-days-out-of-state-what-to-expect-from-the-new-school-year/">States Roundup: Prison officers now have body cams; counties struggle to fund EMTs; Moore spends 1 in 5 days out of state; what to expect from the new school year</a></h2>
-<p class="byline"><small>By Cynthia Prairie</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.paypal.com/donate/?hosted_button_id=JDWECP9YF7NAN">Donate</a></span></p>
-<p>Corrections officers now have body cams; counties struggle to fund EMTs; Moore spends 1 in 5 days out of state; what to expect from the new school year.</p>
-<p class="more"><a href="https://marylandreporter.com/2026/08/20/states-roundup-corrections-officers-now-have-body-cams-counties-struggle-to-fund-emts-moore-spends-1-in-5-days-out-of-state-what-to-expect-from-the-new-school-year/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.rappnews.com/">Support</a></aside>
+<p class="source"><a href="https://www.rappnews.com/"><strong>Rappahannock News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T20:53:53+00:00" data-pub="4:53 PM EDT">Thu, Aug 20 @ 4PM EDT</time><a class="lozenge place" href="/search?state=VA">Virginia</a><a class="lozenge place" href="/search?place=Rappahannock+County&state=VA">Rappahannock County</a></p>
+<h2><a href="https://www.rappnews.com/schools-sports/rappahannock-panthers-open-fall-sports-season-with-strong-starts-43357791">Rappahannock Panthers open fall sports season with strong starts</a></h2>
+<p class="byline">By By Jimmy Swindler</p>
+<a class="shot" href="https://www.rappnews.com/schools-sports/rappahannock-panthers-open-fall-sports-season-with-strong-starts-43357791" tabindex="-1" aria-hidden="true"><img src="../img/05c91837a3cefec5a23a47fb7245eef62120cd54.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>School came back in session last week, and Rappahannock County High School student-athletes took to the court, course and fields to kick off the fall sports seasons. Golf, volleyball, cross country and football teams all had their first contests, with each getting out of the gate in positive ways. <a class="lozenge more" href="https://www.rappnews.com/schools-sports/rappahannock-panthers-open-fall-sports-season-with-strong-starts-43357791">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T12:09:09+00:00" data-pub="8:09 AM EDT">Thursday, August 20, 2026 at 8:09 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>MI / Detroit / <a href="https://www.bridgedetroit.com/">Bridge Detroit</a></small></p>
-<h2><a href="https://www.bridgedetroit.com/detroit-school-board-appoints-25-year-old-youth-advocate-as-its-newest-member/">Detroit school board appoints 25-year-old youth advocate as its newest member</a></h2>
-<p class="byline"><small>By Hannah Dellinger, Chalkbeat Detroit</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://bridgedetroit.fundjournalism.org/donate/?campaign=7011U000000m8QoQAI">Donate</a></span></p>
-<a class="shot" href="https://www.bridgedetroit.com/detroit-school-board-appoints-25-year-old-youth-advocate-as-its-newest-member/" tabindex="-1" aria-hidden="true"><img src="../img/db20ed2f3d34574a1fbba2f3c870d571de06ed4a.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Jeremiah Steen is a community growth fellow at the Community Economic Development Association of Michigan. He hopes to continue his work on workforce development on the DPSCD board.</p>
-<p class="more"><a href="https://www.bridgedetroit.com/detroit-school-board-appoints-25-year-old-youth-advocate-as-its-newest-member/">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Also in <a href="https://www.chalkbeat.org/detroit/2026/08/19/dpscd-school-board-appoints-25-year-old-youth-advocate-to-fill-open-seat/">Chalkbeat</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://ncnewsline.com">Support</a></aside>
+<p class="source"><a href="https://ncnewsline.com"><strong>NC Newsline</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T20:26:30+00:00" data-pub="4:26 PM EDT">Thu, Aug 20 @ 4PM EDT</time><a class="lozenge place" href="/search?state=NC">North Carolina</a></p>
+<h2><a href="https://ncnewsline.com/2026/08/20/judge-rules-unc-ch-can-keep-report-on-controversial-school-secret/">Judge rules UNC-CH can keep report on controversial school secret</a></h2>
+<p class="byline">By Laura Leslie</p>
+<a class="shot" href="https://ncnewsline.com/2026/08/20/judge-rules-unc-ch-can-keep-report-on-controversial-school-secret/" tabindex="-1" aria-hidden="true"><img src="../img/f30fbef769085a352231654ec5bbe0ca15f960d3.jpg" alt="" width="480" height="345" loading="lazy" decoding="async"></a>
+<p>A judge has ruled that the University of North Carolina at Chapel Hill does not have to release its investigative report on problems at its School of Civic Life and Leadership. The decision, communicated in Orange County by Superior Court Judge John M. Morris, R-Rockingham, to attorneys Thursday, means the university’s findings on faculty complaints <a class="lozenge more" href="https://ncnewsline.com/2026/08/20/judge-rules-unc-ch-can-keep-report-on-controversial-school-secret/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T12:00:00+00:00" data-pub="8:00 AM EDT">Thursday, August 20, 2026 at 8:00 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>MI / Detroit / <a href="https://www.modeldmedia.com/">Model D</a></small></p>
-<h2><a href="https://modeldmedia.com/on-the-rise-academy-is-building-detroits-next-generation-of-diverse-educators/">On the Rise Academy Is Building Detroit’s Next Generation of Diverse Educators</a></h2>
-<p class="byline"><small>By Newsroom</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://modeldmedia.com/support-us/">Donate</a></span></p>
-<a class="shot" href="https://modeldmedia.com/on-the-rise-academy-is-building-detroits-next-generation-of-diverse-educators/" tabindex="-1" aria-hidden="true"><img src="../img/e5f765b9f7d866af5e532812289351a21fb3b6e6.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Detroit is building its next generation of educators. On the Rise Academy is creating a more diverse teacher pipeline through hands-on training, certification and career opportunities rooted in the community.</p>
-<p class="more"><a href="https://modeldmedia.com/on-the-rise-academy-is-building-detroits-next-generation-of-diverse-educators/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://vtdigger.org/become-a-member/?campaign=7013i000000d8rcAAA">Donate</a></aside>
+<p class="source"><a href="https://vtdigger.org/"><strong>VTDigger</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T20:23:28+00:00" data-pub="4:23 PM EDT">Thu, Aug 20 @ 4PM EDT</time><a class="lozenge place" href="/search?state=VT">Vermont</a><a class="lozenge place" href="/search?place=Montpelier&state=VT">Montpelier</a></p>
+<h2><a href="https://vtdigger.org/2026/08/20/thirty-years-on-feds-look-at-rolling-back-funds-for-internet-access-at-vermont-schools/">Thirty years on, feds look at rolling back funds for internet access at Vermont schools</a></h2>
+<p class="byline">By Greta Solsaa</p>
+<a class="shot" href="https://vtdigger.org/2026/08/20/thirty-years-on-feds-look-at-rolling-back-funds-for-internet-access-at-vermont-schools/" tabindex="-1" aria-hidden="true"><img src="../img/a4f0c7248a952dab6f61d78d33238f210359a245.jpg" alt="" width="480" height="319" loading="lazy" decoding="async"></a>
+<p>If the proposed changes go through, “our schools are going to have to cut somewhere else,” said an Agency of Education official. <a class="lozenge more" href="https://vtdigger.org/2026/08/20/thirty-years-on-feds-look-at-rolling-back-funds-for-internet-access-at-vermont-schools/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T10:58:33+00:00" data-pub="6:58 AM EDT">Thursday, August 20, 2026 at 6:58 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>MD / Silver Spring / <a href="https://www.mymcmedia.org">MyMCMedia</a></small></p>
-<h2><a href="https://www.mymcmedia.org/montgomery-county-school-bus-safety-back-to-school/">Montgomery County completes road safety work ahead of new school year</a></h2>
-<p class="byline"><small>By Alexandria Barnes</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.mymcmedia.org/donate/">Donate</a></span></p>
-<a class="shot" href="https://www.mymcmedia.org/montgomery-county-school-bus-safety-back-to-school/" tabindex="-1" aria-hidden="true"><img src="../img/28f6975010e5b4055b636106516a4c0fa9298e7b.jpg" alt="" width="480" height="252" loading="lazy" decoding="async"></a>
-<p>Montgomery County finished a summer’s worth of road safety work before the new school year starts next week. Crews completed eight spot safety projects and finished three sidewalk renovations near</p>
-<p class="more"><a href="https://www.mymcmedia.org/montgomery-county-school-bus-safety-back-to-school/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://la.streetsblog.org/make-a-donation-to-streetsblog-los-angeles">Donate</a></aside>
+<p class="source"><a href="https://la.streetsblog.org/"><strong>Streetsblog - Los Angeles</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T20:09:11+00:00" data-pub="1:09 PM PDT">Thu, Aug 20 @ 1PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://la.streetsblog.org/2026/08/20/sgv-multimodal-projects-roundup-august-2026">SGV Multimodal Projects Roundup – August 2026</a></h2>
+<p class="byline">By Chris Greenspon</p>
+<a class="shot" href="https://la.streetsblog.org/2026/08/20/sgv-multimodal-projects-roundup-august-2026" tabindex="-1" aria-hidden="true"><img src="../img/37026eba55966f0c46ccc1a0d644a493138bae92.jpg" alt="" width="480" height="249" loading="lazy" decoding="async"></a>
+<p>Here are four rail/bike/pedestrian oriented projects in the works throughout the San Gabriel Valley. <a class="lozenge more" href="https://la.streetsblog.org/2026/08/20/sgv-multimodal-projects-roundup-august-2026">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T10:44:59+00:00" data-pub="6:44 AM EDT">Thursday, August 20, 2026 at 6:44 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>MD / Statewide / <a href="https://www.marylandmatters.org/">Maryland Matters</a></small></p>
-<h2><a href="https://marylandmatters.org/2026/08/20/school-starts-with-new-funds-for-teacher-hiring-new-standardized-tests-more/">School starts with new funds for teacher hiring, new standardized tests, more</a></h2>
-<p class="byline"><small>By William J. Ford</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.marylandmatters.org/">Support</a></span></p>
-<a class="shot" href="https://marylandmatters.org/2026/08/20/school-starts-with-new-funds-for-teacher-hiring-new-standardized-tests-more/" tabindex="-1" aria-hidden="true"><img src="../img/f43ace48921634de40f3daa6fbcba2a43a2404be.jpg" alt="" width="480" height="318" loading="lazy" decoding="async"></a>
-<p>The 2026-27 school year started Wednesday in Frederick County, and the remaining 23 school systems will all be back in class within less than two weeks -- almost a full week before they go on break for Labor Day weekend.</p>
-<p class="more"><a href="https://marylandmatters.org/2026/08/20/school-starts-with-new-funds-for-teacher-hiring-new-standardized-tests-more/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://givebutter.com/67YVn6">Donate</a></aside>
+<p class="source"><a href="https://documentedny.com/"><strong>Documented</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T19:54:21+00:00" data-pub="3:54 PM EDT">Thu, Aug 20 @ 3PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Immigration&state=NY">Immigration</a></p>
+<h2><a href="https://documentedny.com/2026/08/20/manhattan-megajail-air-pollution-concerns/">Chinatown Residents Warn of Health Risks as Megajail Construction Nears</a></h2>
+<p class="byline">By April Xu</p>
+<a class="shot" href="https://documentedny.com/2026/08/20/manhattan-megajail-air-pollution-concerns/" tabindex="-1" aria-hidden="true"><img src="../img/1650ef0efe91499bd08eb7f9d98b8fdd5aec1f97.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>Researchers from New York University released a report highlighting persistent air quality concerns and data gaps related to the construction of a massive new Manhattan jail located adjacent to Chinatown. <a class="lozenge more" href="https://documentedny.com/2026/08/20/manhattan-megajail-air-pollution-concerns/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T10:43:24+00:00" data-pub="6:43 AM EDT">Thursday, August 20, 2026 at 6:43 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>MD / Statewide / <a href="https://www.marylandmatters.org/">Maryland Matters</a></small></p>
-<h2><a href="https://marylandmatters.org/2026/08/20/after-threat-by-doj-anne-arundel-schools-amend-gender-policy/">After threat from DOJ, Anne Arundel Schools amend gender policy</a></h2>
-<p class="byline"><small>By William J. Ford</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.marylandmatters.org/">Support</a></span></p>
-<a class="shot" href="https://marylandmatters.org/2026/08/20/after-threat-by-doj-anne-arundel-schools-amend-gender-policy/" tabindex="-1" aria-hidden="true"><img src="../img/5fb0d37498694ccd9bf2a2c6da7297033f4f9f8c.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>After receiving a threat from the federal government about violating parental rights, Anne Arundel County public schools informed the school community Wednesday that its gender policy for students has been amended to grant parents more access.</p>
-<p class="more"><a href="https://marylandmatters.org/2026/08/20/after-threat-by-doj-anne-arundel-schools-amend-gender-policy/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://chalkbeat.fundjournalism.org/donate/?campaign=701Pc00000M3hQLIAZ">Donate</a></aside>
+<p class="source"><a href="https://www.chalkbeat.org/"><strong>Chalkbeat</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T19:51:21+00:00" data-pub="3:51 PM EDT">Thu, Aug 20 @ 3PM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Education">Education</a></p>
+<h2><a href="https://www.chalkbeat.org/newark/2026/08/20/6-things-to-watch-for-newark-public-schools-this-year/">Back-to-school: 6 things to watch in Newark Public Schools this year</a></h2>
+<p class="byline">By Jessie Gómez</p>
+<a class="shot" href="https://www.chalkbeat.org/newark/2026/08/20/6-things-to-watch-for-newark-public-schools-this-year/" tabindex="-1" aria-hidden="true"><img src="../img/0d87257a89270b31b33f8afe082aeba3c700b8c9.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>New board members and school leaders, delayed state test scores, and aging buildings are among the developments to watch this upcoming school year. <a class="lozenge more" href="https://www.chalkbeat.org/newark/2026/08/20/6-things-to-watch-for-newark-public-schools-this-year/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T10:01:13+00:00" data-pub="5:01 AM CDT">Thursday, August 20, 2026 at 5:01 AM CDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>AL / Statewide / <a href="https://alabamareflector.com/">Alabama Reflector</a></small></p>
-<h2><a href="https://alabamareflector.com/2026/08/20/tuskegee-students-question-focus-on-dress-code-changes/">Tuskegee students question focus on dress code changes</a></h2>
-<p class="byline"><small>By Andrea Tinker</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://alabamareflector.com/">Support</a></span></p>
-<a class="shot" href="https://alabamareflector.com/2026/08/20/tuskegee-students-question-focus-on-dress-code-changes/" tabindex="-1" aria-hidden="true"><img src="../img/9711855d7e08503f4437523730a268e88476d5e4.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>TUSKEGEE — If there are dress code issues with students at Tuskegee University, they weren’t apparent on Wednesday. The first day of class at the Historically Black University saw many students in a range of outfits, from full suits to streetwear. Others dressed more casually in t-shirts and sweatpants. But few if any seemed to</p>
-<p class="more"><a href="https://alabamareflector.com/2026/08/20/tuskegee-students-question-focus-on-dress-code-changes/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://caro.news/">Support</a></aside>
+<p class="source"><a href="https://caro.news/"><strong>The Carolinian</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T19:42:00+00:00" data-pub="3:42 PM EDT">Thu, Aug 20 @ 3PM EDT</time><a class="lozenge place" href="/search?state=NC">North Carolina</a><a class="lozenge place" href="/search?place=Raleigh&state=NC">Raleigh</a></p>
+<h2><a href="https://caro.news/wakemed-atrium-deal-faces-renewed-scrutiny-as-community-raises-concerns/">WakeMed-Atrium Deal Faces Renewed Scrutiny as Community Raises Concerns</a></h2>
+<p class="byline">By Jordan Meadows</p>
+<a class="shot" href="https://caro.news/wakemed-atrium-deal-faces-renewed-scrutiny-as-community-raises-concerns/" tabindex="-1" aria-hidden="true"><img src="../img/9d15795f801e02a5d676653b4834f5fa8dc4e95b.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>By: Jordan Meadows Staff Writer The proposed combination of WakeMed and Atrium Health is facing renewed public scrutiny after two major community discussions in Raleigh. The proposal, announced in May, <a class="lozenge more" href="https://caro.news/wakemed-atrium-deal-faces-renewed-scrutiny-as-community-raises-concerns/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T10:00:17+00:00" data-pub="5:00 AM CDT">Thursday, August 20, 2026 at 5:00 AM CDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>TN / Statewide / <a href="https://tennesseelookout.com/">Tennessee Lookout</a></small></p>
-<h2><a href="https://tennesseelookout.com/2026/08/20/the-university-of-tennessees-new-civics-degree-should-treat-citizenship-as-a-practice/">The University of Tennessee’s new civics degree should treat citizenship as a practice</a></h2>
-<p class="byline"><small>By Alejandro Ramos</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://tennesseelookout.com/">Support</a></span></p>
-<a class="shot" href="https://tennesseelookout.com/2026/08/20/the-university-of-tennessees-new-civics-degree-should-treat-citizenship-as-a-practice/" tabindex="-1" aria-hidden="true"><img src="../img/6cf59145b367dfcbefa6e80ad79ac1312812be91.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>This fall, students at the University of Tennessee, Knoxville, will be able to major in Civic and Constitutional Thought. Approved in July by the Tennessee Higher Education Commission and the UT Board of Trustees, the degree is the first academic degree program offered through UT’s Institute of American Civics. Tennessee deserves credit for treating civic</p>
-<p class="more"><a href="https://tennesseelookout.com/2026/08/20/the-university-of-tennessees-new-civics-degree-should-treat-citizenship-as-a-practice/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://eplocalnews.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://www.eplocalnews.org/"><strong>Eden Prairie Local</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T19:27:48+00:00" data-pub="2:27 PM CDT">Thu, Aug 20 @ 2PM CDT</time><a class="lozenge place" href="/search?state=MN">Minnesota</a><a class="lozenge place" href="/search?place=Eden+Prairie&state=MN">Eden Prairie</a></p>
+<h2><a href="https://eplocalnews.org/2026/08/20/stop-for-school-buses-updated-law-requires-stopping-when-red-lights-flash/">Stop for school buses: Updated law requires stopping when red lights flash</a></h2>
+<p class="byline">By Juliana Allen, Education Reporter</p>
+<a class="shot" href="https://eplocalnews.org/2026/08/20/stop-for-school-buses-updated-law-requires-stopping-when-red-lights-flash/" tabindex="-1" aria-hidden="true"><img src="../img/f043204f82f0755b7a0403b5a7141b0c7592ab03.jpg" alt="" width="480" height="674" loading="lazy" decoding="async"></a>
+<p>A new Minnesota law requires drivers to stop as soon as a school bus’s red lights begin flashing—before the stop arm extends. <a class="lozenge more" href="https://eplocalnews.org/2026/08/20/stop-for-school-buses-updated-law-requires-stopping-when-red-lights-flash/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T10:00:00+00:00" data-pub="6:00 AM EDT">Thursday, August 20, 2026 at 6:00 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>GA / Athens / <a href="https://www.redandblack.com/">The Red &amp; Black</a></small></p>
-<h2><a href="https://www.redandblack.com/eat-drink/athens-restaurant-roundup-chick-fil-a-college-nights-paloma-park-wine-down-wednesdays-and-more/article_8f3d8f3a-a6d0-414e-90e6-f0f7feb27d1d.html">Athens Restaurant Roundup: Chick-fil-A College Nights, Paloma Park Wine Down Wednesdays and more</a></h2>
-<p class="byline"><small>By Cara Eldridge</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.redandblack.com/">Support</a></span></p>
-<a class="shot" href="https://www.redandblack.com/eat-drink/athens-restaurant-roundup-chick-fil-a-college-nights-paloma-park-wine-down-wednesdays-and-more/article_8f3d8f3a-a6d0-414e-90e6-f0f7feb27d1d.html" tabindex="-1" aria-hidden="true"><img src="../img/9cec093f0e79c2675a2bc7fb0f06685ff1762527.webp" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
-<p>University of Georgia’s fall semester just kicked off, and local restaurants are excited to welcome students back to Athens. There will be new menu items and opportunities for student deals.</p>
-<p class="more"><a href="https://www.redandblack.com/eat-drink/athens-restaurant-roundup-chick-fil-a-college-nights-paloma-park-wine-down-wednesdays-and-more/article_8f3d8f3a-a6d0-414e-90e6-f0f7feb27d1d.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://ncnewsline.com">Support</a></aside>
+<p class="source"><a href="https://ncnewsline.com"><strong>NC Newsline</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T19:27:31+00:00" data-pub="3:27 PM EDT">Thu, Aug 20 @ 3PM EDT</time><a class="lozenge place" href="/search?state=NC">North Carolina</a></p>
+<h2><a href="https://ncnewsline.com/2026/08/20/stein-touts-historic-teacher-pay-raises-as-nc-students-return-to-school/">Stein touts historic teacher pay raises as NC students return to school</a></h2>
+<p class="byline">By Christine Zhu</p>
+<a class="shot" href="https://ncnewsline.com/2026/08/20/stein-touts-historic-teacher-pay-raises-as-nc-students-return-to-school/" tabindex="-1" aria-hidden="true"><img src="../img/bf0f07a2ad8f9c1029a690a572f8bf21b78c8395.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>The spending plan includes more funding for North Carolina’s Principal Recruitment Supplement Program. <a class="lozenge more" href="https://ncnewsline.com/2026/08/20/stein-touts-historic-teacher-pay-raises-as-nc-students-return-to-school/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 </div>
 <p><a id="more" href="education-14.html">More stories</a></p>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="../index.html">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -407,6 +456,47 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>

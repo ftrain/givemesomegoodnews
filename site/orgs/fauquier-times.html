@@ -13,12 +13,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(../fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -27,22 +40,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -50,19 +69,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -75,7 +126,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -93,7 +144,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="../index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="../masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -106,7 +157,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="../subjects/news.html">News</a></li><li><a href="../subjects/politics.html">Politics</a></li><li><a href="../subjects/opinion.html">Opinion</a></li><li><a href="../subjects/health.html">Health</a></li><li><a href="../subjects/environment.html">Environment</a></li><li><a href="../subjects/education.html">Education</a></li><li><a href="../subjects/business.html">Business</a></li><li><a href="../subjects/housing.html">Housing</a></li><li><a href="../subjects/sports.html">Sports</a></li><li><a href="../subjects/food.html">Food</a></li><li><a href="../subjects/arts.html">Arts</a></li></ul></nav>
@@ -123,10 +174,33 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <p>Fauquier, VA · nonprofit</p>
 <p><small><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a></small></p>
 <p><a href="https://www.paypal.com/donate/?hosted_button_id=ZNELVLGVZKUEC"><strong>Donate</strong></a></p>
+<p><a href="https://www.fauquier.com/search/?f=rss&amp;t=article&amp;l=30&amp;s=start_time&amp;sd=desc">RSS feed</a></p>
+<h2>Recent stories</h2><ul>
+<li>Aug 25 — <a href="https://www.fauquier.com/localnews/amissville-world-record-holder-aims-for-new-heights-in-his-backyard-garden/article_2b4d957e-1b47-44fa-bb9e-bdf0ef3fc608.html">Amissville world record holder aims for new heights in his backyard garden</a></li>
+<li>Aug 24 — <a href="https://www.fauquier.com/localnews/alert-4-year-old-dies-days-after-falling-into-belvoir-area-pond/article_ad5898b1-3035-426a-b5b9-0e6823589d88.html">ALERT: 4-year-old dies days after falling into Belvoir-area pond</a></li>
+<li>Aug 24 — <a href="https://www.fauquier.com/localnews/plans-for-new-chipotle-tractor-supply-advance-in-mintbrook/article_7a808035-d662-4315-bda6-dedc8dfb7841.html">Plans for new Chipotle, Tractor Supply advance in Mintbrook</a></li>
+<li>Aug 24 — <a href="https://www.fauquier.com/lifestyles/fauquier-countys-upcoming-events-aug-24-to-aug-30/article_4b61eeac-712d-11ef-98b9-b34cb76bd1cf.html">Fauquier County&#x27;s upcoming events: Aug. 24 to Aug. 30</a></li>
+<li>Aug 23 — <a href="https://www.fauquier.com/localnews/last-call-for-the-2026-nova-senior-olympics/article_c1238c12-5ceb-53ef-b65e-8e869b63a4a8.html">Last call for the 2026 NoVA Senior Olympics</a></li>
+<li>Aug 21 — <a href="https://www.fauquier.com/localnews/va-health-dept-improves-nursing-home-inspection-backlog-reforms-sanction-criteria-for-facilities/article_c8ec7224-c3b7-42af-832a-72a16fa149cd.html">Va. health dept. improves nursing home inspection backlog, reforms sanction criteria for facilities</a></li>
+<li>Aug 21 — <a href="https://www.fauquier.com/localnews/feds-proposal-to-alter-head-start-could-dismantle-program-in-virginia-parents-and-advocates-say/article_8e4f21b8-69a1-4024-8435-bdd78ea25c96.html">Feds’ proposal to alter Head Start could ‘dismantle’ program in Virginia, parents and advocates say</a></li>
+<li>Aug 20 — <a href="https://www.fauquier.com/localnews/alert-fauquier-health-hospital-will-merge-with-bon-secours-health-system/article_7f1fe3fe-0567-44b3-a651-b09bf3741e47.html">ALERT: Fauquier Health, hospital will merge with Bon Secours health system</a></li>
+<li>Aug 20 — <a href="https://www.fauquier.com/sports/led-by-drake-fortune-kettle-run-golf-eyes-more-postseason-glory/article_c24a7b5d-96ce-4853-88e4-28238ab6c70e.html">Led by Drake, Fortune, Kettle Run golf eyes more postseason glory</a></li>
+<li>Aug 20 — <a href="https://www.fauquier.com/localnews/area-hospital-nurse-achieves-her-mission-at-the-mountaintop/article_c1f52f09-cd84-5015-9421-4800a74b3239.html">Area hospital nurse achieves her mission at the mountaintop</a></li>
+<li>Aug 20 — <a href="https://www.fauquier.com/localnews/northern-virginias-unemployment-rate-still-higher-post-doge-cuts/article_fe1f7afc-1e48-58ee-81d4-4fe5d96d06e9.html">Northern Virginia&#x27;s unemployment rate still higher post DOGE cuts</a></li>
+<li>Aug 19 — <a href="https://www.fauquier.com/news/deja-vu-gigaland-withdraws-data-center-application/article_daf9d8b1-6cb3-42f9-82ae-0c6be49b33d8.html">Deja vu: Gigaland withdraws data center application</a></li>
+<li>Aug 19 — <a href="https://www.fauquier.com/localnews/lifelong-learning-institute-proves-youre-never-too-old-to-learn-something-new/article_b129aeb6-d144-5591-be8f-698bf613ad70.html">Lifelong Learning Institute proves you&#x27;re never too old to learn something new</a></li>
+<li>Aug 19 — <a href="https://www.fauquier.com/localnews/victims-organize-against-cross-county-home-contractor-scams/article_8312ead4-5bdf-4bd4-ac20-ab281408a2fc.html">Victims organize against cross-county home contractor scams</a></li>
+<li>Aug 19 — <a href="https://www.fauquier.com/lifestyles/fauquier-times-lifestyles/article_e10c2e48-d5b2-11ee-9753-ab3dceb0915c.html">WEEKEND HAPPENINGS: It’s the dog days of summer for a good cause</a></li>
+<li>Aug 18 — <a href="https://www.fauquier.com/sports/hungry-fauquier-high-golf-team-aspires-to-win-district/article_51b98e7b-ae1f-4e29-8bf5-a71a21b499ec.html">Hungry Fauquier High golf team aspires to win district</a></li>
+<li>Aug 18 — <a href="https://www.fauquier.com/localnews/virginia-secures-17-million-to-upgrade-rail-service-and-improve-transportation-infrastructure/article_1ce6bd2f-9fc3-481d-b0ec-08e7c267c8c0.html">Virginia secures $17 million to upgrade rail service and improve transportation infrastructure</a></li>
+<li>Aug 18 — <a href="https://www.fauquier.com/localnews/alongside-kiggans-u-s-house-speaker-says-va-s-2nd-district-will-determine-the-fate/article_26ba7a9c-4ada-4b35-8a38-2c0084ca5c66.html">Alongside Kiggans, U.S. House Speaker says Va.’s 2nd District ‘will determine the fate of the country’</a></li>
+<li>Aug 18 — <a href="https://www.fauquier.com/localnews/attorney-philanthropist-ann-backer-dies-at-93/article_ca833cdc-ac2f-4cc5-8904-6677853c6d56.html">Attorney, philanthropist Ann Backer dies at 93</a></li>
+<li>Aug 18 — <a href="https://www.fauquier.com/localnews/state-funded-roundabouts-coming-to-lee-highway-in-warrenton/article_533ac693-f8bc-428f-b816-87a8bf2ee083.html">State-funded roundabouts coming to Lee Highway in Warrenton</a></li>
+</ul>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="../index.html">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -142,6 +216,47 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>

@@ -13,12 +13,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -27,38 +40,80 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
 color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
-.lozenge[aria-current=page]{border-color:var(--link);color:var(--bg);background:var(--link)}
+.lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
+.chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -66,18 +121,17 @@ display:flex;gap:.6rem;align-items:center}
 .burger{width:28px;height:28px;flex:none;fill:currentColor;display:block}
 .menu>summary{color:var(--fg)}
 .menu>summary:hover,.menu>summary:focus{color:var(--link)}
-.menu-label{font:600 .78rem/1 PlexMono,ui-monospace,monospace;
-text-transform:uppercase;letter-spacing:.08em}
+
 .burger .cross{display:none}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;left:0;right:0;top:100%;background:var(--bg);
-border-bottom:2px solid var(--fg);padding:.5rem 1rem 1.25rem;max-height:75vh;
-overflow-y:auto;z-index:20}
-.panel hr{margin:.9rem 0}
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
+background:var(--bg);border:2px solid var(--fg);border-top:0;
+padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
+.panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
+.panel p{margin:0}
 .panel ul.cols{display:grid;grid-template-columns:repeat(auto-fill,minmax(7rem,1fr));gap:.4rem}
-.panel{padding:.4rem 0 1rem}
 .panel h3{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
 margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 .panel>nav:first-of-type ul{display:block}
@@ -90,27 +144,27 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
-<summary title="Menu"><svg class="burger" viewBox="0 0 24 24"
+<summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
  width="24" height="24" aria-hidden="true" focusable="false"><g class="bars"><rect x="1" y="4"
  width="22" height="2.5" rx="1.25"/><rect x="1" y="10.75" width="22" height="2.5" rx="1.25"/><rect
  x="1" y="17.5" width="22" height="2.5" rx="1.25"/></g><g class="cross"><rect x="1" y="10.75"
  width="22" height="2.5" rx="1.25" transform="rotate(45 12 12)"/><rect x="1" y="10.75" width="22"
- height="2.5" rx="1.25" transform="rotate(-45 12 12)"/></g></svg><span class="menu-label">Menu</span></summary>
+ height="2.5" rx="1.25" transform="rotate(-45 12 12)"/></g></svg></summary>
 <div class="panel">
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="subjects/news.html">News</a></li><li><a href="subjects/politics.html">Politics</a></li><li><a href="subjects/opinion.html">Opinion</a></li><li><a href="subjects/health.html">Health</a></li><li><a href="subjects/environment.html">Environment</a></li><li><a href="subjects/education.html">Education</a></li><li><a href="subjects/business.html">Business</a></li><li><a href="subjects/housing.html">Housing</a></li><li><a href="subjects/sports.html">Sports</a></li><li><a href="subjects/food.html">Food</a></li><li><a href="subjects/arts.html">Arts</a></li></ul></nav>
 <hr>
-<nav aria-label="Browse"><ul><li><a href="map.html">Map</a></li><li><a href="catalog.html">Newsrooms</a></li><li><a href="big-stories.html">Big Stories</a></li><li><a href="story-links.html">Story Links</a></li></ul></nav>
+<nav aria-label="Browse"><p><a href="map.html">Map</a> · <a href="catalog.html">Newsrooms</a> · <a href="big-stories.html">Big Stories</a> · <a href="story-links.html">Story Links</a></p></nav>
 <hr>
-<nav aria-label="About"><ul><li><a href="resources.html">Resources</a></li><li><a href="text/">Plain text edition</a></li><li><a href="feeds.html">RSS Feeds</a></li><li><a href="about.html">About This Site</a></li></ul></nav>
+<nav aria-label="About"><p><a href="resources.html">Resources</a> · <a href="text/">Plain text edition</a> · <a href="feeds.html">RSS Feeds</a> · <a href="about.html">About This Site</a></p></nav>
 <p class="meta"><a href="/admin" rel="nofollow">Manage feeds</a></p>
 </div>
 </details>
@@ -118,57 +172,178 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <main id="main">
 <div id="feed-items">
 <article>
-<p><small><time datetime="2026-08-25T03:40:02+00:00" data-pub="10:40 PM CDT">Monday, August 24, 2026 at 10:40 PM CDT</time></small></p>
-<p><small>MN / Minneapolis / <a href="orgs/insight-news.html">Insight News</a></small></p>
-<h2><a href="https://www.insightnews.com/online_features/press_releases/foxfire-canoes-merges-artisan-woodworking-with-paddle-sport-performance-to-create-the-ultimate-fly-fishing/article_675286a4-dfc9-54be-ba08-dfc695916185.html">Foxfire Canoes Merges Artisan Woodworking With Paddle Sport Performance to Create the Ultimate Fly Fishing Watercraft</a></h2>
-<p class="more"><a href="https://www.insightnews.com/online_features/press_releases/foxfire-canoes-merges-artisan-woodworking-with-paddle-sport-performance-to-create-the-ultimate-fly-fishing/article_675286a4-dfc9-54be-ba08-dfc695916185.html">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Also in <a href="https://www.daytonatimes.com/online_features/press_releases/foxfire-canoes-merges-artisan-woodworking-with-paddle-sport-performance-to-create-the-ultimate-fly-fishing/article_b5e1d062-ba8f-509d-82ef-54aa74472565.html">Daytona Times</a></small></p>
-<p class="footer-line"><small><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a> | <a href="https://www.insightnews.com/site/forms/subscription_services"><strong>Subscribe</strong></a></small></p>
+<aside class="tagcol"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://chalkbeat.fundjournalism.org/donate/?campaign=701Pc00000M3hQLIAZ">Donate</a></aside>
+<p class="source"><a href="https://www.chalkbeat.org/"><strong>Chalkbeat</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:24:29+00:00" data-pub="6:24 AM EDT">Tue, Aug 25 @ 6AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Education">Education</a></p>
+<h2><a href="https://www.chalkbeat.org/2026/08/25/ai-tutoring-students-khanmigo-khan-academy-engagement-study/">The problem with an AI tutor: Students don’t want to use it</a></h2>
+<p class="byline">By Matt Barnum</p>
+<a class="shot" href="https://www.chalkbeat.org/2026/08/25/ai-tutoring-students-khanmigo-khan-academy-engagement-study/" tabindex="-1" aria-hidden="true"><img src="img/1d6f5dc0271e20d8c016b8c7441938fa10aacb74.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Asiyah Jones, 6, works on her laptop at her home in Philadelphia, Pennsylvania, on Sept. 19, 2024. <a class="lozenge more" href="https://www.chalkbeat.org/2026/08/25/ai-tutoring-students-khanmigo-khan-academy-engagement-study/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p><small><time datetime="2026-08-25T03:40:02+00:00" data-pub="10:40 PM CDT">Monday, August 24, 2026 at 10:40 PM CDT</time></small></p>
-<p><small>MN / Minneapolis / <a href="orgs/insight-news.html">Insight News</a></small></p>
-<h2><a href="https://www.insightnews.com/online_features/press_releases/hrh-candle-introduces-revolutionary-crystal-wax-candle-system-that-empowers-consumers-to-customize-their-home/article_d720e91a-d627-5588-91d2-ddf6a4eaf967.html">HRH Candle Introduces Revolutionary Crystal Wax Candle System That Empowers Consumers to Customize Their Home Fragrance Experience</a></h2>
-<p class="more"><a href="https://www.insightnews.com/online_features/press_releases/hrh-candle-introduces-revolutionary-crystal-wax-candle-system-that-empowers-consumers-to-customize-their-home/article_d720e91a-d627-5588-91d2-ddf6a4eaf967.html">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Also in <a href="https://www.daytonatimes.com/online_features/press_releases/hrh-candle-introduces-revolutionary-crystal-wax-candle-system-that-empowers-consumers-to-customize-their-home/article_a59c7a69-baa2-5f9f-b224-a0b6025dd46f.html">Daytona Times</a></small></p>
-<p class="footer-line"><small><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a> | <a href="https://www.insightnews.com/site/forms/subscription_services"><strong>Subscribe</strong></a></small></p>
+<aside class="tagcol"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://wyofile.fundjournalism.org/donate/?campaign=701Pl00000XoW06IAF">Donate</a></aside>
+<p class="source"><a href="https://wyofile.com/"><strong>WyoFile</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:24:00+00:00" data-pub="4:24 AM MDT">Tue, Aug 25 @ 4AM MDT</time><a class="lozenge place" href="/search?state=WY">Wyoming</a><a class="lozenge place" href="/search?place=Lander&state=WY">Lander</a></p>
+<h2><a href="https://wyofile.com/old-rift-reopens-as-trump-administration-amends-grand-teton-pathway-decision/">Old rift reopens as Trump administration amends Grand Teton pathway decision</a></h2>
+<p class="byline">By Katie Klingsporn</p>
+<a class="shot" href="https://wyofile.com/old-rift-reopens-as-trump-administration-amends-grand-teton-pathway-decision/" tabindex="-1" aria-hidden="true"><img src="img/36c8ee76e8b5dcc1970ed748b017e988cc06d1f8.jpg" alt="" width="300" height="201" loading="lazy" decoding="async"></a>
+<p>Conservation groups decry the federal government’s do-over as both a dubious procedural maneuver and threat to wildlife. But longtime trail advocates are pleased. <a class="lozenge more" href="https://wyofile.com/old-rift-reopens-as-trump-administration-amends-grand-teton-pathway-decision/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p><small><time datetime="2026-08-25T03:35:57+00:00" data-pub="10:35 PM CDT">Monday, August 24, 2026 at 10:35 PM CDT</time> · <a href="subjects/sports.html">Sports</a></small></p>
-<p><small>IL / River Forest / <a href="orgs/wednesday-journal-of-oak-park-and-river-forest.html">Wednesday Journal of Oak Park and River Forest</a></small></p>
-<h2><a href="https://www.oakpark.com/2026/08/24/fenwick-opener-over-joliet-catholic/">Fenwick rolls in opener over Joliet Catholic</a></h2>
-<p><small>By Gregg Voss</small></p>
-<a class="shot" href="https://www.oakpark.com/2026/08/24/fenwick-opener-over-joliet-catholic/" tabindex="-1" aria-hidden="true"><img src="img/e3c1204238184e5744f03737968b054ce7422bd2.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>It took a good 90 minutes in intense traffic for the Fenwick football team to travel from Oak Park to Joliet on Friday for their 2026 season opener against Joliet Catholic. Plenty of time to think and strategize. But not reminisce. That Class 6A title from last year? Forget about that. The future is now.</p>
-<p class="more"><a href="https://www.oakpark.com/2026/08/24/fenwick-opener-over-joliet-catholic/">Read more <span aria-hidden="true">→</span></a></p>
-<p class="footer-line"><small><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a> | <a href="https://wednesday-journal.fundjournalism.org/donate/"><strong>Donate</strong></a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/opinion.html">Opinion</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://wyofile.fundjournalism.org/donate/?campaign=701Pl00000XoW06IAF">Donate</a></aside>
+<p class="source"><a href="https://wyofile.com/"><strong>WyoFile</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:22:00+00:00" data-pub="4:22 AM MDT">Tue, Aug 25 @ 4AM MDT</time><a class="lozenge place" href="/search?state=WY">Wyoming</a><a class="lozenge place" href="/search?place=Lander&state=WY">Lander</a></p>
+<h2><a href="https://wyofile.com/why-the-bear-lodge-mine-plan-needs-a-closer-look/">Why the Bear Lodge mine plan needs a closer look</a></h2>
+<p class="byline">By Justin Johnson</p>
+<a class="shot" href="https://wyofile.com/why-the-bear-lodge-mine-plan-needs-a-closer-look/" tabindex="-1" aria-hidden="true"><img src="img/a667dcf1347f05fc390e21adf23c7c798f4c7904.jpg" alt="" width="300" height="225" loading="lazy" decoding="async"></a>
+<p>Sundance deserves clear, factual data showing how rare earth mining will affect local water and air, writes guest columnist Justin Johnson. <a class="lozenge more" href="https://wyofile.com/why-the-bear-lodge-mine-plan-needs-a-closer-look/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p><small><time datetime="2026-08-25T03:35:04+00:00" data-pub="10:35 PM CDT">Monday, August 24, 2026 at 10:35 PM CDT</time> · <a href="subjects/health.html">Health</a></small></p>
-<p><small>MN / Minneapolis / <a href="orgs/insight-news.html">Insight News</a></small></p>
-<h2><a href="https://www.insightnews.com/online_features/press_releases/veteran-founded-house-of-enough-bridges-mental-health-expertise-and-body-care-to-serve-women/article_aae5e26c-b7b1-5bb4-a6c7-2d87e13e20d7.html">Veteran-Founded House of Enough Bridges Mental Health Expertise and Body Care to Serve Women Often Overlooked by Beauty Brands</a></h2>
-<p class="more"><a href="https://www.insightnews.com/online_features/press_releases/veteran-founded-house-of-enough-bridges-mental-health-expertise-and-body-care-to-serve-women/article_aae5e26c-b7b1-5bb4-a6c7-2d87e13e20d7.html">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Also in <a href="https://www.daytonatimes.com/online_features/press_releases/veteran-founded-house-of-enough-bridges-mental-health-expertise-and-body-care-to-serve-women/article_6829a92d-c752-5bda-a562-a1e4e0915c4c.html">Daytona Times</a></small></p>
-<p class="footer-line"><small><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a> | <a href="https://www.insightnews.com/site/forms/subscription_services"><strong>Subscribe</strong></a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/opinion.html">Opinion</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://wyofile.fundjournalism.org/donate/?campaign=701Pl00000XoW06IAF">Donate</a></aside>
+<p class="source"><a href="https://wyofile.com/"><strong>WyoFile</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:20:00+00:00" data-pub="4:20 AM MDT">Tue, Aug 25 @ 4AM MDT</time><a class="lozenge place" href="/search?state=WY">Wyoming</a><a class="lozenge place" href="/search?place=Lander&state=WY">Lander</a></p>
+<h2><a href="https://wyofile.com/frothy-emotional-appeal-seldom-suffices/">Frothy emotional appeal seldom suffices</a></h2>
+<p class="byline">By Gunnar Malm</p>
+<a class="shot" href="https://wyofile.com/frothy-emotional-appeal-seldom-suffices/" tabindex="-1" aria-hidden="true"><img src="img/3015a11d0612550eee8e754af5157d87becae35e.jpg" alt="" width="300" height="228" loading="lazy" decoding="async"></a>
+<p>Voters showed the Wyoming Freedom Caucus last Tuesday that politicking has to lead to effective, sensible governance, writes guest columnist Gunnar Malm. <a class="lozenge more" href="https://wyofile.com/frothy-emotional-appeal-seldom-suffices/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p><small><time datetime="2026-08-25T03:35:04+00:00" data-pub="10:35 PM CDT">Monday, August 24, 2026 at 10:35 PM CDT</time></small></p>
-<p><small>MN / Minneapolis / <a href="orgs/insight-news.html">Insight News</a></small></p>
-<h2><a href="https://www.insightnews.com/online_features/press_releases/ethiopia-prime-leads-purelight-coffee-lineup-as-bootstrapped-brand-redefines-online-specialty-coffee-for-a/article_7fbdba88-ffd4-5f88-b4ca-b5db727dd01c.html">Ethiopia Prime Leads Purelight Coffee Lineup as Bootstrapped Brand Redefines Online Specialty Coffee for a New Generation</a></h2>
-<p class="more"><a href="https://www.insightnews.com/online_features/press_releases/ethiopia-prime-leads-purelight-coffee-lineup-as-bootstrapped-brand-redefines-online-specialty-coffee-for-a/article_7fbdba88-ffd4-5f88-b4ca-b5db727dd01c.html">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Also in <a href="https://www.daytonatimes.com/online_features/press_releases/ethiopia-prime-leads-purelight-coffee-lineup-as-bootstrapped-brand-redefines-online-specialty-coffee-for-a/article_87330158-5ff2-5b7c-8a97-b1737be6340d.html">Daytona Times</a></small></p>
-<p class="footer-line"><small><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a> | <a href="https://www.insightnews.com/site/forms/subscription_services"><strong>Subscribe</strong></a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/health.html">Health</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.wvgazettemail.com/subscribe">Subscribe</a></aside>
+<p class="source"><a href="https://www.wvgazettemail.com/"><strong>Charleson Gazette-Mail</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:20:00+00:00" data-pub="6:20 AM EDT">Tue, Aug 25 @ 6AM EDT</time><a class="lozenge place" href="/search?state=WV">West Virginia</a><a class="lozenge place" href="/search?place=Charleston&state=WV">Charleston</a></p>
+<h2><a href="https://www.wvgazettemail.com/news/health/hospitals-in-wv-elsewhere-continue-to-deal-with-shortage-of-workers-report/article_72e01570-9dcc-44e8-8c69-ef44b26359b8.html">Hospitals in WV, elsewhere continue to deal with shortage of workers: Report</a></h2>
+<p class="byline">By By MAGGIE SUSA msusa@hdmediallc.com</p>
+<p>HUNTINGTON—Across the country, states including West Virginia are dealing with a significant shortage of healthcare workers. <a class="lozenge more" href="https://www.wvgazettemail.com/news/health/hospitals-in-wv-elsewhere-continue-to-deal-with-shortage-of-workers-report/article_72e01570-9dcc-44e8-8c69-ef44b26359b8.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="subjects/opinion.html">Opinion</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://pagosadailypost.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://pagosadailypost.com/"><strong>Pagosa Daily Post</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:11:30+00:00" data-pub="5:11 AM CDT">Tue, Aug 25 @ 5AM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=Pagosa&state=TX">Pagosa</a></p>
+<h2><a href="https://pagosadailypost.com/2026/08/25/editorial-create-an-educated-community-about-housing-need-and-solutions-part-two-2/">EDITORIAL: ‘Create an Educated Community About Housing Need and Solutions’, Part Two</a></h2>
+<p class="byline">By Bill Hudson</p>
+<p>Theoretically, the crisis could be resolved by the individuals who own property in Archuleta County <a class="lozenge more" href="https://pagosadailypost.com/2026/08/25/editorial-create-an-educated-community-about-housing-need-and-solutions-part-two-2/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="subjects/environment.html">Environment</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://dailymontanan.com/donate">Donate</a></aside>
+<p class="source"><a href="https://dailymontanan.com/"><strong>Daily Montanan</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:11:12+00:00" data-pub="4:11 AM MDT">Tue, Aug 25 @ 4AM MDT</time><a class="lozenge place" href="/search?state=MT">Montana</a></p>
+<h2><a href="https://dailymontanan.com/2026/08/25/the-five-horsemen-of-the-apocalypse/">The five horsemen of the apocalypse</a></h2>
+<p class="byline">By Mike Bader</p>
+<a class="shot" href="https://dailymontanan.com/2026/08/25/the-five-horsemen-of-the-apocalypse/" tabindex="-1" aria-hidden="true"><img src="img/7fe6e604aae68b211f63cb053d3901ef110aee2a.jpg" alt="" width="480" height="374" loading="lazy" decoding="async"></a>
+<p>The Trump Administration has released five horsemen to run roughshod over America the Beautiful, playing out their version of Manifest Destiny 2.0 at the expense of all that is good and whole. In seemingly separate, but connected actions, the very agencies entrusted with protecting our national heritage seek to drive threatened and endangered wildlife off <a class="lozenge more" href="https://dailymontanan.com/2026/08/25/the-five-horsemen-of-the-apocalypse/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="subjects/opinion.html">Opinion</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://pagosadailypost.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://pagosadailypost.com/"><strong>Pagosa Daily Post</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:10:14+00:00" data-pub="5:10 AM CDT">Tue, Aug 25 @ 5AM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=Pagosa&state=TX">Pagosa</a></p>
+<h2><a href="https://pagosadailypost.com/2026/08/25/editorial-shooting-in-the-dark-at-tax-targets-part-nine/">EDITORIAL: Shooting in the Dark… at Tax Targets, Part Nine</a></h2>
+<p class="byline">By Bill Hudson</p>
+<p>Apparently, the School Board did not want to listen to Ms. Hahne&#x27;s rather clear advice <a class="lozenge more" href="https://pagosadailypost.com/2026/08/25/editorial-shooting-in-the-dark-at-tax-targets-part-nine/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="subjects/politics.html">Politics</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://pagosadailypost.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://pagosadailypost.com/"><strong>Pagosa Daily Post</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:08:51+00:00" data-pub="5:08 AM CDT">Tue, Aug 25 @ 5AM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=Pagosa&state=TX">Pagosa</a></p>
+<h2><a href="https://pagosadailypost.com/2026/08/25/big-pivots-rare-optimism-about-the-colorado-river/">BIG PIVOTS: Rare Optimism About the Colorado River?</a></h2>
+<p class="byline">By Allen Best</p>
+<p>When the breakthroughs will occur, Udall said he didn’t know. And he hedged his confidence with caution. “I won’t put bets on this...&quot; <a class="lozenge more" href="https://pagosadailypost.com/2026/08/25/big-pivots-rare-optimism-about-the-colorado-river/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="subjects/environment.html">Environment</a><a class="lozenge" href="tags/journalist-owned.html">Journalist-owned</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://coloradosun.com/support?utm_source=navbar_button">Donate</a></aside>
+<p class="source"><a href="https://coloradosun.com/"><strong>The Colorado Sun</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:08:00+00:00" data-pub="4:08 AM MDT">Tue, Aug 25 @ 4AM MDT</time><a class="lozenge place" href="/search?state=CO">Colorado</a><a class="lozenge place" href="/search?place=Denver&state=CO">Denver</a></p>
+<h2><a href="https://coloradosun.com/2026/08/25/colorado-keeping-roadless-areas-trump-reversal/">Colorado keeps 4.2M acres roadless as Trump administration opens much of the West</a></h2>
+<p class="byline">By Michael Booth</p>
+<a class="shot" href="https://coloradosun.com/2026/08/25/colorado-keeping-roadless-areas-trump-reversal/" tabindex="-1" aria-hidden="true"><img src="img/33c53486b26eb568af4eab9407f91f6f476edc36.jpg" alt="" width="480" height="720" loading="lazy" decoding="async"></a>
+<p>US says it will honor separate state agreement while it paves way for roads in 44 million acres of Forest Service wildlands <a class="lozenge more" href="https://coloradosun.com/2026/08/25/colorado-keeping-roadless-areas-trump-reversal/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="subjects/politics.html">Politics</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.baltimorebrew.com/membership">Become a member</a></aside>
+<p class="source"><a href="https://www.baltimorebrew.com/"><strong>Baltimore Brew</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:07:37+00:00" data-pub="6:07 AM EDT">Tue, Aug 25 @ 6AM EDT</time><a class="lozenge place" href="/search?state=MD">Maryland</a><a class="lozenge place" href="/search?place=Baltimore&state=MD">Baltimore</a></p>
+<h2><a href="https://www.baltimorebrew.com/2026/08/25/following-directors-path-chief-of-staff-at-baltimore-dot-exits/">Following director’s path, chief of staff at Baltimore DOT exits</a></h2>
+<p class="byline">By Mark Reutter</p>
+<p>Patrick Fleming is shown the door at a transportation department plagued by poor performance and heavy staff turnover. <a class="lozenge more" href="https://www.baltimorebrew.com/2026/08/25/following-directors-path-chief-of-staff-at-baltimore-dot-exits/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="subjects/education.html">Education</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://pagosadailypost.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://pagosadailypost.com/"><strong>Pagosa Daily Post</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:06:44+00:00" data-pub="5:06 AM CDT">Tue, Aug 25 @ 5AM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=Pagosa&state=TX">Pagosa</a></p>
+<h2><a href="https://pagosadailypost.com/2026/08/25/learn-about-robot-assisted-surgery-at-pagosa-springs-medical-center-tomorrow-august-26/">Learn About Robot-Assisted Surgery at Pagosa Springs Medical Center, Tomorrow August 26</a></h2>
+<p class="byline">By Post Contributor</p>
+<p>Learn more about the Mako Robotic-Arm Assisted System and how this innovative technology is helping advance joint replacement care <a class="lozenge more" href="https://pagosadailypost.com/2026/08/25/learn-about-robot-assisted-surgery-at-pagosa-springs-medical-center-tomorrow-august-26/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="subjects/business.html">Business</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://madison365.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://madison365.com/"><strong>Madison365</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:05:45+00:00" data-pub="5:05 AM CDT">Tue, Aug 25 @ 5AM CDT</time><a class="lozenge place" href="/search?state=WI">Wisconsin</a><a class="lozenge place" href="/search?place=Madison&state=WI">Madison</a></p>
+<h2><a href="https://madison365.com/michael-jordans-last-dance-1998-finals-jersey-could-sell-for-over-10-million/">Michael Jordan’s ‘Last Dance’ 1998 Finals jersey could sell for over $10 million</a></h2>
+<p class="byline">By CNN</p>
+<p>By Diego Mendoza, CNN (CNN)—A jersey worn by Michael Jordan during one of the most famous seasons of his career is going up for auction and could become the most expensive basketball jersey to ever cross the block. The white mesh top emblazoned with Jordan’s iconic number “23” was worn by the star <a class="lozenge more" href="https://madison365.com/michael-jordans-last-dance-1998-finals-jersey-could-sell-for-over-10-million/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 </div>
 </main>
 <footer>
 <hr>
-<p class="meta">Every story here belongs to the newsroom that reported it —
-follow the links, read them there, and pay them if you can. Catalog entries are
-quoted from each newsroom's own About page. Newsroom directory compiled by the
-<a href="https://www.mediaanddemocracyproject.org/journalism-directory">Media and
-Democracy Project</a>; coordinates from the U.S. Census Bureau gazetteer.</p>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="map.html">Map</a> · <a href="catalog.html">Newsrooms</a> · <a href="big-stories.html">Big Stories</a> · <a href="story-links.html">Story Links</a> · <a href="resources.html">Resources</a> · <a href="text/">Plain text edition</a> · <a href="feeds.html">RSS Feeds</a> · <a href="about.html">About This Site</a></p></nav>
 </footer>
+<script>
+/* A disclosure stays open until it is told otherwise; a menu should not. */
+(function () {
+  function close(e) {
+    var open = document.querySelector("details.menu[open]");
+    if (!open) return;
+    if (e.type === "keydown") {
+      if (e.key === "Escape") { open.removeAttribute("open"); }
+      return;
+    }
+    if (!open.contains(e.target)) { open.removeAttribute("open"); }
+  }
+  document.addEventListener("click", close);
+  document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
+})();
+</script>
 <script>
 /* Datelines are the newsroom's own local time. Tap one to see that moment
    in your time zone; tap again to put it away. Delegated from the document

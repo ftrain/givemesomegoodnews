@@ -13,12 +13,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(../fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -27,22 +40,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -50,19 +69,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -75,7 +126,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -93,7 +144,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="../index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="../masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -106,7 +157,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="../subjects/news.html">News</a></li><li><a href="../subjects/politics.html">Politics</a></li><li><a href="../subjects/opinion.html">Opinion</a></li><li><a href="../subjects/health.html">Health</a></li><li><a href="../subjects/environment.html">Environment</a></li><li><a href="../subjects/education.html">Education</a></li><li><a href="../subjects/business.html">Business</a></li><li><a href="../subjects/housing.html">Housing</a></li><li><a href="../subjects/sports.html">Sports</a></li><li><a href="../subjects/food.html">Food</a></li><li><a href="../subjects/arts.html">Arts</a></li></ul></nav>
@@ -121,275 +172,275 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <main id="main">
 <div id="feed-items">
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T19:25:13+00:00" data-pub="3:25 PM EDT">Monday, August 24, 2026 at 3:25 PM EDT</time></small></p>
-<p><small>PR / San Juan / <a href="https://www.metro.pr/">Metro Puerto Rico</a></small></p>
-<h2><a href="https://www.metro.pr/noticias/2026/08/24/buscan-a-menor-de-15-anos-reportado-como-desaparecido-en-san-juan/">Buscan a menor de 15 años reportado como desaparecido en San Juan</a></h2>
-<p class="byline"><small>By Metro Puerto Rico</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://www.metro.pr/">Support</a></span></p>
-<a class="shot" href="https://www.metro.pr/noticias/2026/08/24/buscan-a-menor-de-15-anos-reportado-como-desaparecido-en-san-juan/" tabindex="-1" aria-hidden="true"><img src="../img/319f583602061f991098143d836f65f1e8499987.jpg" alt="" width="480" height="460" loading="lazy" decoding="async"></a>
-<p>El joven fue visto por última vez el 20 de agosto en la urbanización Country Club, informó la Policía de Puerto Rico.</p>
-<p class="more"><a href="https://www.metro.pr/noticias/2026/08/24/buscan-a-menor-de-15-anos-reportado-como-desaparecido-en-san-juan/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://eldiariony.com/">Support</a></aside>
+<p class="source"><a href="https://eldiariony.com/"><strong>El Diario NY</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:27:00+00:00" data-pub="6:27 AM EDT">Tue, Aug 25 @ 6AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Brooklyn&state=NY">Brooklyn</a></p>
+<h2><a href="https://eldiariony.com/2026/08/25/3-frutas-llenas-de-vitamina-c-y-antioxidantes-para-cuidar-tus-articulaciones-y-musculos/">3 frutas llenas de vitamina C y antioxidantes para cuidar tus articulaciones y músculos</a></h2>
+<p class="byline">By Miyeilis Flores</p>
+<a class="shot" href="https://eldiariony.com/2026/08/25/3-frutas-llenas-de-vitamina-c-y-antioxidantes-para-cuidar-tus-articulaciones-y-musculos/" tabindex="-1" aria-hidden="true"><img src="../img/42a43859cc7cb9db3ef44313a8d52e15e0c611b4.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>Estas tres frutas con respaldo científico para cuidar tus articulaciones, tejidos y músculos, acompañadas de hábitos saludables como hacer ejercicios <a class="lozenge more" href="https://eldiariony.com/2026/08/25/3-frutas-llenas-de-vitamina-c-y-antioxidantes-para-cuidar-tus-articulaciones-y-musculos/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T19:24:23+00:00" data-pub="2:24 PM CDT">Monday, August 24, 2026 at 2:24 PM CDT</time></small></p>
-<p><small>TN / Statewide / <a href="https://nashvillenoticias.com/">Nashville Notacias</a></small></p>
-<h2><a href="https://nashvillenoticias.com/condena-hombre-mato-nina-8-anos-bala-perdida-memphis/">Condenan al hombre que mató a una niña de 8 años con una bala perdida en Memphis en 2020</a></h2>
-<p class="byline"><small>By Alfredo Peña</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://nashvillenoticias.com/">Support</a></span></p>
-<a class="shot" href="https://nashvillenoticias.com/condena-hombre-mato-nina-8-anos-bala-perdida-memphis/" tabindex="-1" aria-hidden="true"><img src="../img/755b4da3bd8471ed5b2a023a4067d081c33142f7.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>En breve: Un jurado declaró culpable a Cedric Conley, de 47 años, por el disparo que mató a Jordyn, una niña de 8 años, en noviembre de 2020 en Memphis. La bala impactó a la menor mientras cocinaba con su abuela. Conley será sentenciado el 24 de septiembre. Condenan al hombre que mató a una</p>
-<p class="more"><a href="https://nashvillenoticias.com/condena-hombre-mato-nina-8-anos-bala-perdida-memphis/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://support.apple.com/downloads/safari">Donate</a></aside>
+<p class="source"><a href="https://www.elnuevodia.com/"><strong>El Nuevo Dia</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:24:17+00:00" data-pub="6:24 AM EDT">Tue, Aug 25 @ 6AM EDT</time></p>
+<h2><a href="https://www.elnuevodia.com/noticias/seguridad/notas/hallan-el-cuerpo-baleado-de-una-mujer-en-san-german/">Hallan el cuerpo baleado de una mujer en San Germán</a></h2>
+<p class="byline">By Alex Figueroa Cancel</p>
+<a class="shot" href="https://www.elnuevodia.com/noticias/seguridad/notas/hallan-el-cuerpo-baleado-de-una-mujer-en-san-german/" tabindex="-1" aria-hidden="true"><img src="../img/403442ffc2afcad027813491ba4d69799b58a193.jpg" alt="" width="480" height="238" loading="lazy" decoding="async"></a>
+<p>La Policía fue alertada por una llamada a un cuartel, después de que se escucharan disparos <a class="lozenge more" href="https://www.elnuevodia.com/noticias/seguridad/notas/hallan-el-cuerpo-baleado-de-una-mujer-en-san-german/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T19:21:27+00:00" data-pub="12:21 PM PDT">Monday, August 24, 2026 at 12:21 PM PDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>CA / Los Angeles / <a href="https://boyleheightsbeat.com/">Boyle Heights Beat</a></small></p>
-<h2><a href="https://thelalocal.org/los-angeles-county/la-mayor-bass-has-skipped-more-than-half-of-lahsa-board-meetings/">LA Mayor Bass has skipped more than half of LAHSA board meetings</a></h2>
-<p class="byline"><small>By LAist</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://boyleheightsbeat.com/donate/">Donate</a></span></p>
-<a class="shot" href="https://thelalocal.org/los-angeles-county/la-mayor-bass-has-skipped-more-than-half-of-lahsa-board-meetings/" tabindex="-1" aria-hidden="true"><img src="../img/8c0622e32a308c2a153e9bf02d8cef672c295908.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>Bass is the first mayor to appoint herself to the commission that oversees the region&#x27;s top homelessness agency. Her attendance record could trigger removal under the bylaws.</p>
-<p class="more"><a href="https://thelalocal.org/los-angeles-county/la-mayor-bass-has-skipped-more-than-half-of-lahsa-board-meetings/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://www.noticel.com/subscribe">Subscribe</a></aside>
+<p class="source"><a href="https://www.noticel.com/"><strong>Noticel</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:23:24+00:00" data-pub="6:23 AM EDT">Tue, Aug 25 @ 6AM EDT</time></p>
+<h2><a href="https://noticel.com/noticias/20260825/abre-puerto-rico-revela-avances-y-retos-en-la-salud-fiscal-de-los-municipios/">ABRE Puerto Rico revela avances y retos en la salud fiscal de los municipios</a></h2>
+<p class="byline">By NotiCel</p>
+<p>La organización ABRE Puerto Rico (ABRE PR) presentó los resultados de la duodécima edición del Índice de Salud Fiscal Municipal, herramienta que permite evaluar la condición financiera de los municipios, identificar tendencias y promover una gestión pública más sólida, transparente y sostenible. ABRE Puerto Rico es un proyecto de innovación social que promueve el mejoramiento continuo <a class="lozenge more" href="https://noticel.com/noticias/20260825/abre-puerto-rico-revela-avances-y-retos-en-la-salud-fiscal-de-los-municipios/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T19:12:12+00:00" data-pub="12:12 PM PDT">Monday, August 24, 2026 at 12:12 PM PDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>CA / San Diego / <a href="https://inewsource.org/">Inewsource</a></small></p>
-<h2><a href="https://inewsource.org/2026/08/24/chula-vista-flock-police-drones-surveillance-privacy/">Amid national backlash against Flock, Chula Vista may seek closer ties with company</a></h2>
-<p class="byline"><small>By Trisha Ganjoo</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://inewsource.org/planned-giving/">Donate</a></span></p>
-<a class="shot" href="https://inewsource.org/2026/08/24/chula-vista-flock-police-drones-surveillance-privacy/" tabindex="-1" aria-hidden="true"><img src="../img/c0be3637206d970ddd4a9117b113314e3796be1e.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Staff say switching to Flock Safety for the southern San Diego County police drone program would save $1.2 million annually. This content Amid national backlash against Flock, Chula Vista may seek closer ties with company appeared first on inewsource.</p>
-<p class="more"><a href="https://inewsource.org/2026/08/24/chula-vista-flock-police-drones-surveillance-privacy/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://www.metro.pr/">Support</a></aside>
+<p class="source"><a href="https://www.metro.pr/"><strong>Metro Puerto Rico</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:23:10+00:00" data-pub="6:23 AM EDT">Tue, Aug 25 @ 6AM EDT</time><a class="lozenge place" href="/search?place=San+Juan&state=PR">San Juan</a></p>
+<h2><a href="https://www.metro.pr/noticias/2026/08/25/debil-onda-tropical-provocara-aguaceros-y-tronadas-este-martes/">Débil onda tropical provocará aguaceros y tronadas este martes</a></h2>
+<p class="byline">By Metro Puerto Rico</p>
+<a class="shot" href="https://www.metro.pr/noticias/2026/08/25/debil-onda-tropical-provocara-aguaceros-y-tronadas-este-martes/" tabindex="-1" aria-hidden="true"><img src="../img/8639feaf7dcbcbda82b3ebb39f931d10b137f896.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Los aguaceros comenzarán en el este y se desplazarán hacia el interior, oeste y norte durante la tarde <a class="lozenge more" href="https://www.metro.pr/noticias/2026/08/25/debil-onda-tropical-provocara-aguaceros-y-tronadas-este-martes/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T19:00:11+00:00" data-pub="3:00 PM EDT">Monday, August 24, 2026 at 3:00 PM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>FL / Miami / <a href="https://elsolnewsmedia.com/">El Sol Latino Newspaper</a></small></p>
-<h2><a href="https://elsolnewsmedia.com/evacuados-incendio-forestal-eeuu/">Más de 40.000 evacuados por incendio forestal en el oeste de EEUU</a></h2>
-<p class="byline"><small>By Colaborador</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://elsoln1.us8.list-manage.com/subscribe?u=b58aaf173a09bc54d9b0bd9c9&amp;id=a2d335e1c7">Subscribe</a></span></p>
-<p>Las autoridades de Nevada, en el oeste de Estados Unidos, instaron el domingo a la población a evacuar sus hogares debido a un incendio forestal de rápida propagación que se acerca a la ciudad de Reno impulsado por el viento. Unas 42.000 personas han salido de sus casas y a otras 45.000 se les pidió</p>
-<p class="more"><a href="https://elsolnewsmedia.com/evacuados-incendio-forestal-eeuu/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://hispanonewjersey.com/">Support</a></aside>
+<p class="source"><a href="https://hispanonewjersey.com/"><strong>New Jersery Hispano</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:22:00+00:00" data-pub="6:22 AM EDT">Tue, Aug 25 @ 6AM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a></p>
+<h2><a href="https://hispanonewjersey.com/horoscopo-25-agosto/">🔮 Horóscopo – 25 de agosto</a></h2>
+<p class="byline">By Edwin Joel Maza Castro</p>
+<p>El día trae una energía ideal para reconocer emociones, ordenar prioridades internas y ajustar dinámicas personales. Es un día perfecto para expresarte sin presión, tomar decisiones conscientes y avanzar con más equilibrio Predicciones de amor, trabajo y salud para los 12 signos zodiacales, desde Aries a Piscis, guía para tu día. ♈ Aries (21 mar <a class="lozenge more" href="https://hispanonewjersey.com/horoscopo-25-agosto/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T19:00:00+00:00" data-pub="12:00 PM PDT">Monday, August 24, 2026 at 12:00 PM PDT</time></small></p>
-<p><small>CA / Ventura County / <a href="https://vidanewspaper.com/">Vida</a></small></p>
-<h2><a href="https://vidanewspaper.com/2026/08/24/los-latinos-podemos-hacer-historia-en-las-elecciones/">En menos de 100 días los latinos podemos hacer historia en las elecciones</a></h2>
-<p class="byline"><small>By José López Zamorano</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://vidanewspaper.com/">Support</a></span></p>
-<a class="shot" href="https://vidanewspaper.com/2026/08/24/los-latinos-podemos-hacer-historia-en-las-elecciones/" tabindex="-1" aria-hidden="true"><img src="../img/577266f7b3f5c0169381e41919297f556fca2f6c.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>La cuenta regresiva ya comenzó. Faltan menos de cien días para las elecciones del 3 de noviembre y Estados Unidos entra en esa etapa en la que la política deja de ser ruido de fondo y comienza a sentirse en el bolsillo, en la mesa familiar y en las conversaciones del trabajo. No será una</p>
-<p class="more"><a href="https://vidanewspaper.com/2026/08/24/los-latinos-podemos-hacer-historia-en-las-elecciones/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://www.elvocero.com">Support</a></aside>
+<p class="source"><a href="https://www.elvocero.com"><strong>El Vocero</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:21:00+00:00" data-pub="6:21 AM EDT">Tue, Aug 25 @ 6AM EDT</time></p>
+<h2><a href="https://www.elvocero.com/ley-y-orden/policiacas/asesinan-a-una-mujer-y-un-hombre-en-menos-de-una-hora-en-san-germ/article_a8583c2c-0e44-4584-9b43-b886f38c1901.html">Asesinan a una mujer y un hombre en menos de una hora en San Germán y Río Piedras</a></h2>
+<p class="byline">By Miguel Rivera Puig, EL VOCERO</p>
+<a class="shot" href="https://www.elvocero.com/ley-y-orden/policiacas/asesinan-a-una-mujer-y-un-hombre-en-menos-de-una-hora-en-san-germ/article_a8583c2c-0e44-4584-9b43-b886f38c1901.html" tabindex="-1" aria-hidden="true"><img src="../img/501b7f77983edac694d2feab442147fc619d6b8b.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+<p>Ambas víctimas fueron encontradas con heridas de bala durante la madrugada de este martes y, hasta el momento, no han sido identificadas <a class="lozenge more" href="https://www.elvocero.com/ley-y-orden/policiacas/asesinan-a-una-mujer-y-un-hombre-en-menos-de-una-hora-en-san-germ/article_a8583c2c-0e44-4584-9b43-b886f38c1901.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T18:59:00+00:00" data-pub="11:59 AM MST">Monday, August 24, 2026 at 11:59 AM MST</time></small></p>
-<p><small>AZ / Statewide / <a href="https://conectaarizona.com/">Conecta Arizona</a></small></p>
-<h2><a href="https://conectaarizona.com/dos-agentes-de-la-policia-de-phoenix-fueron-arrestados-y-despedidos-tras-una-violenta-parada-de-trafico-no-reportada/">Dos agentes de la Policía de Phoenix fueron arrestados y despedidos tras una violenta parada de tráfico no reportada</a></h2>
-<p class="byline"><small>By AP News</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://conectaarizona.com/">Support</a></span></p>
-<a class="shot" href="https://conectaarizona.com/dos-agentes-de-la-policia-de-phoenix-fueron-arrestados-y-despedidos-tras-una-violenta-parada-de-trafico-no-reportada/" tabindex="-1" aria-hidden="true"><img src="../img/6629f32ae97b6635c07981558da7cfaf49dda0fd.jpg" alt="" width="480" height="295" loading="lazy" decoding="async"></a>
-<p>PHOENIX (AP) — Dos agentes de policía de Phoenix fueron despedidos y arrestados tras una parada de tráfico no reportada en la que agredieron a un hombre y a una</p>
-<p class="more"><a href="https://conectaarizona.com/dos-agentes-de-la-policia-de-phoenix-fueron-arrestados-y-despedidos-tras-una-violenta-parada-de-trafico-no-reportada/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://laopinion.com">Support</a></aside>
+<p class="source"><a href="https://laopinion.com"><strong>La Opinión</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:20:00+00:00" data-pub="3:20 AM PDT">Tue, Aug 25 @ 3AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://laopinion.com/2026/08/25/clima-de-hoy-en-los-angeles-para-este-martes-25-de-agosto/">Clima de hoy en Los Ángeles para este martes 25 de agosto</a></h2>
+<p class="byline">By La Opinión</p>
+<a class="shot" href="https://laopinion.com/2026/08/25/clima-de-hoy-en-los-angeles-para-este-martes-25-de-agosto/" tabindex="-1" aria-hidden="true"><img src="../img/44af91282f7a45db5d5af4e34fd32331ac690c76.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>Encuentra el pronóstico meteorológico de hoy para Los Ángeles, cómo estará el tiempo y las condiciones climáticas este martes 25 de agosto. <a class="lozenge more" href="https://laopinion.com/2026/08/25/clima-de-hoy-en-los-angeles-para-este-martes-25-de-agosto/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T18:57:04+00:00" data-pub="2:57 PM EDT">Monday, August 24, 2026 at 2:57 PM EDT</time></small></p>
-<p><small>PR / San Juan / <a href="https://www.metro.pr/">Metro Puerto Rico</a></small></p>
-<h2><a href="https://www.metro.pr/noticias/2026/08/24/trump-afirma-que-iran-se-esta-derrumbando-por-completo/">Trump afirma que Irán “se está derrumbando por completo”</a></h2>
-<p class="byline"><small>By EFE EFE</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://www.metro.pr/">Support</a></span></p>
-<a class="shot" href="https://www.metro.pr/noticias/2026/08/24/trump-afirma-que-iran-se-esta-derrumbando-por-completo/" tabindex="-1" aria-hidden="true"><img src="../img/f9f47bd845756c382c6e241895e6f467b2ce3400.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>El presidente de Estados Unidos anticipó nuevas presiones contra Teherán, mientras Washington prepara un amplio paquete de sanciones económicas</p>
-<p class="more"><a href="https://www.metro.pr/noticias/2026/08/24/trump-afirma-que-iran-se-esta-derrumbando-por-completo/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://eldiariony.com/">Support</a></aside>
+<p class="source"><a href="https://eldiariony.com/"><strong>El Diario NY</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:20:00+00:00" data-pub="6:20 AM EDT">Tue, Aug 25 @ 6AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Brooklyn&state=NY">Brooklyn</a></p>
+<h2><a href="https://eldiariony.com/2026/08/25/chicago-pronostico-del-tiempo-para-este-martes-25-de-agosto/">Chicago: pronóstico del tiempo para este martes 25 de agosto</a></h2>
+<p class="byline">By El Diario</p>
+<a class="shot" href="https://eldiariony.com/2026/08/25/chicago-pronostico-del-tiempo-para-este-martes-25-de-agosto/" tabindex="-1" aria-hidden="true"><img src="../img/f1e4989f2e80d53a894ad2c7b5bd1ac3591b8146.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>Conoce cómo estará el tiempo en Chicago, para hoy martes 25 de agosto. Antes de salir de tu casa, descubre el pronóstico meteorológico y las condiciones climáticas más relevantes para este día. <a class="lozenge more" href="https://eldiariony.com/2026/08/25/chicago-pronostico-del-tiempo-para-este-martes-25-de-agosto/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T18:53:58+00:00" data-pub="2:53 PM EDT">Monday, August 24, 2026 at 2:53 PM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>PR / San Juan / <a href="https://www.metro.pr/">Metro Puerto Rico</a></small></p>
-<h2><a href="https://www.metro.pr/noticias/2026/08/24/30-caimanes-en-seis-horas-los-hermanos-caza-caimanes-establecen-nuevo-record/">30 caimanes en seis horas: Los Hermanos Caza Caimanes establecen nuevo récord</a></h2>
-<p class="byline"><small>By Metro Puerto Rico</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://www.metro.pr/">Support</a></span></p>
-<a class="shot" href="https://www.metro.pr/noticias/2026/08/24/30-caimanes-en-seis-horas-los-hermanos-caza-caimanes-establecen-nuevo-record/" tabindex="-1" aria-hidden="true"><img src="../img/5b4dafcb2e348b736d09025d0fdd5d30acff99c9.jpg" alt="" width="480" height="640" loading="lazy" decoding="async"></a>
-<p>Realizaron la captura durante un recorrido por Carolina, Canóvanas y Loíza.</p>
-<p class="more"><a href="https://www.metro.pr/noticias/2026/08/24/30-caimanes-en-seis-horas-los-hermanos-caza-caimanes-establecen-nuevo-record/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://support.apple.com/downloads/safari">Donate</a></aside>
+<p class="source"><a href="https://www.elnuevodia.com/"><strong>El Nuevo Dia</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:10:00+00:00" data-pub="6:10 AM EDT">Tue, Aug 25 @ 6AM EDT</time></p>
+<h2><a href="https://www.elnuevodia.com/noticias/el-nuevo-dia-educador/notas/todo-lo-que-debes-saber-sobre-la-prueba-del-sat/">Todo lo que debes saber sobre la prueba del SAT</a></h2>
+<p class="byline">By Rut Tellado Domenech</p>
+<a class="shot" href="https://www.elnuevodia.com/noticias/el-nuevo-dia-educador/notas/todo-lo-que-debes-saber-sobre-la-prueba-del-sat/" tabindex="-1" aria-hidden="true"><img src="../img/f710d83a5d8da18e8981597d45bf3bc237818d98.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Este examen en inglés se administra en formato digital y sus resultados son aceptados por universidades en Estados Unidos y otros países <a class="lozenge more" href="https://www.elnuevodia.com/noticias/el-nuevo-dia-educador/notas/todo-lo-que-debes-saber-sobre-la-prueba-del-sat/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T18:50:59+00:00" data-pub="2:50 PM EDT">Monday, August 24, 2026 at 2:50 PM EDT</time></small></p>
-<p><small>PR / San Juan / <a href="https://www.metro.pr/">Metro Puerto Rico</a></small></p>
-<h2><a href="https://www.metro.pr/deportes/2026/08/24/carlos-alcaraz-y-serena-williams-debutan-juntos-en-el-dobles-mixto-del-abierto-de-estados-unidos/">Carlos Alcaraz y Serena Williams debutan juntos en el dobles mixto del Abierto de Estados Unidos</a></h2>
-<p class="byline"><small>By EFE EFE</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://www.metro.pr/">Support</a></span></p>
-<a class="shot" href="https://www.metro.pr/deportes/2026/08/24/carlos-alcaraz-y-serena-williams-debutan-juntos-en-el-dobles-mixto-del-abierto-de-estados-unidos/" tabindex="-1" aria-hidden="true"><img src="../img/77532881059d082dc51b3da205f05bb52c1878ee.jpg" alt="" width="480" height="310" loading="lazy" decoding="async"></a>
-<p>La inédita pareja buscará el título y un premio de 1 millón de dólares en el torneo que marca el regreso de ambos a la competición</p>
-<p class="more"><a href="https://www.metro.pr/deportes/2026/08/24/carlos-alcaraz-y-serena-williams-debutan-juntos-en-el-dobles-mixto-del-abierto-de-estados-unidos/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://lavozhispanact.com/">Support</a></aside>
+<p class="source"><a href="https://lavozhispanact.com/"><strong>La Voz Hispana</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:05:00+00:00" data-pub="6:05 AM EDT">Tue, Aug 25 @ 6AM EDT</time><a class="lozenge place" href="/search?state=CT">Connecticut</a></p>
+<h2><a href="https://lavozhispanact.com/prevencion-del-cancer-de-mama-en-mujeres-hispanas-en-usa-2/">Prevención del cáncer de mama en mujeres hispanas en USA</a></h2>
+<p class="byline">By Dr. Carlos G Cruz H.</p>
+<p>El cáncer de mama en los Estados Unidos es un tema importante para debatir ya que este tipo de enfermedad es la primera causa de muerte en mujeres y por ello es importante conocer (a manera de introducción) los siguientes datos estadísticos ofrecidos por (breastcancer.org y el CDC) sobre este tema: Por tal razón hemos <a class="lozenge more" href="https://lavozhispanact.com/prevencion-del-cancer-de-mama-en-mujeres-hispanas-en-usa-2/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T18:48:41+00:00" data-pub="11:48 AM PDT">Monday, August 24, 2026 at 11:48 AM PDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>CA / Los Angeles / <a href="https://boyleheightsbeat.com/">Boyle Heights Beat</a></small></p>
-<h2><a href="https://thelalocal.org/neighborhoods/boyle-heights/lineage-admits-cleanup-completion-claim-was-misleading/">Lineage admits its ‘104%’ cleanup completion claim was misleading</a></h2>
-<p class="byline"><small>By Christopher Damien</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://boyleheightsbeat.com/donate/">Donate</a></span></p>
-<a class="shot" href="https://thelalocal.org/neighborhoods/boyle-heights/lineage-admits-cleanup-completion-claim-was-misleading/" tabindex="-1" aria-hidden="true"><img src="../img/3483be4f7864c39bc1b367cfc6d20f016c1f538f.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>The company is about a week behind an air regulators’ deadline to remove food waste from its burned warehouse, though it’s still unclear what penalties it could face.</p>
-<p class="more"><a href="https://thelalocal.org/neighborhoods/boyle-heights/lineage-admits-cleanup-completion-claim-was-misleading/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://mosaic.nj.com/">Support</a></aside>
+<p class="source"><a href="https://mosaic.nj.com/"><strong>Mosaic</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:00:01+00:00" data-pub="6:00 AM EDT">Tue, Aug 25 @ 6AM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a></p>
+<h2><a href="https://www.nj.com/eagles/2026/08/10-eagles-on-the-roster-bubble-which-camp-star-could-miss-the-cut.html">10 Eagles on the roster bubble: Which camp star could miss the cut?</a></h2>
+<p class="byline">By Johnny McGonigal</p>
+<a class="shot" href="https://www.nj.com/eagles/2026/08/10-eagles-on-the-roster-bubble-which-camp-star-could-miss-the-cut.html" tabindex="-1" aria-hidden="true"><img src="../img/7ca16a795cc1df4193ff1b4b4a5565cc66e69c3e.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Here are 10 Philadelphia Eagles on the roster bubble ahead of Sunday&#x27;s 53-man roster cutdown deadline. <a class="lozenge more" href="https://www.nj.com/eagles/2026/08/10-eagles-on-the-roster-bubble-which-camp-star-could-miss-the-cut.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T18:38:31+00:00" data-pub="1:38 PM CDT">Monday, August 24, 2026 at 1:38 PM CDT</time></small></p>
-<p><small>TN / Statewide / <a href="https://nashvillenoticias.com/">Nashville Notacias</a></small></p>
-<h2><a href="https://nashvillenoticias.com/viral-latino-se-encuentra-de-frente-con-un-oso-negro-al-ingresar-a-su-casa-en-california/">VIRAL: Latino se encuentra de frente con un oso negro al ingresar a su casa en California</a></h2>
-<p class="byline"><small>By Zurellys Villegas</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://nashvillenoticias.com/">Support</a></span></p>
-<a class="shot" href="https://nashvillenoticias.com/viral-latino-se-encuentra-de-frente-con-un-oso-negro-al-ingresar-a-su-casa-en-california/" tabindex="-1" aria-hidden="true"><img src="../img/91abb2d4af9b79ae6b026bf5624782d0bf2b89f7.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Un colombiano vivió un aterrador momento al encontrar un oso negro dentro de su vivienda en California, al parecer en busca de comida. Al ingresar a la casa, el hombre se encontró con el animal que recorría diferentes espacios del lugar, una escena que quedó registrada en video y se hizo viral tras ser difundida</p>
-<p class="more"><a href="https://nashvillenoticias.com/viral-latino-se-encuentra-de-frente-con-un-oso-negro-al-ingresar-a-su-casa-en-california/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://mosaic.nj.com/">Support</a></aside>
+<p class="source"><a href="https://mosaic.nj.com/"><strong>Mosaic</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:00:01+00:00" data-pub="6:00 AM EDT">Tue, Aug 25 @ 6AM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a></p>
+<h2><a href="https://www.nj.com/news/2026/08/todays-audio-update-nj-beach-temporarily-closed-due-to-syringes-washing-ashore-couple-dead-after-crash-with-stolen-luxury-suv.html">Today’s audio update: Trash forces N.J. beach to close, couple killed after stolen SUV crashes into their vehicle</a></h2>
+<p class="byline">By NJ.com Staff</p>
+<a class="shot" href="https://www.nj.com/news/2026/08/todays-audio-update-nj-beach-temporarily-closed-due-to-syringes-washing-ashore-couple-dead-after-crash-with-stolen-luxury-suv.html" tabindex="-1" aria-hidden="true"><img src="../img/c0e49726cf3128b540f8010d81a9ab35738d367f.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>NJ.com&#x27;s morning audio update brings you the latest news from around the state in a quick audio summary. <a class="lozenge more" href="https://www.nj.com/news/2026/08/todays-audio-update-nj-beach-temporarily-closed-due-to-syringes-washing-ashore-couple-dead-after-crash-with-stolen-luxury-suv.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T18:17:56+00:00" data-pub="1:17 PM CDT">Monday, August 24, 2026 at 1:17 PM CDT</time></small></p>
-<p><small>TX / Houston / <a href="https://www.elvenezolanohouston.com/">EV Houston Newspaper</a></small></p>
-<h2><a href="https://www.elvenezolanohouston.com/el-balon-de-la-mano-de-dios-de-maradona-se-subasta-por-mas-de-3-millones-de-dolares/">El balón de la “Mano de Dios” de Maradona se subasta por más de 3 millones de dólares</a></h2>
-<p class="byline"><small>By Redactor AG</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://www.elvenezolanohouston.com/">Support</a></span></p>
-<p>El balón de la &quot;Mano de Dios&quot; de Diego Armando Maradona se vendió en subasta por 3,35 millones de dólares (2,9 millones de euros).</p>
-<p class="more"><a href="https://www.elvenezolanohouston.com/el-balon-de-la-mano-de-dios-de-maradona-se-subasta-por-mas-de-3-millones-de-dolares/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://mosaic.nj.com/">Support</a></aside>
+<p class="source"><a href="https://mosaic.nj.com/"><strong>Mosaic</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:00:01+00:00" data-pub="6:00 AM EDT">Tue, Aug 25 @ 6AM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a></p>
+<h2><a href="https://www.nj.com/news/2026/08/these-beloved-tv-channels-might-be-gone-soon.html">Say &#x27;goodbye&#x27; to Teen Nick, other beloved channels: They could very well go away</a></h2>
+<p class="byline">By Claudia Dimuro</p>
+<a class="shot" href="https://www.nj.com/news/2026/08/these-beloved-tv-channels-might-be-gone-soon.html" tabindex="-1" aria-hidden="true"><img src="../img/cf9dad6359051915dd99a5be2c10b84e6229383b.jpg" alt="" width="480" height="281" loading="lazy" decoding="async"></a>
+<p>The death rattles of traditional television have been heard for years at this point. <a class="lozenge more" href="https://www.nj.com/news/2026/08/these-beloved-tv-channels-might-be-gone-soon.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T18:16:40+00:00" data-pub="1:16 PM CDT">Monday, August 24, 2026 at 1:16 PM CDT</time></small></p>
-<p><small>TN / Statewide / <a href="https://nashvillenoticias.com/">Nashville Notacias</a></small></p>
-<h2><a href="https://nashvillenoticias.com/recuperan-arma-cargada-en-escuela-secundaria-de-ooltewah-menor-es-acusado/">Recuperan arma cargada en escuela secundaria de Ooltewah; menor es acusado</a></h2>
-<p class="byline"><small>By Mario Salazar</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://nashvillenoticias.com/">Support</a></span></p>
-<a class="shot" href="https://nashvillenoticias.com/recuperan-arma-cargada-en-escuela-secundaria-de-ooltewah-menor-es-acusado/" tabindex="-1" aria-hidden="true"><img src="../img/183896cceaf0e3b615a6c3647d30306bfd20c70c.jpg" alt="" width="480" height="484" loading="lazy" decoding="async"></a>
-<p>OOLTEWAH, TENNESSEE.-Agentes de la Unidad Canina de la Oficina del Sheriff del Condado de Hamilton respondieron la mañana del 24 de agosto a la escuela secundaria Ooltewah tras recibir un reporte sobre la posible presencia de un arma de fuego en el campus. Un perro policial alertó sobre un vehículo estacionado en el plantel. Durante</p>
-<p class="more"><a href="https://nashvillenoticias.com/recuperan-arma-cargada-en-escuela-secundaria-de-ooltewah-menor-es-acusado/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://periodismoinvestigativo.com/">Support</a></aside>
+<p class="source"><a href="https://periodismoinvestigativo.com/"><strong>Centro de Periodismo Investigativo</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:00:00+00:00" data-pub="6:00 AM EDT">Tue, Aug 25 @ 6AM EDT</time><a class="lozenge place" href="/search?place=San+Juan&state=PR">San Juan</a></p>
+<h2><a href="https://periodismoinvestigativo.com/2026/08/casa-carlitos-bermudez-gobernadora/">La casa de Carlitos</a></h2>
+<p class="byline">By Luis Valentín</p>
+<p>Carlos Bermúdez Urbina, el publicista y estratega de medios de la gobernadora Jenniffer González Colón, factura día y noche por controlar la proyección pública de la mandataria y de su administración. <a class="lozenge more" href="https://periodismoinvestigativo.com/2026/08/casa-carlitos-bermudez-gobernadora/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T18:16:00+00:00" data-pub="1:16 PM CDT">Monday, August 24, 2026 at 1:16 PM CDT</time></small></p>
-<p><small>TX / Houston / <a href="https://www.elvenezolanohouston.com/">EV Houston Newspaper</a></small></p>
-<h2><a href="https://www.elvenezolanohouston.com/hrw-pide-a-de-la-espriella-que-frene-el-aumento-del-reclutamiento-infantil-en-colombia/">HRW pide a De la Espriella que frene el aumento del reclutamiento infantil en Colombia</a></h2>
-<p class="byline"><small>By Redactor AG</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://www.elvenezolanohouston.com/">Support</a></span></p>
-<p>Human Right Watch pidió al presidente de Colombia, Abelardo de la Espriella, que adopte medidas para acabar con el aumento del reclutamiento de niños.</p>
-<p class="more"><a href="https://www.elvenezolanohouston.com/hrw-pide-a-de-la-espriella-que-frene-el-aumento-del-reclutamiento-infantil-en-colombia/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://eldiariony.com/">Support</a></aside>
+<p class="source"><a href="https://eldiariony.com/"><strong>El Diario NY</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:00:00+00:00" data-pub="6:00 AM EDT">Tue, Aug 25 @ 6AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Brooklyn&state=NY">Brooklyn</a></p>
+<h2><a href="https://eldiariony.com/2026/08/25/pronostico-del-tiempo-en-nueva-york-para-este-martes-25-de-agosto/">Pronóstico del tiempo en Nueva York para este martes 25 de agosto</a></h2>
+<p class="byline">By El Diario</p>
+<a class="shot" href="https://eldiariony.com/2026/08/25/pronostico-del-tiempo-en-nueva-york-para-este-martes-25-de-agosto/" tabindex="-1" aria-hidden="true"><img src="../img/6af964ceaf5efde6ec6a8fa63d7055dc5537468f.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>Conoce el pronóstico del tiempo en Nueva York, para hoy martes 25 de agosto para evitar sufrir los cambios en el clima <a class="lozenge more" href="https://eldiariony.com/2026/08/25/pronostico-del-tiempo-en-nueva-york-para-este-martes-25-de-agosto/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T18:14:28+00:00" data-pub="1:14 PM CDT">Monday, August 24, 2026 at 1:14 PM CDT</time></small></p>
-<p><small>TN / Statewide / <a href="https://nashvillenoticias.com/">Nashville Notacias</a></small></p>
-<h2><a href="https://nashvillenoticias.com/cristiano-ronaldo-causa-polemica-y-se-hace-viral-por-su-gesto-tras-saludar-a-gianni-infantino-video/">Cristiano Ronaldo causa polémica y se hace viral por su gesto tras saludar a Gianni Infantino (+Video)</a></h2>
-<p class="byline"><small>By Zurellys Villegas</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://nashvillenoticias.com/">Support</a></span></p>
-<a class="shot" href="https://nashvillenoticias.com/cristiano-ronaldo-causa-polemica-y-se-hace-viral-por-su-gesto-tras-saludar-a-gianni-infantino-video/" tabindex="-1" aria-hidden="true"><img src="../img/bbb42c675072b5c8cc0fcc568aac21cd760804a9.jpg" alt="" width="480" height="299" loading="lazy" decoding="async"></a>
-<p>El breve encuentro entre el futbolista Cristiano Ronaldo y el presidente de la FIFA, Gianni Infantino, se hizo viral debido a que el portugués no ocultó su incomodidad por el saludo con el directivo. Durante la Copa del Mundo de E-Sports, celebrada en París, Francia, el astro lusitano fue interceptado por el saliente presidente de la FIFA, quien aprovechó para</p>
-<p class="more"><a href="https://nashvillenoticias.com/cristiano-ronaldo-causa-polemica-y-se-hace-viral-por-su-gesto-tras-saludar-a-gianni-infantino-video/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://www.metro.pr/">Support</a></aside>
+<p class="source"><a href="https://www.metro.pr/"><strong>Metro Puerto Rico</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T09:41:53+00:00" data-pub="5:41 AM EDT">Tue, Aug 25 @ 5AM EDT</time><a class="lozenge place" href="/search?place=San+Juan&state=PR">San Juan</a></p>
+<h2><a href="https://www.metro.pr/noticias/2026/08/25/investigan-en-patillas-el-que-seria-el-noveno-feminicidio-intimo-de-2026/">Investigan en Patillas el que sería el noveno feminicidio íntimo de 2026</a></h2>
+<p class="byline">By Metro Puerto Rico</p>
+<a class="shot" href="https://www.metro.pr/noticias/2026/08/25/investigan-en-patillas-el-que-seria-el-noveno-feminicidio-intimo-de-2026/" tabindex="-1" aria-hidden="true"><img src="../img/0ece39c807a8d04b6d4037bb291f5d9cdeb9b0d7.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Hilda Milagros Meléndez Morales, de 64 años, fue encontrada con una herida de arma blanca en una residencia. En el lugar también fue hallado muerto un hombre de 60 años que, según la Policía, se privó de la vida. <a class="lozenge more" href="https://www.metro.pr/noticias/2026/08/25/investigan-en-patillas-el-que-seria-el-noveno-feminicidio-intimo-de-2026/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T18:13:03+00:00" data-pub="1:13 PM CDT">Monday, August 24, 2026 at 1:13 PM CDT</time></small></p>
-<p><small>TN / Statewide / <a href="https://nashvillenoticias.com/">Nashville Notacias</a></small></p>
-<h2><a href="https://nashvillenoticias.com/operativo-last-call-44-arrestados-armas-nashville/">Operativo federal «Last Call» deja 44 arrestados y más de 160 armas decomisadas en Nashville</a></h2>
-<p class="byline"><small>By Alfredo Peña</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://nashvillenoticias.com/">Support</a></span></p>
-<a class="shot" href="https://nashvillenoticias.com/operativo-last-call-44-arrestados-armas-nashville/" tabindex="-1" aria-hidden="true"><img src="../img/df192710257d4d7f3781dd5497d05d38dab13c1a.jpg" alt="" width="480" height="255" loading="lazy" decoding="async"></a>
-<p>En breve: Un operativo federal contra el tráfico de armas y drogas, bautizado «Last Call», terminó con 44 personas detenidas en Nashville entre el 19 y el 23 de agosto. Los agentes decomisaron más de 160 armas de fuego, incluidos rifles con cargadores de gran capacidad, además de metanfetamina, fentanilo y cocaína. Operativo federal «Last</p>
-<p class="more"><a href="https://nashvillenoticias.com/operativo-last-call-44-arrestados-armas-nashville/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://mosaic.nj.com/">Support</a></aside>
+<p class="source"><a href="https://mosaic.nj.com/"><strong>Mosaic</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T09:00:00+00:00" data-pub="5:00 AM EDT">Tue, Aug 25 @ 5AM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a></p>
+<h2><a href="https://www.nj.com/news/2026/08/more-snap-recipients-will-be-getting-chip-enabled-ebt-cards.html">More SNAP recipients are getting chip-enabled EBT cards: Here&#x27;s where, and why</a></h2>
+<p class="byline">By Claudia Dimuro</p>
+<a class="shot" href="https://www.nj.com/news/2026/08/more-snap-recipients-will-be-getting-chip-enabled-ebt-cards.html" tabindex="-1" aria-hidden="true"><img src="../img/9bc65931b74ddc1d91a2551a5fe31fcee2ef63a3.jpg" alt="" width="480" height="316" loading="lazy" decoding="async"></a>
+<p>SNAP recipients in several states should be receiving their new EBT cards now through December, in some cases. <a class="lozenge more" href="https://www.nj.com/news/2026/08/more-snap-recipients-will-be-getting-chip-enabled-ebt-cards.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T18:07:32+00:00" data-pub="2:07 PM EDT">Monday, August 24, 2026 at 2:07 PM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>PR / San Juan / <a href="https://www.metro.pr/">Metro Puerto Rico</a></small></p>
-<h2><a href="https://www.metro.pr/noticias/2026/08/24/nueva-ofensiva-para-esclarecer-casos-de-desaparecidos-en-puerto-rico/">Nueva ofensiva para esclarecer casos de desaparecidos en Puerto Rico</a></h2>
-<p class="byline"><small>By Santiago Omar  Escobar Colón</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://www.metro.pr/">Support</a></span></p>
-<a class="shot" href="https://www.metro.pr/noticias/2026/08/24/nueva-ofensiva-para-esclarecer-casos-de-desaparecidos-en-puerto-rico/" tabindex="-1" aria-hidden="true"><img src="../img/f3378ab9c56691e7eba8dac2facacc5f5c921d43.jpg" alt="" width="480" height="271" loading="lazy" decoding="async"></a>
-<p>Funcionarios del ICF y agentes de la Policía recibieron hoy capacitación especializada en la plataforma nacional que permite comparar información de personas desaparecidas con casos de personas cuya identidad se desconoce.</p>
-<p class="more"><a href="https://www.metro.pr/noticias/2026/08/24/nueva-ofensiva-para-esclarecer-casos-de-desaparecidos-en-puerto-rico/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://mosaic.nj.com/">Support</a></aside>
+<p class="source"><a href="https://mosaic.nj.com/"><strong>Mosaic</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T09:00:00+00:00" data-pub="5:00 AM EDT">Tue, Aug 25 @ 5AM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a></p>
+<h2><a href="https://www.nj.com/advice/2026/08/asking-eric-i-thought-small-talk-was-staying-connected-my-daughter-calls-it-emotional-wallpaper.html">Asking Eric: I thought small talk was staying connected. My daughter calls it emotional wallpaper</a></h2>
+<p class="byline">By R. Eric Thomas</p>
+<a class="shot" href="https://www.nj.com/advice/2026/08/asking-eric-i-thought-small-talk-was-staying-connected-my-daughter-calls-it-emotional-wallpaper.html" tabindex="-1" aria-hidden="true"><img src="../img/d939508a51df47315696e9ae7238ac63666a078e.jpg" alt="" width="480" height="342" loading="lazy" decoding="async"></a>
+<p>My daughter prefers her mother-in-law’s support. Am I losing this competition? <a class="lozenge more" href="https://www.nj.com/advice/2026/08/asking-eric-i-thought-small-talk-was-staying-connected-my-daughter-calls-it-emotional-wallpaper.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T18:00:05+00:00" data-pub="2:00 PM EDT">Monday, August 24, 2026 at 2:00 PM EDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>PR / San Juan / <a href="https://www.metro.pr/">Metro Puerto Rico</a></small></p>
-<h2><a href="https://www.metro.pr/noticias/2026/08/24/reino-unido-permitira-a-ucrania-fabricar-misiles-storm-shadow/">Reino Unido permitirá a Ucrania fabricar misiles Storm Shadow</a></h2>
-<p class="byline"><small>By EFE EFE</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://www.metro.pr/">Support</a></span></p>
-<a class="shot" href="https://www.metro.pr/noticias/2026/08/24/reino-unido-permitira-a-ucrania-fabricar-misiles-storm-shadow/" tabindex="-1" aria-hidden="true"><img src="../img/97e418365d5b582a90c29e6a6e6bb78f438ac386.jpg" alt="" width="480" height="336" loading="lazy" decoding="async"></a>
-<p>El primer ministro británico anunció la decisión durante la conmemoración del 35 aniversario de la independencia de Ucrania</p>
-<p class="more"><a href="https://www.metro.pr/noticias/2026/08/24/reino-unido-permitira-a-ucrania-fabricar-misiles-storm-shadow/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://mosaic.nj.com/">Support</a></aside>
+<p class="source"><a href="https://mosaic.nj.com/"><strong>Mosaic</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T09:00:00+00:00" data-pub="5:00 AM EDT">Tue, Aug 25 @ 5AM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a></p>
+<h2><a href="https://www.nj.com/eagles/2026/08/why-this-frustrating-eagles-db-might-now-sneak-onto-the-53-man-roster.html">Why this frustrating Eagles DB might now sneak onto the 53-man roster</a></h2>
+<p class="byline">By Johnny McGonigal</p>
+<a class="shot" href="https://www.nj.com/eagles/2026/08/why-this-frustrating-eagles-db-might-now-sneak-onto-the-53-man-roster.html" tabindex="-1" aria-hidden="true"><img src="../img/b972f796f371702e6d8ae6e224e928bcaf25f22f.jpg" alt="" width="480" height="351" loading="lazy" decoding="async"></a>
+<p>Eagles cornerback and special teams ace Kelee Ringo has a better chance to make the 53-man roster after a minor move on Monday. <a class="lozenge more" href="https://www.nj.com/eagles/2026/08/why-this-frustrating-eagles-db-might-now-sneak-onto-the-53-man-roster.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T18:00:00+00:00" data-pub="1:00 PM CDT">Monday, August 24, 2026 at 1:00 PM CDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>TX / Houston / <a href="https://queondamagazine.com/">¡Qué Onda! Houston</a></small></p>
-<h2><a href="https://queondamagazine.com/border-patrol-arrests-sailors-father-uss-lincoln/">Border Patrol Arrests Father as Sailor Nears End of Long USS Lincoln Deployment</a></h2>
-<p class="byline"><small>By Que Onda Editorial</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://queondamagazine.com/">Support</a></span></p>
-<p>Border Patrol arrested a sailor’s father in Key West, Florida, while his son was completing a prolonged deployment aboard the USS Abraham Lincoln. The arrest has brought renewed attention to immigration enforcement involving military families. Federal agents detained Luis Manuel Aviles, 48, on Saturday. His son, Joshua Aviles, was entering his ninth month aboard the […] La entrada Border Patrol Ar</p>
-<p class="more"><a href="https://queondamagazine.com/border-patrol-arrests-sailors-father-uss-lincoln/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://mosaic.nj.com/">Support</a></aside>
+<p class="source"><a href="https://mosaic.nj.com/"><strong>Mosaic</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T09:00:00+00:00" data-pub="5:00 AM EDT">Tue, Aug 25 @ 5AM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a></p>
+<h2><a href="https://www.nj.com/advice/2026/08/dear-doctor-my-head-wont-stop-bobbing-have-doctors-been-looking-at-the-wrong-condition.html">Dear Doctor: My head won’t stop bobbing. Have doctors been looking at the wrong condition?</a></h2>
+<p class="byline">By Dr. Keith Roach</p>
+<a class="shot" href="https://www.nj.com/advice/2026/08/dear-doctor-my-head-wont-stop-bobbing-have-doctors-been-looking-at-the-wrong-condition.html" tabindex="-1" aria-hidden="true"><img src="../img/9eb404fbb50c5370c11b9e406eb868c4fa637a4b.jpg" alt="" width="480" height="391" loading="lazy" decoding="async"></a>
+<p>A doctor addresses two medical questions: suggesting a movement disorder specialist for a woman&#x27;s head-bobbing, and recommending affordable IBS alternatives. <a class="lozenge more" href="https://www.nj.com/advice/2026/08/dear-doctor-my-head-wont-stop-bobbing-have-doctors-been-looking-at-the-wrong-condition.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T17:42:53+00:00" data-pub="1:42 PM EDT">Monday, August 24, 2026 at 1:42 PM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>GA / Atlanta / <a href="https://mundonow.com/">Mundo Now</a></small></p>
-<h2><a href="https://www.mundonow.com/gastroenterologa-advierte-sobre-5-senales-de-dolor-abdominal-que-pueden-llevarte-a-emergencias">Gastroenteróloga advierte sobre 5 señales de dolor abdominal que pueden llevarte a emergencias</a></h2>
-<p class="byline"><small>By Kristel Escobar</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge" href="../tags/latino.html">Latino</a><a class="lozenge give" href="https://mundonow.com/">Support</a></span></p>
-<a class="shot" href="https://www.mundonow.com/gastroenterologa-advierte-sobre-5-senales-de-dolor-abdominal-que-pueden-llevarte-a-emergencias" tabindex="-1" aria-hidden="true"><img src="../img/9cee4c5ab1275f143b0ef8a3a60ae45090853b0a.jpg" alt="" width="480" height="252" loading="lazy" decoding="async"></a>
-<p>Dolor puede esconder emergencias Heces negras son alerta Mareos requieren atención inmediata Un dolor abdominal puede deberse a múltiples causas, pero existen señales que, cuando aparecen junto con esa molestia, pueden indicar que esperar en casa no es la mejor opción. La gastroenteróloga Trisha Pasricha, médica y columnista de The Washington Post, identificó cinco señales</p>
-<p class="more"><a href="https://www.mundonow.com/gastroenterologa-advierte-sobre-5-senales-de-dolor-abdominal-que-pueden-llevarte-a-emergencias">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://laopinion.com">Support</a></aside>
+<p class="source"><a href="https://laopinion.com"><strong>La Opinión</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T08:40:35+00:00" data-pub="1:40 AM PDT">Tue, Aug 25 @ 1AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://laopinion.com/2026/08/25/horoscopo-de-hoy-de-nana-calistar-25-de-agosto-de-2026/">Horóscopo de hoy de Nana Calistar 25 de agosto de 2026</a></h2>
+<p class="byline">By Nana Calistar</p>
+<a class="shot" href="https://laopinion.com/2026/08/25/horoscopo-de-hoy-de-nana-calistar-25-de-agosto-de-2026/" tabindex="-1" aria-hidden="true"><img src="../img/3a3c8efc0d7d8160df428d05d5a9bf40f2f53810.jpg" alt="" width="480" height="284" loading="lazy" decoding="async"></a>
+<p>Nana Calistar nos da sus predicciones para los 12 signos del Zodiaco en su horóscopo diario. <a class="lozenge more" href="https://laopinion.com/2026/08/25/horoscopo-de-hoy-de-nana-calistar-25-de-agosto-de-2026/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T17:31:26+00:00" data-pub="1:31 PM EDT">Monday, August 24, 2026 at 1:31 PM EDT</time></small></p>
-<p><small>CT / Statewide / <a href="https://lavozhispanact.com/">La Voz Hispana</a></small></p>
-<h2><a href="https://lavozhispanact.com/una-paciente-alega-que-un-empleado-del-hospital-hartford-publico-sus-datos-medicos-privados-en-las-redes-sociales/">Una paciente alega que un empleado del Hospital Hartford publicó sus datos médicos privados en las redes sociales</a></h2>
-<p class="byline"><small>By La Voz Hispana CT</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://lavozhispanact.com/">Support</a></span></p>
-<p>HARTFORD.- En una nueva demanda presentada ante el tribunal, una expaciente acusó a un empleado del Hospital Hartford de consultar su historial médico y compartir detalles de su atención médica en las redes sociales. La paciente afirmó haber sido acosada en línea a raíz de dicha publicación. El abogado del paciente presentó una “solicitud de</p>
-<p class="more"><a href="https://lavozhispanact.com/una-paciente-alega-que-un-empleado-del-hospital-hartford-publico-sus-datos-medicos-privados-en-las-redes-sociales/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://elcomerciodecolorado.com/">Support</a></aside>
+<p class="source"><a href="https://elcomerciodecolorado.com/"><strong>El Comercio de Colorado</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T08:25:58+00:00" data-pub="2:25 AM MDT">Tue, Aug 25 @ 2AM MDT</time><a class="lozenge place" href="/search?state=CO">Colorado</a><a class="lozenge place" href="/search?place=Denver&state=CO">Denver</a></p>
+<h2><a href="https://elcomerciodecolorado.com/mexico-reanuda-con-restricciones-exportacion-de-ganado-a-eeuu/">México reanuda con restricciones exportación de ganado a EEUU</a></h2>
+<p class="byline">By El Comercio de Colorado</p>
+<a class="shot" href="https://elcomerciodecolorado.com/mexico-reanuda-con-restricciones-exportacion-de-ganado-a-eeuu/" tabindex="-1" aria-hidden="true"><img src="../img/5f9c182d2a8e2b8832e9134d412a567b262eb0ba.jpg" alt="" width="225" height="150" loading="lazy" decoding="async"></a>
+<p>ABRAHAM TELLEZ, LUIS ERNESTO CASTILLO y FABIOLA SÁNCHEZ / AP México reactivó el lunes en medio <a class="lozenge more" href="https://elcomerciodecolorado.com/mexico-reanuda-con-restricciones-exportacion-de-ganado-a-eeuu/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T17:25:03+00:00" data-pub="1:25 PM EDT">Monday, August 24, 2026 at 1:25 PM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>PR / San Juan / <a href="https://www.metro.pr/">Metro Puerto Rico</a></small></p>
-<h2><a href="https://www.metro.pr/negocios/2026/08/24/municipios-enfrentan-crecientes-presiones-fiscales-mientras-casi-la-mitad-gasta-mas-de-lo-que-ingresa-revela-abre-puerto-rico/">Municipios enfrentan crecientes presiones fiscales mientras casi la mitad gasta más de lo que ingresa, revela ABRE Puerto Rico</a></h2>
-<p class="byline"><small>By Eva Lloréns Vélez</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://www.metro.pr/">Support</a></span></p>
-<a class="shot" href="https://www.metro.pr/negocios/2026/08/24/municipios-enfrentan-crecientes-presiones-fiscales-mientras-casi-la-mitad-gasta-mas-de-lo-que-ingresa-revela-abre-puerto-rico/" tabindex="-1" aria-hidden="true"><img src="../img/7a55680cee62610129eb0f27ddde71b063502198.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Conoce los diez municipios que están en un rango de insostenible.</p>
-<p class="more"><a href="https://www.metro.pr/negocios/2026/08/24/municipios-enfrentan-crecientes-presiones-fiscales-mientras-casi-la-mitad-gasta-mas-de-lo-que-ingresa-revela-abre-puerto-rico/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://elcomerciodecolorado.com/">Support</a></aside>
+<p class="source"><a href="https://elcomerciodecolorado.com/"><strong>El Comercio de Colorado</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T08:16:17+00:00" data-pub="2:16 AM MDT">Tue, Aug 25 @ 2AM MDT</time><a class="lozenge place" href="/search?state=CO">Colorado</a><a class="lozenge place" href="/search?place=Denver&state=CO">Denver</a></p>
+<h2><a href="https://elcomerciodecolorado.com/presidente-colombiano-ordena-redadas-migratorias/">Presidente colombiano ordena redadas migratorias</a></h2>
+<p class="byline">By El Comercio de Colorado</p>
+<a class="shot" href="https://elcomerciodecolorado.com/presidente-colombiano-ordena-redadas-migratorias/" tabindex="-1" aria-hidden="true"><img src="../img/d48f817511a714de8571ffdea95d83a2187251f3.jpg" alt="" width="225" height="150" loading="lazy" decoding="async"></a>
+<p>DEPORTARÁ DE MIGRANTES SIN ESTATUS LEGAL Manuel Rueda y Astrid Suárez / Associated Press El <a class="lozenge more" href="https://elcomerciodecolorado.com/presidente-colombiano-ordena-redadas-migratorias/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T17:20:17+00:00" data-pub="1:20 PM EDT">Monday, August 24, 2026 at 1:20 PM EDT</time></small></p>
-<p><small>GA / Atlanta / <a href="https://mundonow.com/">Mundo Now</a></small></p>
-<h2><a href="https://www.mundonow.com/trump-pierde-figuras-clave-a-semanas-de-unas-elecciones-decisivas-casa-blanca">Trump pierde figuras clave a semanas de unas elecciones decisivas</a></h2>
-<p class="byline"><small>By Kristel Escobar</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge" href="../tags/latino.html">Latino</a><a class="lozenge give" href="https://mundonow.com/">Support</a></span></p>
-<a class="shot" href="https://www.mundonow.com/trump-pierde-figuras-clave-a-semanas-de-unas-elecciones-decisivas-casa-blanca" tabindex="-1" aria-hidden="true"><img src="../img/ce1b7b890a035d56f498dc5ff4499be695af57f5.jpg" alt="" width="480" height="252" loading="lazy" decoding="async"></a>
-<p>Karoline Leavitt, James Braid y Dave Warrington están entre las figuras que dejan puestos importantes mientras la Casa Blanca se prepara para unas elecciones que podrían cambiar el control del Congreso. El presidente Donald Trump afronta una concentración de salidas entre funcionarios clave de la Casa Blanca justo antes de las elecciones de mitad de</p>
-<p class="more"><a href="https://www.mundonow.com/trump-pierde-figuras-clave-a-semanas-de-unas-elecciones-decisivas-casa-blanca">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://elcomerciodecolorado.com/">Support</a></aside>
+<p class="source"><a href="https://elcomerciodecolorado.com/"><strong>El Comercio de Colorado</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T08:04:08+00:00" data-pub="2:04 AM MDT">Tue, Aug 25 @ 2AM MDT</time><a class="lozenge place" href="/search?state=CO">Colorado</a><a class="lozenge place" href="/search?place=Denver&state=CO">Denver</a></p>
+<h2><a href="https://elcomerciodecolorado.com/eeuu-prepara-revocacion-masiva-de-visas/">EEUU prepara revocación masiva de visas</a></h2>
+<p class="byline">By El Comercio de Colorado</p>
+<a class="shot" href="https://elcomerciodecolorado.com/eeuu-prepara-revocacion-masiva-de-visas/" tabindex="-1" aria-hidden="true"><img src="../img/ceca84349dcc2a1da447b3694fb2bd4009f80fd8.jpg" alt="" width="203" height="150" loading="lazy" decoding="async"></a>
+<p>DIRIGIDA A UN MÁXIMO DE 200 MIL EXTRANJEROS Matthew Lee / AP La administración Trump <a class="lozenge more" href="https://elcomerciodecolorado.com/eeuu-prepara-revocacion-masiva-de-visas/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T17:08:20+00:00" data-pub="1:08 PM EDT">Monday, August 24, 2026 at 1:08 PM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>GA / Warner Robins / <a href="https://notivisiongeorgia.com/">NotiVisión Georgia</a></small></p>
-<h2><a href="https://notivisiongeorgia.com/2026/08/24/byron-reglas-centros-datos-boy-scout-road/">Byron debate nuevas reglas para centros de datos mientras continúa disputa por terreno de Boy Scout Road</a></h2>
-<p class="byline"><small>By Monica Pirela</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://fundrazr.com/NotiVisionGA?ref=cr_4ElvE8">Donate</a></span></p>
-<a class="shot" href="https://notivisiongeorgia.com/2026/08/24/byron-reglas-centros-datos-boy-scout-road/" tabindex="-1" aria-hidden="true"><img src="../img/70861f6fb89e2e19ee94ae56679a87898569aa82.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>El gobierno de Byron, Georgia, avanza en la elaboración de nuevas reglas para regular los centros de datos, en medio de la controversia que rodea un terreno de aproximadamente 489 acres ubicado en 2251 Boy Scout Road, en la zona del antiguo Camp Benjamin Hawkins. El sitio se encuentra en la línea entre Peach y</p>
-<p class="more"><a href="https://notivisiongeorgia.com/2026/08/24/byron-reglas-centros-datos-boy-scout-road/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://www.elvocero.com">Support</a></aside>
+<p class="source"><a href="https://www.elvocero.com"><strong>El Vocero</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T08:00:00+00:00" data-pub="4:00 AM EDT">Tue, Aug 25 @ 4AM EDT</time></p>
+<h2><a href="https://www.elvocero.com/ley-y-orden/modifican-condiciones-de-libertad-supervisada-de-yovngchimi/article_fec0cb57-bdbe-4517-a77f-457411cf9d8a.html">Modifican condiciones de libertad supervisada de Yovngchimi</a></h2>
+<p class="byline">By Pedro Menéndez Sanabria, EL VOCERO</p>
+<a class="shot" href="https://www.elvocero.com/ley-y-orden/modifican-condiciones-de-libertad-supervisada-de-yovngchimi/article_fec0cb57-bdbe-4517-a77f-457411cf9d8a.html" tabindex="-1" aria-hidden="true"><img src="../img/5c693e4dc665869e53f41583bbdb9aab060e6f91.jpg" alt="" width="300" height="196" loading="lazy" decoding="async"></a>
+<p>La jueza federal María Antongiorgi Jordán accedió a un pedido de la defensa legal de Ángel Javier Avilés Monzón para modificar las condiciones de libertad supervisada a las que está sujeto el artista conocido en el ambiente de la música <a class="lozenge more" href="https://www.elvocero.com/ley-y-orden/modifican-condiciones-de-libertad-supervisada-de-yovngchimi/article_fec0cb57-bdbe-4517-a77f-457411cf9d8a.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T17:03:56+00:00" data-pub="1:03 PM EDT">Monday, August 24, 2026 at 1:03 PM EDT</time></small></p>
-<p><small>GA / Atlanta / <a href="https://mundonow.com/">Mundo Now</a></small></p>
-<h2><a href="https://www.mundonow.com/kamala-harris-encuesta-democrata-2028">Kamala Harris lidera rumbo a 2028, pero AOC gana fuerza entre votantes hispanos</a></h2>
-<p class="byline"><small>By Kristel Escobar</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge" href="../tags/latino.html">Latino</a><a class="lozenge give" href="https://mundonow.com/">Support</a></span></p>
-<a class="shot" href="https://www.mundonow.com/kamala-harris-encuesta-democrata-2028" tabindex="-1" aria-hidden="true"><img src="../img/79c17c6ffbf1ef7357bc1a8f6649d408498e55e6.jpg" alt="" width="480" height="252" loading="lazy" decoding="async"></a>
-<p>Kamala Harris se mantiene como la figura mejor posicionada entre los demócratas en una eventual carrera presidencial de 2028. La exvicepresidenta obtiene 28% de apoyo, exactamente el doble que el gobernador de California, Gavin Newsom, quien registra 14%, según The Center Square Voters’ Voice Poll. La encuesta representa apenas una fotografía temprana de una primaria</p>
-<p class="more"><a href="https://www.mundonow.com/kamala-harris-encuesta-democrata-2028">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://www.elvocero.com">Support</a></aside>
+<p class="source"><a href="https://www.elvocero.com"><strong>El Vocero</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T08:00:00+00:00" data-pub="4:00 AM EDT">Tue, Aug 25 @ 4AM EDT</time></p>
+<h2><a href="https://www.elvocero.com/economia/image_4ba6a01f-bb6a-4685-9e95-a4b9f0423df7.html">Economia</a></h2>
+<a class="shot" href="https://www.elvocero.com/economia/image_4ba6a01f-bb6a-4685-9e95-a4b9f0423df7.html" tabindex="-1" aria-hidden="true"><img src="../img/536debe6ba6f5ec8571b50f58b6e9b776bc2c32b.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+<p>Analizan estrategias comerciales tras auspicios en eventos&gt;P11 <a class="lozenge more" href="https://www.elvocero.com/economia/image_4ba6a01f-bb6a-4685-9e95-a4b9f0423df7.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T16:58:48+00:00" data-pub="12:58 PM EDT">Monday, August 24, 2026 at 12:58 PM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>KY / Louisville / <a href="https://www.aldiaenamerica.com/">Al Dia en America LLC</a></small></p>
-<h2><a href="https://www.aldiaenamerica.com/2026/08/24/tension-comercial-entre-canada-y-ee-uu-aldia-en-america/">Canadá y EE.UU. chocan por soberanía, automóviles y política comercial</a></h2>
-<p class="byline"><small>By EFE News</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://www.aldiaenamerica.com/">Support</a></span></p>
-<a class="shot" href="https://www.aldiaenamerica.com/2026/08/24/tension-comercial-entre-canada-y-ee-uu-aldia-en-america/" tabindex="-1" aria-hidden="true"><img src="../img/a9e4fd08e00701f08cab94260dc652502f20f8b4.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Julio César Rivas Toronto (Canadá), 24 ago (EFE).- La guerra comercial entre Canadá y Estados Unidos ha entrado en una nueva fase tras el fracaso de negociaciones bilaterales que han encallado en cuestiones de soberanía, política cultural y el sector del automóvil. El resultado es la imposición por parte de Washington de aranceles del 50</p>
-<p class="more"><a href="https://www.aldiaenamerica.com/2026/08/24/tension-comercial-entre-canada-y-ee-uu-aldia-en-america/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://www.elvocero.com">Support</a></aside>
+<p class="source"><a href="https://www.elvocero.com"><strong>El Vocero</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T08:00:00+00:00" data-pub="4:00 AM EDT">Tue, Aug 25 @ 4AM EDT</time></p>
+<h2><a href="https://www.elvocero.com/actualidad/baby-boomers/enzimas-hep-ticas-el-term-metro-de-la-salud-del-h-gado/article_f8a43f35-aa82-4839-b97f-38515bb92db7.html">Enzimas hepáticas: El &quot;termómetro&quot; de la salud del hígado</a></h2>
+<p class="byline">By Dra. Alana Marrero González; DCN, MHSN, LND</p>
+<a class="shot" href="https://www.elvocero.com/actualidad/baby-boomers/enzimas-hep-ticas-el-term-metro-de-la-salud-del-h-gado/article_f8a43f35-aa82-4839-b97f-38515bb92db7.html" tabindex="-1" aria-hidden="true"><img src="../img/25782865c689456a975babf147e02c22c89cb17e.jpg" alt="" width="300" height="158" loading="lazy" decoding="async"></a>
+<p>A medida que envejecemos, es común prestar más atención a los niveles de colesterol, la glucosa o presión arterial. Sin embargo, hay otro indicador que merece atención: las enzimas hepáticas. Aunque muchas personas las descubren al revisar un análisis de <a class="lozenge more" href="https://www.elvocero.com/actualidad/baby-boomers/enzimas-hep-ticas-el-term-metro-de-la-salud-del-h-gado/article_f8a43f35-aa82-4839-b97f-38515bb92db7.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T16:55:13+00:00" data-pub="12:55 PM EDT">Monday, August 24, 2026 at 12:55 PM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>FL / Miami / <a href="https://elsolnewsmedia.com/">El Sol Latino Newspaper</a></small></p>
-<h2><a href="https://elsolnewsmedia.com/school-district-philadelphia-bienvenida/">School District of Philadelphia da la bienvenida al nuevo al escolar 2006-2007</a></h2>
-<p class="byline"><small>By Beatriz Oliva</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://elsoln1.us8.list-manage.com/subscribe?u=b58aaf173a09bc54d9b0bd9c9&amp;id=a2d335e1c7">Subscribe</a></span></p>
-<p>El School District of Philadelphia dio la bienvenida a los estudiantes y sus familias al año escolar 2026-2027, con nuevas iniciativas, herramientas y recursos destinados a fortalecer la comunicación entre las escuelas, los padres y la comunidad educativa. El superintendente Tony B. Watlington destacó el trabajo realizado durante el verano para preparar las escuelas y</p>
-<p class="more"><a href="https://elsolnewsmedia.com/school-district-philadelphia-bienvenida/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://www.elvocero.com">Support</a></aside>
+<p class="source"><a href="https://www.elvocero.com"><strong>El Vocero</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T08:00:00+00:00" data-pub="4:00 AM EDT">Tue, Aug 25 @ 4AM EDT</time></p>
+<h2><a href="https://www.elvocero.com/qu-buscan-las-marcas-cuando-auspician-un-evento/image_1772b13a-9cb7-4e08-a762-76ca33c33238.html">¿Qué buscan las marcas cuando auspician un evento?</a></h2>
+<p class="byline">By Peter Amador Rivera / EL VOCERO</p>
+<a class="shot" href="https://www.elvocero.com/qu-buscan-las-marcas-cuando-auspician-un-evento/image_1772b13a-9cb7-4e08-a762-76ca33c33238.html" tabindex="-1" aria-hidden="true"><img src="../img/5a232a7627aeb028ede98dc1f0080d46bfdcba05.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+<p>Varias marcas auspiciaron el cierre de la gira mundial de Bad Bunny en Puerto Rico. <a class="lozenge more" href="https://www.elvocero.com/qu-buscan-las-marcas-cuando-auspician-un-evento/image_1772b13a-9cb7-4e08-a762-76ca33c33238.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T16:48:39+00:00" data-pub="12:48 PM EDT">Monday, August 24, 2026 at 12:48 PM EDT</time></small></p>
-<p><small>KY / Louisville / <a href="https://www.aldiaenamerica.com/">Al Dia en America LLC</a></small></p>
-<h2><a href="https://www.aldiaenamerica.com/2026/08/24/anulan-veto-migratorio-de-trump-aldia-en-america/">Un tribunal federal anula la suspensión de visados ordenada por Trump para 75 países</a></h2>
-<p class="byline"><small>By EFE News</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://www.aldiaenamerica.com/">Support</a></span></p>
-<a class="shot" href="https://www.aldiaenamerica.com/2026/08/24/anulan-veto-migratorio-de-trump-aldia-en-america/" tabindex="-1" aria-hidden="true"><img src="../img/a1387ee8af394d7b433e61fc18204eb9b0f69aec.jpg" alt="" width="480" height="237" loading="lazy" decoding="async"></a>
-<p>Washington, agosto (EFE).- Un tribunal federal estadounidense ha invalidado la suspensión de visados de inmigrante para 75 países impuesta a principios de año por el Gobierno del presidente, Donald Trump, al determinar que el secretario de Estado, Marco Rubio, excedió sus competencias legales con la medida. La jueza del Distrito Sur de Nueva York, Jeannette</p>
-<p class="more"><a href="https://www.aldiaenamerica.com/2026/08/24/anulan-veto-migratorio-de-trump-aldia-en-america/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://www.elvocero.com">Support</a></aside>
+<p class="source"><a href="https://www.elvocero.com"><strong>El Vocero</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T08:00:00+00:00" data-pub="4:00 AM EDT">Tue, Aug 25 @ 4AM EDT</time></p>
+<h2><a href="https://www.elvocero.com/ante-un-desastre-natural-casa-y-auto-no-tienen-la-misma-protecci-n/image_72d561c0-e048-459c-bb5b-cde027aea26b.html">Ante un desastre natural, casa y auto no tienen la misma protección</a></h2>
+<p class="byline">By Suministrada</p>
+<a class="shot" href="https://www.elvocero.com/ante-un-desastre-natural-casa-y-auto-no-tienen-la-misma-protecci-n/image_72d561c0-e048-459c-bb5b-cde027aea26b.html" tabindex="-1" aria-hidden="true"><img src="../img/790918857686e90892c6428f949fd5c15030c118.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+<p><a class="lozenge more" href="https://www.elvocero.com/ante-un-desastre-natural-casa-y-auto-no-tienen-la-misma-protecci-n/image_72d561c0-e048-459c-bb5b-cde027aea26b.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T16:44:37+00:00" data-pub="12:44 PM EDT">Monday, August 24, 2026 at 12:44 PM EDT</time></small></p>
-<p><small>GA / Atlanta / <a href="https://mundonow.com/">Mundo Now</a></small></p>
-<h2><a href="https://www.mundonow.com/nuevo-ataque-a-presunta-narcolancha-deja-dos-muertos-southcom-advierte-a-los-carteles">Nuevo ataque a presunta narcolancha deja dos muertos: SOUTHCOM advierte a los cárteles</a></h2>
-<p class="byline"><small>By Kristel Escobar</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge" href="../tags/latino.html">Latino</a><a class="lozenge give" href="https://mundonow.com/">Support</a></span></p>
-<a class="shot" href="https://www.mundonow.com/nuevo-ataque-a-presunta-narcolancha-deja-dos-muertos-southcom-advierte-a-los-carteles" tabindex="-1" aria-hidden="true"><img src="../img/88b630d3d5e265d1182859ff649e6d6565773263.jpg" alt="" width="480" height="252" loading="lazy" decoding="async"></a>
-<p>El Comando Sur asegura que la embarcación estaba vinculada al narcotráfico, pero no identificó a los fallecidos, el cargamento ni el cartel involucrado. Estados Unidos ejecutó el 23 de agosto un nuevo ataque contra una presunta narcolancha en el Pacífico Oriental que dejó dos muertos, informó el Comando Sur (SOUTHCOM). Por qué es importante: SOUTHCOM</p>
-<p class="more"><a href="https://www.mundonow.com/nuevo-ataque-a-presunta-narcolancha-deja-dos-muertos-southcom-advierte-a-los-carteles">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://www.elvocero.com">Support</a></aside>
+<p class="source"><a href="https://www.elvocero.com"><strong>El Vocero</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T08:00:00+00:00" data-pub="4:00 AM EDT">Tue, Aug 25 @ 4AM EDT</time></p>
+<h2><a href="https://www.elvocero.com/el-mundo/ponen-precio-a-la-vida-del-hijo-menor-de-donald-trump/article_248a1c01-9bde-4974-82eb-660af137b959.html">Ponen precio a la vida del hijo menor de Donald Trump</a></h2>
+<p class="byline">By Redacción, EL VOCERO</p>
+<p>Los medios estatales iraníes han difundido imágenes que aseguran seguir los movimientos de Barron Trump, el hijo menor de Donald Trump, con información sobre su universidad, sus vehículos de escolta y el dispositivo del Servicio Secreto. La televisión iraní sostiene <a class="lozenge more" href="https://www.elvocero.com/el-mundo/ponen-precio-a-la-vida-del-hijo-menor-de-donald-trump/article_248a1c01-9bde-4974-82eb-660af137b959.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 </div>
 <p><a id="more" href="spanish-11.html">More stories</a></p>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="../index.html">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -405,6 +456,47 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>

@@ -13,12 +13,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(../fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -27,22 +40,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -50,19 +69,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -75,7 +126,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -93,7 +144,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="../index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="../masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -106,7 +157,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="../subjects/news.html">News</a></li><li><a href="../subjects/politics.html">Politics</a></li><li><a href="../subjects/opinion.html">Opinion</a></li><li><a href="../subjects/health.html">Health</a></li><li><a href="../subjects/environment.html">Environment</a></li><li><a href="../subjects/education.html">Education</a></li><li><a href="../subjects/business.html">Business</a></li><li><a href="../subjects/housing.html">Housing</a></li><li><a href="../subjects/sports.html">Sports</a></li><li><a href="../subjects/food.html">Food</a></li><li><a href="../subjects/arts.html">Arts</a></li></ul></nav>
@@ -122,10 +173,33 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <h1><a href="https://www.forwardtimes.com/">Houston Forward Times</a></h1>
 <p>Houston, TX · independently owned</p>
 <p><small><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a></small></p>
+<p><a href="http://www.forwardtimes.com/search/?f=rss&amp;amp;t=article&amp;amp;l=50&amp;amp;s=start_time&amp;amp;sd=desc&amp;amp;k%5B%5D=%23topstory">RSS feed</a></p>
+<h2>Recent stories</h2><ul>
+<li>Aug 25 — <a href="https://www.forwardtimes.com/online_features/press_releases/one-in-three-media-contacts-found-online-cannot-be-verified-as-deliverable-analysis-finds/article_a6cdb64a-9e1b-5707-8c40-ea66ecc9e969.html">One in Three Media Contacts Found Online Cannot Be Verified as Deliverable, Analysis Finds</a></li>
+<li>Aug 25 — <a href="https://www.forwardtimes.com/online_features/press_releases/inside-a-41-000-contact-media-database-editors-and-reporters-each-make-up-a-third/article_aab8f128-078b-5bfe-bdb8-ebd9d11f88e5.html">Inside a 41,000-Contact Media Database: Editors and Reporters Each Make Up a Third of Working Newsrooms</a></li>
+<li>Aug 25 — <a href="https://www.forwardtimes.com/online_features/press_releases/one-in-three-media-contacts-found-online-cannot-be-verified-as-deliverable-analysis-finds/image_87dd2723-e6ed-585f-8709-c93312cf4705.html">One in Three Media Contacts Found Online Cannot Be Verified as Deliverable, Analysis Finds</a></li>
+<li>Aug 25 — <a href="https://www.forwardtimes.com/online_features/press_releases/inside-a-41-000-contact-media-database-editors-and-reporters-each-make-up-a-third/image_42c0b2c1-2b61-5a4c-b9cb-a6438d88ff01.html">Inside a 41,000-Contact Media Database: Editors and Reporters Each Make Up a Third of Working Newsrooms</a></li>
+<li>Aug 25 — <a href="https://www.forwardtimes.com/online_features/press_releases/one-in-four-press-releases-ships-without-a-boilerplate-five-year-study-finds/image_0fc9c268-6659-5018-9e38-37f265473a85.html">One in Four Press Releases Ships Without a Boilerplate, Five-Year Study Finds</a></li>
+<li>Aug 25 — <a href="https://www.forwardtimes.com/online_features/press_releases/one-in-four-press-releases-ships-without-a-boilerplate-five-year-study-finds/article_f0b2b460-fe39-596f-9ee9-5adda1289a83.html">One in Four Press Releases Ships Without a Boilerplate, Five-Year Study Finds</a></li>
+<li>Aug 25 — <a href="https://www.forwardtimes.com/online_features/press_releases/new-study-of-138-901-press-releases-finds-90-of-headlines-are-too-long-for/image_124edce4-33af-577b-941a-f8c767ee9b6c.html">New Study of 138,901 Press Releases Finds 90% of Headlines Are Too Long for Google</a></li>
+<li>Aug 25 — <a href="https://www.forwardtimes.com/online_features/press_releases/new-study-of-138-901-press-releases-finds-90-of-headlines-are-too-long-for/article_b2399d50-e37e-5708-b071-fcb683ce40ed.html">New Study of 138,901 Press Releases Finds 90% of Headlines Are Too Long for Google</a></li>
+<li>Aug 25 — <a href="https://www.forwardtimes.com/online_features/press_releases/longtime-warwick-resident-julio-batres-highlights-local-education-first-alternative-for-homeowners-considering-a-sale/article_eb11e6a1-a155-517a-a122-6240ccd9099f.html">Longtime Warwick Resident Julio Batres Highlights Local, Education-First Alternative for Homeowners Considering a Sale</a></li>
+<li>Aug 25 — <a href="https://www.forwardtimes.com/online_features/press_releases/kitchen-goodies-4-u-llc-reaffirms-commitment-to-fast-customer-focused-online-shopping-for-home/article_40d394ad-de5e-5ae5-9d0a-a6bdebff2762.html">Kitchen Goodies 4 U LLC Reaffirms Commitment to Fast, Customer-Focused Online Shopping for Home Cooks Across the United States</a></li>
+<li>Aug 25 — <a href="https://www.forwardtimes.com/online_features/press_releases/hrh-candle-introduces-revolutionary-crystal-wax-candle-system-that-empowers-consumers-to-customize-their-home/article_d6a6e86e-78fe-5b5a-a0a6-a6d3a4e5e842.html">HRH Candle Introduces Revolutionary Crystal Wax Candle System That Empowers Consumers to Customize Their Home Fragrance Experience</a></li>
+<li>Aug 25 — <a href="https://www.forwardtimes.com/online_features/press_releases/foxfire-canoes-merges-artisan-woodworking-with-paddle-sport-performance-to-create-the-ultimate-fly-fishing/article_a09b83e0-fe42-54f2-89a6-8aa6ab13af4e.html">Foxfire Canoes Merges Artisan Woodworking With Paddle Sport Performance to Create the Ultimate Fly Fishing Watercraft</a></li>
+<li>Aug 25 — <a href="https://www.forwardtimes.com/online_features/press_releases/veteran-founded-house-of-enough-bridges-mental-health-expertise-and-body-care-to-serve-women/article_6d0af119-8205-5438-83bd-0e9db9dff7b6.html">Veteran-Founded House of Enough Bridges Mental Health Expertise and Body Care to Serve Women Often Overlooked by Beauty Brands</a></li>
+<li>Aug 25 — <a href="https://www.forwardtimes.com/online_features/press_releases/ethiopia-prime-leads-purelight-coffee-lineup-as-bootstrapped-brand-redefines-online-specialty-coffee-for-a/article_572289bd-8d3f-5afd-b347-12be2c48c9c7.html">Ethiopia Prime Leads Purelight Coffee Lineup as Bootstrapped Brand Redefines Online Specialty Coffee for a New Generation</a></li>
+<li>Aug 25 — <a href="https://www.forwardtimes.com/online_features/press_releases/the-estate-lawyers-attorneys-carl-l-jones-and-michael-c-mcdonald-recognized-in-2027-best/article_ef548717-9e4a-556a-917c-60a7b6c511b7.html">The Estate Lawyers Attorneys Carl L. Jones and Michael C. McDonald Recognized in 2027 Best Lawyers: Ones to Watch® in America</a></li>
+<li>Aug 25 — <a href="https://www.forwardtimes.com/online_features/press_releases/prv-tree-service-highlights-efficient-land-clearing-solutions-for-austin-tx-property-development/article_f05a057e-9841-5b5b-bf42-da61b30e705e.html">PRV Tree Service Highlights Efficient Land Clearing Solutions for Austin, TX Property Development</a></li>
+<li>Aug 25 — <a href="https://www.forwardtimes.com/online_features/press_releases/woman-owned-nuyou360-ventures-llc-publishes-full-red-light-therapy-device-specifications-to-combat-skincare/article_db225d4c-0105-5a37-a279-317db24def99.html">Woman-Owned NuYOU360 Ventures LLC Publishes Full Red Light Therapy Device Specifications to Combat Skincare Industry Misinformation</a></li>
+<li>Aug 25 — <a href="https://www.forwardtimes.com/online_features/press_releases/sunshinescoffee-invites-adventurous-drinkers-to-explore-a-new-world-of-flavor-with-its-signature-blends/article_0724c974-cef7-5613-a6a2-b6b6a595da8e.html">SunshinesCoffee Invites Adventurous Drinkers to Explore a New World of Flavor With Its Signature Blends</a></li>
+<li>Aug 25 — <a href="https://www.forwardtimes.com/online_features/press_releases/fewer-than-30-of-eligible-small-businesses-claim-the-r-d-tax-credit-k-38/article_7ff6f3e9-9a8c-58ff-aac5-36e55687613c.html">Fewer Than 30% of Eligible Small Businesses Claim the R&amp;D Tax Credit, K-38 Consulting Reports</a></li>
+<li>Aug 25 — <a href="https://www.forwardtimes.com/online_features/press_releases/veilapp-prepares-to-launch-privacy-first-communications-platform-that-eliminates-the-need-for-phone-numbers/article_50ad419b-972a-5a3f-a7ad-28f9d62d7897.html">VeilApp Prepares to Launch Privacy-First Communications Platform That Eliminates the Need for Phone Numbers or Email Addresses</a></li>
+</ul>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="../index.html">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -141,6 +215,47 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>

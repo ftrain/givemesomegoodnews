@@ -13,12 +13,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -27,22 +40,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -50,19 +69,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -75,7 +126,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -93,7 +144,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -106,7 +157,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="subjects/news.html">News</a></li><li><a href="subjects/politics.html">Politics</a></li><li><a href="subjects/opinion.html">Opinion</a></li><li><a href="subjects/health.html">Health</a></li><li><a href="subjects/environment.html">Environment</a></li><li><a href="subjects/education.html">Education</a></li><li><a href="subjects/business.html">Business</a></li><li><a href="subjects/housing.html">Housing</a></li><li><a href="subjects/sports.html">Sports</a></li><li><a href="subjects/food.html">Food</a></li><li><a href="subjects/arts.html">Arts</a></li></ul></nav>
@@ -121,272 +172,281 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <main id="main">
 <div id="feed-items">
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T11:00:00+00:00" data-pub="6:00 AM CDT">Tuesday, August 25, 2026 at 6:00 AM CDT</time></small><a class="lozenge" href="subjects/politics.html">Politics</a></p>
-<p><small>IL / Chicago / <a href="https://www.injusticewatch.org/news/">Injustice Watch</a></small></p>
-<h2><a href="https://www.injusticewatch.org/project/ice-informants/2026/illinois-trust-act-violations-immigrants-deported/">Illinois promised to protect immigrants. Local officials helped deport them anyway.</a></h2>
-<p class="byline"><small>By Aura Bogado</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.injusticewatch.org/donate/">Donate</a></span></p>
-<a class="shot" href="https://www.injusticewatch.org/project/ice-informants/2026/illinois-trust-act-violations-immigrants-deported/" tabindex="-1" aria-hidden="true"><img src="img/20282966c6ae30e8a1149567e26635edecd57ebd.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>In over a third of Illinois counties, cops, sheriffs, and even prosecutors helped federal immigration agents route at least 150 people into the deportation system since Trump returned to office, despite a state law intended to prevent such collaboration.</p>
-<p class="more"><a href="https://www.injusticewatch.org/project/ice-informants/2026/illinois-trust-act-violations-immigrants-deported/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/news.html">News</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://wausaupilotandreview.com/2026/08/24/dnr-seeks-hunters-meat-processors-for-deer-donation-program/">Donate</a></aside>
+<p class="source"><a href="https://www.wausaupilotandreview.com"><strong>Wausau Pilot &amp; Review</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:30:00+00:00" data-pub="10:30 AM CDT">Tue, Aug 25 @ 10AM CDT</time><a class="lozenge place" href="/search?state=WI">Wisconsin</a><a class="lozenge place" href="/search?place=Wausau&state=WI">Wausau</a></p>
+<h2><a href="https://wausaupilotandreview.com/2026/08/25/today-in-history-today-is-tuesday-aug-25-the-237th-day-of-2026/">Today in History: Today is Tuesday, Aug. 25, the 237th day of 2026.</a></h2>
+<p class="byline">By Darren Siewert</p>
+<a class="shot" href="https://wausaupilotandreview.com/2026/08/25/today-in-history-today-is-tuesday-aug-25-the-237th-day-of-2026/" tabindex="-1" aria-hidden="true"><img src="img/673efc253c9ad32a55742e65a3e42c377c65ba31.webp" alt="" width="336" height="336" loading="lazy" decoding="async"></a>
+<p>By The Associated Press Today in history: On Aug. 25, 1916, President Woodrow Wilson signed the National Park Service Organic Act, establishing the National Park Service as an agency of the U.S. Department of the Interior to maintain the country’s natural and historic wonders and “leave them unimpaired for the enjoyment of future generations.” Also <a class="lozenge more" href="https://wausaupilotandreview.com/2026/08/25/today-in-history-today-is-tuesday-aug-25-the-237th-day-of-2026/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T11:00:00+00:00" data-pub="6:00 AM CDT">Tuesday, August 25, 2026 at 6:00 AM CDT</time></small><a class="lozenge" href="subjects/politics.html">Politics</a></p>
-<p><small>IL / Chicago / <a href="https://www.injusticewatch.org/news/">Injustice Watch</a></small></p>
-<h2><a href="https://www.injusticewatch.org/project/ice-informants/2026/illinois-prosecutors-helping-ice/">The county prosecutors who became ICE informants</a></h2>
-<p class="byline"><small>By Aura Bogado</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.injusticewatch.org/donate/">Donate</a></span></p>
-<a class="shot" href="https://www.injusticewatch.org/project/ice-informants/2026/illinois-prosecutors-helping-ice/" tabindex="-1" aria-hidden="true"><img src="img/9a4f0fbb5360ffbab256a35f1d118f220d74aed7.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>Illinois prosecutors shared defendants’ personal data with federal immigration agents without criminal warrants, public disclosure, or legislative oversight.</p>
-<p class="more"><a href="https://www.injusticewatch.org/project/ice-informants/2026/illinois-prosecutors-helping-ice/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://support.apple.com/downloads/safari">Donate</a></aside>
+<p class="source"><a href="https://www.elnuevodia.com/"><strong>El Nuevo Dia</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:30:00+00:00" data-pub="11:30 AM EDT">Tue, Aug 25 @ 11AM EDT</time></p>
+<h2><a href="https://www.elnuevodia.com/negocios/turismo/notas/lanzan-plataforma-informativa-sobre-alquileres-a-corto-plazo-en-puerto-rico/">Lanzan plataforma informativa sobre alquileres a corto plazo en Puerto Rico</a></h2>
+<p class="byline">By Itzel Rivera</p>
+<a class="shot" href="https://www.elnuevodia.com/negocios/turismo/notas/lanzan-plataforma-informativa-sobre-alquileres-a-corto-plazo-en-puerto-rico/" tabindex="-1" aria-hidden="true"><img src="img/4f17e7a78b9273578f089e8995beffe6bc02af56.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Viva Short-Term Rental Alliance anunció PA’QUEDARTE, una página en redes sociales que busca ampliar la conversación del sector <a class="lozenge more" href="https://www.elnuevodia.com/negocios/turismo/notas/lanzan-plataforma-informativa-sobre-alquileres-a-corto-plazo-en-puerto-rico/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T11:00:00+00:00" data-pub="5:00 AM MDT">Tuesday, August 25, 2026 at 5:00 AM MDT</time></small><a class="lozenge" href="subjects/education.html">Education</a></p>
-<p><small>MT / Flathead County / <a href="https://flatheadbeacon.com/">Flathead Beacon</a></small></p>
-<h2><a href="https://flatheadbeacon.com/2026/08/25/kalispell-chamber-cites-risk-to-advocacy-work-as-reason-it-opposes-i-194/">Kalispell Chamber Cites Risk to Advocacy Work as Reason it Opposes I-194</a></h2>
-<p class="byline"><small>By Mariah Thomas</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://flatheadbeacon.com/support/?utm_source=website&amp;utm_medium=button&amp;utm_campaign=menu">Donate</a></span></p>
-<p>In 2025, Kalispell Public Schools passed its first high school levy in nearly two decades — in no small part, thanks to help from the Kalispell Chamber of Commerce, which backed the district’s funding ask and educated the community on the district’s needs. But this year, according to chamber president Lorraine Clarno, a ballot initiative puts</p>
-<p class="more"><a href="https://flatheadbeacon.com/2026/08/25/kalispell-chamber-cites-risk-to-advocacy-work-as-reason-it-opposes-i-194/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://lavozhispanact.com/">Support</a></aside>
+<p class="source"><a href="https://lavozhispanact.com/"><strong>La Voz Hispana</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:30:00+00:00" data-pub="11:30 AM EDT">Tue, Aug 25 @ 11AM EDT</time><a class="lozenge place" href="/search?state=CT">Connecticut</a></p>
+<h2><a href="https://lavozhispanact.com/natura-nail-salon-nueva-alternativa-para-embellecer-las-unas/">“Natura Nail Salon”, nueva alternativa para embellecer las uñas</a></h2>
+<p class="byline">By Maricarmen Godoy</p>
+<a class="shot" href="https://lavozhispanact.com/natura-nail-salon-nueva-alternativa-para-embellecer-las-unas/" tabindex="-1" aria-hidden="true"><img src="img/f0791abc7f267b1ddd1a47e041f7f39b76ba34af.webp" alt="" width="480" height="358" loading="lazy" decoding="async"></a>
+<p>STAMFORD.- La experiencia de la estilista Ladi Rojas nativa de Perú, reconocida como una de las pioneras en la industria de las salas de belleza de la ciudad, se juntó a la juventud de Sofia Gómez, una joven de origen mexicano, con apenas cuatro años en el país; y juntas lograron juntar fuerzas para dar <a class="lozenge more" href="https://lavozhispanact.com/natura-nail-salon-nueva-alternativa-para-embellecer-las-unas/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T11:00:00+00:00" data-pub="7:00 AM EDT">Tuesday, August 25, 2026 at 7:00 AM EDT</time></small><a class="lozenge" href="subjects/news.html">News</a></p>
-<p><small>MA / Concord / <a href="https://theconcordbridge.org/">Concord Bridge</a></small></p>
-<h2><a href="https://concordbridge.org/index.php/2026/08/25/puppy-love-momo-capturing-hearts-on-weekly-visits-to-council-on-aging/">Puppy love: Momo capturing hearts on weekly visits to Council on Aging</a></h2>
-<p class="byline"><small>By Kim Carpenter</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://concordbridge.org/index.php/2022/10/27/donate/">Donate</a></span></p>
-<a class="shot" href="https://concordbridge.org/index.php/2026/08/25/puppy-love-momo-capturing-hearts-on-weekly-visits-to-council-on-aging/" tabindex="-1" aria-hidden="true"><img src="img/d371519270658dd4cfa7ea4b8a449f863a59ba0c.jpg" alt="" width="480" height="640" loading="lazy" decoding="async"></a>
-<p>“Once [you] pet her, you feel different. She takes all your heaviness away.”</p>
-<p class="more"><a href="https://concordbridge.org/index.php/2026/08/25/puppy-love-momo-capturing-hearts-on-weekly-visits-to-council-on-aging/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/politics.html">Politics</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://brookline.news/support-our-publication/">Donate</a></aside>
+<p class="source"><a href="https://brookline.news/news/"><strong>Brookline News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:29:48+00:00" data-pub="11:29 AM EDT">Tue, Aug 25 @ 11AM EDT</time><a class="lozenge place" href="/search?state=MA">Massachusetts</a><a class="lozenge place" href="/search?place=Brookline&state=MA">Brookline</a></p>
+<h2><a href="https://brookline.news/after-debate-over-safety-nonprofit-plans-to-open-recovery-home-for-mothers-near-coolidge-corner/">After debate over safety, nonprofit plans to open recovery home for mothers near Coolidge Corner</a></h2>
+<p class="byline">By Sam Mintz</p>
+<a class="shot" href="https://brookline.news/after-debate-over-safety-nonprofit-plans-to-open-recovery-home-for-mothers-near-coolidge-corner/" tabindex="-1" aria-hidden="true"><img src="img/6ef020d08a5ec9835c488c3dde47942a4a386ad6.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Victory Programs is planning to spend about 18 months renovating the home at 16 Wiliams Street before opening it to 10 families. <a class="lozenge more" href="https://brookline.news/after-debate-over-safety-nonprofit-plans-to-open-recovery-home-for-mothers-near-coolidge-corner/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T11:00:00+00:00" data-pub="6:00 AM CDT">Tuesday, August 25, 2026 at 6:00 AM CDT</time></small><a class="lozenge" href="subjects/news.html">News</a></p>
-<p><small>MO / Columbia / <a href="https://www.columbiamissourian.com/">Columbia Missourian</a></small></p>
-<h2><a href="https://www.columbiamissourian.com/news/students-wait-for-class-outside-middlebush-hall/image_42c6c96a-1ba8-4eb9-9636-e38abbe733a8.html">Students wait for class outside Middlebush Hall</a></h2>
-<p class="byline"><small>By Noah Grabianski/Missourian</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.columbiamissourian.com/news/local/church-donation-boosts-vac-opportunity-campus/article_ec8b756a-0baa-4a85-bb92-07a66ff5b1a4.html">Donate</a></span></p>
-<a class="shot" href="https://www.columbiamissourian.com/news/students-wait-for-class-outside-middlebush-hall/image_42c6c96a-1ba8-4eb9-9636-e38abbe733a8.html" tabindex="-1" aria-hidden="true"><img src="img/e9535b476af103819566a578d9866813fa778e5e.jpg" alt="" width="300" height="195" loading="lazy" decoding="async"></a>
-<p>Students wait for class outside Middlebush Hall on Monday at the University of Missouri. Middlebush Auditorium hosts six separate class sections on Mondays.</p>
-<p class="more"><a href="https://www.columbiamissourian.com/news/students-wait-for-class-outside-middlebush-hall/image_42c6c96a-1ba8-4eb9-9636-e38abbe733a8.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/news.html">News</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://support.apple.com/downloads/safari">Donate</a></aside>
+<p class="source"><a href="https://www.elnuevodia.com/"><strong>El Nuevo Dia</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:29:40+00:00" data-pub="11:29 AM EDT">Tue, Aug 25 @ 11AM EDT</time></p>
+<h2><a href="https://www.elnuevodia.com/noticias/seguridad/notas/se-incendia-un-camion-en-la-pr-2-en-penuelas/">Se incendia un camión en la PR-2 en Peñuelas</a></h2>
+<p class="byline">By Yaritza Rivera Clemente</p>
+<a class="shot" href="https://www.elnuevodia.com/noticias/seguridad/notas/se-incendia-un-camion-en-la-pr-2-en-penuelas/" tabindex="-1" aria-hidden="true"><img src="img/e6872aa43158be6e7003c1c49a0880982f168789.webp" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>El tránsito discurre por un solo carril mientras bomberos se movilizan al lugar <a class="lozenge more" href="https://www.elnuevodia.com/noticias/seguridad/notas/se-incendia-un-camion-en-la-pr-2-en-penuelas/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T11:00:00+00:00" data-pub="6:00 AM CDT">Tuesday, August 25, 2026 at 6:00 AM CDT</time></small><a class="lozenge" href="subjects/news.html">News</a></p>
-<p><small>MO / Columbia / <a href="https://www.columbiamissourian.com/">Columbia Missourian</a></small></p>
-<h2><a href="https://www.columbiamissourian.com/news/students-cross-the-street-during-a-post-class-rush/image_7f34e08d-8872-4875-9a47-a42b010e95bd.html">Students cross the street during a post-class rush</a></h2>
-<p class="byline"><small>By Elsa Connolly/Missourian</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.columbiamissourian.com/news/local/church-donation-boosts-vac-opportunity-campus/article_ec8b756a-0baa-4a85-bb92-07a66ff5b1a4.html">Donate</a></span></p>
-<a class="shot" href="https://www.columbiamissourian.com/news/students-cross-the-street-during-a-post-class-rush/image_7f34e08d-8872-4875-9a47-a42b010e95bd.html" tabindex="-1" aria-hidden="true"><img src="img/b8ccb6e51f805ba08283bb750f8fc30e72556b79.jpg" alt="" width="300" height="186" loading="lazy" decoding="async"></a>
-<p>Students cross the street during a post-class rush on Monday at the University of Missouri. Booths were set up at Speakers Circle to promote student organizations.</p>
-<p class="more"><a href="https://www.columbiamissourian.com/news/students-cross-the-street-during-a-post-class-rush/image_7f34e08d-8872-4875-9a47-a42b010e95bd.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/sports.html">Sports</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://stlargusnews.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://www.stlargusnews.com"><strong>St. Louis Argus</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:29:36+00:00" data-pub="10:29 AM CDT">Tue, Aug 25 @ 10AM CDT</time><a class="lozenge place" href="/search?state=MO">Missouri</a><a class="lozenge place" href="/search?place=St.+Louis&state=MO">St. Louis</a></p>
+<h2><a href="https://stlargusnews.com/2026/08/25/jennings-high-warriors-will-have-to-ride-it-out-without-rideout-this-football-season/">Jennings High Warriors will have to ‘ride it out’ without Rideout this football season</a></h2>
+<p class="byline">By ArgusStaff</p>
+<a class="shot" href="https://stlargusnews.com/2026/08/25/jennings-high-warriors-will-have-to-ride-it-out-without-rideout-this-football-season/" tabindex="-1" aria-hidden="true"><img src="img/bca999ac335a8ad2cc254689e18fc73219e919c9.webp" alt="" width="480" height="720" loading="lazy" decoding="async"></a>
+<p>by Lonnel Cole, Argus Sports They were one of the most explosive, dominant high school football teams in the entire St Louis metropolitan area for the first six weeks of the season. In a prolific four-game stretch they outscored the opposition 248-7.No, we’re not talking about East St. Louis, CBC or Cardinal Ritter, but rather <a class="lozenge more" href="https://stlargusnews.com/2026/08/25/jennings-high-warriors-will-have-to-ride-it-out-without-rideout-this-football-season/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T11:00:00+00:00" data-pub="6:00 AM CDT">Tuesday, August 25, 2026 at 6:00 AM CDT</time></small><a class="lozenge" href="subjects/news.html">News</a></p>
-<p><small>MO / Columbia / <a href="https://www.columbiamissourian.com/">Columbia Missourian</a></small></p>
-<h2><a href="https://www.columbiamissourian.com/news/a-mizzou-student-walks-down-lowry-mall-on-the-first-day-of-classes/image_81bc886d-6f63-4f1c-8e93-bab7b384b22c.html">A Mizzou student walks down Lowry Mall on the first day of classes</a></h2>
-<p class="byline"><small>By Noah Grabianski/Missourian</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.columbiamissourian.com/news/local/church-donation-boosts-vac-opportunity-campus/article_ec8b756a-0baa-4a85-bb92-07a66ff5b1a4.html">Donate</a></span></p>
-<a class="shot" href="https://www.columbiamissourian.com/news/a-mizzou-student-walks-down-lowry-mall-on-the-first-day-of-classes/image_81bc886d-6f63-4f1c-8e93-bab7b384b22c.html" tabindex="-1" aria-hidden="true"><img src="img/12cc96018b8014bf291f9ccb9416474cdd94ddc6.jpg" alt="" width="300" height="203" loading="lazy" decoding="async"></a>
-<p>A Mizzou student walks down Lowry Mall on the first day of classes on Monday at the University of Missouri. Several thousand students begin fall semester classes this week. Stephens College also began classes for the fall semester Monday, while</p>
-<p class="more"><a href="https://www.columbiamissourian.com/news/a-mizzou-student-walks-down-lowry-mall-on-the-first-day-of-classes/image_81bc886d-6f63-4f1c-8e93-bab7b384b22c.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/politics.html">Politics</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://scalawagmagazine.org/support/">Donate</a></aside>
+<p class="source"><a href="https://scalawagmagazine.org/"><strong>Scalawag Magazine</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:29:26+00:00" data-pub="10:29 AM CDT">Tue, Aug 25 @ 10AM CDT</time><a class="lozenge place" href="/search?state=AL">Alabama</a></p>
+<h2><a href="https://scalawagmagazine.org/2026/08/notification-of-unauthorized-mail-comics-by-juan-hernandez/">&quot;Notification of Unauthorized Mail&quot;: Comics by Juan Hernandez</a></h2>
+<p class="byline">By Juan Hernandez</p>
+<a class="shot" href="https://scalawagmagazine.org/2026/08/notification-of-unauthorized-mail-comics-by-juan-hernandez/" tabindex="-1" aria-hidden="true"><img src="img/d41af0b4c4b4c255c5ea9ecd041c45f224528b5b.webp" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>It looks like censorship within these walls will never end, but neither will my resolve to combat it. Censorship is their weapon, and mine is my art. Read more via Scalawag: &quot;Notification of Unauthorized Mail&quot;: Comics by Juan Hernandez. <a class="lozenge more" href="https://scalawagmagazine.org/2026/08/notification-of-unauthorized-mail-comics-by-juan-hernandez/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T11:00:00+00:00" data-pub="6:00 AM CDT">Tuesday, August 25, 2026 at 6:00 AM CDT</time></small><a class="lozenge" href="subjects/news.html">News</a></p>
-<p><small>MO / Columbia / <a href="https://www.columbiamissourian.com/">Columbia Missourian</a></small></p>
-<h2><a href="https://www.columbiamissourian.com/news/sophomore-esti-ellis-returns-to-her-favorite-campus-spot/image_edb50fa9-1267-4dc8-914a-8e05c1152389.html">Sophomore Esti Ellis returns to her favorite campus spot</a></h2>
-<p class="byline"><small>By Elsa Connolly/Missourian</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.columbiamissourian.com/news/local/church-donation-boosts-vac-opportunity-campus/article_ec8b756a-0baa-4a85-bb92-07a66ff5b1a4.html">Donate</a></span></p>
-<a class="shot" href="https://www.columbiamissourian.com/news/sophomore-esti-ellis-returns-to-her-favorite-campus-spot/image_edb50fa9-1267-4dc8-914a-8e05c1152389.html" tabindex="-1" aria-hidden="true"><img src="img/b64537100e48bbc67a9f868ad6331635a22a327e.jpg" alt="" width="300" height="195" loading="lazy" decoding="async"></a>
-<p>Sophomore Esti Ellis returns to her favorite campus spot on Monday at the University of Missouri. “I’m really excited to be back, honestly,” Ellis said. “I’m excited for my classes. I love learning, so I’m just very excited for the</p>
-<p class="more"><a href="https://www.columbiamissourian.com/news/sophomore-esti-ellis-returns-to-her-favorite-campus-spot/image_edb50fa9-1267-4dc8-914a-8e05c1152389.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/vietnamese.html">Vietnamese</a><a class="lozenge give" href="https://www.nguoi-viet.com/">Support</a></aside>
+<p class="source"><a href="https://www.nguoi-viet.com/"><strong>Nguoi Viet</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:28:19+00:00" data-pub="8:28 AM PDT">Tue, Aug 25 @ 8AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Westminster&state=CA">Westminster</a></p>
+<h2><a href="https://www.nguoi-viet.com/hoa-ky/hai-ca-tu-vong-vi-benh-soi-dau-tien-o-pennsylvanie-trong-35-nam/">Hai ca tử vong vì bệnh sởi đầu tiên ở Pennsylvanie trong 35 năm</a></h2>
+<p class="byline">By kalynh ngo</p>
+<a class="shot" href="https://www.nguoi-viet.com/hoa-ky/hai-ca-tu-vong-vi-benh-soi-dau-tien-o-pennsylvanie-trong-35-nam/" tabindex="-1" aria-hidden="true"><img src="img/95934e91750cd1c3d1821a9e14f923fb246294b3.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Sở Y Tế Pennsylvania hôm Thứ Ba xác nhận đã có hai nạn nhân tử vong vì bệnh sởi, hai trường hợp đầu tiên trong vòng 35 năm tại tiểu bang này <a class="lozenge more" href="https://www.nguoi-viet.com/hoa-ky/hai-ca-tu-vong-vi-benh-soi-dau-tien-o-pennsylvanie-trong-35-nam/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T11:00:00+00:00" data-pub="6:00 AM CDT">Tuesday, August 25, 2026 at 6:00 AM CDT</time></small><a class="lozenge" href="subjects/news.html">News</a></p>
-<p><small>MO / Columbia / <a href="https://www.columbiamissourian.com/">Columbia Missourian</a></small></p>
-<h2><a href="https://www.columbiamissourian.com/news/mizzou-junior-casey-ryan-studies-the-thyroid-gland-for-her-superficial-studies-class/image_f4dfe9d4-0577-4723-ad0a-d84845b82fae.html">Mizzou Junior Casey Ryan studies the thyroid gland for her superficial studies class</a></h2>
-<p class="byline"><small>By Augustus Henderson/Missourian</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.columbiamissourian.com/news/local/church-donation-boosts-vac-opportunity-campus/article_ec8b756a-0baa-4a85-bb92-07a66ff5b1a4.html">Donate</a></span></p>
-<a class="shot" href="https://www.columbiamissourian.com/news/mizzou-junior-casey-ryan-studies-the-thyroid-gland-for-her-superficial-studies-class/image_f4dfe9d4-0577-4723-ad0a-d84845b82fae.html" tabindex="-1" aria-hidden="true"><img src="img/1272e27b1ea73eb536e3219058346740b5690a74.jpg" alt="" width="300" height="190" loading="lazy" decoding="async"></a>
-<p>Mizzou junior Casey Ryan studies the thyroid gland for her superficial studies class on Monday at Ellis Library at the University of Missouri. Ryan said she is excited for her junior year but is also expecting stress later in the</p>
-<p class="more"><a href="https://www.columbiamissourian.com/news/mizzou-junior-casey-ryan-studies-the-thyroid-gland-for-her-superficial-studies-class/image_f4dfe9d4-0577-4723-ad0a-d84845b82fae.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/education.html">Education</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.inquirer.com/">Support</a></aside>
+<p class="source"><a href="https://www.inquirer.com/"><strong>Philadelphia Inquirer</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:27:54+00:00" data-pub="11:27 AM EDT">Tue, Aug 25 @ 11AM EDT</time><a class="lozenge place" href="/search?state=PA">Pennsylvania</a><a class="lozenge place" href="/search?place=Philadelphia&state=PA">Philadelphia</a></p>
+<h2><a href="https://www.inquirer.com/education/tony-watlington-philadelphia-school-district-priorities-20260825.html">Paying parents to become influencers and other priorities for Philly schools superintendent in 2026-27</a></h2>
+<p class="byline">By Kristen Graham</p>
+<a class="shot" href="https://www.inquirer.com/education/tony-watlington-philadelphia-school-district-priorities-20260825.html" tabindex="-1" aria-hidden="true"><img src="img/eb83c365d6076f460d27f65a4e1b401278f03a7b.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Superintendent Tony B. Watlington Sr. said the Philadelphia School District will begin paying some parent influencers to help improve schools, suggested PSSA scores may have gone down, and more. <a class="lozenge more" href="https://www.inquirer.com/education/tony-watlington-philadelphia-school-district-priorities-20260825.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T11:00:00+00:00" data-pub="6:00 AM CDT">Tuesday, August 25, 2026 at 6:00 AM CDT</time></small><a class="lozenge" href="subjects/news.html">News</a></p>
-<p><small>MO / Columbia / <a href="https://www.columbiamissourian.com/">Columbia Missourian</a></small></p>
-<h2><a href="https://www.columbiamissourian.com/news/from-left-sophomores-kyra-orrick-amanda-qualley-and-toby-kelly-relax-after-the-first-day/image_b357084b-bbfc-416e-8721-2d5a7b3fb3ae.html">From left, sophomores Kyra Orrick, Amanda Qualley, and Toby Kelly relax after the first day of classes</a></h2>
-<p class="byline"><small>By Augustus Henderson/Missourian</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.columbiamissourian.com/news/local/church-donation-boosts-vac-opportunity-campus/article_ec8b756a-0baa-4a85-bb92-07a66ff5b1a4.html">Donate</a></span></p>
-<a class="shot" href="https://www.columbiamissourian.com/news/from-left-sophomores-kyra-orrick-amanda-qualley-and-toby-kelly-relax-after-the-first-day/image_b357084b-bbfc-416e-8721-2d5a7b3fb3ae.html" tabindex="-1" aria-hidden="true"><img src="img/7281907f3a740271c21454e4aa87ea6db7f6bae9.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
-<p>From left, sophomores Kyra Orrick, Amanda Qualley and Toby Kelly relax after the first day of classes on Monday outside Jesse Hall at the University of Missouri. Kelly said she was glad to get back into the swing of things.</p>
-<p class="more"><a href="https://www.columbiamissourian.com/news/from-left-sophomores-kyra-orrick-amanda-qualley-and-toby-kelly-relax-after-the-first-day/image_b357084b-bbfc-416e-8721-2d5a7b3fb3ae.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://athensindependent.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://athensindependent.com/"><strong>Athens County Independent</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:26:23+00:00" data-pub="11:26 AM EDT">Tue, Aug 25 @ 11AM EDT</time><a class="lozenge place" href="/search?state=OH">Ohio</a><a class="lozenge place" href="/search?place=Athens&state=OH">Athens</a></p>
+<h2><a href="https://athensindependent.com/announcement-solar-training-260825/">Solar photovoltaic level one certification course</a></h2>
+<p class="byline">By Karen McGuire</p>
+<a class="shot" href="https://athensindependent.com/announcement-solar-training-260825/" tabindex="-1" aria-hidden="true"><img src="img/b2f93c6bb670e69fda8533695bd03c3084a98814.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>The average PVI solar installer makes $27.00/hr. <a class="lozenge more" href="https://athensindependent.com/announcement-solar-training-260825/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T11:00:00+00:00" data-pub="6:00 AM CDT">Tuesday, August 25, 2026 at 6:00 AM CDT</time></small><a class="lozenge" href="subjects/news.html">News</a></p>
-<p><small>MO / Columbia / <a href="https://www.columbiamissourian.com/">Columbia Missourian</a></small></p>
-<h2><a href="https://www.columbiamissourian.com/news/mizzou-students-walk-through-kuhlman-court-on-their-first-day-of-classes/image_6e90b214-3908-4010-bd6e-c6b70ced445b.html">Mizzou students walk through Kuhlman Court on their first day of classes</a></h2>
-<p class="byline"><small>By Noah Grabianski/Missourian</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.columbiamissourian.com/news/local/church-donation-boosts-vac-opportunity-campus/article_ec8b756a-0baa-4a85-bb92-07a66ff5b1a4.html">Donate</a></span></p>
-<a class="shot" href="https://www.columbiamissourian.com/news/mizzou-students-walk-through-kuhlman-court-on-their-first-day-of-classes/image_6e90b214-3908-4010-bd6e-c6b70ced445b.html" tabindex="-1" aria-hidden="true"><img src="img/46d2393e0b038b6934ea78dbb9a1e4cd40a0bf40.jpg" alt="" width="300" height="214" loading="lazy" decoding="async"></a>
-<p>Mizzou students walk through Kuhlman Court on their first day of classes on Monday at the University of Missouri. Volunteers passed out cups of cold brew to students.</p>
-<p class="more"><a href="https://www.columbiamissourian.com/news/mizzou-students-walk-through-kuhlman-court-on-their-first-day-of-classes/image_6e90b214-3908-4010-bd6e-c6b70ced445b.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/vietnamese.html">Vietnamese</a><a class="lozenge give" href="https://www.nguoi-viet.com/">Support</a></aside>
+<p class="source"><a href="https://www.nguoi-viet.com/"><strong>Nguoi Viet</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:25:43+00:00" data-pub="8:25 AM PDT">Tue, Aug 25 @ 8AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Westminster&state=CA">Westminster</a></p>
+<h2><a href="https://www.nguoi-viet.com/viet-nam/nhieu-loai-ca-hiem-mua-nuoc-noi-xuat-hien-tro-lai-o-an-giang/">Nhiều loại cá hiếm mùa nước nổi xuất hiện trở lại ở An Giang</a></h2>
+<p class="byline">By Tran Nha</p>
+<a class="shot" href="https://www.nguoi-viet.com/viet-nam/nhieu-loai-ca-hiem-mua-nuoc-noi-xuat-hien-tro-lai-o-an-giang/" tabindex="-1" aria-hidden="true"><img src="img/07b88c286ad87cda218732c27ee0f94eb56664e5.webp" alt="" width="480" height="201" loading="lazy" decoding="async"></a>
+<p>Mùa nước nổi ở vùng giáp biên giới Cambodia năm nay xuất hiện trở lại nhiều loại cá hiếm tưởng chừng tuyệt chủng <a class="lozenge more" href="https://www.nguoi-viet.com/viet-nam/nhieu-loai-ca-hiem-mua-nuoc-noi-xuat-hien-tro-lai-o-an-giang/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T11:00:00+00:00" data-pub="6:00 AM CDT">Tuesday, August 25, 2026 at 6:00 AM CDT</time></small><a class="lozenge" href="subjects/opinion.html">Opinion</a></p>
-<p><small>MO / Columbia / <a href="https://www.columbiamissourian.com/">Columbia Missourian</a></small></p>
-<h2><a href="https://www.columbiamissourian.com/opinion/renaming-an-aircraft-carrier/article_7c14794a-6532-491b-b405-0ddf10bb84e5.html">Renaming an aircraft carrier</a></h2>
-<p class="byline"><small>By John Darkow</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.columbiamissourian.com/news/local/church-donation-boosts-vac-opportunity-campus/article_ec8b756a-0baa-4a85-bb92-07a66ff5b1a4.html">Donate</a></span></p>
-<a class="shot" href="https://www.columbiamissourian.com/opinion/renaming-an-aircraft-carrier/article_7c14794a-6532-491b-b405-0ddf10bb84e5.html" tabindex="-1" aria-hidden="true"><img src="img/61ee477ef218213d61351e5bae87fa831067c7c4.jpg" alt="" width="300" height="169" loading="lazy" decoding="async"></a>
-<p>Editorial cartoon by John Darkow.</p>
-<p class="more"><a href="https://www.columbiamissourian.com/opinion/renaming-an-aircraft-carrier/article_7c14794a-6532-491b-b405-0ddf10bb84e5.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/sports.html">Sports</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://pages.deseret.com/subscribe?utm_source=supernav&amp;utm_medium=site&amp;utm_campaign=deseretnews/">Subscribe</a></aside>
+<p class="source"><a href="https://www.deseret.com"><strong>Deseret News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:25:33+00:00" data-pub="9:25 AM MDT">Tue, Aug 25 @ 9AM MDT</time><a class="lozenge place" href="/search?state=UT">Utah</a></p>
+<h2><a href="https://www.deseret.com/sports/2026/08/25/real-salt-lake-extends-sergi-solans/">RSL lost Zavier Gozo to Europe. But this young star is staying put</a></h2>
+<p class="byline">By Krysyan Edler</p>
+<a class="shot" href="https://www.deseret.com/sports/2026/08/25/real-salt-lake-extends-sergi-solans/" tabindex="-1" aria-hidden="true"><img src="img/8a4c7e17c448d7ee99ffe5ffaf59334f8131e5d5.webp" alt="" width="480" height="294" loading="lazy" decoding="async"></a>
+<p><a class="lozenge more" href="https://www.deseret.com/sports/2026/08/25/real-salt-lake-extends-sergi-solans/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T11:00:00+00:00" data-pub="6:00 AM CDT">Tuesday, August 25, 2026 at 6:00 AM CDT</time></small></p>
-<p><small>MO / Columbia / <a href="https://www.columbiamissourian.com/">Columbia Missourian</a></small></p>
-<h2><a href="https://www.columbiamissourian.com/renaming-an-aircraft-carrier/image_045cf353-89ea-4528-bcbc-7944971801a1.html">Renaming an aircraft carrier</a></h2>
-<p class="byline"><small>By John Darkow</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.columbiamissourian.com/news/local/church-donation-boosts-vac-opportunity-campus/article_ec8b756a-0baa-4a85-bb92-07a66ff5b1a4.html">Donate</a></span></p>
-<a class="shot" href="https://www.columbiamissourian.com/renaming-an-aircraft-carrier/image_045cf353-89ea-4528-bcbc-7944971801a1.html" tabindex="-1" aria-hidden="true"><img src="img/61ee477ef218213d61351e5bae87fa831067c7c4.jpg" alt="" width="300" height="169" loading="lazy" decoding="async"></a>
-<p class="more"><a href="https://www.columbiamissourian.com/renaming-an-aircraft-carrier/image_045cf353-89ea-4528-bcbc-7944971801a1.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://newyorktrendnyc.com/">Support</a></aside>
+<p class="source"><a href="https://newyorktrendnyc.com/"><strong>New York Trend</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:24:57+00:00" data-pub="11:24 AM EDT">Tue, Aug 25 @ 11AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Long+Island&state=NY">Long Island</a></p>
+<h2><a href="https://newyorktrendnyc.com/2026/08/aaron-tveit-returns-to-moulin-rouge-the-musical-for-final-broadway-engagement/">Aaron Tveit Returns to ‘Moulin Rouge! The Musical’ for Final Broadway Engagement</a></h2>
+<p class="byline">By NEW YORK TREND</p>
+<a class="shot" href="https://newyorktrendnyc.com/2026/08/aaron-tveit-returns-to-moulin-rouge-the-musical-for-final-broadway-engagement/" tabindex="-1" aria-hidden="true"><img src="img/3f6e9fe6026dd7183ba80ae98dbcbf6710de240f.webp" alt="" width="480" height="218" loading="lazy" decoding="async"></a>
+<p>Broadway favorite Aaron Tveit is returning to the role that helped make him a musical theater star. The Tony Award-winning actor will reprise his role as Christian in “Moulin Rouge! The Musical” for a final, limited Broadway engagement of 15 performances from August 18 through August 29 at the Al Hirschfeld Theatre in New York <a class="lozenge more" href="https://newyorktrendnyc.com/2026/08/aaron-tveit-returns-to-moulin-rouge-the-musical-for-final-broadway-engagement/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T11:00:00+00:00" data-pub="6:00 AM CDT">Tuesday, August 25, 2026 at 6:00 AM CDT</time></small><a class="lozenge" href="subjects/food.html">Food</a></p>
-<p><small>MO / Columbia / <a href="https://www.columbiamissourian.com/">Columbia Missourian</a></small></p>
-<h2><a href="https://www.columbiamissourian.com/obituaries/family_obituary/robert-arthur-leuenberger-sr-jan-3-1930-aug-18-2026/article_0fe1544b-1fc0-4801-b219-406e13ede664.html">Robert Arthur Leuenberger, Sr., Jan. 3, 1930 — Aug. 18, 2026</a></h2>
-<p class="byline"><small>By Courtesy of the family</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.columbiamissourian.com/news/local/church-donation-boosts-vac-opportunity-campus/article_ec8b756a-0baa-4a85-bb92-07a66ff5b1a4.html">Donate</a></span></p>
-<a class="shot" href="https://www.columbiamissourian.com/obituaries/family_obituary/robert-arthur-leuenberger-sr-jan-3-1930-aug-18-2026/article_0fe1544b-1fc0-4801-b219-406e13ede664.html" tabindex="-1" aria-hidden="true"><img src="img/d39144162e70e180773fdce4c55050fda9b62db9.jpg" alt="" width="300" height="343" loading="lazy" decoding="async"></a>
-<p>Robert (Bob) Leuenberger, 96, passed away Aug. 18 at his home, surrounded by his loving family.</p>
-<p class="more"><a href="https://www.columbiamissourian.com/obituaries/family_obituary/robert-arthur-leuenberger-sr-jan-3-1930-aug-18-2026/article_0fe1544b-1fc0-4801-b219-406e13ede664.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/arts.html">Arts</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://phillytrib.com/subscribe">Subscribe</a></aside>
+<p class="source"><a href="https://www.phillytrib.com/"><strong>The Philadelphia Tribune</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:24:00+00:00" data-pub="11:24 AM EDT">Tue, Aug 25 @ 11AM EDT</time><a class="lozenge place" href="/search?state=PA">Pennsylvania</a><a class="lozenge place" href="/search?place=Philadelphia&state=PA">Philadelphia</a></p>
+<h2><a href="https://www.phillytrib.com/vaccination-rates/image_5c4a025d-cebf-435c-994a-5c814b47e4c6.html">Vaccination Rates</a></h2>
+<p class="byline">By Mary Conlon</p>
+<a class="shot" href="https://www.phillytrib.com/vaccination-rates/image_5c4a025d-cebf-435c-994a-5c814b47e4c6.html" tabindex="-1" aria-hidden="true"><img src="img/772f7894aaf7d71abf8a3c67174d7935b828620a.webp" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+<p>FILE - Dr. Jessica Early holds a vial of the combination measles, mumps and rubella vaccine at Prisma Health Pediatrics in Greer, S.C., March 18, 2026. (AP Photo/Mary Conlon, File) <a class="lozenge more" href="https://www.phillytrib.com/vaccination-rates/image_5c4a025d-cebf-435c-994a-5c814b47e4c6.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T11:00:00+00:00" data-pub="6:00 AM CDT">Tuesday, August 25, 2026 at 6:00 AM CDT</time></small><a class="lozenge" href="subjects/arts.html">Arts</a></p>
-<p><small>AL / Statewide / <a href="https://www.100daysinappalachia.com/">100 Days in Appalachia</a></small></p>
-<h2><a href="https://www.100daysinappalachia.com/2026/08/you-dont-have-to-look-far-to-feel-connected-to-her-at-knoxvilles-rhinestone-fest-dolly-parton-is-a-reason-to-celebrate/">‘You don’t have to look far to feel connected to her.’ At Knoxville’s Rhinestone Fest, Dolly Parton is a reason to celebrate.</a></h2>
-<p class="byline"><small>By Rachel Molenda</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/rural.html">Rural</a><a class="lozenge give" href="https://www.100daysinappalachia.com/\&quot;https:\/\/www.100daysinappalachia.com\/support-our-work\/?utm_source=Homepage&amp;utm_medium=Banner&amp;utm_campaign=NewsMatch&amp;utm_content=&amp;utm_term=2023\&quot;">Donate</a></span></p>
-<a class="shot" href="https://www.100daysinappalachia.com/2026/08/you-dont-have-to-look-far-to-feel-connected-to-her-at-knoxvilles-rhinestone-fest-dolly-parton-is-a-reason-to-celebrate/" tabindex="-1" aria-hidden="true"><img src="img/ac4ef4fd30c0b55d145c5253646d6602839da29e.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>Eight people at Knoxville’s Rhinestone Fest share why they love Dolly Parton</p>
-<p class="more"><a href="https://www.100daysinappalachia.com/2026/08/you-dont-have-to-look-far-to-feel-connected-to-her-at-knoxvilles-rhinestone-fest-dolly-parton-is-a-reason-to-celebrate/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://laopinion.com">Support</a></aside>
+<p class="source"><a href="https://laopinion.com"><strong>La Opinión</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:23:19+00:00" data-pub="8:23 AM PDT">Tue, Aug 25 @ 8AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://laopinion.com/2026/08/25/mexico-reanuda-exportacion-de-ganado-en-pie-a-estados-unidos/">México reanuda exportación de ganado a Estados Unidos</a></h2>
+<p class="byline">By Deutsche Welle</p>
+<a class="shot" href="https://laopinion.com/2026/08/25/mexico-reanuda-exportacion-de-ganado-en-pie-a-estados-unidos/" tabindex="-1" aria-hidden="true"><img src="img/2e9aed1b7017b26e00f861cd304ae270110715ed.webp" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>El gobierno mexicano informó que prevé enviar hasta 1,500 cabezas de ganado diarias, tras la reapertura de la frontera común <a class="lozenge more" href="https://laopinion.com/2026/08/25/mexico-reanuda-exportacion-de-ganado-en-pie-a-estados-unidos/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:59:17+00:00" data-pub="5:59 AM CDT">Tuesday, August 25, 2026 at 5:59 AM CDT</time></small><a class="lozenge" href="subjects/sports.html">Sports</a></p>
-<p><small>WI / Madison / <a href="https://madison365.com/">Madison365</a></small></p>
-<h2><a href="https://madison365.com/madison365-sports-midwest-class-of-2030-girls-basketball-watchlist/">Madison365 Sports Midwest Class of 2030 Girls Basketball Watchlist</a></h2>
-<p class="byline"><small>By Henry Sanders</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://madison365.com/donate/">Donate</a></span></p>
-<p>The Class of 2030 is officially entering high school, and across the Midwest, a talented group of girls basketball players is ready to make the jump. Many of these players have been on the radar for years through AAU basketball, national circuits, camps and showcases. Some have already played significant varsity minutes. Others have competed</p>
-<p class="more"><a href="https://madison365.com/madison365-sports-midwest-class-of-2030-girls-basketball-watchlist/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/politics.html">Politics</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.pleasantonweekly.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://www.pleasantonweekly.com/"><strong>Pleasanton Weekly</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:23:05+00:00" data-pub="8:23 AM PDT">Tue, Aug 25 @ 8AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Pleasanton&state=CA">Pleasanton</a></p>
+<h2><a href="https://www.pleasantonweekly.com/fire-wildfire/2026/08/25/lpfd-fire-station-no-6-overhaul-to-begin-next-year-temporarily-relocating-centennial-light-bulb/">LPFD Fire Station No. 6 overhaul to begin next year – temporarily relocating Centennial Light Bulb</a></h2>
+<p class="byline">By Jude Strzemp</p>
+<a class="shot" href="https://www.pleasantonweekly.com/fire-wildfire/2026/08/25/lpfd-fire-station-no-6-overhaul-to-begin-next-year-temporarily-relocating-centennial-light-bulb/" tabindex="-1" aria-hidden="true"><img src="img/e4493b5717db84e17e9d98791ef5f027cc2ce049.webp" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>The oldest fire station in Livermore, home to the famed 125-year-old Centennial Light Bulb, is poised for complete demolition and reconstruction beginning next August as part of a project to improve the public safety post. <a class="lozenge more" href="https://www.pleasantonweekly.com/fire-wildfire/2026/08/25/lpfd-fire-station-no-6-overhaul-to-begin-next-year-temporarily-relocating-centennial-light-bulb/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:57:50+00:00" data-pub="6:57 AM EDT">Tuesday, August 25, 2026 at 6:57 AM EDT</time></small><a class="lozenge" href="subjects/news.html">News</a></p>
-<p><small>GA / Atlanta / <a href="https://www.gpb.org/news">Georgia News Lab</a></small></p>
-<h2><a href="https://www.gpb.org/news/2026/08/25/us-set-for-largest-mass-visa-revocation-in-history-200000-foreigners-officials-say">U.S. set for largest mass visa revocation in history, up to 200,000 foreigners, officials say</a></h2>
-<p class="byline"><small>By The Associated Press</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.gpb.org/support/planned">Donate</a></span></p>
-<a class="shot" href="https://www.gpb.org/news/2026/08/25/us-set-for-largest-mass-visa-revocation-in-history-200000-foreigners-officials-say" tabindex="-1" aria-hidden="true"><img src="img/3de80dc3c73530079ac7788aa7cba8beb8c902b9.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>The Trump administration is preparing to revoke the business and tourism visas of up to 200,000 foreigners who have applied for or are currently seeking asylum status in the United States.</p>
-<p class="more"><a href="https://www.gpb.org/news/2026/08/25/us-set-for-largest-mass-visa-revocation-in-history-200000-foreigners-officials-say">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://laopinion.com">Support</a></aside>
+<p class="source"><a href="https://laopinion.com"><strong>La Opinión</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:23:05+00:00" data-pub="8:23 AM PDT">Tue, Aug 25 @ 8AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://laopinion.com/2026/08/25/edson-alvarez-podria-ser-el-guia-de-armando-gonzalez-en-europa/">Edson Álvarez podría ser el “guía” de Armando González en Europa</a></h2>
+<p class="byline">By Wilson Flórez</p>
+<a class="shot" href="https://laopinion.com/2026/08/25/edson-alvarez-podria-ser-el-guia-de-armando-gonzalez-en-europa/" tabindex="-1" aria-hidden="true"><img src="img/76add709816b9e468b65633d07f37667165e7b95.webp" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>El “Machín” sería un objetivo claro del Olympiacos. Los griegos ya enviaron una oferta formal. En España también quieren sus servicios <a class="lozenge more" href="https://laopinion.com/2026/08/25/edson-alvarez-podria-ser-el-guia-de-armando-gonzalez-en-europa/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:55:57+00:00" data-pub="5:55 AM CDT">Tuesday, August 25, 2026 at 5:55 AM CDT</time></small></p>
-<p><small>WI / Madison / <a href="https://madison365.com/">Madison365</a></small></p>
-<h2><a href="https://madison365.com/wisconsin-lgbt-chamber-named-national-2026-affiliate-chamber-of-the-year/">Wisconsin LGBT Chamber named national 2026 Affiliate Chamber of the Year</a></h2>
-<p class="byline"><small>By Madison365 staff</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://madison365.com/donate/">Donate</a></span></p>
-<p>The Wisconsin LGBT Chamber of Commerce has been named the 2026 Affiliate Chamber of the Year by the National LGBTQ+ &amp; Allied Chamber of Commerce (NGLCC), the highest honor presented to an affiliate chamber within NGLCC’s national network. The award was presented Aug. 21 during NGLCC’s International Business &amp; Leadership Conference in San Diego. The</p>
-<p class="more"><a href="https://madison365.com/wisconsin-lgbt-chamber-named-national-2026-affiliate-chamber-of-the-year/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/politics.html">Politics</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.washingtoninformer.com/support-our-publication/">Donate</a></aside>
+<p class="source"><a href="http://www.washingtoninformer.com/"><strong>The Washington Informer</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:23:00+00:00" data-pub="11:23 AM EDT">Tue, Aug 25 @ 11AM EDT</time><a class="lozenge place" href="/search?state=DC">Washington, D.C.</a><a class="lozenge place" href="/search?place=Washington&state=DC">Washington</a></p>
+<h2><a href="https://www.washingtoninformer.com/defend-dc-midterm-strategy/">Defend D.C.: Council Member Robert White to Take Statehood Fight on the Road</a></h2>
+<p class="byline">By Sam Plo Kwia Collins Jr.</p>
+<a class="shot" href="https://www.washingtoninformer.com/defend-dc-midterm-strategy/" tabindex="-1" aria-hidden="true"><img src="img/26f4b30e6c96988da0dc3d1947f401ce654592c3.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>D.C. Council member Robert White launched the Defend DC initiative and the DC51 Leadership PAC to build a Democratic majority in Congress and protect District autonomy against Republican interference. <a class="lozenge more" href="https://www.washingtoninformer.com/defend-dc-midterm-strategy/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:55:40+00:00" data-pub="6:55 AM EDT">Tuesday, August 25, 2026 at 6:55 AM EDT</time></small><a class="lozenge" href="subjects/health.html">Health</a></p>
-<p><small>MD / Statewide / <a href="https://www.marylandmatters.org/">Maryland Matters</a></small></p>
-<h2><a href="https://marylandmatters.org/2026/08/25/measles-outbreak-in-three-counties-shows-importance-of-vaccination-officials-say/">Measles outbreak in three counties shows importance of vaccination, officials say</a></h2>
-<p class="byline"><small>By WTOP News</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.marylandmatters.org/">Support</a></span></p>
-<a class="shot" href="https://marylandmatters.org/2026/08/25/measles-outbreak-in-three-counties-shows-importance-of-vaccination-officials-say/" tabindex="-1" aria-hidden="true"><img src="img/e4b8d22332970f8d22b02aefd1729039677ffd34.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>Maryland is declaring a measles outbreak in St. Mary&#x27;s, Carroll and Cecil counties as cases continue to rise across the state, highlighting the importance of getting immunized, health experts say.</p>
-<p class="more"><a href="https://marylandmatters.org/2026/08/25/measles-outbreak-in-three-counties-shows-importance-of-vaccination-officials-say/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/health.html">Health</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://phillytrib.com/subscribe">Subscribe</a></aside>
+<p class="source"><a href="https://www.phillytrib.com/"><strong>The Philadelphia Tribune</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:23:00+00:00" data-pub="11:23 AM EDT">Tue, Aug 25 @ 11AM EDT</time><a class="lozenge place" href="/search?state=PA">Pennsylvania</a><a class="lozenge place" href="/search?place=Philadelphia&state=PA">Philadelphia</a></p>
+<h2><a href="https://www.phillytrib.com/news/health/pennsylvania-reports-first-2-measles-deaths-in-the-us-this-year-both-people-unvaccinated/article_ac4c0736-e1ae-451c-8e78-85535a582b50.html">Pennsylvania reports first 2 measles deaths in the US this year, both people unvaccinated</a></h2>
+<p class="byline">By JONATHAN POET</p>
+<a class="shot" href="https://www.phillytrib.com/news/health/pennsylvania-reports-first-2-measles-deaths-in-the-us-this-year-both-people-unvaccinated/article_ac4c0736-e1ae-451c-8e78-85535a582b50.html" tabindex="-1" aria-hidden="true"><img src="img/772f7894aaf7d71abf8a3c67174d7935b828620a.webp" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+<p>Two unvaccinated Pennsylvania residents have died from measles, state health officials said Tuesday, the first measles-related deaths in the U.S. this year. <a class="lozenge more" href="https://www.phillytrib.com/news/health/pennsylvania-reports-first-2-measles-deaths-in-the-us-this-year-both-people-unvaccinated/article_ac4c0736-e1ae-451c-8e78-85535a582b50.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:54:00+00:00" data-pub="6:54 AM EDT">Tuesday, August 25, 2026 at 6:54 AM EDT</time></small><a class="lozenge" href="subjects/news.html">News</a></p>
-<p><small>NY / New York City / <a href="https://nycaribnews.com/">New York Carib News</a></small></p>
-<h2><a href="https://nycaribnews.com/us-plans-historic-mass-revocation-of-visas-for-asylum-seekers/">US Plans Historic Mass Revocation of Visas for Asylum Seekers</a></h2>
-<p class="byline"><small>By nycaribnews</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://buy.stripe.com/8wM4gOal085h3Wo7ss">Donate</a></span></p>
-<p>The United States is preparing to revoke the visas of as many as 200,000 foreign nationals who entered the country on business or tourist visas before seeking asylum, in what could become the largest mass visa cancellation in the nation’s history. The planned action is part of the Trump administration’s broader effort to tighten immigration</p>
-<p class="more"><a href="https://nycaribnews.com/us-plans-historic-mass-revocation-of-visas-for-asylum-seekers/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://sf.streetsblog.org/make-a-donation-to-streetsblog-san-francisco">Donate</a></aside>
+<p class="source"><a href="https://sf.streetsblog.org/"><strong>Streetsblog - San Francisco</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:22:20+00:00" data-pub="8:22 AM PDT">Tue, Aug 25 @ 8AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=San+Francisco&state=CA">San Francisco</a></p>
+<h2><a href="https://sf.streetsblog.org/2026/08/25/headlines-august-25-3">Headlines, August 25</a></h2>
+<p class="byline">By Roger Rudick</p>
+<a class="shot" href="https://sf.streetsblog.org/2026/08/25/headlines-august-25-3" tabindex="-1" aria-hidden="true"><img src="img/fbb36ff140ca53855f61cb3c19f4e726753446a5.jpg" alt="" width="480" height="163" loading="lazy" decoding="async"></a>
+<p><a class="lozenge more" href="https://sf.streetsblog.org/2026/08/25/headlines-august-25-3">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:51:57+00:00" data-pub="6:51 AM EDT">Tuesday, August 25, 2026 at 6:51 AM EDT</time></small></p>
-<p><small>PR / San Juan / <a href="https://www.metro.pr/">Metro Puerto Rico</a></small></p>
-<h2><a href="https://www.metro.pr/noticias/2026/08/25/carraizo-y-la-plata-continuan-perdiendo-agua/">Carraízo y La Plata continúan perdiendo agua</a></h2>
-<p class="byline"><small>By Metro Puerto Rico</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://www.metro.pr/">Support</a></span></p>
-<a class="shot" href="https://www.metro.pr/noticias/2026/08/25/carraizo-y-la-plata-continuan-perdiendo-agua/" tabindex="-1" aria-hidden="true"><img src="img/f0fafc8ca86cb05099de0f4531c819b33ee7bd8a.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>Carraízo quedó a 32 centímetros de entrar en la fase de control, mientras La Plata se situó a poca distancia de ajustes operacionales</p>
-<p class="more"><a href="https://www.metro.pr/noticias/2026/08/25/carraizo-y-la-plata-continuan-perdiendo-agua/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/politics.html">Politics</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://mosaic.nj.com/">Support</a></aside>
+<p class="source"><a href="https://mosaic.nj.com/"><strong>Mosaic</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:22:00+00:00" data-pub="11:22 AM EDT">Tue, Aug 25 @ 11AM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a></p>
+<h2><a href="https://www.nj.com/politics/2026/08/top-republican-a-trump-ally-wont-bow-yet-to-jd-vance-in-2028.html">Top Republican, a Trump ally, won’t bow yet to JD Vance in 2028</a></h2>
+<p class="byline">By Rachel Cohen</p>
+<a class="shot" href="https://www.nj.com/politics/2026/08/top-republican-a-trump-ally-wont-bow-yet-to-jd-vance-in-2028.html" tabindex="-1" aria-hidden="true"><img src="img/c5e4edbf58d1f634efb54311863dd96586eee51d.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>The senator also did not rule out running in 2028. <a class="lozenge more" href="https://www.nj.com/politics/2026/08/top-republican-a-trump-ally-wont-bow-yet-to-jd-vance-in-2028.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:50:54+00:00" data-pub="6:50 AM EDT">Tuesday, August 25, 2026 at 6:50 AM EDT</time></small></p>
-<p><small>PR / Statewide / <a href="https://www.noticel.com/">Noticel</a></small></p>
-<h2><a href="https://noticel.com/noticias/20260825/posible-aumento-de-lluvias-hoy-pero-se-emitio-una-advertencia-de-calor-intenso/">Posible aumento de lluvias hoy, pero se emitió una advertencia de calor intenso</a></h2>
-<p class="byline"><small>By Cybernews</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://www.noticel.com/subscribe">Subscribe</a></span></p>
-<p>Una onda tropical débil cruzará Puerto Rico con un aumento de humedad, aguaceros y tronadas, informó el Servicio Nacional de Meteorología. Durante la mañana y primeras horas de la tarde, la mayor actividad se concentrará sobre el este de Puerto Rico. Más tarde, los aguaceros y tronadas se desplazarán hacia el interior, oeste y norte.</p>
-<p class="more"><a href="https://noticel.com/noticias/20260825/posible-aumento-de-lluvias-hoy-pero-se-emitio-una-advertencia-de-calor-intenso/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/arts.html">Arts</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.stlamerican.com/support/">Donate</a></aside>
+<p class="source"><a href="https://www.stlamerican.com/"><strong>St. Louis American</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:22:00+00:00" data-pub="10:22 AM CDT">Tue, Aug 25 @ 10AM CDT</time><a class="lozenge place" href="/search?state=MO">Missouri</a><a class="lozenge place" href="/search?place=St.+Louis&state=MO">St. Louis</a></p>
+<h2><a href="https://www.stlamerican.com/arts-and-entertainment/living-it-arts-and-entertainment/st-louis-city-sc-block-party-pays-tribute-to-tina-turner/">St. Louis CITY SC block party pays tribute to Tina Turner</a></h2>
+<p class="byline">By Kenya Vaughn | The St. Louis American</p>
+<a class="shot" href="https://www.stlamerican.com/arts-and-entertainment/living-it-arts-and-entertainment/st-louis-city-sc-block-party-pays-tribute-to-tina-turner/" tabindex="-1" aria-hidden="true"><img src="img/5f92840a4c289a883673c115674f87ffe6f5dd64.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>The block party had been underway for about an hour Saturday at Lou Fusz Plaza before the start of the performance element. Block parties are not new to the St. Louis CITY SC fan experience at Energizer Park. Quite the contrary. But this past Saturday’s celebration was more than six months in the making. It <a class="lozenge more" href="https://www.stlamerican.com/arts-and-entertainment/living-it-arts-and-entertainment/st-louis-city-sc-block-party-pays-tribute-to-tina-turner/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:48:12+00:00" data-pub="6:48 AM EDT">Tuesday, August 25, 2026 at 6:48 AM EDT</time></small></p>
-<p><small>NY / New York City / <a href="https://nycaribnews.com/">New York Carib News</a></small></p>
-<h2><a href="https://nycaribnews.com/eminence-by-beenie-man-no-1-on-itunes-chart/">‘Eminence’ by Beenie Man No 1 On Itunes Chart</a></h2>
-<p class="byline"><small>By nycaribnews</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://buy.stripe.com/8wM4gOal085h3Wo7ss">Donate</a></span></p>
-<p>Dancehall veteran Beenie Man has returned to the top of the US digital music charts, with his latest album Eminencereaching No. 1 on the US iTunes Albums chart just days after its release. The achievement marks another significant moment in the career of the Jamaican deejay, whose 20th studio album was released through Billboard King. Eminence moved ahead</p>
-<p class="more"><a href="https://nycaribnews.com/eminence-by-beenie-man-no-1-on-itunes-chart/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/sports.html">Sports</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.albanyherald.com/">Support</a></aside>
+<p class="source"><a href="https://www.albanyherald.com/"><strong>Albany Herald</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:21:03+00:00" data-pub="11:21 AM EDT">Tue, Aug 25 @ 11AM EDT</time><a class="lozenge place" href="/search?state=GA">Georgia</a><a class="lozenge place" href="/search?place=Albany&state=GA">Albany</a></p>
+<h2><a href="https://albanyherald.com/sports/angel-reese-grabs-wnba-record-26-rebounds-sets-season-mark-too/">Angel Reese grabs WNBA-record 26 rebounds; sets season mark, too</a></h2>
+<p class="byline">By Albany Herald News</p>
+<a class="shot" href="https://albanyherald.com/sports/angel-reese-grabs-wnba-record-26-rebounds-sets-season-mark-too/" tabindex="-1" aria-hidden="true"><img src="img/82e965aff4886d07b99602997e3c91a5f7d2c246.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Angel Reese grabbed a WNBA-record 26 rebounds and the Atlanta Dream completed a perfect West Coast road trip with a 78-71 victory over the Los Angeles Sparks on Monday. <a class="lozenge more" href="https://albanyherald.com/sports/angel-reese-grabs-wnba-record-26-rebounds-sets-season-mark-too/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:45:07+00:00" data-pub="6:45 AM EDT">Tuesday, August 25, 2026 at 6:45 AM EDT</time></small><a class="lozenge" href="subjects/politics.html">Politics</a></p>
-<p><small>FL / Palm Beach County / <a href="https://stetnews.org/">Stet News</a></small></p>
-<h2><a href="https://stetnews.org/2026/08/25/%f0%9f%8d%8a-the-juice-12/">🍊 The Juice</a></h2>
-<p class="byline"><small>By Stet News</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://stetnews.org/support-us/">Donate</a></span></p>
-<p>🗳️ Election results are in from Florida’s midterm primary and the biggest surprise is Democrat Angie Nixon’s defeat of Alex Vindman for U.S. Senate. Nixon and the state party’s chief, Nikki Fried, got into a heated conversation Friday that included a yelling match about the impact of socialism and the challenges of campaigning in a red state like Florida. (Axios) 🔎 Florida Tax Watch, a nonpartisan</p>
-<p class="more"><a href="https://stetnews.org/2026/08/25/%f0%9f%8d%8a-the-juice-12/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/news.html">News</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://miamitimes.typeform.com/to/mQvUpc">Subscribe</a></aside>
+<p class="source"><a href="https://www.miamitimesonline.com/"><strong>The Miami Times</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:21:00+00:00" data-pub="11:21 AM EDT">Tue, Aug 25 @ 11AM EDT</time><a class="lozenge place" href="/search?state=FL">Florida</a><a class="lozenge place" href="/search?place=Miami&state=FL">Miami</a></p>
+<h2><a href="https://www.miamitimesonline.com/news/world_national/trump-s-trade-war-with-canada-could-rattle-economies-in-states-with-key-senate-races/article_05e443e0-81ca-4b59-90b2-040f27b2fcb2.html">Trump’s trade war with Canada could rattle economies in states with key Senate races</a></h2>
+<p class="byline">By Bill Barrow and Patrick Whittle, The Associated Press</p>
+<a class="shot" href="https://www.miamitimesonline.com/news/world_national/trump-s-trade-war-with-canada-could-rattle-economies-in-states-with-key-senate-races/article_05e443e0-81ca-4b59-90b2-040f27b2fcb2.html" tabindex="-1" aria-hidden="true"><img src="img/621369f9ffc41ca990875a8d735a2cdcc83a2d7a.webp" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+<p>President Donald Trump’s trade war with Canada is escalating as the midterm elections approach, threatening Republican efforts to address voters’ economic concerns in a year when control of the U.S. Senate hinges on states along the border between the United <a class="lozenge more" href="https://www.miamitimesonline.com/news/world_national/trump-s-trade-war-with-canada-could-rattle-economies-in-states-with-key-senate-races/article_05e443e0-81ca-4b59-90b2-040f27b2fcb2.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:45:00+00:00" data-pub="6:45 AM EDT">Tuesday, August 25, 2026 at 6:45 AM EDT</time></small><a class="lozenge" href="subjects/sports.html">Sports</a></p>
-<p><small>NJ / Statewide / <a href="https://mosaic.nj.com/">Mosaic</a></small></p>
-<h2><a href="https://www.nj.com/rutgersfootball/2026/08/will-rutgers-return-to-bowl-game-in-2026-what-preseason-projections-are-saying.html">Will Rutgers return to bowl game in 2026? What preseason projections are saying</a></h2>
-<p class="byline"><small>By Brian Fonseca</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://mosaic.nj.com/">Support</a></span></p>
-<a class="shot" href="https://www.nj.com/rutgersfootball/2026/08/will-rutgers-return-to-bowl-game-in-2026-what-preseason-projections-are-saying.html" tabindex="-1" aria-hidden="true"><img src="img/f267f44f3b641efec3cda8dd2d044470fc35a237.jpg" alt="" width="480" height="312" loading="lazy" decoding="async"></a>
-<p>A handful of preseason bowl projections are out ahead of the 2026 season kicking off, and they are not kind to Rutgers.</p>
-<p class="more"><a href="https://www.nj.com/rutgersfootball/2026/08/will-rutgers-return-to-bowl-game-in-2026-what-preseason-projections-are-saying.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/food.html">Food</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://blockclubchicago.org/donate">Donate</a></aside>
+<p class="source"><a href="https://blockclubchicago.org/"><strong>Block Club Chicago</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:19:42+00:00" data-pub="10:19 AM CDT">Tue, Aug 25 @ 10AM CDT</time><a class="lozenge place" href="/search?state=IL">Illinois</a><a class="lozenge place" href="/search?place=Chicago&state=IL">Chicago</a></p>
+<h2><a href="https://blockclubchicago.org/2026/08/25/iron-age-korean-steakhouse-in-wicker-park-closed-by-city-after-over-500-rat-droppings-found/">Iron Age Korean Steakhouse In Wicker Park Closed By City After ‘Over 500’ Rat Droppings Found</a></h2>
+<p class="byline">By Quinn Myers</p>
+<a class="shot" href="https://blockclubchicago.org/2026/08/25/iron-age-korean-steakhouse-in-wicker-park-closed-by-city-after-over-500-rat-droppings-found/" tabindex="-1" aria-hidden="true"><img src="img/82836d93249c65cbc449c468166e95f6aac69f84.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>The restaurant on Milwaukee Avenue had its license suspended last week, records show. It remained shuttered Monday. <a class="lozenge more" href="https://blockclubchicago.org/2026/08/25/iron-age-korean-steakhouse-in-wicker-park-closed-by-city-after-over-500-rat-droppings-found/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:44:34+00:00" data-pub="5:44 AM CDT">Tuesday, August 25, 2026 at 5:44 AM CDT</time></small></p>
-<p><small>OK / Oklahoma City / <a href="https://blackchronicle.com/">Black Chronicle</a></small></p>
-<h2><a href="https://blackchronicle.com/midwest/illinois/judge-clears-tracks-for-trucker-class-action-against-union-pacific/">Judge clears tracks for trucker class action against Union Pacific</a></h2>
-<p class="byline"><small>By Black Chronicle News Service</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://blackchronicle.com/product/the-black-chronicle-newspaper-subscription-now-with-the-all-new-tbc-magazine/">Subscribe</a></span></p>
-<a class="shot" href="https://blackchronicle.com/midwest/illinois/judge-clears-tracks-for-trucker-class-action-against-union-pacific/" tabindex="-1" aria-hidden="true"><img src="img/31320d15d857b7c696bd5ab0f73a34b7fabafbe6.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>(Legal Newsline) — A federal judge has cleared the way for potentially more than 22,000 truck drivers to move ahead with a class action lawsuit potentially worth many millions of dollars against Union Pacific Railroad […] Continue reading with a Black Chronicle subscription. Purchase The Black Chronicle Newspaper Subscription – Now with the All-New TBC Magazine! or The Black Chronicle Newspaper Su</p>
-<p class="more"><a href="https://blackchronicle.com/midwest/illinois/judge-clears-tracks-for-trucker-class-action-against-union-pacific/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://laopinion.com">Support</a></aside>
+<p class="source"><a href="https://laopinion.com"><strong>La Opinión</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:19:02+00:00" data-pub="8:19 AM PDT">Tue, Aug 25 @ 8AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://laopinion.com/2026/08/25/venezuela-supera-los-6-500-muertos-a-dos-meses-de-los-terremotos/">Venezuela supera los 6,500 muertos a dos meses de los terremotos</a></h2>
+<p class="byline">By Deutsche Welle</p>
+<a class="shot" href="https://laopinion.com/2026/08/25/venezuela-supera-los-6-500-muertos-a-dos-meses-de-los-terremotos/" tabindex="-1" aria-hidden="true"><img src="img/f8aa6e64b3e7bf5a873db0060a6084d8945b0f87.webp" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>El gobierno chavista sigue sin ofrecer cifras de desaparecidos, que hasta el pasado 4 de agosto sumaban 1,579 personas solo en La Guaira <a class="lozenge more" href="https://laopinion.com/2026/08/25/venezuela-supera-los-6-500-muertos-a-dos-meses-de-los-terremotos/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://www.elvenezolanohouston.com/venezuela-supera-los-6-500-muertos-despues-de-dos-meses-de-los-terremotos/">EV Houston Newspaper</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:44:00+00:00" data-pub="5:44 AM CDT">Tuesday, August 25, 2026 at 5:44 AM CDT</time></small><a class="lozenge" href="subjects/news.html">News</a></p>
-<p><small>NE / Omaha / <a href="https://thereader.com">The Reader</a></small></p>
-<h2><a href="https://thereader.com/2026/08/25/four-additional-voids-were-found-in-omaha-neighborhood-before-foundation-collapse/">Four additional voids were found in Omaha neighborhood before foundation collapse</a></h2>
-<p class="byline"><small>By Jessica Wade</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/latino.html">Latino</a><a class="lozenge give" href="https://donate.nebraskapublicmedia.org/alleg/WebModule/Donate.aspx?P=MAINREADER&amp;PAGETYPE=PLG&amp;CHECK=3%2foSwZzpJTyVqb%2bcC91T%2b71YhDw50SikSh2nq0qouhg%3d">Donate</a></span></p>
-<a class="shot" href="https://thereader.com/2026/08/25/four-additional-voids-were-found-in-omaha-neighborhood-before-foundation-collapse/" tabindex="-1" aria-hidden="true"><img src="img/b1bb93a62165905bfa23bcf2d40064fb1bf62ed7.jpg" alt="" width="480" height="343" loading="lazy" decoding="async"></a>
-<p>There were more sinkholes in Omaha’s Blackstone neighborhood that didn’t make headlines. A large void opened in late June when the foundation wall of a vacant building collapsed, swallowing a sidewalk and part of the building at 3810 and 3812 Farnam St. A hole remains while the city awaits a decision from the building owners</p>
-<p class="more"><a href="https://thereader.com/2026/08/25/four-additional-voids-were-found-in-omaha-neighborhood-before-foundation-collapse/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/business.html">Business</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://brookline.news/support-our-publication/">Donate</a></aside>
+<p class="source"><a href="https://brookline.news/news/"><strong>Brookline News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:18:32+00:00" data-pub="11:18 AM EDT">Tue, Aug 25 @ 11AM EDT</time><a class="lozenge place" href="/search?state=MA">Massachusetts</a><a class="lozenge place" href="/search?place=Brookline&state=MA">Brookline</a></p>
+<h2><a href="https://brookline.news/car-bike-or-green-line-putting-the-beacon-street-gauntlet-to-the-test/">Car, bike or Green Line? Putting the Beacon Street gauntlet to the test</a></h2>
+<p class="byline">By Sam Mintz</p>
+<a class="shot" href="https://brookline.news/car-bike-or-green-line-putting-the-beacon-street-gauntlet-to-the-test/" tabindex="-1" aria-hidden="true"><img src="img/946109f46b1aba91162ac00cfdb57fc0117a21c5.webp" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>What&#x27;s the quickest way to travel the length of Beacon Street in Brookline? We tried to find out. <a class="lozenge more" href="https://brookline.news/car-bike-or-green-line-putting-the-beacon-street-gauntlet-to-the-test/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:42:35+00:00" data-pub="6:42 AM EDT">Tuesday, August 25, 2026 at 6:42 AM EDT</time></small><a class="lozenge" href="subjects/news.html">News</a></p>
-<p><small>NY / New York City / <a href="https://nycaribnews.com/">New York Carib News</a></small></p>
-<h2><a href="https://nycaribnews.com/jamaica-celene-hall-crowned-miss-universe-jamaica-2026/">Jamaica – Celene Hall Crowned Miss Universe Jamaica 2026</a></h2>
-<p class="byline"><small>By nycaribnews</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://buy.stripe.com/8wM4gOal085h3Wo7ss">Donate</a></span></p>
-<p>Portland native Celene Hall has been crowned Miss Universe Jamaica 2026, earning the opportunity to represent the island at the Miss Universe finals in Puerto Rico later this year. The 25-year-old businesswoman, artist and philanthropist captured the national title on Sunday night at the AC Hotel Kingston, emerging from a field of 33 contestants. Medical</p>
-<p class="more"><a href="https://nycaribnews.com/jamaica-celene-hall-crowned-miss-universe-jamaica-2026/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.columbiamissourian.com/news/local/church-donation-boosts-vac-opportunity-campus/article_ec8b756a-0baa-4a85-bb92-07a66ff5b1a4.html">Donate</a></aside>
+<p class="source"><a href="https://www.columbiamissourian.com/"><strong>Columbia Missourian</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:18:00+00:00" data-pub="10:18 AM CDT">Tue, Aug 25 @ 10AM CDT</time><a class="lozenge place" href="/search?state=MO">Missouri</a><a class="lozenge place" href="/search?place=Columbia&state=MO">Columbia</a></p>
+<h2><a href="https://www.columbiamissourian.com/kent-murray-ford/image_84712114-4d44-4b94-8047-96e421369ab4.html">Kent Murray Ford</a></h2>
+<a class="shot" href="https://www.columbiamissourian.com/kent-murray-ford/image_84712114-4d44-4b94-8047-96e421369ab4.html" tabindex="-1" aria-hidden="true"><img src="img/f40ab0d79caa9f5d28acc7bfa7215ef501ae7363.webp" alt="" width="300" height="450" loading="lazy" decoding="async"></a>
+<p>Kent Murray Ford <a class="lozenge more" href="https://www.columbiamissourian.com/kent-murray-ford/image_84712114-4d44-4b94-8047-96e421369ab4.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:42:00+00:00" data-pub="6:42 AM EDT">Tuesday, August 25, 2026 at 6:42 AM EDT</time></small><a class="lozenge" href="subjects/arts.html">Arts</a></p>
-<p><small>IN / Fort Wayne / <a href="https://www.inputfortwayne.com/">Input Fort Wayne</a></small></p>
-<h2><a href="https://inputfortwayne.com/myaamia-heritage-foundation-is-hosting-the-first-myaamia-cultural-fest-in-fort-wayne/">Myaamia Heritage Foundation is hosting the first Myaamia Cultural Fest in Fort Wayne</a></h2>
-<p class="byline"><small>By Brittany Lantz</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://inputfortwayne.com/support-us/">Donate</a></span></p>
-<a class="shot" href="https://inputfortwayne.com/myaamia-heritage-foundation-is-hosting-the-first-myaamia-cultural-fest-in-fort-wayne/" tabindex="-1" aria-hidden="true"><img src="img/fe7eee0b30ea26a0b664513289171ec2a35b52e4.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>The event will celebrate the culture, history, language, foodways, arts, and ongoing revitalization of the Miami Tribe of Oklahoma — whose homelands include Fort Wayne and northeast Indiana.</p>
-<p class="more"><a href="https://inputfortwayne.com/myaamia-heritage-foundation-is-hosting-the-first-myaamia-cultural-fest-in-fort-wayne/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/family-owned.html">Family-owned</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://lanoticia.com/donar/">Donate</a></aside>
+<p class="source"><a href="https://lanoticia.com/"><strong>La Noticia</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:16:25+00:00" data-pub="11:16 AM EDT">Tue, Aug 25 @ 11AM EDT</time><a class="lozenge place" href="/search?state=NC">North Carolina</a><a class="lozenge place" href="/search?place=Charlotte&state=NC">Charlotte</a></p>
+<h2><a href="https://lanoticia.com/inmigracion/que-pasa-con-la-casa-el-auto-y-las-deudas-si-un-inmigrante-es-deportado/">¿Qué pasa con la casa, el auto y las deudas si un inmigrante es deportado?</a></h2>
+<p class="byline">By Yuliana Montiel</p>
+<a class="shot" href="https://lanoticia.com/inmigracion/que-pasa-con-la-casa-el-auto-y-las-deudas-si-un-inmigrante-es-deportado/" tabindex="-1" aria-hidden="true"><img src="img/4b82c7a611a7dabe7869a469d9a32521736eb8c0.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Las deudas no desaparecen por una deportación. Aunque una persona tenga que salir del país y esto implique cambios importantes en tu vida, así como la pérdida de trabajo, gastos no programados e inestabilidad, tus obligaciones financieras, propiedades y cuentas a tu nombre seguirán allí. Por eso, para entender qué ocurre con estos bienes y <a class="lozenge more" href="https://lanoticia.com/inmigracion/que-pasa-con-la-casa-el-auto-y-las-deudas-si-un-inmigrante-es-deportado/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:41:44+00:00" data-pub="6:41 AM EDT">Tuesday, August 25, 2026 at 6:41 AM EDT</time></small></p>
-<p><small>PR / Statewide / <a href="https://www.elnuevodia.com/">El Nuevo Dia</a></small></p>
-<h2><a href="https://www.elnuevodia.com/noticias/seguridad/notas/policia-investiga-el-asesinato-de-un-hombre-en-rio-piedras/">Policía investiga el asesinato de un hombre en Río Piedras</a></h2>
-<p class="byline"><small>By Alex Figueroa Cancel</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://support.apple.com/downloads/safari">Donate</a></span></p>
-<a class="shot" href="https://www.elnuevodia.com/noticias/seguridad/notas/policia-investiga-el-asesinato-de-un-hombre-en-rio-piedras/" tabindex="-1" aria-hidden="true"><img src="img/2f446535b046b3c62f316fcd050237b1e56e590f.jpg" alt="" width="480" height="238" loading="lazy" decoding="async"></a>
-<p>El cuerpo baleado fue encontrado en la calle Frontera Final Park Court</p>
-<p class="more"><a href="https://www.elnuevodia.com/noticias/seguridad/notas/policia-investiga-el-asesinato-de-un-hombre-en-rio-piedras/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/arts.html">Arts</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://saobserver.com/">Support</a></aside>
+<p class="source"><a href="https://saobserver.com/"><strong>San Antonio Observer</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:16:05+00:00" data-pub="10:16 AM CDT">Tue, Aug 25 @ 10AM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=San+Antonio&state=TX">San Antonio</a></p>
+<h2><a href="https://saobserver.com/myles-bullock-be-lands-dr-dre-role-in-upcoming-snoop-dogg-biopic/">Myles Bullock Be Lands Dr. Dre Role in Upcoming Snoop Dogg Biopic</a></h2>
+<p class="byline">By Observer Staff</p>
+<a class="shot" href="https://saobserver.com/myles-bullock-be-lands-dr-dre-role-in-upcoming-snoop-dogg-biopic/" tabindex="-1" aria-hidden="true"><img src="img/136372aa1b4e5a0d59772e012da6f3fbeaf29f34.webp" alt="Myles Bullock Be Lands Dr. Dre Role in Upcoming Snoop Dogg Biopic" width="300" height="200" loading="lazy" decoding="async"></a>
+<p>The BMF Actor Joins Jonathan Daviss in Universal’s Film, Scheduled for an August 2027 Theatrical Release Actor Myles Bullock Be has been cast as Dr. Dre in Universal Pictures’ upcoming Snoop Dogg biopic, adding another central figure to the film’s growing cast. Bullock Be will appear opposite “Outer Banks” star Jonathan Daviss, who was previously <a class="lozenge more" href="https://saobserver.com/myles-bullock-be-lands-dr-dre-role-in-upcoming-snoop-dogg-biopic/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 </div>
 <p><a id="more" href="everything-12.html">More stories</a></p>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="index.html">Today&#x27;s news</a> · <a href="map.html">Map</a> · <a href="catalog.html">Newsrooms</a> · <a href="big-stories.html">Big Stories</a> · <a href="story-links.html">Story Links</a> · <a href="resources.html">Resources</a> · <a href="text/">Plain text edition</a> · <a href="feeds.html">RSS Feeds</a> · <a href="about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="map.html">Map</a> · <a href="catalog.html">Newsrooms</a> · <a href="big-stories.html">Big Stories</a> · <a href="story-links.html">Story Links</a> · <a href="resources.html">Resources</a> · <a href="text/">Plain text edition</a> · <a href="feeds.html">RSS Feeds</a> · <a href="about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -402,6 +462,47 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>

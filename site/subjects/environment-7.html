@@ -13,12 +13,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(../fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -27,22 +40,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -50,19 +69,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -75,7 +126,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -93,7 +144,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="../index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="../masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -106,7 +157,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="../subjects/news.html">News</a></li><li><a href="../subjects/politics.html">Politics</a></li><li><a href="../subjects/opinion.html">Opinion</a></li><li><a href="../subjects/health.html">Health</a></li><li><a href="../subjects/environment.html">Environment</a></li><li><a href="../subjects/education.html">Education</a></li><li><a href="../subjects/business.html">Business</a></li><li><a href="../subjects/housing.html">Housing</a></li><li><a href="../subjects/sports.html">Sports</a></li><li><a href="../subjects/food.html">Food</a></li><li><a href="../subjects/arts.html">Arts</a></li></ul></nav>
@@ -121,279 +172,278 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <main id="main">
 <div id="feed-items">
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T14:02:00+00:00" data-pub="10:02 AM EDT">Friday, August 21, 2026 at 10:02 AM EDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>VT / Winooski / <a href="https://thewinooskinews.com/">Winooski News</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://vtdigger.org/become-a-member/?campaign=7013i000000d8rcAAA">Donate</a></aside>
+<p class="source"><a href="https://vtdigger.org/"><strong>VTDigger</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T19:37:55+00:00" data-pub="3:37 PM EDT">Fri, Aug 21 @ 3PM EDT</time><a class="lozenge place" href="/search?state=VT">Vermont</a><a class="lozenge place" href="/search?place=Montpelier&state=VT">Montpelier</a></p>
+<h2><a href="https://vtdigger.org/2026/08/21/as-heating-oil-prices-remain-volatile-vermonters-prepare-cautiously-for-winter/">As heating oil prices remain volatile, Vermonters prepare cautiously for winter</a></h2>
+<p class="byline">By Theo Wells-Spackman</p>
+<a class="shot" href="https://vtdigger.org/2026/08/21/as-heating-oil-prices-remain-volatile-vermonters-prepare-cautiously-for-winter/" tabindex="-1" aria-hidden="true"><img src="../img/c4b2dada8606478a33ae30ed709bd5c2bdb5bf03.jpg" alt="" width="480" height="319" loading="lazy" decoding="async"></a>
+<p>Vermont’s deep reliance on heating oil makes the state vulnerable to price swings. Some residents are trying to find a safer path. <a class="lozenge more" href="https://vtdigger.org/2026/08/21/as-heating-oil-prices-remain-volatile-vermonters-prepare-cautiously-for-winter/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://georgiarecorder.com/">Support</a></aside>
+<p class="source"><a href="https://georgiarecorder.com/"><strong>Georgia Recorder</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T19:36:35+00:00" data-pub="3:36 PM EDT">Fri, Aug 21 @ 3PM EDT</time><a class="lozenge place" href="/search?state=GA">Georgia</a></p>
+<h2><a href="https://georgiarecorder.com/briefs/republican-psc-commissioner-resigns-from-rate-setting-regulatory-board/">Republican PSC commissioner resigns from rate-setting regulatory board</a></h2>
+<p class="byline">By Ross Williams</p>
+<a class="shot" href="https://georgiarecorder.com/briefs/republican-psc-commissioner-resigns-from-rate-setting-regulatory-board/" tabindex="-1" aria-hidden="true"><img src="../img/27dfd1a0fef550f4763a2871c6dabd98407a0755.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Republican Public Service Commissioner Tricia Pridemore is stepping down early next month, 60 days before the election to replace her. In an Aug. 18 email to Republican Gov. Brian Kemp, Pridemore announced her plan to leave the body that regulates Georgia’s utility companies and helps set energy prices for Georgia Power customers. Her resignation was <a class="lozenge more" href="https://georgiarecorder.com/briefs/republican-psc-commissioner-resigns-from-rate-setting-regulatory-board/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://ictnews.fundjournalism.org/donate/?campaign=701Uq00000pRjgPIAS&amp;utm_source=ictnews&amp;utm_medium=nav_button&amp;utm_campaign=support_page_2026_placements&amp;utm_content=header_donate_button">Donate</a></aside>
+<p class="source"><a href="https://ictnews.org/category/news/"><strong>Indian Country Today</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T19:35:41+00:00" data-pub="11:35 AM AKDT">Fri, Aug 21 @ 11AM AKDT</time><a class="lozenge place" href="/search?state=AK">Alaska</a></p>
+<h2><a href="https://ictnews.org/news/tribes-push-back-on-federal-plan-for-colorado-river-water-cuts/">Tribes push back on federal plan for Colorado River water cuts</a></h2>
+<p class="byline">By Daniel Herrera Carbajal</p>
+<a class="shot" href="https://ictnews.org/news/tribes-push-back-on-federal-plan-for-colorado-river-water-cuts/" tabindex="-1" aria-hidden="true"><img src="../img/841b0d18c1c7c81dddec131a233d72dad966a66e.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Interior Department Friday announce steep reductions for lower basin state, tribes say they were not given proper consideration <a class="lozenge more" href="https://ictnews.org/news/tribes-push-back-on-federal-plan-for-colorado-river-water-cuts/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://bridge.fundjournalism.org/donate/?campaign=7011U000000a60gQAA">Donate</a></aside>
+<p class="source"><a href="https://www.bridgemi.com/"><strong>Bridge Michigan</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T19:28:36+00:00" data-pub="3:28 PM EDT">Fri, Aug 21 @ 3PM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=Ann+Arbor&state=MI">Ann Arbor</a></p>
+<h2><a href="https://bridgemi.com/michigan-environment-watch/residents-and-officials-feeling-powerless-in-michigan-data-center-fights/">Residents and officials feeling powerless in Michigan data center fights</a></h2>
+<p class="byline">By Isabella Figueroa Nogueira</p>
+<a class="shot" href="https://bridgemi.com/michigan-environment-watch/residents-and-officials-feeling-powerless-in-michigan-data-center-fights/" tabindex="-1" aria-hidden="true"><img src="../img/709e8d70d5764e5bf0a3a88d06821879ba489897.jpg" alt="" width="480" height="319" loading="lazy" decoding="async"></a>
+<p>Town leaders say they’re powerless to stop data centers from moving in. And residents who’ve tried to recall officials over data center votes have struggled to get those efforts on the ballot. <a class="lozenge more" href="https://bridgemi.com/michigan-environment-watch/residents-and-officials-feeling-powerless-in-michigan-data-center-fights/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://sanjosespotlight.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://sanjosespotlight.com/"><strong>San José Spotlight</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T19:00:02+00:00" data-pub="12:00 PM PDT">Fri, Aug 21 @ 12PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=San+Jos%C3%A9&state=CA">San José</a></p>
+<h2><a href="https://sanjosespotlight.com/san-joses-circle-of-palms-is-losing-its-iconic-trees/">San Jose’s Circle of Palms is losing its iconic trees</a></h2>
+<p class="byline">By Gabriel Symkowick</p>
+<p>Ice skating in downtown San Jose won’t be the same this holiday season, after losing its iconic namesake. Crews began removing all 32 palm trees from the Circle of Palms on Thursday, after a city arborist found none of them were healthy enough to keep. Work is expected to continue for the next several days. <a class="lozenge more" href="https://sanjosespotlight.com/san-joses-circle-of-palms-is-losing-its-iconic-trees/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://sourcenm.com/">Support</a></aside>
+<p class="source"><a href="https://sourcenm.com/"><strong>Source New Mexico</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T19:00:00+00:00" data-pub="1:00 PM MDT">Fri, Aug 21 @ 1PM MDT</time><a class="lozenge place" href="/search?state=NM">New Mexico</a></p>
+<h2><a href="https://sourcenm.com/2026/08/21/drought-conditions-worsen-across-new-mexico-west/">Drought conditions worsen across New Mexico, West</a></h2>
+<p class="byline">By Patrick Lohmann</p>
+<a class="shot" href="https://sourcenm.com/2026/08/21/drought-conditions-worsen-across-new-mexico-west/" tabindex="-1" aria-hidden="true"><img src="../img/036114764ad64ed92f67c6aeb141affce43f01b1.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Record-breaking July temperatures have left nearly 95% of New Mexico in some degree of drought, according to a new outlook from the National Oceanic and Atmospheric Administration, and “isolated” monsoon rains failed to provide meaningful relief to water supply challenges across the West. <a class="lozenge more" href="https://sourcenm.com/2026/08/21/drought-conditions-worsen-across-new-mexico-west/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://the-allegheny-front.fundjournalism.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://www.alleghenyfront.org/"><strong>Allegheny Front</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T18:51:55+00:00" data-pub="2:51 PM EDT">Fri, Aug 21 @ 2PM EDT</time><a class="lozenge place" href="/search?state=PA">Pennsylvania</a><a class="lozenge place" href="/search?place=Western+PA&state=PA">Western PA</a></p>
+<h2><a href="https://www.alleghenyfront.org/archbald-borough-data-center-opposition/">How tiny Archbald Borough is handling a data center rush</a></h2>
+<p class="byline">By Kara Holsopple</p>
+<p>The Lackawanna County borough has more data centers proposed than any other municipality in Pennsylvania. <a class="lozenge more" href="https://www.alleghenyfront.org/archbald-borough-data-center-opposition/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://givebutter.com/local-news-that-answers-to-coastal-georgia-bdsovj">Donate</a></aside>
+<p class="source"><a href="https://thecurrentga.org/"><strong>The Current</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T18:28:42+00:00" data-pub="2:28 PM EDT">Fri, Aug 21 @ 2PM EDT</time><a class="lozenge place" href="/search?state=GA">Georgia</a><a class="lozenge place" href="/search?place=Savannah&state=GA">Savannah</a></p>
+<h2><a href="https://thecurrentga.org/2026/08/21/pridemore-to-resign-from-georgia-public-service-commission/">Pridemore to resign from Georgia Public Service Commission</a></h2>
+<p class="byline">By Emily Jones/WABE, Grist and Rahul Bali/WABE</p>
+<a class="shot" href="https://thecurrentga.org/2026/08/21/pridemore-to-resign-from-georgia-public-service-commission/" tabindex="-1" aria-hidden="true"><img src="../img/502d17396a2122f6c3f8e6d33f804c61cb58f425.jpg" alt="" width="480" height="321" loading="lazy" decoding="async"></a>
+<p>Georgia Public Service Commissioner Tricia Pridemore announced her resignation effective Sept. 4, leaving her seat open for Governor Brian Kemp to fill until the winner of the upcoming November election is sworn in. The Current is an inclusive nonprofit, non-partisan news organization providing in-depth watchdog journalism for Savannah and Coastal Georgia’s communities. <a class="lozenge more" href="https://thecurrentga.org/2026/08/21/pridemore-to-resign-from-georgia-public-service-commission/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://alaskabeacon.com/">Support</a></aside>
+<p class="source"><a href="https://alaskabeacon.com/"><strong>Alaska Beacon</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T18:00:40+00:00" data-pub="10:00 AM AKDT">Fri, Aug 21 @ 10AM AKDT</time><a class="lozenge place" href="/search?state=AK">Alaska</a></p>
+<h2><a href="https://alaskabeacon.com/2026/08/21/low-alaska-wildfire-season-punctuated-by-serious-interior-blaze/">Low Alaska wildfire season punctuated by serious Interior blaze</a></h2>
+<p class="byline">By Yereth Rosen</p>
+<a class="shot" href="https://alaskabeacon.com/2026/08/21/low-alaska-wildfire-season-punctuated-by-serious-interior-blaze/" tabindex="-1" aria-hidden="true"><img src="../img/f023ff3d4e0351617796e7efff27b783914ed554.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>A quiet year for Alaska wildfires is closing out in dramatic fashion with a late-season blaze that has burned homes and prompted evacuations in an Interior Alaska community. As of Thursday, only about 83,400 acres had burned in Alaska wildfires this year, far short of the approximately 1 million acres that has become typical for <a class="lozenge more" href="https://alaskabeacon.com/2026/08/21/low-alaska-wildfire-season-punctuated-by-serious-interior-blaze/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://dailymontanan.com/donate">Donate</a></aside>
+<p class="source"><a href="https://dailymontanan.com/"><strong>Daily Montanan</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T17:55:42+00:00" data-pub="11:55 AM MDT">Fri, Aug 21 @ 11AM MDT</time><a class="lozenge place" href="/search?state=MT">Montana</a></p>
+<h2><a href="https://dailymontanan.com/2026/08/21/ending-the-roadless-rule-could-end-montanas-wilderness/">Ending the ‘Roadless Rule’ could end Montana’s wilderness</a></h2>
+<p class="byline">By Ryan Callaghan</p>
+<a class="shot" href="https://dailymontanan.com/2026/08/21/ending-the-roadless-rule-could-end-montanas-wilderness/" tabindex="-1" aria-hidden="true"><img src="../img/0d322051101c02ca554861338313781b819effbf.jpg" alt="" width="480" height="333" loading="lazy" decoding="async"></a>
+<p>Our public lands are the backbone of Montana. Our sporting heritage, wildlife habitat, clean water and local economies depend on healthy national forests. Hunters and anglers understand this as well as anyone, which is why sportsmen and women from across Montana are standing up to champion the Roadless Area Conservation Rule from the U.S. Department <a class="lozenge more" href="https://dailymontanan.com/2026/08/21/ending-the-roadless-rule-could-end-montanas-wilderness/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://donorbox.org/be-a-planet-detroiter-780440">Donate</a></aside>
+<p class="source"><a href="https://planetdetroit.org/"><strong>Planet Detroit</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T17:46:45+00:00" data-pub="1:46 PM EDT">Fri, Aug 21 @ 1PM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=Detroit&state=MI">Detroit</a></p>
+<h2><a href="https://planetdetroit.org/2026/08/detroit-energy-affordability-workshop/">Michigan’s utility regulator to host Detroit energy affordability workshop: ‘Ultimately this is about people’</a></h2>
+<p class="byline">By Brian Allnutt</p>
+<a class="shot" href="https://planetdetroit.org/2026/08/detroit-energy-affordability-workshop/" tabindex="-1" aria-hidden="true"><img src="../img/d2418a312718064d9ab5ffca5c3ad04ce5728fd3.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>The Michigan Public Service Commission is hosting a community workshop Sept. 3 in Detroit to discuss energy affordability challenges and hear from residents about barriers to accessing assistance programs. <a class="lozenge more" href="https://planetdetroit.org/2026/08/detroit-energy-affordability-workshop/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://minnpost.fundjournalism.org/support/?campaign=701VQ00000pqSsXYAU">Donate</a></aside>
+<p class="source"><a href="https://www.minnpost.com/"><strong>MinnPost</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T17:25:48+00:00" data-pub="12:25 PM CDT">Fri, Aug 21 @ 12PM CDT</time><a class="lozenge place" href="/search?state=MN">Minnesota</a><a class="lozenge place" href="/search?place=Minneapolis&state=MN">Minneapolis</a></p>
+<h2><a href="https://www.minnpost.com/drinking-water/2026/08/minnesota-agencies-planning-ahead-for-changes-to-states-water-supply/">Minnesota agencies planning ahead for changes to state’s water supply</a></h2>
+<p class="byline">By Claire Carlson</p>
+<a class="shot" href="https://www.minnpost.com/drinking-water/2026/08/minnesota-agencies-planning-ahead-for-changes-to-states-water-supply/" tabindex="-1" aria-hidden="true"><img src="../img/f4a55867b6b4b969d072dbfaa06e73b75c67bfe3.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>The 2100 Water Futures Project is one of six long-range planning projects designed to prepare Minnesota for generational shifts. <a class="lozenge more" href="https://www.minnpost.com/drinking-water/2026/08/minnesota-agencies-planning-ahead-for-changes-to-states-water-supply/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://arkansasadvocate.com/">Support</a></aside>
+<p class="source"><a href="https://arkansasadvocate.com/"><strong>Arkansas Advocate</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T16:22:58+00:00" data-pub="11:22 AM CDT">Fri, Aug 21 @ 11AM CDT</time><a class="lozenge place" href="/search?state=AR">Arkansas</a></p>
+<h2><a href="https://arkansasadvocate.com/2026/08/21/150-people-evacuated-as-crews-battle-wildfire-in-south-arkansas/">150 people evacuated as crews battle wildfire in south Arkansas</a></h2>
+<p class="byline">By Andrew DeMillo</p>
+<a class="shot" href="https://arkansasadvocate.com/2026/08/21/150-people-evacuated-as-crews-battle-wildfire-in-south-arkansas/" tabindex="-1" aria-hidden="true"><img src="../img/48bd621f3578a06b52508c552a8474a53bff6b6a.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>About 150 people in Union County have been evacuated as crews worked to contain a wildfire that’s grown to 2,000 acres, Arkansas authorities said Friday morning. The Arkansas Department of Agriculture said in a post on X that the fire at Pine Tree Road has been burning since Thursday night. “Ten bulldozers are currently working <a class="lozenge more" href="https://arkansasadvocate.com/2026/08/21/150-people-evacuated-as-crews-battle-wildfire-in-south-arkansas/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://nyc.streetsblog.org/2019/08/29/heres-how-to-donate">Donate</a></aside>
+<p class="source"><a href="https://nyc.streetsblog.org/"><strong>Streetsblog - NYC</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T15:59:29+00:00" data-pub="11:59 AM EDT">Fri, Aug 21 @ 11AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=New+York+City&state=NY">New York City</a></p>
+<h2><a href="https://nyc.streetsblog.org/2026/08/21/hit-and-run-drivers-killed-three-new-york-city-cyclists-this-week">Hit-and-Run Drivers Killed Three Cyclists in Three Days</a></h2>
+<p class="byline">By David Meyer</p>
+<a class="shot" href="https://nyc.streetsblog.org/2026/08/21/hit-and-run-drivers-killed-three-new-york-city-cyclists-this-week" tabindex="-1" aria-hidden="true"><img src="../img/9b371516377d66686fb63c5ee425b5ba50af3fee.jpg" alt="" width="480" height="258" loading="lazy" decoding="async"></a>
+<p>Advocates called on the mayor to take action after a BMW driver allegedly struck Mamadou Diallo, of Canarsie, head-on before fleeing the scene. <a class="lozenge more" href="https://nyc.streetsblog.org/2026/08/21/hit-and-run-drivers-killed-three-new-york-city-cyclists-this-week">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://www.highgroundnews.com/support-us/">Donate</a></aside>
+<p class="source"><a href="https://www.highgroundnews.com/"><strong>High Ground News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T15:59:21+00:00" data-pub="10:59 AM CDT">Fri, Aug 21 @ 10AM CDT</time><a class="lozenge place" href="/search?state=TN">Tennessee</a><a class="lozenge place" href="/search?place=Memphis&state=TN">Memphis</a></p>
+<h2><a href="https://fromcommonground.com/they-grew-up-breathing-detroit-air-generations-of-women-are-pushing-for-new-approaches-to-pollution/">They grew up breathing Detroit air. Generations of women are pushing for new approaches to pollution.</a></h2>
+<p class="byline">By Ebony JJ Curry, The 19th</p>
+<a class="shot" href="https://fromcommonground.com/they-grew-up-breathing-detroit-air-generations-of-women-are-pushing-for-new-approaches-to-pollution/" tabindex="-1" aria-hidden="true"><img src="../img/47220ddee89bd3ecbfc323774f11cf9969760e22.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Some are organizing and training to advocate for their neighbors; some are trying to change the laws to consider the cumulative burden of pollution. <a class="lozenge more" href="https://fromcommonground.com/they-grew-up-breathing-detroit-air-generations-of-women-are-pushing-for-new-approaches-to-pollution/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://winterparkvoice.com/donations/">Donate</a></aside>
+<p class="source"><a href="https://winterparkvoice.com/"><strong>Winter Park Voice</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T15:51:54+00:00" data-pub="11:51 AM EDT">Fri, Aug 21 @ 11AM EDT</time><a class="lozenge place" href="/search?state=FL">Florida</a><a class="lozenge place" href="/search?place=Winter+Park&state=FL">Winter Park</a></p>
+<h2><a href="https://winterparkvoice.com/how-healthy-is-lake-virginia-new-buoy-sends-real-time-data/">How Healthy is Lake Virginia? New Buoy Sends Real-Time Data</a></h2>
+<p class="byline">By Beth Kassab</p>
+<a class="shot" href="https://winterparkvoice.com/how-healthy-is-lake-virginia-new-buoy-sends-real-time-data/" tabindex="-1" aria-hidden="true"><img src="../img/a32bedef96bef86b6cdd997b63b78bd0ecfe1bab.jpg" alt="" width="480" height="306" loading="lazy" decoding="async"></a>
+<p>Aug. 21, 2026: The project from the Freshwater Alliance at Rollins will help scientists and average lake goers know more about water quality <a class="lozenge more" href="https://winterparkvoice.com/how-healthy-is-lake-virginia-new-buoy-sends-real-time-data/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://www.highgroundnews.com/support-us/">Donate</a></aside>
+<p class="source"><a href="https://www.highgroundnews.com/"><strong>High Ground News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T15:37:21+00:00" data-pub="10:37 AM CDT">Fri, Aug 21 @ 10AM CDT</time><a class="lozenge place" href="/search?state=TN">Tennessee</a><a class="lozenge place" href="/search?place=Memphis&state=TN">Memphis</a></p>
+<h2><a href="https://fromcommonground.com/ann-arbor-resident-trains-michigan-conservation-dogs-to-sniff-out-invasive-species/">Michigan resident trains “Conservation Dogs” to sniff out invasive species</a></h2>
+<p class="byline">By Shirley Obih</p>
+<a class="shot" href="https://fromcommonground.com/ann-arbor-resident-trains-michigan-conservation-dogs-to-sniff-out-invasive-species/" tabindex="-1" aria-hidden="true"><img src="../img/e51ac4ff3a3620a694514cf164511688bc88fcf4.jpg" alt="" width="480" height="144" loading="lazy" decoding="async"></a>
+<p>Ann Arbor dog trainer Hannah Ashmore is building a network of dogs and handlers trained to sniff out environmental threats that human eyes can miss. <a class="lozenge more" href="https://fromcommonground.com/ann-arbor-resident-trains-michigan-conservation-dogs-to-sniff-out-invasive-species/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://the-allegheny-front.fundjournalism.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://www.alleghenyfront.org/"><strong>Allegheny Front</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T15:00:15+00:00" data-pub="11:00 AM EDT">Fri, Aug 21 @ 11AM EDT</time><a class="lozenge place" href="/search?state=PA">Pennsylvania</a><a class="lozenge place" href="/search?place=Western+PA&state=PA">Western PA</a></p>
+<h2><a href="https://www.alleghenyfront.org/episode-for-august-21-2026/">Episode for August 21, 2026</a></h2>
+<p class="byline">By The Allegheny Front</p>
+<p>Sludge from municipal sewage is often spread on farm fields as fertilizer. But it can contain PFAS forever chemicals. Regulators want to limit the amount of these chemicals, but monitoring could be expensive. Data centers have become a hot button issue across Pennsylvania, including in a small town where six projects have been proposed. Pennsylvania Governor Josh Shapiro signs an executive order p <a class="lozenge more" href="https://www.alleghenyfront.org/episode-for-august-21-2026/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://soprissun-bloom.kindful.com/">Donate</a></aside>
+<p class="source"><a href="https://soprissun.com/"><strong>The Sopris Sun</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T14:04:00+00:00" data-pub="8:04 AM MDT">Fri, Aug 21 @ 8AM MDT</time><a class="lozenge place" href="/search?state=CO">Colorado</a><a class="lozenge place" href="/search?place=Carbondale&state=CO">Carbondale</a></p>
+<h2><a href="https://soprissun.com/nuevas-crias-de-lobo-gris-forman-una-nueva-manada-en-colorado-continuan-las-muertes-de-lobos/">Nuevas crías de lobo gris forman una nueva manada en Colorado</a></h2>
+<p class="byline">By Amy Hadden Marsh and The Sopris Sun</p>
+<a class="shot" href="https://soprissun.com/nuevas-crias-de-lobo-gris-forman-una-nueva-manada-en-colorado-continuan-las-muertes-de-lobos/" tabindex="-1" aria-hidden="true"><img src="../img/95b04ff76478f2e943c4785ac32c4d66b273885c.jpg" alt="" width="480" height="334" loading="lazy" decoding="async"></a>
+<p>CPW anunció el 22 de julio que las crías nacidas esta primavera en el condado de Eagle forman parte de la manada Piney Ridge, la quinta manada que se ha formado desde que comenzó la reintroducción de lobos en diciembre de 2023. <a class="lozenge more" href="https://soprissun.com/nuevas-crias-de-lobo-gris-forman-una-nueva-manada-en-colorado-continuan-las-muertes-de-lobos/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://thewinooskinews.com/">Support</a></aside>
+<p class="source"><a href="https://thewinooskinews.com/"><strong>Winooski News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T14:02:00+00:00" data-pub="10:02 AM EDT">Fri, Aug 21 @ 10AM EDT</time><a class="lozenge place" href="/search?state=VT">Vermont</a><a class="lozenge place" href="/search?place=Winooski&state=VT">Winooski</a></p>
 <h2><a href="https://vtcommunitynews.org/2026/08/21/a-mother-and-daughter-duo-give-wedding-bouquets-new-life-in-stowe/">A mother-and-daughter duo give wedding bouquets new life in Stowe</a></h2>
-<p class="byline"><small>By Erika Tally</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://thewinooskinews.com/">Support</a></span></p>
+<p class="byline">By Erika Tally</p>
 <a class="shot" href="https://vtcommunitynews.org/2026/08/21/a-mother-and-daughter-duo-give-wedding-bouquets-new-life-in-stowe/" tabindex="-1" aria-hidden="true"><img src="../img/ef17c52eefa2937f040284541bd8ab8f98937e86.jpg" alt="" width="480" height="478" loading="lazy" decoding="async"></a>
-<p>The Stowe Petal Project repurposes flower arrangements in one of Vermont’s most popular wedding destinations.</p>
-<p class="more"><a href="https://vtcommunitynews.org/2026/08/21/a-mother-and-daughter-duo-give-wedding-bouquets-new-life-in-stowe/">Read more <span aria-hidden="true">→</span></a></p>
+<p>The Stowe Petal Project repurposes flower arrangements in one of Vermont’s most popular wedding destinations. <a class="lozenge more" href="https://vtcommunitynews.org/2026/08/21/a-mother-and-daughter-duo-give-wedding-bouquets-new-life-in-stowe/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T14:00:00+00:00" data-pub="10:00 AM EDT">Friday, August 21, 2026 at 10:00 AM EDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>CT / Hartford / <a href="https://ctmirror.org/">The Connecticut Mirror</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://ctmirror.donorsupport.co/page/FUNDVURKCRQ">Donate</a></aside>
+<p class="source"><a href="https://ctmirror.org/"><strong>The Connecticut Mirror</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T14:00:00+00:00" data-pub="10:00 AM EDT">Fri, Aug 21 @ 10AM EDT</time><a class="lozenge place" href="/search?state=CT">Connecticut</a><a class="lozenge place" href="/search?place=Hartford&state=CT">Hartford</a></p>
 <h2><a href="https://ctmirror.org/2026/08/21/shark-population-long-island-sound/">Shark populations ‘increasing slowly’ in Long Island Sound, CT biologist says</a></h2>
-<p class="byline"><small>By Chris Polansky | Connecticut Public</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://ctmirror.donorsupport.co/page/FUNDVURKCRQ">Donate</a></span></p>
+<p class="byline">By Chris Polansky | Connecticut Public</p>
 <a class="shot" href="https://ctmirror.org/2026/08/21/shark-population-long-island-sound/" tabindex="-1" aria-hidden="true"><img src="../img/cdb13e450400134d547143113bc7ef1d24cabeff.jpg" alt="" width="480" height="335" loading="lazy" decoding="async"></a>
-<p>Certain shark species native to Long Island Sound are increasing in population, according to CT&#x27;s Department of Energy and Environmental Protection.</p>
-<p class="more"><a href="https://ctmirror.org/2026/08/21/shark-population-long-island-sound/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Certain shark species native to Long Island Sound are increasing in population, according to CT&#x27;s Department of Energy and Environmental Protection. <a class="lozenge more" href="https://ctmirror.org/2026/08/21/shark-population-long-island-sound/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T13:00:42+00:00" data-pub="6:00 AM PDT">Friday, August 21, 2026 at 6:00 AM PDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>WA / Spokane / <a href="https://rangemedia.co/">RANGE</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://www.rangemedia.co/support/">Donate</a></aside>
+<p class="source"><a href="https://rangemedia.co/"><strong>RANGE</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T13:00:42+00:00" data-pub="6:00 AM PDT">Fri, Aug 21 @ 6AM PDT</time><a class="lozenge place" href="/search?state=WA">Washington</a><a class="lozenge place" href="/search?place=Spokane&state=WA">Spokane</a></p>
 <h2><a href="https://www.rangemedia.co/podcasts/mobilizing-for-data-center-pause/">Mobilizing for data center pause</a></h2>
-<p class="byline"><small>By RANGE</small><span class="aside"><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://www.rangemedia.co/support/">Donate</a></span></p>
+<p class="byline">By RANGE</p>
 <a class="shot" href="https://www.rangemedia.co/podcasts/mobilizing-for-data-center-pause/" tabindex="-1" aria-hidden="true"><img src="../img/2fb8dc5b06cd9632dc5c047e84d6d6e0df5d369f.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>A heated national issue has come to Spokane; this is what one activist is doing about it</p>
-<p class="more"><a href="https://www.rangemedia.co/podcasts/mobilizing-for-data-center-pause/">Read more <span aria-hidden="true">→</span></a></p>
+<p>A heated national issue has come to Spokane; this is what one activist is doing about it <a class="lozenge more" href="https://www.rangemedia.co/podcasts/mobilizing-for-data-center-pause/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T13:00:35+00:00" data-pub="6:00 AM PDT">Friday, August 21, 2026 at 6:00 AM PDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>OR / Statewide / <a href="https://oregoncapitalchronicle.com/">Oregon Capital Chronicle</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://oregoncapitalchronicle.com/">Support</a></aside>
+<p class="source"><a href="https://oregoncapitalchronicle.com/"><strong>Oregon Capital Chronicle</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T13:00:35+00:00" data-pub="6:00 AM PDT">Fri, Aug 21 @ 6AM PDT</time><a class="lozenge place" href="/search?state=OR">Oregon</a></p>
 <h2><a href="https://oregoncapitalchronicle.com/2026/08/21/odot-staff-cuts-would-reduce-maintenance-and-responses-to-severe-weather-events/">ODOT staff cuts would reduce maintenance and responses to severe weather events</a></h2>
-<p class="byline"><small>By Mia Maldonado</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://oregoncapitalchronicle.com/">Support</a></span></p>
+<p class="byline">By Mia Maldonado</p>
 <a class="shot" href="https://oregoncapitalchronicle.com/2026/08/21/odot-staff-cuts-would-reduce-maintenance-and-responses-to-severe-weather-events/" tabindex="-1" aria-hidden="true"><img src="../img/55a7287ac23e4df67f0ac9a1e5d545fafd1c6f0f.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>As fires scorched through a record 2.5 million acres this summer, mostly in eastern and central Oregon, many of the state’s transportation maintenance crews traded patching potholes and cleaning culverts for wildfire response. Diverting resources to respond to severe weather events is becoming increasingly common for the Oregon Department of Transportation. But as the agency</p>
-<p class="more"><a href="https://oregoncapitalchronicle.com/2026/08/21/odot-staff-cuts-would-reduce-maintenance-and-responses-to-severe-weather-events/">Read more <span aria-hidden="true">→</span></a></p>
+<p>As fires scorched through a record 2.5 million acres this summer, mostly in eastern and central Oregon, many of the state’s transportation maintenance crews traded patching potholes and cleaning culverts for wildfire response. Diverting resources to respond to severe weather events is becoming increasingly common for the Oregon Department of Transportation. But as the agency <a class="lozenge more" href="https://oregoncapitalchronicle.com/2026/08/21/odot-staff-cuts-would-reduce-maintenance-and-responses-to-severe-weather-events/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T13:00:00+00:00" data-pub="6:00 AM PDT">Friday, August 21, 2026 at 6:00 AM PDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>CA / Richmond / <a href="https://richmondside.org/">Richmondside</a></small></p>
-<h2><a href="https://richmondside.org/2026/08/21/richmond-ca-news-wccusd-board-seats-uncontested/">5 things to know — 2 WCCUSD board seats are decided without a vote</a></h2>
-<p class="byline"><small>By David Mills</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://richmondside.org/2026/08/12/fppc-fines-richmond-council-member-doria-robinson/">Become a member</a></span></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://richmondside.org/2026/08/12/fppc-fines-richmond-council-member-doria-robinson/">Become a member</a></aside>
+<p class="source"><a href="https://richmondside.org/"><strong>Richmondside</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T13:00:00+00:00" data-pub="6:00 AM PDT">Fri, Aug 21 @ 6AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Richmond&state=CA">Richmond</a></p>
+<h2><a href="https://richmondside.org/2026/08/21/richmond-ca-news-wccusd-board-seats-uncontested/">5 things to know—2 WCCUSD board seats are decided without a vote</a></h2>
+<p class="byline">By David Mills</p>
 <a class="shot" href="https://richmondside.org/2026/08/21/richmond-ca-news-wccusd-board-seats-uncontested/" tabindex="-1" aria-hidden="true"><img src="../img/c75c5dc776653396d896706265d415921ef5b86c.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>5 things to know — 2 WCCUSD board seats are decided without a vote Also: RYSE Center opens membership for fall semester; Contra Costa County reports West Nile virus in El Cerrito birds; grants open for African-American health and wellness programs.</p>
-<p class="more"><a href="https://richmondside.org/2026/08/21/richmond-ca-news-wccusd-board-seats-uncontested/">Read more <span aria-hidden="true">→</span></a></p>
+<p>5 things to know—2 WCCUSD board seats are decided without a vote Also: RYSE Center opens membership for fall semester; Contra Costa County reports West Nile virus in El Cerrito birds; grants open for African-American health and wellness programs. <a class="lozenge more" href="https://richmondside.org/2026/08/21/richmond-ca-news-wccusd-board-seats-uncontested/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T13:00:00+00:00" data-pub="9:00 AM EDT">Friday, August 21, 2026 at 9:00 AM EDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>MA / Cambridge / <a href="https://www.cambridgeday.com/">Cambridge Day</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.cambridgeday.com/donate">Donate</a></aside>
+<p class="source"><a href="https://www.cambridgeday.com/"><strong>Cambridge Day</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T13:00:00+00:00" data-pub="9:00 AM EDT">Fri, Aug 21 @ 9AM EDT</time><a class="lozenge place" href="/search?state=MA">Massachusetts</a><a class="lozenge place" href="/search?place=Cambridge&state=MA">Cambridge</a></p>
 <h2><a href="https://www.cambridgeday.com/2026/08/21/black-saddlebags/">Dragonflies are older than dinosaurs and still thriving</a></h2>
-<p class="byline"><small>By Jeanine Farley</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.cambridgeday.com/donate">Donate</a></span></p>
+<p class="byline">By Jeanine Farley</p>
 <a class="shot" href="https://www.cambridgeday.com/2026/08/21/black-saddlebags/" tabindex="-1" aria-hidden="true"><img src="../img/3d3a1533975fc3bc52c1b2bffdc92cc3e3c09d9e.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Of the more than 300 species of dragonflies in North America, none are more interesting than the black saddlebags dragonfly (Tramea lacerata), so named because of the black patches on its hind wings. When viewed from above, the patches look to be resting on each side of the abdomen, resembling saddlebags draped across the back</p>
-<p class="more"><a href="https://www.cambridgeday.com/2026/08/21/black-saddlebags/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Of the more than 300 species of dragonflies in North America, none are more interesting than the black saddlebags dragonfly (Tramea lacerata), so named because of the black patches on its hind wings. When viewed from above, the patches look to be resting on each side of the abdomen, resembling saddlebags draped across the back <a class="lozenge more" href="https://www.cambridgeday.com/2026/08/21/black-saddlebags/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T11:05:20+00:00" data-pub="5:05 AM MDT">Friday, August 21, 2026 at 5:05 AM MDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>UT / Statewide / <a href="https://utahnewsdispatch.com/">Utah News Dispatch</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://utahnewsdispatch.com/">Support</a></aside>
+<p class="source"><a href="https://utahnewsdispatch.com/"><strong>Utah News Dispatch</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T11:05:20+00:00" data-pub="5:05 AM MDT">Fri, Aug 21 @ 5AM MDT</time><a class="lozenge place" href="/search?state=UT">Utah</a></p>
 <h2><a href="https://utahnewsdispatch.com/2026/08/21/feds-look-to-the-great-salt-lake-in-push-to-produce-critical-minerals/">Feds look to the Great Salt Lake in push to produce critical minerals</a></h2>
-<p class="byline"><small>By Annie Knox</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://utahnewsdispatch.com/">Support</a></span></p>
+<p class="byline">By Annie Knox</p>
 <a class="shot" href="https://utahnewsdispatch.com/2026/08/21/feds-look-to-the-great-salt-lake-in-push-to-produce-critical-minerals/" tabindex="-1" aria-hidden="true"><img src="../img/ae3a7276b5315b9c81da827dd6642852f44d75f9.jpg" alt="" width="480" height="297" loading="lazy" decoding="async"></a>
-<p>The Trump administration wants to ramp up production of critical minerals without relying on other countries, and it’s looking to Utah for help.</p>
-<p class="more"><a href="https://utahnewsdispatch.com/2026/08/21/feds-look-to-the-great-salt-lake-in-push-to-produce-critical-minerals/">Read more <span aria-hidden="true">→</span></a></p>
+<p>The Trump administration wants to ramp up production of critical minerals without relying on other countries, and it’s looking to Utah for help. <a class="lozenge more" href="https://utahnewsdispatch.com/2026/08/21/feds-look-to-the-great-salt-lake-in-push-to-produce-critical-minerals/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T10:00:00+00:00" data-pub="5:00 AM CDT">Friday, August 21, 2026 at 5:00 AM CDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>TX / Austin / <a href="https://www.texastribune.org/">The Texas Tribune</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://give.texastribune.org/campaign/814363/donate?c_src=website&amp;c_src2=donatebutton">Donate</a></aside>
+<p class="source"><a href="https://www.texastribune.org/"><strong>The Texas Tribune</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T10:00:00+00:00" data-pub="5:00 AM CDT">Fri, Aug 21 @ 5AM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=Austin&state=TX">Austin</a></p>
 <h2><a href="https://feeds.texastribune.org/link/16799/17425013/texas-oil-gas-wastewater-produced-water-disposal">Pressure mounts to allow treated oilfield waste in Texas rivers and on rangeland</a></h2>
-<p class="byline"><small>By By Martha Pskowski, Inside Climate News</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://give.texastribune.org/campaign/814363/donate?c_src=website&amp;c_src2=donatebutton">Donate</a></span></p>
+<p class="byline">By By Martha Pskowski, Inside Climate News</p>
 <a class="shot" href="https://feeds.texastribune.org/link/16799/17425013/texas-oil-gas-wastewater-produced-water-disposal" tabindex="-1" aria-hidden="true"><img src="../img/df386120b9bd5fa5e6e240123007b2722160422b.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>As oil and gas companies run out of places to dispose of their wastewater, Texas regulators are drafting permits to treat and reuse it outside the oilfields.</p>
-<p class="more"><a href="https://feeds.texastribune.org/link/16799/17425013/texas-oil-gas-wastewater-produced-water-disposal">Read more <span aria-hidden="true">→</span></a></p>
+<p>As oil and gas companies run out of places to dispose of their wastewater, Texas regulators are drafting permits to treat and reuse it outside the oilfields. <a class="lozenge more" href="https://feeds.texastribune.org/link/16799/17425013/texas-oil-gas-wastewater-produced-water-disposal">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T09:55:50+00:00" data-pub="5:55 AM EDT">Friday, August 21, 2026 at 5:55 AM EDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>PA / Philadelphia / <a href="https://thephiladelphiacitizen.org/about/">The Philadelphia Citizen</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://thephiladelphiacitizen.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://thephiladelphiacitizen.org/about/"><strong>The Philadelphia Citizen</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T09:55:50+00:00" data-pub="5:55 AM EDT">Fri, Aug 21 @ 5AM EDT</time><a class="lozenge place" href="/search?state=PA">Pennsylvania</a><a class="lozenge place" href="/search?place=Philadelphia&state=PA">Philadelphia</a></p>
 <h2><a href="https://thephiladelphiacitizen.org/guest-commentary-packing-for-climate-change/">Guest Commentary: Packing for Climate Change</a></h2>
-<p class="byline"><small>By Josh Mogerman</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://thephiladelphiacitizen.org/donate/">Donate</a></span></p>
+<p class="byline">By Josh Mogerman</p>
 <a class="shot" href="https://thephiladelphiacitizen.org/guest-commentary-packing-for-climate-change/" tabindex="-1" aria-hidden="true"><img src="../img/953586baa58edb83e2b7e6338053ec3e06ceb95b.jpg" alt="" width="480" height="240" loading="lazy" decoding="async"></a>
-<p>Last month, while sprinting down the corridor in Terminal A at PHL, I was struck that the last-minute effort to reshuffle what was in my family’s luggage might actually prevent us from making our flight. Missing the flight would be a drag … But the reasons for the last-second re-pack really weighed on me. Our … Continue reading Guest Commentary: Packing for Climate Change</p>
-<p class="more"><a href="https://thephiladelphiacitizen.org/guest-commentary-packing-for-climate-change/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Last month, while sprinting down the corridor in Terminal A at PHL, I was struck that the last-minute effort to reshuffle what was in my family’s luggage might actually prevent us from making our flight. Missing the flight would be a drag … But the reasons for the last-second re-pack really weighed on me. Our … Continue reading Guest Commentary: Packing for Climate Change <a class="lozenge more" href="https://thephiladelphiacitizen.org/guest-commentary-packing-for-climate-change/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T09:30:55+00:00" data-pub="5:30 AM EDT">Friday, August 21, 2026 at 5:30 AM EDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>KY / Statewide / <a href="https://kentuckylantern.com/">Kentucky Lantern</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://kentuckylantern.com/">Support</a></aside>
+<p class="source"><a href="https://kentuckylantern.com/"><strong>Kentucky Lantern</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T09:30:55+00:00" data-pub="5:30 AM EDT">Fri, Aug 21 @ 5AM EDT</time><a class="lozenge place" href="/search?state=KY">Kentucky</a></p>
 <h2><a href="https://kentuckylantern.com/2026/08/21/a-data-center-developer-says-it-is-committing-to-beshearsthe-governors-data-center-requirements/">A data center developer says it is committing to Beshear’s data center requirements</a></h2>
-<p class="byline"><small>By Liam Niemeyer</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://kentuckylantern.com/">Support</a></span></p>
+<p class="byline">By Liam Niemeyer</p>
 <a class="shot" href="https://kentuckylantern.com/2026/08/21/a-data-center-developer-says-it-is-committing-to-beshearsthe-governors-data-center-requirements/" tabindex="-1" aria-hidden="true"><img src="../img/dfd2c6983e937403dd85b97601769792a0f7a45e.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>An investor-owned developer looking to build a hyperscale data center at an idled Hancock County aluminum smelter says it’s committing to the governor’s requirements to pay its share of taxes, follow environmental laws and “build a meaningful relationship” with the community. That’s according to an “energy plan” that TeraWulf filed before the state utility regulator</p>
-<p class="more"><a href="https://kentuckylantern.com/2026/08/21/a-data-center-developer-says-it-is-committing-to-beshearsthe-governors-data-center-requirements/">Read more <span aria-hidden="true">→</span></a></p>
+<p>An investor-owned developer looking to build a hyperscale data center at an idled Hancock County aluminum smelter says it’s committing to the governor’s requirements to pay its share of taxes, follow environmental laws and “build a meaningful relationship” with the community. That’s according to an “energy plan” that TeraWulf filed before the state utility regulator <a class="lozenge more" href="https://kentuckylantern.com/2026/08/21/a-data-center-developer-says-it-is-committing-to-beshearsthe-governors-data-center-requirements/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T09:28:20+00:00" data-pub="5:28 AM EDT">Friday, August 21, 2026 at 5:28 AM EDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>VA / Statewide / <a href="https://www.virginiamercury.com/">Virginia Mercury</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.virginiamercury.com/">Support</a></aside>
+<p class="source"><a href="https://www.virginiamercury.com/"><strong>Virginia Mercury</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T09:28:20+00:00" data-pub="5:28 AM EDT">Fri, Aug 21 @ 5AM EDT</time><a class="lozenge place" href="/search?state=VA">Virginia</a></p>
 <h2><a href="https://virginiamercury.com/2026/08/21/after-eastern-groundwater-report-detailed-aquifer-concerns-va-lawmakers-consider-policy-shifts/">After eastern groundwater report detailed aquifer concerns, Va. lawmakers consider policy shifts</a></h2>
-<p class="byline"><small>By Shannon Heckt</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.virginiamercury.com/">Support</a></span></p>
+<p class="byline">By Shannon Heckt</p>
 <a class="shot" href="https://virginiamercury.com/2026/08/21/after-eastern-groundwater-report-detailed-aquifer-concerns-va-lawmakers-consider-policy-shifts/" tabindex="-1" aria-hidden="true"><img src="../img/f612cc9a76fdc9620d21290e61482e8ad589017a.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>After the Virginia Department of Environmental Quality released a 117-page report indicating that available groundwater east of Interstate-95 is “declining (in) availability in the near future,” the agency pitched recommendations on how to tackle the issue to lawmakers Thursday in Richmond. The report detailed the groundwater needs for the Eastern Groundwater Management Area, and showed</p>
-<p class="more"><a href="https://virginiamercury.com/2026/08/21/after-eastern-groundwater-report-detailed-aquifer-concerns-va-lawmakers-consider-policy-shifts/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-21T09:25:45+00:00" data-pub="5:25 AM EDT">Friday, August 21, 2026 at 5:25 AM EDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>VA / Statewide / <a href="https://www.virginiamercury.com/">Virginia Mercury</a></small></p>
-<h2><a href="https://virginiamercury.com/2026/08/21/eastern-shore-leaders-residents-dubious-of-mineral-mining-pitch-they-have-good-reason-to-be/">Eastern Shore leaders, residents dubious of mineral mining pitch. They have good reason to be.</a></h2>
-<p class="byline"><small>By Jim Spencer</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.virginiamercury.com/">Support</a></span></p>
-<a class="shot" href="https://virginiamercury.com/2026/08/21/eastern-shore-leaders-residents-dubious-of-mineral-mining-pitch-they-have-good-reason-to-be/" tabindex="-1" aria-hidden="true"><img src="../img/4a5b784015400f84c1841e8da1dd88adbc709314.jpg" alt="" width="480" height="283" loading="lazy" decoding="async"></a>
-<p>The initial public comment period for an unprecedented proposal to mine minerals from the Atlantic Ocean off Virginia’s Eastern Shore ends on Saturday, Aug. 22. Over 1,300 comments have been filed, the vast majority opposing offshore mineral leases. But thanks to the arcane U.S. regulatory approval process, the door to public input will close with</p>
-<p class="more"><a href="https://virginiamercury.com/2026/08/21/eastern-shore-leaders-residents-dubious-of-mineral-mining-pitch-they-have-good-reason-to-be/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-21T09:06:28+00:00" data-pub="5:06 AM EDT">Friday, August 21, 2026 at 5:06 AM EDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>NC / Charlotte / <a href="https://qcitymetro.com/">QCity Metro</a></small></p>
-<h2><a href="https://www.qcitymetro.com/news-buzz/charlotte-launches-first-digital-touchscreen-kiosk-in-historic-west-end-79f841bf">Charlotte launches first digital, touchscreen kiosk in Historic West End</a></h2>
-<p class="byline"><small>By Glenn H. Burkins</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://qcitymetro.com/">Support</a></span></p>
-<a class="shot" href="https://www.qcitymetro.com/news-buzz/charlotte-launches-first-digital-touchscreen-kiosk-in-historic-west-end-79f841bf" tabindex="-1" aria-hidden="true"><img src="../img/98d491c93f443c7e341998b29b19e75080679723.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Up to 30 kiosks will offer navigation, public information, free Wi-Fi and ads, with Charlotte guaranteed at least $8,000 per kiosk annually in advertising revenue.</p>
-<p class="more"><a href="https://www.qcitymetro.com/news-buzz/charlotte-launches-first-digital-touchscreen-kiosk-in-historic-west-end-79f841bf">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-21T09:00:00+00:00" data-pub="2:00 AM PDT">Friday, August 21, 2026 at 2:00 AM PDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>CA / San Diego / <a href="https://voiceofsandiego.org/">Voice of San Diego</a></small></p>
-<h2><a href="https://voiceofsandiego.org/2026/08/21/arizona-wants-to-suck-water-supplies-from-mexicos-sea-of-cortez/">Arizona Wants to Suck Water Supplies From Mexico’s Sea of Cortez</a></h2>
-<p class="byline"><small>By MacKenzie Elmer and Vicente Calderón</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://checkout.fundjournalism.org/memberform?org_id=vosd&amp;amount=15&amp;installmentPeriod=monthly&amp;campaign=7014y000000zQ9CAAU">Donate</a></span></p>
-<a class="shot" href="https://voiceofsandiego.org/2026/08/21/arizona-wants-to-suck-water-supplies-from-mexicos-sea-of-cortez/" tabindex="-1" aria-hidden="true"><img src="../img/ee424fde868535698c014d4d2d8c861013462aaf.jpg" alt="" width="480" height="301" loading="lazy" decoding="async"></a>
-<p>Mexico would keep the water, but Arizona’s investment in building desalination would allow the state to draw more Colorado River water.</p>
-<p class="more"><a href="https://voiceofsandiego.org/2026/08/21/arizona-wants-to-suck-water-supplies-from-mexicos-sea-of-cortez/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-21T08:45:00+00:00" data-pub="4:45 AM EDT">Friday, August 21, 2026 at 4:45 AM EDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>National / Climate / <a href="https://grist.org/">Grist</a></small></p>
-<h2><a href="https://grist.org/energy/heat-waves-europe-grid-solar-energy/">Solar buoyed Europe’s grid amid record-breaking heat and drought this summer</a></h2>
-<p class="byline"><small>By Austin Corona</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://grist.org/support-us/">Donate</a></span></p>
-<p class="more"><a href="https://grist.org/energy/heat-waves-europe-grid-solar-energy/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-21T08:30:08+00:00" data-pub="3:30 AM CDT">Friday, August 21, 2026 at 3:30 AM CDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>WI / Statewide / <a href="https://wisconsinexaminer.com/">Wisconsin Examiner</a></small></p>
-<h2><a href="https://wisconsinexaminer.com/2026/08/21/data-centers-are-a-big-political-issue-what-should-wisconsin-do-about-them/">Data centers are a big political issue; what should Wisconsin do about them?</a></h2>
-<p class="byline"><small>By Ruth Conniff</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://wisconsinexaminer.com/">Support</a></span></p>
-<a class="shot" href="https://wisconsinexaminer.com/2026/08/21/data-centers-are-a-big-political-issue-what-should-wisconsin-do-about-them/" tabindex="-1" aria-hidden="true"><img src="../img/5025e67cefae9c0edfb4490191b0195faa6a0aff.jpg" alt="" width="480" height="300" loading="lazy" decoding="async"></a>
-<p>There’s no bigger issue in the Wisconsin governor’s race than data centers. Republican candidate Tom Tiffany, who was hoping to run on not canceling Thanksgiving, quickly pivoted after democratic socialist candidate Francesca Hong lost the primary, moving to capture the issue that galvanized Hong’s supporters: opposing data center development. Tiffany spent the first week of</p>
-<p class="more"><a href="https://wisconsinexaminer.com/2026/08/21/data-centers-are-a-big-political-issue-what-should-wisconsin-do-about-them/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-21T07:30:10+00:00" data-pub="3:30 AM EDT">Friday, August 21, 2026 at 3:30 AM EDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>PA / Statewide / <a href="https://www.penncapital-star.com/">Pennsylvania Capital-Star</a></small></p>
-<h2><a href="https://penncapital-star.com/energy-environment/safety-failures-led-to-last-years-fatal-explosion-at-u-s-steel-plant/">Safety failures led to last year’s fatal explosion at U.S. Steel plant</a></h2>
-<p class="byline"><small>By Jon Hurdle, Inside Climate News</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.penncapital-star.com/">Support</a></span></p>
-<a class="shot" href="https://penncapital-star.com/energy-environment/safety-failures-led-to-last-years-fatal-explosion-at-u-s-steel-plant/" tabindex="-1" aria-hidden="true"><img src="../img/c7e1ff7d0a4e7c7a32f2acb0f10ba52ff5711f7f.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>A deadly accident at the Clairton Coke Works in 2025 could have been prevented, federal investigators concluded.</p>
-<p class="more"><a href="https://penncapital-star.com/energy-environment/safety-failures-led-to-last-years-fatal-explosion-at-u-s-steel-plant/">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Also in <a href="https://www.spotlightpa.org/news/2026/08/us-steel-clairton-explosion-safety-failures-environment/">Spotlight PA</a></small></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-21T06:36:56+00:00" data-pub="11:36 PM PDT">Thursday, August 20, 2026 at 11:36 PM PDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>CA / Malibu / <a href="https://pepperdine-graphic.com/category/news/">Pepperdine Graphic</a></small></p>
-<h2><a href="https://pepperdine-graphic.com/sustainable-silence-pepperdine-faculty-students-alum-question-universitys-sustainability-efforts/">Sustainable Silence: Pepperdine Faculty, Students, Alum Question University’s Sustainability Efforts</a></h2>
-<p class="byline"><small>By Amanda Monahan</small><span class="aside"><a class="lozenge" href="../tags/college.html">College</a><a class="lozenge give" href="https://pepperdine-graphic.com/join-pgm/">Become a member</a></span></p>
-<a class="shot" href="https://pepperdine-graphic.com/sustainable-silence-pepperdine-faculty-students-alum-question-universitys-sustainability-efforts/" tabindex="-1" aria-hidden="true"><img src="../img/933ab0f8d43466df394c4e9701c7670d23377843.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>While Pepperdine promotes its 1972 water reclamation system and sustainable thinking, students and faculty believe the University has resisted moving forward on sustainability efforts. Pepperdine administrators have denied climate change and failed to implement solar energy on campus.</p>
-<p class="more"><a href="https://pepperdine-graphic.com/sustainable-silence-pepperdine-faculty-students-alum-question-universitys-sustainability-efforts/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-21T04:29:43+00:00" data-pub="10:29 PM MDT">Thursday, August 20, 2026 at 10:29 PM MDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>CO / Boulder / <a href="https://boulderreportinglab.org/">Boulder Reporting Lab</a></small></p>
-<h2><a href="https://boulderreportinglab.org/2026/08/20/environmental-group-sues-trump-administration-over-plan-to-dismantle-boulders-ncar/">Environmental group sues Trump administration over plan to dismantle Boulder’s NCAR</a></h2>
-<p class="byline"><small>By Brooke Stephenson</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://boulderreportinglab.org/donate-to-us/">Donate</a></span></p>
-<a class="shot" href="https://boulderreportinglab.org/2026/08/20/environmental-group-sues-trump-administration-over-plan-to-dismantle-boulders-ncar/" tabindex="-1" aria-hidden="true"><img src="../img/7eb86c4d01d4c0e4be174a07f25f61eee2b28140.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>The Environmental Defense Fund filed a lawsuit against the Trump administration on Aug. 20 seeking to stop its attempt to dismantle Boulder’s National Center for Atmospheric Research. The lawsuit follows a similar lawsuit filed in March by the University Corporation for Atmospheric Research, a nonprofit consortium of 129 universities that manages NCAR. Like UCAR’s lawsuit,</p>
-<p class="more"><a href="https://boulderreportinglab.org/2026/08/20/environmental-group-sues-trump-administration-over-plan-to-dismantle-boulders-ncar/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-20T23:19:29+00:00" data-pub="4:19 PM PDT">Thursday, August 20, 2026 at 4:19 PM PDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>CA / Napa Valley / <a href="https://yountvillesun.com/">Yountville Sun</a></small></p>
-<h2><a href="https://yountvillesun.com/napa-county-master-gardeners-invasive-spotted-lanternfly-threatens-grapes-and-other-crops/">Napa County Master Gardeners: Invasive spotted lanternfly threatens grapes and other crops</a></h2>
-<p class="byline"><small>By Lloyd Christopher Jones Jr.</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://yountvillesun.com/subscribe-and-support/">Subscribe</a></span></p>
-<a class="shot" href="https://yountvillesun.com/napa-county-master-gardeners-invasive-spotted-lanternfly-threatens-grapes-and-other-crops/" tabindex="-1" aria-hidden="true"><img src="../img/386f08e82297d3bc526c246bc8d41890590e7897.jpg" alt="" width="480" height="300" loading="lazy" decoding="async"></a>
-<p>The spotted lanternfly (Lycorma delicatula) is an invasive agricultural pest from Asia. It was first detected in Berks County, Pennsylvania, in 2014 but may have been stateside a few years prior. It is native to China, India and Vietnam. While the spotted lanternfly has turned up on the West Coast (California), it is more prevalent</p>
-<p class="more"><a href="https://yountvillesun.com/napa-county-master-gardeners-invasive-spotted-lanternfly-threatens-grapes-and-other-crops/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-20T23:19:25+00:00" data-pub="7:19 PM EDT">Thursday, August 20, 2026 at 7:19 PM EDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>MA / Lexington / <a href="https://lexobserver.org/">Lexington Observer</a></small></p>
-<h2><a href="https://lexobserver.org/2026/08/20/resident-appeal-delays-lexington-school-building-project-and-adds-millions-to-cost/">Resident appeal delays LHS building project and adds millions to cost</a></h2>
-<p class="byline"><small>By Maggie Scales</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://lexobserver.org/support-our-publication/">Donate</a></span></p>
-<a class="shot" href="https://lexobserver.org/2026/08/20/resident-appeal-delays-lexington-school-building-project-and-adds-millions-to-cost/" tabindex="-1" aria-hidden="true"><img src="../img/fec9457bd4973f4514a4e45a401633280faab3aa.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Reps. from the state’s environmental protection dept. will reevaluate the property on Aug. 27. Until then, construction by wetlands is on pause — and time is money.</p>
-<p class="more"><a href="https://lexobserver.org/2026/08/20/resident-appeal-delays-lexington-school-building-project-and-adds-millions-to-cost/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-20T22:54:45+00:00" data-pub="6:54 PM EDT">Thursday, August 20, 2026 at 6:54 PM EDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>OH / Cleveland / <a href="https://thelandcle.org/">The Land</a></small></p>
-<h2><a href="https://thelandcle.org/stories/trump-keeps-embracing-data-centers-even-as-they-become-toxic-in-midterm-races/">Trump keeps embracing data centers even as they become toxic in midterm races</a></h2>
-<p class="byline"><small>By The Associated Press</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://thelandcle.org/membership/">Donate</a></span></p>
-<a class="shot" href="https://thelandcle.org/stories/trump-keeps-embracing-data-centers-even-as-they-become-toxic-in-midterm-races/" tabindex="-1" aria-hidden="true"><img src="../img/1ec126a29c57776ba6aad2c7c38bc39126efcb57.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Data centers have become a contentious issue, with concerns about energy costs and environmental impact. In Ohio, Republican Jon Husted faces attacks over his support for data centers.</p>
-<p class="more"><a href="https://thelandcle.org/stories/trump-keeps-embracing-data-centers-even-as-they-become-toxic-in-midterm-races/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-20T22:10:37+00:00" data-pub="4:10 PM MDT">Thursday, August 20, 2026 at 4:10 PM MDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>WY / Lander / <a href="https://wyofile.com/">WyoFile</a></small></p>
-<h2><a href="https://wyofile.com/wyoming-stockgrowers-have-cows-staged-in-limbo-as-federal-judge-mulls-upper-green-grazing-dispute/">Wyoming stockgrowers have cows staged ‘in limbo’ as federal judge mulls Upper Green grazing dispute</a></h2>
-<p class="byline"><small>By Mike Koshmrl</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://wyofile.fundjournalism.org/donate/?campaign=701Pl00000XoW06IAF">Donate</a></span></p>
-<a class="shot" href="https://wyofile.com/wyoming-stockgrowers-have-cows-staged-in-limbo-as-federal-judge-mulls-upper-green-grazing-dispute/" tabindex="-1" aria-hidden="true"><img src="../img/7772994205ec7955779dbdc40b0544873d2b15ee.jpg" alt="" width="300" height="179" loading="lazy" decoding="async"></a>
-<p>The decision over whether to let the cattlemen turn their livestock onto Northwestern Wyoming allotments full of grizzly bears will soon be made by a U.S. District Court judge.</p>
-<p class="more"><a href="https://wyofile.com/wyoming-stockgrowers-have-cows-staged-in-limbo-as-federal-judge-mulls-upper-green-grazing-dispute/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-20T22:05:35+00:00" data-pub="3:05 PM PDT">Thursday, August 20, 2026 at 3:05 PM PDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>OR / Portland / <a href="https://www.underscore.news/">Underscore Native News</a></small></p>
-<h2><a href="https://www.underscore.news/land/wildfire/klamath-tribes-respond-to-wrights-spring-fire/">Klamath Tribes Respond to Wrights Spring Fire</a></h2>
-<p class="byline"><small>By Nika Bartoo-Smith, Underscore Native News + ICT</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.underscore.news/support-underscore/">Donate</a></span></p>
-<a class="shot" href="https://www.underscore.news/land/wildfire/klamath-tribes-respond-to-wrights-spring-fire/" tabindex="-1" aria-hidden="true"><img src="../img/f3fd7d84a322c1e56cee609cf92b817372e5ad45.jpg" alt="" width="480" height="640" loading="lazy" decoding="async"></a>
-<p>The Klamath Tribes’ Wildland Fire Program continues to work with other crews to help contain the Wrights Spring Fire.</p>
-<p class="more"><a href="https://www.underscore.news/land/wildfire/klamath-tribes-respond-to-wrights-spring-fire/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-20T21:31:48+00:00" data-pub="4:31 PM CDT">Thursday, August 20, 2026 at 4:31 PM CDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>IA / Statewide / <a href="https://iowacapitaldispatch.com/">Iowa Capital Dispatch</a></small></p>
-<h2><a href="https://iowacapitaldispatch.com/2026/08/20/national-group-releases-cover-crop-tool-modeled-after-iowa-batch-and-build-program/">National group releases cover crop tool modeled after Iowa ‘batch and build’ program</a></h2>
-<p class="byline"><small>By Cami Koons</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://iowacapitaldispatch.com/">Support</a></span></p>
-<a class="shot" href="https://iowacapitaldispatch.com/2026/08/20/national-group-releases-cover-crop-tool-modeled-after-iowa-batch-and-build-program/" tabindex="-1" aria-hidden="true"><img src="../img/8607bcea5d528a3e03225833e8f96820d0962981.jpg" alt="" width="480" height="319" loading="lazy" decoding="async"></a>
-<p>An Iowa program that deploys conservation practices across an area, rather than one at a time, served as a model for a cover crop adoption program launched by American Farmland Trust. The conservation agriculture group released a guide to help producers follow the “batch and grow” cover crop program, which it said removes barriers, lowers</p>
-<p class="more"><a href="https://iowacapitaldispatch.com/2026/08/20/national-group-releases-cover-crop-tool-modeled-after-iowa-batch-and-build-program/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-20T20:53:44+00:00" data-pub="4:53 PM EDT">Thursday, August 20, 2026 at 4:53 PM EDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>NJ / South Jersey / <a href="https://sjclimate.news/">South Jersey Climate News</a></small></p>
-<h2><a href="https://sjclimate.news/8429/from-our-news-partners/data-center-fight-moves-to-nj-courts-with-developers-blaming-local-bans-on-public-hysteria/">Data center fight moves to NJ courts, with developers blaming local bans on ‘public hysteria’</a></h2>
-<p class="byline"><small>By Sophie Nieto-Munoz, New Jersey Monitor</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://sjclimate.news/6813/uncategorized/contribute-to-the-work-of-south-jersey-climate-news/">Donate</a></span></p>
-<a class="shot" href="https://sjclimate.news/8429/from-our-news-partners/data-center-fight-moves-to-nj-courts-with-developers-blaming-local-bans-on-public-hysteria/" tabindex="-1" aria-hidden="true"><img src="../img/90dc19772220b13bb7a45ea6da7272ad7d5624fc.jpg" alt="" width="480" height="399" loading="lazy" decoding="async"></a>
-<p>At least three New Jersey towns are now being sued by data center developers challenging local bans on the facilities.</p>
-<p class="more"><a href="https://sjclimate.news/8429/from-our-news-partners/data-center-fight-moves-to-nj-courts-with-developers-blaming-local-bans-on-public-hysteria/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-20T20:47:34+00:00" data-pub="4:47 PM EDT">Thursday, August 20, 2026 at 4:47 PM EDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>PA / Western PA / <a href="https://www.alleghenyfront.org/">Allegheny Front</a></small></p>
-<h2><a href="https://www.alleghenyfront.org/data-center-ai-construction-opposition/">Opposition to data center construction is rising sharply, survey says</a></h2>
-<p class="byline"><small>By Susan Phillips</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://the-allegheny-front.fundjournalism.org/donate/">Donate</a></span></p>
-<p>Opposition to new data center construction has jumped significantly among both Democrats and Republicans.</p>
-<p class="more"><a href="https://www.alleghenyfront.org/data-center-ai-construction-opposition/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-20T20:30:35+00:00" data-pub="4:30 PM EDT">Thursday, August 20, 2026 at 4:30 PM EDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>OH / Licking County / <a href="https://www.thereportingproject.org/">The Reporting Project</a></small></p>
-<h2><a href="https://www.thereportingproject.org/bright-spot-a-fawn-called-fern/">Bright Spot: A fawn called Fern</a></h2>
-<p class="byline"><small>By Guest Contributor</small><span class="aside"><a class="lozenge" href="../tags/college.html">College</a><a class="lozenge give" href="https://give.denison.edu/schools/DenisonUniversity/honoring-denisonians/pages/TRP">Donate</a></span></p>
-<a class="shot" href="https://www.thereportingproject.org/bright-spot-a-fawn-called-fern/" tabindex="-1" aria-hidden="true"><img src="../img/4d974cbfd2c23c0732858b69cb39060a5a0d6605.jpg" alt="" width="225" height="300" loading="lazy" decoding="async"></a>
-<p>Bright Spots are the perfect cup of coffee in the morning, your favorite song on the radio, a cute dog in the park, and the beautiful moments in our everyday lives.</p>
-<p class="more"><a href="https://www.thereportingproject.org/bright-spot-a-fawn-called-fern/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-20T20:17:41+00:00" data-pub="12:17 PM AKDT">Thursday, August 20, 2026 at 12:17 PM AKDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>AK / Statewide / <a href="https://alaskabeacon.com/">Alaska Beacon</a></small></p>
-<h2><a href="https://alaskabeacon.com/2026/08/20/ruling-overturns-land-trade-in-alaska-wildlife-refuge-casts-doubt-on-road-plan/">Ruling overturns land trade in Alaska wildlife refuge, casts doubt on road plan</a></h2>
-<p class="byline"><small>By Yereth Rosen</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://alaskabeacon.com/">Support</a></span></p>
-<a class="shot" href="https://alaskabeacon.com/2026/08/20/ruling-overturns-land-trade-in-alaska-wildlife-refuge-casts-doubt-on-road-plan/" tabindex="-1" aria-hidden="true"><img src="../img/b8b7acfd60e1a4d5b375ccb9018980291ab24a73.jpg" alt="" width="480" height="300" loading="lazy" decoding="async"></a>
-<p>A federal judge has overturned the land exchange intended to enable the state to build a controversial road through the Izembek National Wildlife Refuge, possibly halting plans for construction to start in the coming weeks. U.S. District Court Judge Sharon Gleason ruled Tuesday that the Department of the Interior violated three laws when it approved</p>
-<p class="more"><a href="https://alaskabeacon.com/2026/08/20/ruling-overturns-land-trade-in-alaska-wildlife-refuge-casts-doubt-on-road-plan/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-20T20:06:02+00:00" data-pub="2:06 PM MDT">Thursday, August 20, 2026 at 2:06 PM MDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>NM / Statewide / <a href="https://sourcenm.com/">Source New Mexico</a></small></p>
-<h2><a href="https://sourcenm.com/2026/08/20/can-a-dam-expansion-hold-back-climate-considerations-on-the-colorado-river/">Can a dam expansion hold back climate considerations on the Colorado River?</a></h2>
-<p class="byline"><small>By Wyatt Myskow, Inside Climate News, Jake Bolster, Inside Climate News</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://sourcenm.com/">Support</a></span></p>
-<a class="shot" href="https://sourcenm.com/2026/08/20/can-a-dam-expansion-hold-back-climate-considerations-on-the-colorado-river/" tabindex="-1" aria-hidden="true"><img src="../img/69de1d6c0f9aa85f5945dc1f3024ab774d1fb6f4.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Is climate change enough justification to stop the expansion of a reservoir that will take more water from the dwindling Colorado River? That’s the central question in a lawsuit pitting the U.S. Army Corps of Engineers and Colorado’s largest water utility against a consortium of environmental nonprofits.</p>
-<p class="more"><a href="https://sourcenm.com/2026/08/20/can-a-dam-expansion-hold-back-climate-considerations-on-the-colorado-river/">Read more <span aria-hidden="true">→</span></a></p>
+<p>After the Virginia Department of Environmental Quality released a 117-page report indicating that available groundwater east of Interstate-95 is “declining (in) availability in the near future,” the agency pitched recommendations on how to tackle the issue to lawmakers Thursday in Richmond. The report detailed the groundwater needs for the Eastern Groundwater Management Area, and showed <a class="lozenge more" href="https://virginiamercury.com/2026/08/21/after-eastern-groundwater-report-detailed-aquifer-concerns-va-lawmakers-consider-policy-shifts/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 </div>
 <p><a id="more" href="environment-8.html">More stories</a></p>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="../index.html">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -409,6 +459,47 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>

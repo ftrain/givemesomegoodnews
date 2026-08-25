@@ -13,12 +13,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(../fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -27,22 +40,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -50,19 +69,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -75,7 +126,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -93,7 +144,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="../index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="../masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -106,7 +157,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="../subjects/news.html">News</a></li><li><a href="../subjects/politics.html">Politics</a></li><li><a href="../subjects/opinion.html">Opinion</a></li><li><a href="../subjects/health.html">Health</a></li><li><a href="../subjects/environment.html">Environment</a></li><li><a href="../subjects/education.html">Education</a></li><li><a href="../subjects/business.html">Business</a></li><li><a href="../subjects/housing.html">Housing</a></li><li><a href="../subjects/sports.html">Sports</a></li><li><a href="../subjects/food.html">Food</a></li><li><a href="../subjects/arts.html">Arts</a></li></ul></nav>
@@ -123,277 +174,279 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <p class="meta">28 newsrooms tagged Solutions journalism. <a href="../catalog.html">All tags</a></p>
 <div id="feed-items">
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T13:50:09+00:00" data-pub="6:50 AM PDT">Tuesday, August 25, 2026 at 6:50 AM PDT</time></small></p>
-<p><small>CA / Sacramento / <a href="https://nowruzmedia.com/">Nowruz Media</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://chronogramsocialclub.memberful.com/join">Become a member</a></aside>
+<p class="source"><a href="https://www.chronogram.com/river-newsroom"><strong>The River</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:40:57+00:00" data-pub="12:40 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Hudson+Valley&state=NY">Hudson Valley</a></p>
+<h2><a href="https://www.chronogram.com/resource-guide/new-york-canada-two-cannabis-rulebooks/">Two Legal Cannabis Systems, One Border Apart</a></h2>
+<p class="byline">By Christopher Pape</p>
+<a class="shot" href="https://www.chronogram.com/resource-guide/new-york-canada-two-cannabis-rulebooks/" tabindex="-1" aria-hidden="true"><img src="../img/b3d2ffee19d48d222c0b12fe94c03f0f1c2ca4a8.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Walk down Wall Street in Kingston or Main Street in Beacon and the change is easy to miss. A licensed dispensary now looks like any other retail tenant, with a window sticker and regular hours. Five years ago none of it existed. The Hudson Valley got a legal market and then, very quickly, got used <a class="lozenge more" href="https://www.chronogram.com/resource-guide/new-york-canada-two-cannabis-rulebooks/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://chronogramsocialclub.memberful.com/join">Become a member</a></aside>
+<p class="source"><a href="https://www.chronogram.com/river-newsroom"><strong>The River</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:38:10+00:00" data-pub="12:38 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Hudson+Valley&state=NY">Hudson Valley</a></p>
+<h2><a href="https://www.chronogram.com/resource-guide/what-hudson-valley-real-estate-investors-should-know-before-buying-their-next-property/">What Hudson Valley Real Estate Investors Should Know Before Buying Their Next Property</a></h2>
+<p class="byline">By Christopher Pape</p>
+<a class="shot" href="https://www.chronogram.com/resource-guide/what-hudson-valley-real-estate-investors-should-know-before-buying-their-next-property/" tabindex="-1" aria-hidden="true"><img src="../img/f6f7bfb2e9495dc5b20714824ed271b441a5e3be.webp" alt="" width="480" height="309" loading="lazy" decoding="async"></a>
+<p>For real estate investors, the Hudson Valley can be an appealing place to own property. But buying an investment property here requires more than finding a promising listing and calculating the expected rent. The details matter. Property condition, local regulations, taxes, insurance, financing, rental income, and operating expenses can all affect whether a property makes <a class="lozenge more" href="https://www.chronogram.com/resource-guide/what-hudson-valley-real-estate-investors-should-know-before-buying-their-next-property/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://chronogramsocialclub.memberful.com/join">Become a member</a></aside>
+<p class="source"><a href="https://www.chronogram.com/river-newsroom"><strong>The River</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:36:12+00:00" data-pub="12:36 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Hudson+Valley&state=NY">Hudson Valley</a></p>
+<h2><a href="https://www.chronogram.com/resource-guide/what-to-know-before-you-call-a-garage-door-technician/">What to Know Before You Call a Garage Door Technician</a></h2>
+<p class="byline">By Christopher Pape</p>
+<a class="shot" href="https://www.chronogram.com/resource-guide/what-to-know-before-you-call-a-garage-door-technician/" tabindex="-1" aria-hidden="true"><img src="../img/ab57a86c5c04ac54bc76858989dd5f117a903f77.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>A garage door problem can go from mildly annoying to seriously disruptive in a matter of minutes. One moment, you are leaving for work, and the next, the door refuses to move with your car still inside. When that happens, quick turnaround garage door repair can help restore access without turning the problem into a <a class="lozenge more" href="https://www.chronogram.com/resource-guide/what-to-know-before-you-call-a-garage-door-technician/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://donate.mazloweb.com/donate/V7v4sq9GsKAvBqEZ814eeX">Donate</a></aside>
+<p class="source"><a href="https://nowruzmedia.com/"><strong>Nowruz Media</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T13:50:09+00:00" data-pub="6:50 AM PDT">Tue, Aug 25 @ 6AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Sacramento&state=CA">Sacramento</a></p>
 <h2><a href="https://nowruzmedia.com/court-ruling-afghan-travel-ban-remains-in-effect/">ممنوعیت سفر شهروندان افغانستان لغو نشده است؛ مشوره‌های یک وکیل مهاجرت درباره حکم اخیر دادگاه</a></h2>
-<p class="byline"><small>By Sodaba Ehrari</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://donate.mazloweb.com/donate/V7v4sq9GsKAvBqEZ814eeX">Donate</a></span></p>
-<p>در پی صدور حکم یک دادگاه فدرال امریکا در ۲۱ آگست ۲۰۲۶ درباره سیاست وزارت خارجه این کشور برای صدور ویزای مهاجرتی اتباع ۷۵ کشور، پرسش‌ها و سردرگمی‌هایی درباره تأثیر این تصمیم بر شهروندان افغانستان به وجود آمده است. سازمان جامعه افغان-امریکایی (AACO) د... نوشته ممنوعیت سفر شهروندان افغانستان لغو نشده است؛ مشوره‌های یک وکیل مهاجرت درباره حکم اخیر دادگاه اولین بار در نوروز میدیا. پدیدار شد.</p>
-<p class="more"><a href="https://nowruzmedia.com/court-ruling-afghan-travel-ban-remains-in-effect/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Sodaba Ehrari</p>
+<p>در پی صدور حکم یک دادگاه فدرال امریکا در ۲۱ آگست ۲۰۲۶ درباره سیاست وزارت خارجه این کشور برای صدور ویزای مهاجرتی اتباع ۷۵ کشور، پرسش‌ها و سردرگمی‌هایی درباره تأثیر این تصمیم بر شهروندان افغانستان به وجود آمده است. سازمان جامعه افغان-امریکایی (AACO) د... نوشته ممنوعیت سفر شهروندان افغانستان لغو نشده است؛ مشوره‌های یک وکیل مهاجرت درباره حکم اخیر دادگاه اولین بار در نوروز میدیا. پدیدار شد. <a class="lozenge more" href="https://nowruzmedia.com/court-ruling-afghan-travel-ban-remains-in-effect/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T12:00:00+00:00" data-pub="5:00 AM PDT">Tuesday, August 25, 2026 at 5:00 AM PDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>CA / Los Angeles / <a href="https://nextcity.org/Los_Angeles">Next City: Los Angeles</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://thelandcle.org/membership/">Donate</a></aside>
+<p class="source"><a href="https://thelandcle.org/"><strong>The Land</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T13:06:02+00:00" data-pub="9:06 AM EDT">Tue, Aug 25 @ 9AM EDT</time><a class="lozenge place" href="/search?state=OH">Ohio</a><a class="lozenge place" href="/search?place=Cleveland&state=OH">Cleveland</a></p>
+<h2><a href="https://thelandcle.org/stories/trumps-trade-war-with-canada-could-rattle-economy-in-ohio-other-states-with-key-senate-races/">Trump’s trade war with Canada could rattle economy in Ohio, other states with key Senate races</a></h2>
+<p class="byline">By The Associated Press</p>
+<a class="shot" href="https://thelandcle.org/stories/trumps-trade-war-with-canada-could-rattle-economy-in-ohio-other-states-with-key-senate-races/" tabindex="-1" aria-hidden="true"><img src="../img/2292639488b215f8daafbcf6383f7de76b440079.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Ohio exports a number of goods to Canada and the tariffs could become an issue locally in the Buckeye State. <a class="lozenge more" href="https://thelandcle.org/stories/trumps-trade-war-with-canada-could-rattle-economy-in-ohio-other-states-with-key-senate-races/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://secondwavemedia.com/support-us/">Donate</a></aside>
+<p class="source"><a href="https://www.secondwavemedia.com/"><strong>Second Wave</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T13:04:16+00:00" data-pub="9:04 AM EDT">Tue, Aug 25 @ 9AM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=-&state=MI">-</a></p>
+<h2><a href="https://secondwavemedia.com/bonnie-gabriels-work-strengthening-small-businesses-in-west-michigan/">Bonnie Gabriel’s work strengthening small businesses in West Michigan</a></h2>
+<p class="byline">By Newsroom</p>
+<a class="shot" href="https://secondwavemedia.com/bonnie-gabriels-work-strengthening-small-businesses-in-west-michigan/" tabindex="-1" aria-hidden="true"><img src="../img/fbc1a1ab3c566ebf5cf9f695fee81ef9342f28a3.webp" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Bonnie Gabriel and the Michigan SBDC help West Michigan’s small businesses navigate economic uncertainty, grow sustainably, and strengthen the communities they serve. <a class="lozenge more" href="https://secondwavemedia.com/bonnie-gabriels-work-strengthening-small-businesses-in-west-michigan/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://secondwavemedia.com/support-us/">Donate</a></aside>
+<p class="source"><a href="https://www.secondwavemedia.com/"><strong>Second Wave</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T12:42:58+00:00" data-pub="8:42 AM EDT">Tue, Aug 25 @ 8AM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=-&state=MI">-</a></p>
+<h2><a href="https://secondwavemedia.com/small-business-social-hours-foster-success-through-face-to-face-connection/">Small Business Social Hours foster success through face-to-face connection</a></h2>
+<p class="byline">By Estelle Slootmaker</p>
+<a class="shot" href="https://secondwavemedia.com/small-business-social-hours-foster-success-through-face-to-face-connection/" tabindex="-1" aria-hidden="true"><img src="../img/18bee7844078f6eba4737e14003ffb251082d02d.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Why face-to-face networking opportunities are even more important for small businesses and entrepreneurs. <a class="lozenge more" href="https://secondwavemedia.com/small-business-social-hours-foster-success-through-face-to-face-connection/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://fromcommonground.com/small-business-social-hours-foster-success-through-face-to-face-connection/">High Ground News</a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://nextcity.org/donate">Donate</a></aside>
+<p class="source"><a href="https://nextcity.org/Los_Angeles"><strong>Next City: Los Angeles</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T12:00:00+00:00" data-pub="5:00 AM PDT">Tue, Aug 25 @ 5AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
 <h2><a href="https://nextcity.org/features/learning-to-drive-in-gaza-city">Learning To Drive in Gaza City</a></h2>
-<p class="byline"><small>By Ansam Al-Kitaa</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://nextcity.org/donate">Donate</a></span></p>
+<p class="byline">By Ansam Al-Kitaa</p>
 <a class="shot" href="https://nextcity.org/features/learning-to-drive-in-gaza-city" tabindex="-1" aria-hidden="true"><img src="../img/bf796f3da1486dfe864c6fcad1751a1e4174306a.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Essay: A Palestinian driving school and its four remaining cars are surviving the same way the whole city is: by salvaging, improvising, and refusing to stop.</p>
-<p class="more"><a href="https://nextcity.org/features/learning-to-drive-in-gaza-city">Read more <span aria-hidden="true">→</span></a></p>
+<p>Essay: A Palestinian driving school and its four remaining cars are surviving the same way the whole city is: by salvaging, improvising, and refusing to stop. <a class="lozenge more" href="https://nextcity.org/features/learning-to-drive-in-gaza-city">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:01:00+00:00" data-pub="12:01 AM HST">Tuesday, August 25, 2026 at 12:01 AM HST</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>HI / Statewide / <a href="https://www.civilbeat.org/">Honolulu Civil Beat</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://civilbeat.fundjournalism.org/?amount=15&amp;campaign=701UI00000BcKdj&amp;frequency=monthly">Donate</a></aside>
+<p class="source"><a href="https://www.civilbeat.org/"><strong>Honolulu Civil Beat</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:01:00+00:00" data-pub="12:01 AM HST">Tue, Aug 25 @ 12AM HST</time><a class="lozenge place" href="/search?state=HI">Hawaii</a></p>
 <h2><a href="https://www.civilbeat.org/2026/08/5-takeaways-from-our-investigation-of-methamphetamine-in-hawaii/">5 Takeaways From Our Investigation Of Methamphetamine In Hawaiʻi</a></h2>
-<p class="byline"><small>By &quot;John Hill&quot;</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://civilbeat.fundjournalism.org/?amount=15&amp;campaign=701UI00000BcKdj&amp;frequency=monthly">Donate</a></span></p>
+<p class="byline">By &quot;John Hill&quot;</p>
 <a class="shot" href="https://www.civilbeat.org/2026/08/5-takeaways-from-our-investigation-of-methamphetamine-in-hawaii/" tabindex="-1" aria-hidden="true"><img src="../img/c2510d50b72100da6b662bfbbb4e06c1ec857533.jpg" alt="" width="299" height="226" loading="lazy" decoding="async"></a>
-<p>A Civil Beat series starting today examines the people caught up in Hawaiʻi&#x27;s most severe drug problem, how it started and what&#x27;s being done about it.</p>
-<p class="more"><a href="https://www.civilbeat.org/2026/08/5-takeaways-from-our-investigation-of-methamphetamine-in-hawaii/">Read more <span aria-hidden="true">→</span></a></p>
+<p>A Civil Beat series starting today examines the people caught up in Hawaiʻi&#x27;s most severe drug problem, how it started and what&#x27;s being done about it. <a class="lozenge more" href="https://www.civilbeat.org/2026/08/5-takeaways-from-our-investigation-of-methamphetamine-in-hawaii/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:01:00+00:00" data-pub="12:01 AM HST">Tuesday, August 25, 2026 at 12:01 AM HST</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>HI / Statewide / <a href="https://www.civilbeat.org/">Honolulu Civil Beat</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://civilbeat.fundjournalism.org/?amount=15&amp;campaign=701UI00000BcKdj&amp;frequency=monthly">Donate</a></aside>
+<p class="source"><a href="https://www.civilbeat.org/"><strong>Honolulu Civil Beat</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:01:00+00:00" data-pub="12:01 AM HST">Tue, Aug 25 @ 12AM HST</time><a class="lozenge place" href="/search?state=HI">Hawaii</a></p>
 <h2><a href="https://www.civilbeat.org/2026/08/jeta-intellectual-theft-in-the-artificial-age/">Jeta: Intellectual Theft In The Artificial Age</a></h2>
-<p class="byline"><small>By &quot;Jenny &quot;Jeta&quot; Tang&quot;</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://civilbeat.fundjournalism.org/?amount=15&amp;campaign=701UI00000BcKdj&amp;frequency=monthly">Donate</a></span></p>
+<p class="byline">By &quot;Jenny &quot;Jeta&quot; Tang&quot;</p>
 <a class="shot" href="https://www.civilbeat.org/2026/08/jeta-intellectual-theft-in-the-artificial-age/" tabindex="-1" aria-hidden="true"><img src="../img/2b82da457e09ed9e004baae2a038b9aaf38f9b03.jpg" alt="" width="299" height="255" loading="lazy" decoding="async"></a>
-<p>Hawaiʻi musicians confront extraction, exploitation and ownership in the age of AI music.</p>
-<p class="more"><a href="https://www.civilbeat.org/2026/08/jeta-intellectual-theft-in-the-artificial-age/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Hawaiʻi musicians confront extraction, exploitation and ownership in the age of AI music. <a class="lozenge more" href="https://www.civilbeat.org/2026/08/jeta-intellectual-theft-in-the-artificial-age/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:01:00+00:00" data-pub="12:01 AM HST">Tuesday, August 25, 2026 at 12:01 AM HST</time></small></p>
-<p><small>HI / Statewide / <a href="https://www.civilbeat.org/">Honolulu Civil Beat</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://civilbeat.fundjournalism.org/?amount=15&amp;campaign=701UI00000BcKdj&amp;frequency=monthly">Donate</a></aside>
+<p class="source"><a href="https://www.civilbeat.org/"><strong>Honolulu Civil Beat</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:01:00+00:00" data-pub="12:01 AM HST">Tue, Aug 25 @ 12AM HST</time><a class="lozenge place" href="/search?state=HI">Hawaii</a></p>
 <h2><a href="https://www.civilbeat.org/2026/08/word-row-aug-25/">Word Row: Aug. 25</a></h2>
-<p class="byline"><small>By &quot;The Civil Beat Staff&quot;</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://civilbeat.fundjournalism.org/?amount=15&amp;campaign=701UI00000BcKdj&amp;frequency=monthly">Donate</a></span></p>
+<p class="byline">By &quot;The Civil Beat Staff&quot;</p>
 <a class="shot" href="https://www.civilbeat.org/2026/08/word-row-aug-25/" tabindex="-1" aria-hidden="true"><img src="../img/66a62330aec93b74c957ab854cb0788e24e2c749.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
-<p>Six chances to figure out one five-letter word.</p>
-<p class="more"><a href="https://www.civilbeat.org/2026/08/word-row-aug-25/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Six chances to figure out one five-letter word. <a class="lozenge more" href="https://www.civilbeat.org/2026/08/word-row-aug-25/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:01:00+00:00" data-pub="12:01 AM HST">Tuesday, August 25, 2026 at 12:01 AM HST</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>HI / Statewide / <a href="https://www.civilbeat.org/">Honolulu Civil Beat</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://civilbeat.fundjournalism.org/?amount=15&amp;campaign=701UI00000BcKdj&amp;frequency=monthly">Donate</a></aside>
+<p class="source"><a href="https://www.civilbeat.org/"><strong>Honolulu Civil Beat</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:01:00+00:00" data-pub="12:01 AM HST">Tue, Aug 25 @ 12AM HST</time><a class="lozenge place" href="/search?state=HI">Hawaii</a></p>
 <h2><a href="https://www.civilbeat.org/2026/08/rural-maui-residents-still-isolated-after-lala-washed-away-bridge/">Rural Maui Residents Still Isolated After Lala Washed Away Bridge</a></h2>
-<p class="byline"><small>By &quot;Erin Nolan&quot;</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://civilbeat.fundjournalism.org/?amount=15&amp;campaign=701UI00000BcKdj&amp;frequency=monthly">Donate</a></span></p>
+<p class="byline">By &quot;Erin Nolan&quot;</p>
 <a class="shot" href="https://www.civilbeat.org/2026/08/rural-maui-residents-still-isolated-after-lala-washed-away-bridge/" tabindex="-1" aria-hidden="true"><img src="../img/88c503c9e8e2e6877a7dc269ee70a93bfb0465c8.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
-<p>Emergency crews are flying in supplies to Nāhiku but a decades-long debate over who owns the bridge is complicating a long-term solution for this small community along the Road to Hana.</p>
-<p class="more"><a href="https://www.civilbeat.org/2026/08/rural-maui-residents-still-isolated-after-lala-washed-away-bridge/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Emergency crews are flying in supplies to Nāhiku but a decades-long debate over who owns the bridge is complicating a long-term solution for this small community along the Road to Hana. <a class="lozenge more" href="https://www.civilbeat.org/2026/08/rural-maui-residents-still-isolated-after-lala-washed-away-bridge/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:01:00+00:00" data-pub="12:01 AM HST">Tuesday, August 25, 2026 at 12:01 AM HST</time></small></p>
-<p><small>HI / Statewide / <a href="https://www.civilbeat.org/">Honolulu Civil Beat</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://civilbeat.fundjournalism.org/?amount=15&amp;campaign=701UI00000BcKdj&amp;frequency=monthly">Donate</a></aside>
+<p class="source"><a href="https://www.civilbeat.org/"><strong>Honolulu Civil Beat</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:01:00+00:00" data-pub="12:01 AM HST">Tue, Aug 25 @ 12AM HST</time><a class="lozenge place" href="/search?state=HI">Hawaii</a></p>
 <h2><a href="https://www.civilbeat.org/2026/08/in-a-big-hurricane-dont-count-on-hawaii-shelters-to-protect-you/">In A Big Hurricane, Don’t Count On Hawaiʻi Shelters To Protect You</a></h2>
-<p class="byline"><small>By &quot;Hikari Mae Hida&quot;</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://civilbeat.fundjournalism.org/?amount=15&amp;campaign=701UI00000BcKdj&amp;frequency=monthly">Donate</a></span></p>
+<p class="byline">By &quot;Hikari Mae Hida&quot;</p>
 <a class="shot" href="https://www.civilbeat.org/2026/08/in-a-big-hurricane-dont-count-on-hawaii-shelters-to-protect-you/" tabindex="-1" aria-hidden="true"><img src="../img/cc7e36b1deb28cce1168aac5b8055fcdc3c91bb8.jpg" alt="" width="300" height="169" loading="lazy" decoding="async"></a>
-<p>Eight years ago, a Civil Beat investigation found the island’s shelters were unable to withstand even a moderate hurricane. Today, officials won&#x27;t say what improvements they&#x27;ve made.</p>
-<p class="more"><a href="https://www.civilbeat.org/2026/08/in-a-big-hurricane-dont-count-on-hawaii-shelters-to-protect-you/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Eight years ago, a Civil Beat investigation found the island’s shelters were unable to withstand even a moderate hurricane. Today, officials won&#x27;t say what improvements they&#x27;ve made. <a class="lozenge more" href="https://www.civilbeat.org/2026/08/in-a-big-hurricane-dont-count-on-hawaii-shelters-to-protect-you/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:01:00+00:00" data-pub="12:01 AM HST">Tuesday, August 25, 2026 at 12:01 AM HST</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>HI / Statewide / <a href="https://www.civilbeat.org/">Honolulu Civil Beat</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://civilbeat.fundjournalism.org/?amount=15&amp;campaign=701UI00000BcKdj&amp;frequency=monthly">Donate</a></aside>
+<p class="source"><a href="https://www.civilbeat.org/"><strong>Honolulu Civil Beat</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:01:00+00:00" data-pub="12:01 AM HST">Tue, Aug 25 @ 12AM HST</time><a class="lozenge place" href="/search?state=HI">Hawaii</a></p>
 <h2><a href="https://www.civilbeat.org/2026/08/100-autopsies-meth-deaths-spiking-40-years-after-ice-seized-hawaii/">100 Autopsies: Meth Deaths Spiking 40 Years After Ice Seized Hawaiʻi</a></h2>
-<p class="byline"><small>By &quot;John Hill&quot;</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://civilbeat.fundjournalism.org/?amount=15&amp;campaign=701UI00000BcKdj&amp;frequency=monthly">Donate</a></span></p>
+<p class="byline">By &quot;John Hill&quot;</p>
 <a class="shot" href="https://www.civilbeat.org/2026/08/100-autopsies-meth-deaths-spiking-40-years-after-ice-seized-hawaii/" tabindex="-1" aria-hidden="true"><img src="../img/84f24f781a8617880472c82a6b2d82c038a3a6de.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
-<p>Hawaiʻi was ground zero for smoking methamphetamine in the U.S. Today, it&#x27;s the only place where meth is far deadlier than opioids — yet the state has been slow to act.</p>
-<p class="more"><a href="https://www.civilbeat.org/2026/08/100-autopsies-meth-deaths-spiking-40-years-after-ice-seized-hawaii/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Hawaiʻi was ground zero for smoking methamphetamine in the U.S. Today, it&#x27;s the only place where meth is far deadlier than opioids—yet the state has been slow to act. <a class="lozenge more" href="https://www.civilbeat.org/2026/08/100-autopsies-meth-deaths-spiking-40-years-after-ice-seized-hawaii/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:00:46+00:00" data-pub="6:00 AM EDT">Tuesday, August 25, 2026 at 6:00 AM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>PA / Philadelphia / <a href="https://thephiladelphiacitizen.org/about/">The Philadelphia Citizen</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://thephiladelphiacitizen.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://thephiladelphiacitizen.org/about/"><strong>The Philadelphia Citizen</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T10:00:46+00:00" data-pub="6:00 AM EDT">Tue, Aug 25 @ 6AM EDT</time><a class="lozenge place" href="/search?state=PA">Pennsylvania</a><a class="lozenge place" href="/search?place=Philadelphia&state=PA">Philadelphia</a></p>
 <h2><a href="https://thephiladelphiacitizen.org/guest-commentary-yet-again-its-all-about-josh/">Guest Commentary: Yet Again, It’s All About Josh</a></h2>
-<p class="byline"><small>By Guy Ciarrocchi</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://thephiladelphiacitizen.org/donate/">Donate</a></span></p>
+<p class="byline">By Guy Ciarrocchi</p>
 <a class="shot" href="https://thephiladelphiacitizen.org/guest-commentary-yet-again-its-all-about-josh/" tabindex="-1" aria-hidden="true"><img src="../img/2621e78f11c894a130b514bb24f9c43d2144c2be.jpg" alt="" width="480" height="240" loading="lazy" decoding="async"></a>
-<p>So if you’re keeping score, Governor Josh Shapiro is now opposed to data centers. Loudly and forcefully — for Pennsylvania voters to hear from Allentown to Ligonier, and for progressive Democrats to hear from Des Moines, Iowa, to Charleston, South Carolina. For Pennsylvanians, I understand if you’re confused. After all, Shapiro had been passionately for … Continue reading Guest Commentary: Yet Aga</p>
-<p class="more"><a href="https://thephiladelphiacitizen.org/guest-commentary-yet-again-its-all-about-josh/">Read more <span aria-hidden="true">→</span></a></p>
+<p>So if you’re keeping score, Governor Josh Shapiro is now opposed to data centers. Loudly and forcefully—for Pennsylvania voters to hear from Allentown to Ligonier, and for progressive Democrats to hear from Des Moines, Iowa, to Charleston, South Carolina. For Pennsylvanians, I understand if you’re confused. After all, Shapiro had been passionately for … Continue reading Guest Commentary: Yet Aga <a class="lozenge more" href="https://thephiladelphiacitizen.org/guest-commentary-yet-again-its-all-about-josh/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T09:50:21+00:00" data-pub="5:50 AM EDT">Tuesday, August 25, 2026 at 5:50 AM EDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>PA / Philadelphia / <a href="https://thephiladelphiacitizen.org/about/">The Philadelphia Citizen</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://thephiladelphiacitizen.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://thephiladelphiacitizen.org/about/"><strong>The Philadelphia Citizen</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T09:50:21+00:00" data-pub="5:50 AM EDT">Tue, Aug 25 @ 5AM EDT</time><a class="lozenge place" href="/search?state=PA">Pennsylvania</a><a class="lozenge place" href="/search?place=Philadelphia&state=PA">Philadelphia</a></p>
 <h2><a href="https://thephiladelphiacitizen.org/the-new-urban-order-retail-public-good-meantime/">The New Urban Order: Retail as a Public Good?</a></h2>
-<p class="byline"><small>By Diana Lind</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://thephiladelphiacitizen.org/donate/">Donate</a></span></p>
+<p class="byline">By Diana Lind</p>
 <a class="shot" href="https://thephiladelphiacitizen.org/the-new-urban-order-retail-public-good-meantime/" tabindex="-1" aria-hidden="true"><img src="../img/29d988536e8aa7f5c2d83e120cdfc551675a49f1.jpg" alt="" width="480" height="240" loading="lazy" decoding="async"></a>
-<p>As Philadelphia prepared to host a run of major 2026 events — the 250th, the World Cup, the MLB All-Star Weekend — it got to work on public space beautification and wayfinding. Sidewalks were repaired; flowers were planted; new signage went in. The city wanted to look its best, and as someone who’s taken a … Continue reading The New Urban Order: Retail as a Public Good?</p>
-<p class="more"><a href="https://thephiladelphiacitizen.org/the-new-urban-order-retail-public-good-meantime/">Read more <span aria-hidden="true">→</span></a></p>
+<p>As Philadelphia prepared to host a run of major 2026 events—the 250th, the World Cup, the MLB All-Star Weekend—it got to work on public space beautification and wayfinding. Sidewalks were repaired; flowers were planted; new signage went in. The city wanted to look its best, and as someone who’s taken a … Continue reading The New Urban Order: Retail as a Public Good? <a class="lozenge more" href="https://thephiladelphiacitizen.org/the-new-urban-order-retail-public-good-meantime/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:00:00+00:00" data-pub="11:00 PM CDT">Monday, August 24, 2026 at 11:00 PM CDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>TN / Memphis / <a href="https://www.highgroundnews.com/">High Ground News</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://www.highgroundnews.com/support-us/">Donate</a></aside>
+<p class="source"><a href="https://www.highgroundnews.com/"><strong>High Ground News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T04:00:00+00:00" data-pub="11:00 PM CDT">Mon, Aug 24 @ 11PM CDT</time><a class="lozenge place" href="/search?state=TN">Tennessee</a><a class="lozenge place" href="/search?place=Memphis&state=TN">Memphis</a></p>
 <h2><a href="https://fromcommonground.com/covid-kids-mental-health-how-are-the-pandemics-littles-doing-in-middle-and-high-school/">COVID kids and mental health: How are pandemic littles doing today?</a></h2>
-<p class="byline"><small>By Estelle Slootmaker</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://www.highgroundnews.com/support-us/">Donate</a></span></p>
+<p class="byline">By Estelle Slootmaker</p>
 <a class="shot" href="https://fromcommonground.com/covid-kids-mental-health-how-are-the-pandemics-littles-doing-in-middle-and-high-school/" tabindex="-1" aria-hidden="true"><img src="../img/ec6ca54b11ee5a623651fd693f940ef36fa43f8d.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Mental health challenges have surfaced but kids also benefited from increased family time and less hectic schedules.</p>
-<p class="more"><a href="https://fromcommonground.com/covid-kids-mental-health-how-are-the-pandemics-littles-doing-in-middle-and-high-school/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Mental health challenges have surfaced but kids also benefited from increased family time and less hectic schedules. <a class="lozenge more" href="https://fromcommonground.com/covid-kids-mental-health-how-are-the-pandemics-littles-doing-in-middle-and-high-school/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:00:00+00:00" data-pub="11:00 PM CDT">Monday, August 24, 2026 at 11:00 PM CDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>TN / Memphis / <a href="https://www.highgroundnews.com/">High Ground News</a></small></p>
-<h2><a href="https://fromcommonground.com/small-business-social-hours-foster-success-through-face-to-face-connection/">Small Business Social Hours foster success through face-to-face connection</a></h2>
-<p class="byline"><small>By Estelle Slootmaker</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://www.highgroundnews.com/support-us/">Donate</a></span></p>
-<a class="shot" href="https://fromcommonground.com/small-business-social-hours-foster-success-through-face-to-face-connection/" tabindex="-1" aria-hidden="true"><img src="../img/2e8368da16a10920bc6c1f67fa6ae09237a7802e.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Why face-to-face networking opportunities are even more important for small businesses and entrepreneurs.</p>
-<p class="more"><a href="https://fromcommonground.com/small-business-social-hours-foster-success-through-face-to-face-connection/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-25T04:00:00+00:00" data-pub="11:00 PM CDT">Monday, August 24, 2026 at 11:00 PM CDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>TN / Memphis / <a href="https://www.highgroundnews.com/">High Ground News</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://www.highgroundnews.com/support-us/">Donate</a></aside>
+<p class="source"><a href="https://www.highgroundnews.com/"><strong>High Ground News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T04:00:00+00:00" data-pub="11:00 PM CDT">Mon, Aug 24 @ 11PM CDT</time><a class="lozenge place" href="/search?state=TN">Tennessee</a><a class="lozenge place" href="/search?place=Memphis&state=TN">Memphis</a></p>
 <h2><a href="https://fromcommonground.com/free-wonderschool-platform-will-help-michigan-families-find-childcare-faster/">Free Wonderschool platform will help Michigan families find childcare faster</a></h2>
-<p class="byline"><small>By Brianna Nargiso</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://www.highgroundnews.com/support-us/">Donate</a></span></p>
+<p class="byline">By Brianna Nargiso</p>
 <a class="shot" href="https://fromcommonground.com/free-wonderschool-platform-will-help-michigan-families-find-childcare-faster/" tabindex="-1" aria-hidden="true"><img src="../img/b95c5c0df558acc91c40edd642349557bdc8803a.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>Scheduled to launch early 2027, the platform will connect parents to available childcare and preschool spaces with one application.</p>
-<p class="more"><a href="https://fromcommonground.com/free-wonderschool-platform-will-help-michigan-families-find-childcare-faster/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Scheduled to launch early 2027, the platform will connect parents to available childcare and preschool spaces with one application. <a class="lozenge more" href="https://fromcommonground.com/free-wonderschool-platform-will-help-michigan-families-find-childcare-faster/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T22:53:42+00:00" data-pub="3:53 PM MST">Monday, August 24, 2026 at 3:53 PM MST</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>AZ / Statewide / <a href="https://azluminaria.org/">Arizona Luminaria</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://azluminaria.org/membership">Become a member</a></aside>
+<p class="source"><a href="https://azluminaria.org/"><strong>Arizona Luminaria</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T22:53:42+00:00" data-pub="3:53 PM MST">Mon, Aug 24 @ 3PM MST</time><a class="lozenge place" href="/search?state=AZ">Arizona</a></p>
 <h2><a href="https://azluminaria.org/2026/08/24/which-schools-could-tusd-close-board-will-discuss-plan-tuesday/">Which schools could TUSD close? Board will discuss plan Tuesday</a></h2>
-<p class="byline"><small>By Shannon Conner</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://azluminaria.org/membership">Become a member</a></span></p>
+<p class="byline">By Shannon Conner</p>
 <a class="shot" href="https://azluminaria.org/2026/08/24/which-schools-could-tusd-close-board-will-discuss-plan-tuesday/" tabindex="-1" aria-hidden="true"><img src="../img/9a7789ca2d686b6e09e1a1fa1d0396b6bd2c8db1.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>The Tucson Unified School District will discuss its plan for closing and consolidating schools amid declining enrollment at its Aug. 25 Governing Board meeting. Clarifying details should come in the board meeting presentation called “Reimagining Our Schools Together — A Community Engagement Plan for Elements of the Enrollment Stabilization Program,” according to TUSD’s agenda. The</p>
-<p class="more"><a href="https://azluminaria.org/2026/08/24/which-schools-could-tusd-close-board-will-discuss-plan-tuesday/">Read more <span aria-hidden="true">→</span></a></p>
+<p>The Tucson Unified School District will discuss its plan for closing and consolidating schools amid declining enrollment at its Aug. 25 Governing Board meeting. Clarifying details should come in the board meeting presentation called “Reimagining Our Schools Together—A Community Engagement Plan for Elements of the Enrollment Stabilization Program,” according to TUSD’s agenda. The <a class="lozenge more" href="https://azluminaria.org/2026/08/24/which-schools-could-tusd-close-board-will-discuss-plan-tuesday/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T22:44:23+00:00" data-pub="3:44 PM PDT">Monday, August 24, 2026 at 3:44 PM PDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>CA / Long Beach / <a href="https://lbcurrent.com/about/">Long Beach Current</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/college.html">College</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://lbcurrent.com/about/">Support</a></aside>
+<p class="source"><a href="https://lbcurrent.com/about/"><strong>Long Beach Current</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T22:44:23+00:00" data-pub="3:44 PM PDT">Mon, Aug 24 @ 3PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Long+Beach&state=CA">Long Beach</a></p>
 <h2><a href="https://lbcurrent.com/news/2026/08/24/we-were-robbed-students-parents-outraged-over-la-playa-move-in-delay-housing-relocation/">‘We were robbed’: Students, parents outraged over La Playa move-in delay, housing relocation</a></h2>
-<p class="byline"><small>By Claire Morris</small><span class="aside"><a class="lozenge" href="../tags/college.html">College</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://lbcurrent.com/about/">Support</a></span></p>
-<p>Incoming La Playa Hall residents were buzzing with excitement Sunday morning, ready to move in to the highly anticipated $115-million dormitory. But later that morning, those hopes were crushed as families gathered outside with luggage in hand were told by university representatives and notified via email that the building was not ready for students to move in. Instead, they would be relocated to </p>
-<p class="more"><a href="https://lbcurrent.com/news/2026/08/24/we-were-robbed-students-parents-outraged-over-la-playa-move-in-delay-housing-relocation/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Claire Morris</p>
+<p>Incoming La Playa Hall residents were buzzing with excitement Sunday morning, ready to move in to the highly anticipated $115-million dormitory. But later that morning, those hopes were crushed as families gathered outside with luggage in hand were told by university representatives and notified via email that the building was not ready for students to move in. Instead, they would be relocated to  <a class="lozenge more" href="https://lbcurrent.com/news/2026/08/24/we-were-robbed-students-parents-outraged-over-la-playa-move-in-delay-housing-relocation/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T22:00:30+00:00" data-pub="3:00 PM PDT">Monday, August 24, 2026 at 3:00 PM PDT</time></small></p>
-<p><small>CA / Long Beach / <a href="https://lbcurrent.com/about/">Long Beach Current</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/college.html">College</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://lbcurrent.com/about/">Support</a></aside>
+<p class="source"><a href="https://lbcurrent.com/about/"><strong>Long Beach Current</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T22:00:30+00:00" data-pub="3:00 PM PDT">Mon, Aug 24 @ 3PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Long+Beach&state=CA">Long Beach</a></p>
 <h2><a href="https://lbcurrent.com/uncategorized/2026/08/24/best-study-spots-at-csulb/">Best study spots at CSULB</a></h2>
-<p class="byline"><small>By Mason Mangus</small><span class="aside"><a class="lozenge" href="../tags/college.html">College</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://lbcurrent.com/about/">Support</a></span></p>
-<p>As the fall semester kicks off, Long Beach State students will settle into their academic routines and study habits. This makes it essential to know where you can find a study spot that fits your individual needs and preferences. While some might already know about these locations on campus, they may still be unaware of the resources these spaces offer for students. From wireless printing to writi</p>
-<p class="more"><a href="https://lbcurrent.com/uncategorized/2026/08/24/best-study-spots-at-csulb/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Mason Mangus</p>
+<p>As the fall semester kicks off, Long Beach State students will settle into their academic routines and study habits. This makes it essential to know where you can find a study spot that fits your individual needs and preferences. While some might already know about these locations on campus, they may still be unaware of the resources these spaces offer for students. From wireless printing to writi <a class="lozenge more" href="https://lbcurrent.com/uncategorized/2026/08/24/best-study-spots-at-csulb/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T21:36:19+00:00" data-pub="5:36 PM EDT">Monday, August 24, 2026 at 5:36 PM EDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>GA / Savannah / <a href="https://thecurrentga.org/">The Current</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://givebutter.com/local-news-that-answers-to-coastal-georgia-bdsovj">Donate</a></aside>
+<p class="source"><a href="https://thecurrentga.org/"><strong>The Current</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T21:36:19+00:00" data-pub="5:36 PM EDT">Mon, Aug 24 @ 5PM EDT</time><a class="lozenge place" href="/search?state=GA">Georgia</a><a class="lozenge place" href="/search?place=Savannah&state=GA">Savannah</a></p>
 <h2><a href="https://thecurrentga.org/2026/08/24/effingham-agency-pays-tens-of-thousands-to-plug-openai-project/">Effingham agency pays tens of thousands to plug OpenAI project</a></h2>
-<p class="byline"><small>By By Maggie Lee</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://givebutter.com/local-news-that-answers-to-coastal-georgia-bdsovj">Donate</a></span></p>
+<p class="byline">By By Maggie Lee</p>
 <a class="shot" href="https://thecurrentga.org/2026/08/24/effingham-agency-pays-tens-of-thousands-to-plug-openai-project/" tabindex="-1" aria-hidden="true"><img src="../img/44f40a3400b4f58e281ef907cf8db45741d173b3.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Effingham County&#x27;s industrial development authority hired an Alabama PR firm to manage public pushback regarding OpenAI&#x27;s planned massive data center in Rincon. The Current is an inclusive nonprofit, non-partisan news organization providing in-depth watchdog journalism for Savannah and Coastal Georgia’s communities.</p>
-<p class="more"><a href="https://thecurrentga.org/2026/08/24/effingham-agency-pays-tens-of-thousands-to-plug-openai-project/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Effingham County&#x27;s industrial development authority hired an Alabama PR firm to manage public pushback regarding OpenAI&#x27;s planned massive data center in Rincon. The Current is an inclusive nonprofit, non-partisan news organization providing in-depth watchdog journalism for Savannah and Coastal Georgia’s communities. <a class="lozenge more" href="https://thecurrentga.org/2026/08/24/effingham-agency-pays-tens-of-thousands-to-plug-openai-project/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T20:47:48+00:00" data-pub="4:47 PM EDT">Monday, August 24, 2026 at 4:47 PM EDT</time></small></p>
-<p><small>MI / Grand Rapids / <a href="https://www.rapidgrowthmedia.com/">Rapid Growth</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://rapidgrowthmedia.com/support-us/">Donate</a></aside>
+<p class="source"><a href="https://www.rapidgrowthmedia.com/"><strong>Rapid Growth</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T20:47:48+00:00" data-pub="4:47 PM EDT">Mon, Aug 24 @ 4PM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=Grand+Rapids&state=MI">Grand Rapids</a></p>
 <h2><a href="https://rapidgrowthmedia.com/shark-tank-stars-kick-off-tech-week-grand-rapids/">Shark Tank stars kick off Tech Week Grand Rapids</a></h2>
-<p class="byline"><small>By Shandra Martinez</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://rapidgrowthmedia.com/support-us/">Donate</a></span></p>
+<p class="byline">By Shandra Martinez</p>
 <a class="shot" href="https://rapidgrowthmedia.com/shark-tank-stars-kick-off-tech-week-grand-rapids/" tabindex="-1" aria-hidden="true"><img src="../img/6c827585f7b9b9a67c32926dc7cc979d36edde14.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>Daymond John and Robert Herjavec open a week that celebrates innovation, entrepreneurship, and West Michigan&#x27;s growing technology community.</p>
-<p class="more"><a href="https://rapidgrowthmedia.com/shark-tank-stars-kick-off-tech-week-grand-rapids/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Daymond John and Robert Herjavec open a week that celebrates innovation, entrepreneurship, and West Michigan&#x27;s growing technology community. <a class="lozenge more" href="https://rapidgrowthmedia.com/shark-tank-stars-kick-off-tech-week-grand-rapids/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T19:58:46+00:00" data-pub="3:58 PM EDT">Monday, August 24, 2026 at 3:58 PM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>MI / - / <a href="https://www.secondwavemedia.com/">Second Wave</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://secondwavemedia.com/support-us/">Donate</a></aside>
+<p class="source"><a href="https://www.secondwavemedia.com/"><strong>Second Wave</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T19:58:46+00:00" data-pub="3:58 PM EDT">Mon, Aug 24 @ 3PM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=-&state=MI">-</a></p>
 <h2><a href="https://secondwavemedia.com/yemeni-coffee-is-having-a-moment-kalamazoo-is-getting-a-taste/">Yemeni coffee is having a moment. Kalamazoo is getting a taste.</a></h2>
-<p class="byline"><small>By Mike Wenninger</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://secondwavemedia.com/support-us/">Donate</a></span></p>
+<p class="byline">By Mike Wenninger</p>
 <a class="shot" href="https://secondwavemedia.com/yemeni-coffee-is-having-a-moment-kalamazoo-is-getting-a-taste/" tabindex="-1" aria-hidden="true"><img src="../img/e3bfa7a1e08fdff4ddaa4af8d16a00265e48a09b.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Shibam Coffee is bringing the distinctive flavors and centuries-old traditions of Yemeni coffee to Kalamazoo while creating a welcoming, late-night gathering place for students and the wider community.</p>
-<p class="more"><a href="https://secondwavemedia.com/yemeni-coffee-is-having-a-moment-kalamazoo-is-getting-a-taste/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Shibam Coffee is bringing the distinctive flavors and centuries-old traditions of Yemeni coffee to Kalamazoo while creating a welcoming, late-night gathering place for students and the wider community. <a class="lozenge more" href="https://secondwavemedia.com/yemeni-coffee-is-having-a-moment-kalamazoo-is-getting-a-taste/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T19:53:00+00:00" data-pub="3:53 PM EDT">Monday, August 24, 2026 at 3:53 PM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>MI / Detroit / <a href="https://www.modeldmedia.com/">Model D</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://modeldmedia.com/support-us/">Donate</a></aside>
+<p class="source"><a href="https://www.modeldmedia.com/"><strong>Model D</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T19:53:00+00:00" data-pub="3:53 PM EDT">Mon, Aug 24 @ 3PM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=Detroit&state=MI">Detroit</a></p>
 <h2><a href="https://modeldmedia.com/rx-kids-expansion-to-60-michigan-communities-is-balancing-family-budgets-and-birthing-healthier-babies/">Rx Kids expansion to 60 Michigan communities is balancing family budgets and birthing healthier babies</a></h2>
-<p class="byline"><small>By Brianna Nargiso</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://modeldmedia.com/support-us/">Donate</a></span></p>
+<p class="byline">By Brianna Nargiso</p>
 <a class="shot" href="https://modeldmedia.com/rx-kids-expansion-to-60-michigan-communities-is-balancing-family-budgets-and-birthing-healthier-babies/" tabindex="-1" aria-hidden="true"><img src="../img/e3e33210c49890c88cff7dcd173afe5759066220.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>The Michigan program is the largest unconditional cash transfer program for expectant parents in the country.</p>
-<p class="more"><a href="https://modeldmedia.com/rx-kids-expansion-to-60-michigan-communities-is-balancing-family-budgets-and-birthing-healthier-babies/">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Also in <a href="https://secondwavemedia.com/rx-kids-expansion-to-60-michigan-communities-is-balancing-family-budgets-and-birthing-healthier-babies/">Second Wave</a> · <a href="https://fromcommonground.com/rx-kids-expansion-to-60-michigan-communities-is-balancing-family-budgets-and-birthing-healthier-babies/">High Ground News</a></small></p>
+<p>The Michigan program is the largest unconditional cash transfer program for expectant parents in the country. <a class="lozenge more" href="https://modeldmedia.com/rx-kids-expansion-to-60-michigan-communities-is-balancing-family-budgets-and-birthing-healthier-babies/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://secondwavemedia.com/rx-kids-expansion-to-60-michigan-communities-is-balancing-family-budgets-and-birthing-healthier-babies/">Second Wave</a> &middot; <a href="https://fromcommonground.com/rx-kids-expansion-to-60-michigan-communities-is-balancing-family-budgets-and-birthing-healthier-babies/">High Ground News</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T19:35:23+00:00" data-pub="3:35 PM EDT">Monday, August 24, 2026 at 3:35 PM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>IN / Fort Wayne / <a href="https://www.inputfortwayne.com/">Input Fort Wayne</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://inputfortwayne.com/support-us/">Donate</a></aside>
+<p class="source"><a href="https://www.inputfortwayne.com/"><strong>Input Fort Wayne</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T19:35:23+00:00" data-pub="3:35 PM EDT">Mon, Aug 24 @ 3PM EDT</time><a class="lozenge place" href="/search?state=IN">Indiana</a><a class="lozenge place" href="/search?place=Fort+Wayne&state=IN">Fort Wayne</a></p>
 <h2><a href="https://inputfortwayne.com/thousands-of-hoosiers-not-enrolling-in-federal-safety-net-programs/">Thousands of Hoosiers not enrolling in federal safety net programs</a></h2>
-<p class="byline"><small>By Carson Gerber, FPI News</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://inputfortwayne.com/support-us/">Donate</a></span></p>
+<p class="byline">By Carson Gerber, FPI News</p>
 <a class="shot" href="https://inputfortwayne.com/thousands-of-hoosiers-not-enrolling-in-federal-safety-net-programs/" tabindex="-1" aria-hidden="true"><img src="../img/bdb122b4745e7836117aa7a617dd1271070ce493.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Recent study reveals large gaps in eligible families receiving benefits.</p>
-<p class="more"><a href="https://inputfortwayne.com/thousands-of-hoosiers-not-enrolling-in-federal-safety-net-programs/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Recent study reveals large gaps in eligible families receiving benefits. <a class="lozenge more" href="https://inputfortwayne.com/thousands-of-hoosiers-not-enrolling-in-federal-safety-net-programs/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T18:12:46+00:00" data-pub="2:12 PM EDT">Monday, August 24, 2026 at 2:12 PM EDT</time></small></p>
-<p><small>NY / Hudson Valley / <a href="https://www.chronogram.com/river-newsroom">The River</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://chronogramsocialclub.memberful.com/join">Become a member</a></aside>
+<p class="source"><a href="https://www.chronogram.com/river-newsroom"><strong>The River</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T18:12:46+00:00" data-pub="2:12 PM EDT">Mon, Aug 24 @ 2PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Hudson+Valley&state=NY">Hudson Valley</a></p>
 <h2><a href="https://www.chronogram.com/resource-guide/the-records-to-update-after-divorce-relocation-or-remarriage/">The Records to Update After Divorce, Relocation or Remarriage</a></h2>
-<p class="byline"><small>By Christopher Pape</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://chronogramsocialclub.memberful.com/join">Become a member</a></span></p>
+<p class="byline">By Christopher Pape</p>
 <a class="shot" href="https://www.chronogram.com/resource-guide/the-records-to-update-after-divorce-relocation-or-remarriage/" tabindex="-1" aria-hidden="true"><img src="../img/4478302e9a17399a2c001e41301a4fbd09dc7440.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Divorce may end with a signed judgment, but the administrative work often continues long afterward. A change in marital status can affect identification, financial accounts, insurance, property records, beneficiaries, employment information, and household paperwork. Add a move or remarriage, and the number of places that may need updated information can grow quickly. The easiest way</p>
-<p class="more"><a href="https://www.chronogram.com/resource-guide/the-records-to-update-after-divorce-relocation-or-remarriage/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Divorce may end with a signed judgment, but the administrative work often continues long afterward. A change in marital status can affect identification, financial accounts, insurance, property records, beneficiaries, employment information, and household paperwork. Add a move or remarriage, and the number of places that may need updated information can grow quickly. The easiest way <a class="lozenge more" href="https://www.chronogram.com/resource-guide/the-records-to-update-after-divorce-relocation-or-remarriage/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T18:00:00+00:00" data-pub="11:00 AM PDT">Monday, August 24, 2026 at 11:00 AM PDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>CA / Long Beach / <a href="https://lbcurrent.com/about/">Long Beach Current</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/college.html">College</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://lbcurrent.com/about/">Support</a></aside>
+<p class="source"><a href="https://lbcurrent.com/about/"><strong>Long Beach Current</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T18:00:00+00:00" data-pub="11:00 AM PDT">Mon, Aug 24 @ 11AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Long+Beach&state=CA">Long Beach</a></p>
 <h2><a href="https://lbcurrent.com/news/2026/08/24/new-official-graduate-dean-announced/">New dean of Graduate Studies promises to make grad school more accessible</a></h2>
-<p class="byline"><small>By Jayden Sandstrom</small><span class="aside"><a class="lozenge" href="../tags/college.html">College</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://lbcurrent.com/about/">Support</a></span></p>
-<p>Dina Perrone has entered her first year as dean of Graduate Studies, prioritizing student support, accessibility to graduate education and making grad school easier to navigate. Perrone joined Long Beach State as a faculty member in Criminology and Criminal Justice in 2010; however, her path toward graduate education began in 2014, when she became a graduate adviser. “In that role, I realized very</p>
-<p class="more"><a href="https://lbcurrent.com/news/2026/08/24/new-official-graduate-dean-announced/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Jayden Sandstrom</p>
+<p>Dina Perrone has entered her first year as dean of Graduate Studies, prioritizing student support, accessibility to graduate education and making grad school easier to navigate. Perrone joined Long Beach State as a faculty member in Criminology and Criminal Justice in 2010; however, her path toward graduate education began in 2014, when she became a graduate adviser. “In that role, I realized very <a class="lozenge more" href="https://lbcurrent.com/news/2026/08/24/new-official-graduate-dean-announced/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T17:27:07+00:00" data-pub="1:27 PM EDT">Monday, August 24, 2026 at 1:27 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>GA / Savannah / <a href="https://thecurrentga.org/">The Current</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://givebutter.com/local-news-that-answers-to-coastal-georgia-bdsovj">Donate</a></aside>
+<p class="source"><a href="https://thecurrentga.org/"><strong>The Current</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T17:27:07+00:00" data-pub="1:27 PM EDT">Mon, Aug 24 @ 1PM EDT</time><a class="lozenge place" href="/search?state=GA">Georgia</a><a class="lozenge place" href="/search?place=Savannah&state=GA">Savannah</a></p>
 <h2><a href="https://thecurrentga.org/2026/08/24/both-candidates-for-georgia-governor-emphasize-character-in-weekend-events/">Both candidates for Georgia governor emphasize character in weekend events</a></h2>
-<p class="byline"><small>By Sarah Kallis/GPB News</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://givebutter.com/local-news-that-answers-to-coastal-georgia-bdsovj">Donate</a></span></p>
+<p class="byline">By Sarah Kallis/GPB News</p>
 <a class="shot" href="https://thecurrentga.org/2026/08/24/both-candidates-for-georgia-governor-emphasize-character-in-weekend-events/" tabindex="-1" aria-hidden="true"><img src="../img/5543d13af578a07c42258493633502f02da55658.jpg" alt="" width="480" height="238" loading="lazy" decoding="async"></a>
-<p>Georgia&#x27;s gubernatorial candidates Keisha Lance Bottoms and Rick Jackson focused on their personal backgrounds and ethics during campaign events ahead of the November election. The Current is an inclusive nonprofit, non-partisan news organization providing in-depth watchdog journalism for Savannah and Coastal Georgia’s communities.</p>
-<p class="more"><a href="https://thecurrentga.org/2026/08/24/both-candidates-for-georgia-governor-emphasize-character-in-weekend-events/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Georgia&#x27;s gubernatorial candidates Keisha Lance Bottoms and Rick Jackson focused on their personal backgrounds and ethics during campaign events ahead of the November election. The Current is an inclusive nonprofit, non-partisan news organization providing in-depth watchdog journalism for Savannah and Coastal Georgia’s communities. <a class="lozenge more" href="https://thecurrentga.org/2026/08/24/both-candidates-for-georgia-governor-emphasize-character-in-weekend-events/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T17:22:05+00:00" data-pub="1:22 PM EDT">Monday, August 24, 2026 at 1:22 PM EDT</time></small></p>
-<p><small>NY / Hudson Valley / <a href="https://www.chronogram.com/river-newsroom">The River</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://chronogramsocialclub.memberful.com/join">Become a member</a></aside>
+<p class="source"><a href="https://www.chronogram.com/river-newsroom"><strong>The River</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T17:22:05+00:00" data-pub="1:22 PM EDT">Mon, Aug 24 @ 1PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Hudson+Valley&state=NY">Hudson Valley</a></p>
 <h2><a href="https://www.chronogram.com/resource-guide/how-to-evaluate-the-concrete-supplier-on-more-variables-than-the-quote-sheet-contains/">How To Evaluate the Concrete Supplier on More Variables Than the Quote Sheet Contains</a></h2>
-<p class="byline"><small>By Christopher Pape</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://chronogramsocialclub.memberful.com/join">Become a member</a></span></p>
+<p class="byline">By Christopher Pape</p>
 <a class="shot" href="https://www.chronogram.com/resource-guide/how-to-evaluate-the-concrete-supplier-on-more-variables-than-the-quote-sheet-contains/" tabindex="-1" aria-hidden="true"><img src="../img/c29ae2829736ce44acaa1f6495ab7b38096012db.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>The quote sheet from a concrete supplier contains the information the supplier chose to present in the format most likely to win the business. Mix designs, pricing per cubic metre, and delivery availability are the variables that appear, because those are the variables that drive most procurement decisions. The variables that most directly affect whether</p>
-<p class="more"><a href="https://www.chronogram.com/resource-guide/how-to-evaluate-the-concrete-supplier-on-more-variables-than-the-quote-sheet-contains/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-24T17:02:20+00:00" data-pub="1:02 PM EDT">Monday, August 24, 2026 at 1:02 PM EDT</time></small></p>
-<p><small>NY / Hudson Valley / <a href="https://www.chronogram.com/river-newsroom">The River</a></small></p>
-<h2><a href="https://www.chronogram.com/resource-guide/how-to-master-wave-selection-using-different-surfboards/">How To Master Wave Selection Using Different Surfboards</a></h2>
-<p class="byline"><small>By Christopher Pape</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://chronogramsocialclub.memberful.com/join">Become a member</a></span></p>
-<a class="shot" href="https://www.chronogram.com/resource-guide/how-to-master-wave-selection-using-different-surfboards/" tabindex="-1" aria-hidden="true"><img src="../img/c175bc2ac88b49e4bb3653beab48f20bb8dc9a75.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Reading the ocean and finding the right waves makes surfing a lot more fun. Each swell has its own speed and pace and rhythm, so you should have to adjust your paddle strategy out there. In set after set, catching fast, hollow beach breaks on a heavy board designed for smooth, gentle points rarely works.</p>
-<p class="more"><a href="https://www.chronogram.com/resource-guide/how-to-master-wave-selection-using-different-surfboards/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-24T17:00:59+00:00" data-pub="10:00 AM PDT">Monday, August 24, 2026 at 10:00 AM PDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>CA / Long Beach / <a href="https://lbcurrent.com/about/">Long Beach Current</a></small></p>
-<h2><a href="https://lbcurrent.com/news/2026/08/24/union-members-maintain-a-united-front-amid-statewide-leadership-attempts-to-centralize-power/">CSU employee union members reject proposal to expand statewide union control</a></h2>
-<p class="byline"><small>By Josephine Robinson</small><span class="aside"><a class="lozenge" href="../tags/college.html">College</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://lbcurrent.com/about/">Support</a></span></p>
-<p>Cal State University Employees Union members turned back statewide leadership attempts to replace chapter-based governing by voting no on a proposed set of bylaws. The bylaws would have given statewide officers more control and implemented trusteeship to 10 union chapters, including Long Beach State. This means the statewide union could temporarily take control of a local chapter “to correct malfe</p>
-<p class="more"><a href="https://lbcurrent.com/news/2026/08/24/union-members-maintain-a-united-front-amid-statewide-leadership-attempts-to-centralize-power/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-24T17:00:33+00:00" data-pub="1:00 PM EDT">Monday, August 24, 2026 at 1:00 PM EDT</time></small></p>
-<p><small>NY / Hudson Valley / <a href="https://www.chronogram.com/river-newsroom">The River</a></small></p>
-<h2><a href="https://www.chronogram.com/resource-guide/5-critical-misconceptions-surrounding-remote-offshore-talent-integration/">5 Critical Misconceptions Surrounding Remote Offshore Talent Integration</a></h2>
-<p class="byline"><small>By Christopher Pape</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://chronogramsocialclub.memberful.com/join">Become a member</a></span></p>
-<a class="shot" href="https://www.chronogram.com/resource-guide/5-critical-misconceptions-surrounding-remote-offshore-talent-integration/" tabindex="-1" aria-hidden="true"><img src="../img/b2273e0a8ec38572bdb95fe285b97de5a29ecf1e.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>International staff provide flexibility and lower operating costs in a competitive marketplace. Unfortunately, old myths, misunderstandings and fears about remote employment prevent many companies from hiring globally. To beat these fears, you need to understand the modern global hiring system. Professional systems make international team management safe, easy and productive. This article will deb</p>
-<p class="more"><a href="https://www.chronogram.com/resource-guide/5-critical-misconceptions-surrounding-remote-offshore-talent-integration/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-24T16:58:34+00:00" data-pub="12:58 PM EDT">Monday, August 24, 2026 at 12:58 PM EDT</time></small></p>
-<p><small>NY / Hudson Valley / <a href="https://www.chronogram.com/river-newsroom">The River</a></small></p>
-<h2><a href="https://www.chronogram.com/resource-guide/what-to-expect-from-professional-photographer-services/">What to Expect from Professional Photographer Services</a></h2>
-<p class="byline"><small>By Christopher Pape</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://chronogramsocialclub.memberful.com/join">Become a member</a></span></p>
-<a class="shot" href="https://www.chronogram.com/resource-guide/what-to-expect-from-professional-photographer-services/" tabindex="-1" aria-hidden="true"><img src="../img/faf19f740ae3d09f8ee9db007118534ccb930d5d.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Professional photographers don’t just come in and press a button. When a professional photographer creates images, from personal portraits to business campaigns, art, strategy and technique collide. Give your visual identity to a great photographer, and your brand or personal project will look great. You learn about professional sessions and trust from start to finish.</p>
-<p class="more"><a href="https://www.chronogram.com/resource-guide/what-to-expect-from-professional-photographer-services/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-24T16:55:13+00:00" data-pub="12:55 PM EDT">Monday, August 24, 2026 at 12:55 PM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>NY / Hudson Valley / <a href="https://www.chronogram.com/river-newsroom">The River</a></small></p>
-<h2><a href="https://www.chronogram.com/resource-guide/5-essential-features-of-superior-early-learning-facilities/">5 Essential Features Of Superior Early Learning Facilities</a></h2>
-<p class="byline"><small>By Christopher Pape</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://chronogramsocialclub.memberful.com/join">Become a member</a></span></p>
-<a class="shot" href="https://www.chronogram.com/resource-guide/5-essential-features-of-superior-early-learning-facilities/" tabindex="-1" aria-hidden="true"><img src="../img/075428ff169b998ec13b76caded7980b441eea28.jpg" alt="" width="480" height="319" loading="lazy" decoding="async"></a>
-<p>One of the most important decisions you will make for your child’s early development is choosing the best early childhood facility. A truly great learning centre is more than just basic supervision; it’s an inspiring environment that promotes health, curiosity and emotional health. From outdoor nature play spaces to loving teachers, every detail matters to</p>
-<p class="more"><a href="https://www.chronogram.com/resource-guide/5-essential-features-of-superior-early-learning-facilities/">Read more <span aria-hidden="true">→</span></a></p>
+<p>The quote sheet from a concrete supplier contains the information the supplier chose to present in the format most likely to win the business. Mix designs, pricing per cubic metre, and delivery availability are the variables that appear, because those are the variables that drive most procurement decisions. The variables that most directly affect whether <a class="lozenge more" href="https://www.chronogram.com/resource-guide/how-to-evaluate-the-concrete-supplier-on-more-variables-than-the-quote-sheet-contains/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 </div>
 <p><a id="more" href="solutions-journalism-2.html">More stories</a></p>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="../index.html">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -409,6 +462,47 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>

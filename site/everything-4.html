@@ -13,12 +13,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -27,22 +40,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -50,19 +69,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -75,7 +126,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -93,7 +144,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -106,7 +157,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="subjects/news.html">News</a></li><li><a href="subjects/politics.html">Politics</a></li><li><a href="subjects/opinion.html">Opinion</a></li><li><a href="subjects/health.html">Health</a></li><li><a href="subjects/environment.html">Environment</a></li><li><a href="subjects/education.html">Education</a></li><li><a href="subjects/business.html">Business</a></li><li><a href="subjects/housing.html">Housing</a></li><li><a href="subjects/sports.html">Sports</a></li><li><a href="subjects/food.html">Food</a></li><li><a href="subjects/arts.html">Arts</a></li></ul></nav>
@@ -121,273 +172,275 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <main id="main">
 <div id="feed-items">
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:18:26+00:00" data-pub="10:18 AM EDT">Tuesday, August 25, 2026 at 10:18 AM EDT</time></small></p>
-<p><small>GA / Atlanta / <a href="https://mundonow.com/">Mundo Now</a></small></p>
-<h2><a href="https://www.mundonow.com/dolar-mexico-volver-17">El dólar intenta volver a los $17 en México y también sube en Colombia</a></h2>
-<p class="byline"><small>By Daniel Navas</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge" href="tags/latino.html">Latino</a><a class="lozenge give" href="https://mundonow.com/">Support</a></span></p>
-<a class="shot" href="https://www.mundonow.com/dolar-mexico-volver-17" tabindex="-1" aria-hidden="true"><img src="img/8012e866d4695a0ec83e3bfe08cad502b6988697.webp" alt="" width="480" height="252" loading="lazy" decoding="async"></a>
-<p>El dólar comenzó este martes 25 de agosto con una ligera recuperación en México y Colombia, después de las caídas registradas en los últimos días. En México intenta acercarse nuevamente a la barrera de los $17 pesos, mientras en Colombia también avanza. En República Dominicana, en cambio, los precios se mantienen prácticamente sin cambios. Por</p>
-<p class="more"><a href="https://www.mundonow.com/dolar-mexico-volver-17">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://therapidian.org/">Support</a></aside>
+<p class="source"><a href="https://therapidian.org/"><strong>The Rapidian</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:43:00+00:00" data-pub="12:43 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=Grand+Rapids&state=MI">Grand Rapids</a></p>
+<h2><a href="https://therapidian.org/the-rapid-board-of-directors-reverses-course-greenlighting-naloxone-awareness-campaign">The Rapid Board of Directors reverses course, greenlighting naloxone awareness campaign</a></h2>
+<p class="byline">By johnwillette@gmail.com (John Willette)</p>
+<a class="shot" href="https://therapidian.org/the-rapid-board-of-directors-reverses-course-greenlighting-naloxone-awareness-campaign" tabindex="-1" aria-hidden="true"><img src="img/c93400f0823f84a8d1da184f392ad53e3c6ba324.webp" alt="" width="480" height="361" loading="lazy" decoding="async"></a>
+<p>The Rapid Board reversed its previous decision, voting 9-5 to allow the Red Project&#x27;s Naloxone awareness ads on transit. <a class="lozenge more" href="https://therapidian.org/the-rapid-board-of-directors-reverses-course-greenlighting-naloxone-awareness-campaign">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:15:22+00:00" data-pub="10:15 AM EDT">Tuesday, August 25, 2026 at 10:15 AM EDT</time></small></p>
-<p><small>CT / Statewide / <a href="https://identidadlatina.com/category/locales/">Identidad Latina</a></small></p>
-<h2><a href="https://identidadlatina.com/2026/08/nueva-ia-promete-revolucionar-la-ciencia-al-modelar-fenomenos-fisicos-a-gran-escala/">Nueva IA promete revolucionar la ciencia al modelar fenómenos físicos a gran escala</a></h2>
-<p class="byline"><small>By identidadlatina</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://identidadlatina.com/category/locales/">Support</a></span></p>
-<p>Una nueva propuesta de inteligencia artificial intenta llevar esta tecnología más allá del lenguaje, las imágenes y los asistentes digitales.</p>
-<p class="more"><a href="https://identidadlatina.com/2026/08/nueva-ia-promete-revolucionar-la-ciencia-al-modelar-fenomenos-fisicos-a-gran-escala/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://51st.news/donate/">Donate</a></aside>
+<p class="source"><a href="https://51st.news/"><strong>The 51st</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:42:26+00:00" data-pub="12:42 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=DC">Washington, D.C.</a><a class="lozenge place" href="/search?place=Washington&state=DC">Washington</a></p>
+<h2><a href="https://51st.news/dc-library-resources-books-tools-sewing-machine/">What&#x27;s more punk than ... a sewing machine?</a></h2>
+<p class="byline">By Becky Little</p>
+<a class="shot" href="https://51st.news/dc-library-resources-books-tools-sewing-machine/" tabindex="-1" aria-hidden="true"><img src="img/3532177819d29c1d497b3817a67e4a0cde2e028e.webp" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>From a 3D printer to a recording studio, your D.C. Public Library card gives you access to so much more than books. <a class="lozenge more" href="https://51st.news/dc-library-resources-books-tools-sewing-machine/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:13:00+00:00" data-pub="7:13 AM PDT">Tuesday, August 25, 2026 at 7:13 AM PDT</time></small></p>
-<p><small>CA / Los Angeles / <a href="https://laopinion.com">La Opinión</a></small></p>
-<h2><a href="https://laopinion.com/2026/08/25/trump-amenaza-a-canada-con-un-arancel-del-50-a-sus-autos/">Trump amenaza a Canadá con un arancel del 50% a sus autos</a></h2>
-<p class="byline"><small>By Ramón Castro</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://laopinion.com">Support</a></span></p>
-<a class="shot" href="https://laopinion.com/2026/08/25/trump-amenaza-a-canada-con-un-arancel-del-50-a-sus-autos/" tabindex="-1" aria-hidden="true"><img src="img/5d9bae777c9c3d22496c9c719c1a012205e6d125.webp" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Donald Trump plantea subir al 50% el arancel a autos, camiones y acero de Canadá, tras el quiebre de las negociaciones comerciales</p>
-<p class="more"><a href="https://laopinion.com/2026/08/25/trump-amenaza-a-canada-con-un-arancel-del-50-a-sus-autos/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.albanyherald.com/">Support</a></aside>
+<p class="source"><a href="https://www.albanyherald.com/"><strong>Albany Herald</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:42:12+00:00" data-pub="12:42 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=GA">Georgia</a><a class="lozenge place" href="/search?place=Albany&state=GA">Albany</a></p>
+<h2><a href="https://albanyherald.com/albanystate/photos-albany-state-cisa-career-services-brunch-and-learn/">PHOTOS: Albany State CISA- Career Services Brunch and Learn</a></h2>
+<p class="byline">By Albany Herald News</p>
+<p>Click the arrow to scroll through the photos. <a class="lozenge more" href="https://albanyherald.com/albanystate/photos-albany-state-cisa-career-services-brunch-and-learn/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:12:28+00:00" data-pub="10:12 AM EDT">Tuesday, August 25, 2026 at 10:12 AM EDT</time></small><a class="lozenge" href="subjects/environment.html">Environment</a></p>
-<p><small>PA / Harrisburg / <a href="https://www.spotlightpa.org/">Spotlight PA</a></small></p>
-<h2><a href="https://www.spotlightpa.org/news/2026/08/pennsylvania-data-center-executive-order-shapiro-explainer-environment/">What Shapiro’s new data center order does — and doesn’t — force developers to do</a></h2>
-<p class="byline"><small>By Katie Meyer</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.spotlightpa.org/donate">Donate</a></span></p>
-<a class="shot" href="https://www.spotlightpa.org/news/2026/08/pennsylvania-data-center-executive-order-shapiro-explainer-environment/" tabindex="-1" aria-hidden="true"><img src="img/5b8a6359f56700f7dc7c3ec48e1d482a55b8f6f7.webp" alt="" width="480" height="480" loading="lazy" decoding="async"></a>
-<p>HARRISBURG — Gov. Josh Shapiro recently signed an executive order setting much stricter environmental and transparency standards for new data center developments in Pennsylvania. The order is sweeping. And the many things it does — and doesn’t — do to existing and future data center projects may not all be clear at first glance. Here are its most important components: The executive order asks deve</p>
-<p class="more"><a href="https://www.spotlightpa.org/news/2026/08/pennsylvania-data-center-executive-order-shapiro-explainer-environment/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/business.html">Business</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://pages.deseret.com/subscribe?utm_source=supernav&amp;utm_medium=site&amp;utm_campaign=deseretnews/">Subscribe</a></aside>
+<p class="source"><a href="https://www.deseret.com"><strong>Deseret News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:41:50+00:00" data-pub="10:41 AM MDT">Tue, Aug 25 @ 10AM MDT</time><a class="lozenge place" href="/search?state=UT">Utah</a></p>
+<h2><a href="https://www.deseret.com/business/2026/08/25/trump-rename-lake-ontario-canada-trade-war-import-levies-steel-lumber-dairy-hockey-sticks/">Trump threatens to rename Lake Ontario as tariff spat heats up</a></h2>
+<p class="byline">By Art Raymond</p>
+<a class="shot" href="https://www.deseret.com/business/2026/08/25/trump-rename-lake-ontario-canada-trade-war-import-levies-steel-lumber-dairy-hockey-sticks/" tabindex="-1" aria-hidden="true"><img src="img/2ad547b36b58e24cd57d2c4aa5d5932ab79923b7.webp" alt="" width="480" height="294" loading="lazy" decoding="async"></a>
+<p><a class="lozenge more" href="https://www.deseret.com/business/2026/08/25/trump-rename-lake-ontario-canada-trade-war-import-levies-steel-lumber-dairy-hockey-sticks/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:11:38+00:00" data-pub="10:11 AM EDT">Tuesday, August 25, 2026 at 10:11 AM EDT</time></small><a class="lozenge" href="subjects/health.html">Health</a></p>
-<p><small>KY / Statewide / <a href="https://kentuckylantern.com/">Kentucky Lantern</a></small></p>
-<h2><a href="https://kentuckylantern.com/2026/08/25/repub/cheaper-health-insurance-changed-their-lives-then-it-went-away/">Cheaper health insurance changed their lives. Then it went away.</a></h2>
-<p class="byline"><small>By Shalina Chatlani</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://kentuckylantern.com/">Support</a></span></p>
-<a class="shot" href="https://kentuckylantern.com/2026/08/25/repub/cheaper-health-insurance-changed-their-lives-then-it-went-away/" tabindex="-1" aria-hidden="true"><img src="img/436e2dab8821eec39cac09fa952a13dd00901142.webp" alt="Derrick Clark, 51, stands in front of the Jackson-Hinds Comprehensive Health Center in Jackson, Mississippi, on June 6, 2026. Over the past few years, Clark and many other diabetes patients in Mississippi were getting regular care through subsidized Affordable Care Act health insurance plans. But Co" width="480" height="326" loading="lazy" decoding="async"></a>
-<p>Part 1 of an occasional series on how people are being affected by the expiration of Affordable Care Act subsidies. EDWARDS, Miss. — Every now and then a freight train rumbles through, creaking and groaning on the rusted tracks that run along the edge of the largely deserted downtown. On some days, that train is</p>
-<p class="more"><a href="https://kentuckylantern.com/2026/08/25/repub/cheaper-health-insurance-changed-their-lives-then-it-went-away/">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Also in <a href="https://sourcenm.com/2026/08/25/repub/cheaper-health-insurance-changed-their-lives-then-it-went-away/">Source New Mexico</a> · <a href="https://lailluminator.com/2026/08/25/repub/health-insurance-3/">Lousiana Illuminator</a> · <a href="https://penncapital-star.com/2026/08/25/repub/cheaper-health-insurance-changed-their-lives-then-it-went-away/">Pennsylvania Capital-Star</a> · <a href="https://michiganadvance.com/2026/08/25/repub/cheaper-health-insurance-changed-their-lives-then-it-went-away/">Michigan Advance</a> · <a href="https://mississippitoday.org/2026/08/25/cheaper-health-insurance-went-away/">Mississippi Today</a> · <a href="https://stateline.org/2026/08/25/cheaper-health-insurance-changed-their-lives-then-it-went-away/">Stateline</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/opinion.html">Opinion</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://chalkbeat.fundjournalism.org/donate/?campaign=701Pc00000M3hQLIAZ">Donate</a></aside>
+<p class="source"><a href="https://www.chalkbeat.org/"><strong>Chalkbeat</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:41:43+00:00" data-pub="12:41 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Education">Education</a></p>
+<h2><a href="https://www.chalkbeat.org/colorado/2026/08/25/colleges-weigh-response-to-trump-administration-higher-education-letter/">Trump administration higher education letter: Most Colorado universities have yet to decide response</a></h2>
+<p class="byline">By Jason Gonzales</p>
+<a class="shot" href="https://www.chalkbeat.org/colorado/2026/08/25/colleges-weigh-response-to-trump-administration-higher-education-letter/" tabindex="-1" aria-hidden="true"><img src="img/120568bd7636e91feb7747003527b399769a3ee3.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Colorado State University System officials said they are reviewing a letter from the Trump administration asking colleges and universities to answer several questions about high-profile topics. <a class="lozenge more" href="https://www.chalkbeat.org/colorado/2026/08/25/colleges-weigh-response-to-trump-administration-higher-education-letter/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:11:09+00:00" data-pub="10:11 AM EDT">Tuesday, August 25, 2026 at 10:11 AM EDT</time></small></p>
-<p><small>CT / Statewide / <a href="https://identidadlatina.com/category/locales/">Identidad Latina</a></small></p>
-<h2><a href="https://identidadlatina.com/2026/08/alerta-por-el-auge-de-peptidos-sin-regulacion-expertos-advierten-sobre-sus-riesgos-para-la-salud/">Alerta por el auge de péptidos sin regulación: expertos advierten sobre sus riesgos para la salud</a></h2>
-<p class="byline"><small>By identidadlatina</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://identidadlatina.com/category/locales/">Support</a></span></p>
-<p>El creciente uso de péptidos promocionados en internet para adelgazar, aumentar la masa muscular, acelerar la recuperación física o combatir</p>
-<p class="more"><a href="https://identidadlatina.com/2026/08/alerta-por-el-auge-de-peptidos-sin-regulacion-expertos-advierten-sobre-sus-riesgos-para-la-salud/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://laopinion.com">Support</a></aside>
+<p class="source"><a href="https://laopinion.com"><strong>La Opinión</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:41:33+00:00" data-pub="9:41 AM PDT">Tue, Aug 25 @ 9AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://laopinion.com/2026/08/25/en-chicago-fire-reconocen-la-motivacion-de-jugar-contra-equipos-mexicanos/">En Chicago Fire reconocen la motivación de jugar contra equipos mexicanos</a></h2>
+<p class="byline">By Wilson Flórez</p>
+<a class="shot" href="https://laopinion.com/2026/08/25/en-chicago-fire-reconocen-la-motivacion-de-jugar-contra-equipos-mexicanos/" tabindex="-1" aria-hidden="true"><img src="img/e37deb129e583de86e2707160aab0695c90c54cd.webp" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>El lateral Andrew Gutman considera “divertido” jugar contra rivales de la Liga MX. En Chicago Fire respetan a Rayados <a class="lozenge more" href="https://laopinion.com/2026/08/25/en-chicago-fire-reconocen-la-motivacion-de-jugar-contra-equipos-mexicanos/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:10:04+00:00" data-pub="8:10 AM MDT">Tuesday, August 25, 2026 at 8:10 AM MDT</time></small><a class="lozenge" href="subjects/opinion.html">Opinion</a></p>
-<p><small>CO / Statewide / <a href="https://coloradotimesrecorder.com/about/">Colorado Times-Recorder</a></small></p>
-<h2><a href="https://coloradotimesrecorder.com/2026/08/davis-capping-the-corporate-tax-makes-a-lot-of-sense-if-you-dont-know-anything/81238/">DAVIS: Capping the Corporate Tax Makes a Lot of Sense if You Don’t Know Anything</a></h2>
-<p class="byline"><small>By Logan M. Davis</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.paypal.com/donate/?cmd=_donations&amp;business=jason@coloradotimesrecorder.com&amp;lc=US&amp;item_name=Support+Local+Journalism+in+Colorado&amp;no_note=0&amp;cn=&amp;currency_code=USD">Donate</a></span></p>
-<a class="shot" href="https://coloradotimesrecorder.com/2026/08/davis-capping-the-corporate-tax-makes-a-lot-of-sense-if-you-dont-know-anything/81238/" tabindex="-1" aria-hidden="true"><img src="img/a2e3bf0dccf47e79199d14d678af50b20cd9d378.webp" alt="" width="480" height="480" loading="lazy" decoding="async"></a>
-<p>Colorado’s November ballot is almost finalized. As of today, ten initiatives are set to bulk up the ballots Coloradans will cast this fall. While those initiatives might look like unrelated efforts by groups of concerned citizens, in reality most of them have been sponsored and funded by billionaire-backed right-wing organization Advance Colorado, which specializes in using Colorado’s ballot proce</p>
-<p class="more"><a href="https://coloradotimesrecorder.com/2026/08/davis-capping-the-corporate-tax-makes-a-lot-of-sense-if-you-dont-know-anything/81238/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://chronogramsocialclub.memberful.com/join">Become a member</a></aside>
+<p class="source"><a href="https://www.chronogram.com/river-newsroom"><strong>The River</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:40:57+00:00" data-pub="12:40 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Hudson+Valley&state=NY">Hudson Valley</a></p>
+<h2><a href="https://www.chronogram.com/resource-guide/new-york-canada-two-cannabis-rulebooks/">Two Legal Cannabis Systems, One Border Apart</a></h2>
+<p class="byline">By Christopher Pape</p>
+<a class="shot" href="https://www.chronogram.com/resource-guide/new-york-canada-two-cannabis-rulebooks/" tabindex="-1" aria-hidden="true"><img src="img/b3d2ffee19d48d222c0b12fe94c03f0f1c2ca4a8.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Walk down Wall Street in Kingston or Main Street in Beacon and the change is easy to miss. A licensed dispensary now looks like any other retail tenant, with a window sticker and regular hours. Five years ago none of it existed. The Hudson Valley got a legal market and then, very quickly, got used <a class="lozenge more" href="https://www.chronogram.com/resource-guide/new-york-canada-two-cannabis-rulebooks/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:10:00+00:00" data-pub="7:10 AM PDT">Tuesday, August 25, 2026 at 7:10 AM PDT</time></small><a class="lozenge" href="subjects/sports.html">Sports</a></p>
-<p><small>CA / San Diego / <a href="https://timesofsandiego.com/">Times of San Diego</a></small></p>
-<h2><a href="https://timesofsandiego.com/sports/2026/08/25/mission-bay-high-football-looking-for-another-standout-season/">Mission Bay High football looking for another standout season</a></h2>
-<p class="byline"><small>By Hector Trujillo • Special to Times of San Diego</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://timesofsandiego.fundjournalism.org/donate/?_gl=1*14u3dte*_ga*Nzc0Nzg2NTIyLjE3NDM2OTA4NDU.*_ga_TEHJR60KD9*czE3NDc2NjYxMjUkbzE5JGcxJHQxNzQ3NjY2MTI1JGo2MCRsMCRoMTk1MDc1ODIzNiRkWUdIaTdfUUNkQ1l0My00Qm1pTzJyRkhkdDZIRWxtMzA0QQ..">Donate</a></span></p>
-<a class="shot" href="https://timesofsandiego.com/sports/2026/08/25/mission-bay-high-football-looking-for-another-standout-season/" tabindex="-1" aria-hidden="true"><img src="img/3292f363ea25c412f8382103f6ba584586adea32.webp" alt="" width="480" height="355" loading="lazy" decoding="async"></a>
-<p>The Bucs lost in the CIF San Diego Section Div. II playoff semifinals to San Diego High last year after an undefeated regular season.</p>
-<p class="more"><a href="https://timesofsandiego.com/sports/2026/08/25/mission-bay-high-football-looking-for-another-standout-season/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/food.html">Food</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://pages.deseret.com/subscribe?utm_source=supernav&amp;utm_medium=site&amp;utm_campaign=deseretnews/">Subscribe</a></aside>
+<p class="source"><a href="https://www.deseret.com"><strong>Deseret News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:40:48+00:00" data-pub="10:40 AM MDT">Tue, Aug 25 @ 10AM MDT</time><a class="lozenge place" href="/search?state=UT">Utah</a></p>
+<h2><a href="https://www.deseret.com/utah/2024/08/25/deseret-news-archives-admiral-richard-byrd-set-sail-for-antarctica/">Deseret News archives: Adm. Richard Byrd set sail for Antarctica in 1928</a></h2>
+<p class="byline">By Chris Miller</p>
+<a class="shot" href="https://www.deseret.com/utah/2024/08/25/deseret-news-archives-admiral-richard-byrd-set-sail-for-antarctica/" tabindex="-1" aria-hidden="true"><img src="img/daa9d022d67dbeebe84b1d958a3b9b148fe04bed.webp" alt="" width="480" height="294" loading="lazy" decoding="async"></a>
+<p><a class="lozenge more" href="https://www.deseret.com/utah/2024/08/25/deseret-news-archives-admiral-richard-byrd-set-sail-for-antarctica/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:05:51+00:00" data-pub="10:05 AM EDT">Tuesday, August 25, 2026 at 10:05 AM EDT</time></small></p>
-<p><small>CT / Statewide / <a href="https://identidadlatina.com/category/locales/">Identidad Latina</a></small></p>
-<h2><a href="https://identidadlatina.com/2026/08/robot-chino-rompe-la-barrera-de-usain-bolt-y-corre-los-100-metros-en-886-segundos/">Robot chino rompe la barrera de Usain Bolt y corre los 100 metros en 8,86 segundos</a></h2>
-<p class="byline"><small>By identidadlatina</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://identidadlatina.com/category/locales/">Support</a></span></p>
-<p>La velocidad ya no es terreno exclusivo de los grandes atletas humanos. Un robot humanoide chino sorprendió este martes en</p>
-<p class="more"><a href="https://identidadlatina.com/2026/08/robot-chino-rompe-la-barrera-de-usain-bolt-y-corre-los-100-metros-en-886-segundos/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/vietnamese.html">Vietnamese</a><a class="lozenge give" href="https://www.nguoi-viet.com/">Support</a></aside>
+<p class="source"><a href="https://www.nguoi-viet.com/"><strong>Nguoi Viet</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:40:36+00:00" data-pub="9:40 AM PDT">Tue, Aug 25 @ 9AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Westminster&state=CA">Westminster</a></p>
+<h2><a href="https://www.nguoi-viet.com/viet-nam/gia-lai-lai-ngo-doc-sau-khi-an-banh-mi-hon-100-nguoi-nhap-vien/">Gia Lai: Lại ngộ độc sau khi ăn bánh mì, hơn 100 người nhập viện</a></h2>
+<p class="byline">By Tran Nha</p>
+<a class="shot" href="https://www.nguoi-viet.com/viet-nam/gia-lai-lai-ngo-doc-sau-khi-an-banh-mi-hon-100-nguoi-nhap-vien/" tabindex="-1" aria-hidden="true"><img src="img/da0de0bfe1f5d9e9cb60d55ab5f2fba52c775833.webp" alt="" width="480" height="376" loading="lazy" decoding="async"></a>
+<p>Hơn trăm người ở phường An Khê, tỉnh Gia Lai bị ngộ độc khi ăn bánh mì phải nhập viện cấp cứu <a class="lozenge more" href="https://www.nguoi-viet.com/viet-nam/gia-lai-lai-ngo-doc-sau-khi-an-banh-mi-hon-100-nguoi-nhap-vien/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:05:00+00:00" data-pub="10:05 AM EDT">Tuesday, August 25, 2026 at 10:05 AM EDT</time></small><a class="lozenge" href="subjects/sports.html">Sports</a></p>
-<p><small>FL / Miami / <a href="https://www.miamitimesonline.com/">The Miami Times</a></small></p>
-<h2><a href="https://www.miamitimesonline.com/sports/serena-williams-is-back-at-the-us-open-playing-mixed-doubles-with-carlos-alcaraz/article_2449cff3-54ee-4ebd-9bba-2b63da6d982b.html">Serena Williams is back at the US Open, playing mixed doubles with Carlos Alcaraz</a></h2>
-<p class="byline"><small>By Stephen Whyno, The Associated Press</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://miamitimes.typeform.com/to/mQvUpc">Subscribe</a></span></p>
-<a class="shot" href="https://www.miamitimesonline.com/sports/serena-williams-is-back-at-the-us-open-playing-mixed-doubles-with-carlos-alcaraz/article_2449cff3-54ee-4ebd-9bba-2b63da6d982b.html" tabindex="-1" aria-hidden="true"><img src="img/8d2e45f4ed24081b804459d00a0c47eacb9b1854.webp" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
-<p>Serena Williams is back at the U.S. Open for her first match at the Grand Slam tournament since 2022, playing mixed doubles alongside defending men’s singles champion Carlos Alcaraz.</p>
-<p class="more"><a href="https://www.miamitimesonline.com/sports/serena-williams-is-back-at-the-us-open-playing-mixed-doubles-with-carlos-alcaraz/article_2449cff3-54ee-4ebd-9bba-2b63da6d982b.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/business.html">Business</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://marbleheadcurrent.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://marbleheadcurrent.org/"><strong>Marblehead Current</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:40:17+00:00" data-pub="12:40 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=MA">Massachusetts</a><a class="lozenge place" href="/search?place=Marblehead&state=MA">Marblehead</a></p>
+<h2><a href="https://marbleheadcurrent.org/2026/08/25/marblehead-chamber-unveils-new-home-lower-dues-and-fall-events/">Marblehead Chamber unveils new home, lower dues and fall events</a></h2>
+<p class="byline">By Leigh Blander</p>
+<p>The Marblehead Chamber of Commerce is announcing big changes heading into the fall. “Since restructuring the Chamber, our board has been working diligently to keep things moving forward and ensure <a class="lozenge more" href="https://marbleheadcurrent.org/2026/08/25/marblehead-chamber-unveils-new-home-lower-dues-and-fall-events/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:05:00+00:00" data-pub="6:05 AM AKDT">Tuesday, August 25, 2026 at 6:05 AM AKDT</time></small><a class="lozenge" href="subjects/news.html">News</a></p>
-<p><small>AK / Statewide / <a href="https://www.newsminer.com/">Fairbanks Daily News-Miner</a></small></p>
-<h2><a href="https://www.newsminer.com/news/local_news/assembly-sets-election-language-for-hand-count-proposition/article_123aa473-6b9d-4331-9cc7-80a97be93438.html">Assembly sets election language for hand-count proposition</a></h2>
-<p class="byline"><small>By Jack Barnwell</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.newsminer.com/">Support</a></span></p>
-<a class="shot" href="https://www.newsminer.com/news/local_news/assembly-sets-election-language-for-hand-count-proposition/article_123aa473-6b9d-4331-9cc7-80a97be93438.html" tabindex="-1" aria-hidden="true"><img src="img/7fce86e53637d50c1e693e56d2bdb92af2fb3145.webp" alt="" width="300" height="208" loading="lazy" decoding="async"></a>
-<p>Supporters sought to remove information about delayed results and uncertain costs from the borough’s explanation of Prop. 3.</p>
-<p class="more"><a href="https://www.newsminer.com/news/local_news/assembly-sets-election-language-for-hand-count-proposition/article_123aa473-6b9d-4331-9cc7-80a97be93438.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/news.html">News</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://mosaic.nj.com/">Support</a></aside>
+<p class="source"><a href="https://mosaic.nj.com/"><strong>Mosaic</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:39:05+00:00" data-pub="12:39 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a></p>
+<h2><a href="https://www.nj.com/news/2026/08/21k-recreational-vehicles-sold-nationwide-recalled-for-injury-death-risks.html">21K+ recreational vehicles sold nationwide recalled for injury, death risks</a></h2>
+<p class="byline">By Dallas Gagnon, Advance Local Express Desk</p>
+<a class="shot" href="https://www.nj.com/news/2026/08/21k-recreational-vehicles-sold-nationwide-recalled-for-injury-death-risks.html" tabindex="-1" aria-hidden="true"><img src="img/29f5d9b567b8546a59762fd04ee34dcd927f3069.webp" alt="" width="480" height="272" loading="lazy" decoding="async"></a>
+<p>More than 21,000 recreational vehicles are being recalled nationwide because of a dangerous brake failure risk. Here&#x27;s how to check for to see if your machine is impacted. <a class="lozenge more" href="https://www.nj.com/news/2026/08/21k-recreational-vehicles-sold-nationwide-recalled-for-injury-death-risks.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:04:25+00:00" data-pub="7:04 AM PDT">Tuesday, August 25, 2026 at 7:04 AM PDT</time></small><a class="lozenge" href="subjects/politics.html">Politics</a></p>
-<p><small>CA / Statewide / <a href="https://asamnews.com/">Asam News</a></small></p>
-<h2><a href="https://asamnews.com/2026/08/25/thai-wife-visa-paused-despite-us-approval/">Married two years, separated by a visa pause</a></h2>
-<p class="byline"><small>By Aani Nagaiah</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://givebutter.com/k6qjNq">Donate</a></span></p>
-<p>By Aani Nagaiah Craig Gima left his phone in a taxi in Ayutthaya, the ancient capital north of Bangkok. The driver did not speak English, but a woman who Gima</p>
-<p class="more"><a href="https://asamnews.com/2026/08/25/thai-wife-visa-paused-despite-us-approval/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.thelundreport.org/donate">Donate</a></aside>
+<p class="source"><a href="https://www.thelundreport.org"><strong>The Lund Report</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:38:51+00:00" data-pub="9:38 AM PDT">Tue, Aug 25 @ 9AM PDT</time><a class="lozenge place" href="/search?state=OR">Oregon</a><a class="lozenge place" href="/search?place=Portland&state=OR">Portland</a></p>
+<h2><a href="https://www.thelundreport.org/content/oregon-weighs-enrollment-caps-paying-claims-double-digit-insurance-hikes-set-2027">Oregon weighs enrollment caps, paying for claims as double-digit insurance hikes set for 2027</a></h2>
+<p class="byline">By Joanne Zuhl</p>
+<p>Oregon weighs enrollment caps, paying for claims as double-digit insurance hikes set for 2027 Financial regulators said they would budget an additional $15 million toward the Oregon Reinsurance Program, which allows the state to help insurers pay for expensive medical claims, to &#x27;offset anticipated higher than usual claims costs&#x27; Joanne ZuhlTue, 08/25/2026 - 09:38 Oregon insurance regulators have  <a class="lozenge more" href="https://www.thelundreport.org/content/oregon-weighs-enrollment-caps-paying-claims-double-digit-insurance-hikes-set-2027">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:03:00+00:00" data-pub="10:03 AM EDT">Tuesday, August 25, 2026 at 10:03 AM EDT</time></small><a class="lozenge" href="subjects/politics.html">Politics</a></p>
-<p><small>NY / New York / <a href="https://www.thecity.nyc/">THE CITY</a></small></p>
-<h2><a href="https://www.thecityreporter.nyc/2026/08/25/freed-slave-black-burial-ground-queens-st-mark-sale/">Paved-Over Historic Black Cemetery Is Now Up For Sale, Lawyer Says</a></h2>
-<p class="byline"><small>By Greg B. Smith</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://donorbox.org/supportlocalnews?utm_source=bottom%20epic&amp;utm_medium=web&amp;utm_campaign=Harry%20Siegel">Donate</a></span></p>
-<a class="shot" href="https://www.thecityreporter.nyc/2026/08/25/freed-slave-black-burial-ground-queens-st-mark-sale/" tabindex="-1" aria-hidden="true"><img src="img/b11ed851b7353118cf19456a98e2a4a9a04c9bc5.webp" alt="An Elmhurst, Queens parking lot sits atop an African American burial ground," width="480" height="320" loading="lazy" decoding="async"></a>
-<p>The Queens property where the owner put up a parking lot on an 18th century burial site for free Blacks is now in foreclosure and up for sale — a transaction that could be complicated by strict state rules meant to preserve the human remains interred in unmarked graves. Three weeks ago the attorney appointed</p>
-<p class="more"><a href="https://www.thecityreporter.nyc/2026/08/25/freed-slave-black-burial-ground-queens-st-mark-sale/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/news.html">News</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/public-media.html">Public media</a><a class="lozenge give" href="https://laist.com/support-us/car-donation">Donate</a></aside>
+<p class="source"><a href="https://laist.com/"><strong>LAist</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:38:51+00:00" data-pub="9:38 AM PDT">Tue, Aug 25 @ 9AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://laist.com/news/canada-announces-retaliatory-tariffs-on-the-us-as-the-countries-trade-fight-deepens">Canada announces retaliatory tariffs on the US as the countries&#x27; trade fight deepens</a></h2>
+<a class="shot" href="https://laist.com/news/canada-announces-retaliatory-tariffs-on-the-us-as-the-countries-trade-fight-deepens" tabindex="-1" aria-hidden="true"><img src="img/c929e85324e877bb8bf3396186439965ba073ffd.webp" alt="A man wearing a dark suit speaks into a microphone placed on a brown podium. He is standing outdoors, behind him a Canadian red and white flag with a red maple leaf in the middle, blows in the wind against a cloudless, blue sky." width="480" height="320" loading="lazy" decoding="async"></a>
+<p>The measures come after President Trump imposed 50% tariffs on many Canadian goods and threatened more after trade talks broke down on Friday. <a class="lozenge more" href="https://laist.com/news/canada-announces-retaliatory-tariffs-on-the-us-as-the-countries-trade-fight-deepens">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://www.gpb.org/news/2026/08/25/canada-announces-retaliatory-tariffs-on-the-us-the-countries-trade-fight-deepens">Georgia News Lab</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:01:32+00:00" data-pub="10:01 AM EDT">Tuesday, August 25, 2026 at 10:01 AM EDT</time></small><a class="lozenge" href="subjects/politics.html">Politics</a></p>
-<p><small>KY / Statewide / <a href="https://kentuckylantern.com/">Kentucky Lantern</a></small></p>
-<h2><a href="https://kentuckylantern.com/2026/08/25/appeals-court-sends-uk-professors-case-back-to-lower-court/">Appeals court sends UK professor’s case back to lower court</a></h2>
-<p class="byline"><small>By McKenna Horsley</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://kentuckylantern.com/">Support</a></span></p>
-<a class="shot" href="https://kentuckylantern.com/2026/08/25/appeals-court-sends-uk-professors-case-back-to-lower-court/" tabindex="-1" aria-hidden="true"><img src="img/7815864339a2e9efebde106fa4e6c1e6c74e5148.webp" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>A federal appeals court is sending a University of Kentucky law professor’s case to restore his teaching duties back to a lower court.</p>
-<p class="more"><a href="https://kentuckylantern.com/2026/08/25/appeals-court-sends-uk-professors-case-back-to-lower-court/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/business.html">Business</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://timesofsandiego.fundjournalism.org/donate/?_gl=1*14u3dte*_ga*Nzc0Nzg2NTIyLjE3NDM2OTA4NDU.*_ga_TEHJR60KD9*czE3NDc2NjYxMjUkbzE5JGcxJHQxNzQ3NjY2MTI1JGo2MCRsMCRoMTk1MDc1ODIzNiRkWUdIaTdfUUNkQ1l0My00Qm1pTzJyRkhkdDZIRWxtMzA0QQ..">Donate</a></aside>
+<p class="source"><a href="https://timesofsandiego.com/"><strong>Times of San Diego</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:38:42+00:00" data-pub="9:38 AM PDT">Tue, Aug 25 @ 9AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=San+Diego&state=CA">San Diego</a></p>
+<h2><a href="https://timesofsandiego.com/business/2026/08/25/nuevos-duenos-padres-jose-feliciano-kwanza-jones/">Uno aporta confianza, la otra carisma. De cualquier forma, los nuevos dueños de los Padres quieren ganar</a></h2>
+<p class="byline">By Barry M. Bloom • Special to Times of San Diego</p>
+<a class="shot" href="https://timesofsandiego.com/business/2026/08/25/nuevos-duenos-padres-jose-feliciano-kwanza-jones/" tabindex="-1" aria-hidden="true"><img src="img/6f070fb13d04f6f62cc50f7229fc93dc9a3adae8.jpg" alt="Three people, two men, and a woman in the center, sit at a table with a cloth over it and decorated with the letters &quot;SD.&quot;" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Mucho antes de que José E. Feliciano y su esposa, Kwanza Jones, presentaran una oferta para comprar a los Padres de San Diego, ya estaban realizando una evaluación minuciosa de la organización durante una visita al complejo de entrenamiento de primavera del equipo en Peoria, Arizona. Erik Greupner, presidente de los Padres, los colocó frente <a class="lozenge more" href="https://timesofsandiego.com/business/2026/08/25/nuevos-duenos-padres-jose-feliciano-kwanza-jones/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:01:15+00:00" data-pub="7:01 AM PDT">Tuesday, August 25, 2026 at 7:01 AM PDT</time></small></p>
-<p><small>CA / Westminster / <a href="https://www.nguoi-viet.com/">Nguoi Viet</a></small></p>
-<h2><a href="https://www.nguoi-viet.com/hoa-ky/chinh-quyen-chuan-bi-thu-hoi-200000-visa-nguoi-nuoc-ngoai-o-my-xin-ty-nan/">Chính quyền chuẩn bị thu hồi 200,000 visa người nước ngoài ở Mỹ xin tỵ nạn</a></h2>
-<p class="byline"><small>By kalynh ngo</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/vietnamese.html">Vietnamese</a><a class="lozenge give" href="https://www.nguoi-viet.com/">Support</a></span></p>
-<a class="shot" href="https://www.nguoi-viet.com/hoa-ky/chinh-quyen-chuan-bi-thu-hoi-200000-visa-nguoi-nuoc-ngoai-o-my-xin-ty-nan/" tabindex="-1" aria-hidden="true"><img src="img/17101284948bca9173e86b4dc01d2cc1302c46ce.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Trump bắt đầu chiến dịch thu hồi khoảng 200,000 visa vào Mỹ với mục đích du lịch hoặc kinh doanh nhưng sau đó nộp đơn xin tị nạn.</p>
-<p class="more"><a href="https://www.nguoi-viet.com/hoa-ky/chinh-quyen-chuan-bi-thu-hoi-200000-visa-nguoi-nuoc-ngoai-o-my-xin-ty-nan/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/housing.html">Housing</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://chronogramsocialclub.memberful.com/join">Become a member</a></aside>
+<p class="source"><a href="https://www.chronogram.com/river-newsroom"><strong>The River</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:38:10+00:00" data-pub="12:38 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Hudson+Valley&state=NY">Hudson Valley</a></p>
+<h2><a href="https://www.chronogram.com/resource-guide/what-hudson-valley-real-estate-investors-should-know-before-buying-their-next-property/">What Hudson Valley Real Estate Investors Should Know Before Buying Their Next Property</a></h2>
+<p class="byline">By Christopher Pape</p>
+<a class="shot" href="https://www.chronogram.com/resource-guide/what-hudson-valley-real-estate-investors-should-know-before-buying-their-next-property/" tabindex="-1" aria-hidden="true"><img src="img/f6f7bfb2e9495dc5b20714824ed271b441a5e3be.webp" alt="" width="480" height="309" loading="lazy" decoding="async"></a>
+<p>For real estate investors, the Hudson Valley can be an appealing place to own property. But buying an investment property here requires more than finding a promising listing and calculating the expected rent. The details matter. Property condition, local regulations, taxes, insurance, financing, rental income, and operating expenses can all affect whether a property makes <a class="lozenge more" href="https://www.chronogram.com/resource-guide/what-hudson-valley-real-estate-investors-should-know-before-buying-their-next-property/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:00:44+00:00" data-pub="7:00 AM PDT">Tuesday, August 25, 2026 at 7:00 AM PDT</time></small><a class="lozenge" href="subjects/news.html">News</a></p>
-<p><small>CA / Statewide / <a href="https://capitolweekly.net/">Capitol Weekly</a></small></p>
-<h2><a href="https://capitolweekly.net/insurance-crisis-has-private-foster-agencies-struggling-to-stay-afloat/">Insurance crisis has private foster agencies struggling to stay afloat</a></h2>
-<p class="byline"><small>By Rich Ehisen</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://capitolweekly.net/donations/">Donate</a></span></p>
-<p>Left in limbo by the Legislature and Gov. Gavin Newsom, California’s private foster agencies say they’re struggling to stay afloat until the new year, when they hope a new governor will help them navigate an ongoing insurance crisis that threatens their existence. Continue reading the full article:Capitol Weekly Original article: https://capitolweekly.net/insurance-crisis-has-private-foster-agenci</p>
-<p class="more"><a href="https://capitolweekly.net/insurance-crisis-has-private-foster-agencies-struggling-to-stay-afloat/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/news.html">News</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://mosaic.nj.com/">Support</a></aside>
+<p class="source"><a href="https://mosaic.nj.com/"><strong>Mosaic</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:37:05+00:00" data-pub="12:37 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a></p>
+<h2><a href="https://www.nj.com/news/2026/08/walmart-sams-club-changes-how-customers-can-pay.html">Walmart, Sam’s Club customers have a brand new payment option</a></h2>
+<p class="byline">By Claudia Dimuro</p>
+<a class="shot" href="https://www.nj.com/news/2026/08/walmart-sams-club-changes-how-customers-can-pay.html" tabindex="-1" aria-hidden="true"><img src="img/6990bcf2913d29d7ce13d61f3b9003422173195c.webp" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Walmart plans on rolling this out at alls tore locations by the end of this year. <a class="lozenge more" href="https://www.nj.com/news/2026/08/walmart-sams-club-changes-how-customers-can-pay.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:00:41+00:00" data-pub="10:00 AM EDT">Tuesday, August 25, 2026 at 10:00 AM EDT</time></small></p>
-<p><small>FL / Miami / <a href="https://elsolnewsmedia.com/">El Sol Latino Newspaper</a></small></p>
-<h2><a href="https://elsolnewsmedia.com/colombia-deportaciones-migrantes-irregulares/">Presidente de Colombia ordena deportaciones de migrantes irregulares</a></h2>
-<p class="byline"><small>By Marianela Rodríguez</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://elsoln1.us8.list-manage.com/subscribe?u=b58aaf173a09bc54d9b0bd9c9&amp;id=a2d335e1c7">Subscribe</a></span></p>
-<p>El presidente de Colombia, Abelardo de la Espriella, ordenó iniciar esta semana operaciones coordinadas entre la autoridad migratoria y la policía para deportar a migrantes irregulares en el país. El mandatario derechista llegó al poder el 7 de agosto con una agenda de línea dura que quedó en pausa tras un potente terremoto que dejó</p>
-<p class="more"><a href="https://elsolnewsmedia.com/colombia-deportaciones-migrantes-irregulares/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://chronogramsocialclub.memberful.com/join">Become a member</a></aside>
+<p class="source"><a href="https://www.chronogram.com/river-newsroom"><strong>The River</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:36:12+00:00" data-pub="12:36 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Hudson+Valley&state=NY">Hudson Valley</a></p>
+<h2><a href="https://www.chronogram.com/resource-guide/what-to-know-before-you-call-a-garage-door-technician/">What to Know Before You Call a Garage Door Technician</a></h2>
+<p class="byline">By Christopher Pape</p>
+<a class="shot" href="https://www.chronogram.com/resource-guide/what-to-know-before-you-call-a-garage-door-technician/" tabindex="-1" aria-hidden="true"><img src="img/ab57a86c5c04ac54bc76858989dd5f117a903f77.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>A garage door problem can go from mildly annoying to seriously disruptive in a matter of minutes. One moment, you are leaving for work, and the next, the door refuses to move with your car still inside. When that happens, quick turnaround garage door repair can help restore access without turning the problem into a <a class="lozenge more" href="https://www.chronogram.com/resource-guide/what-to-know-before-you-call-a-garage-door-technician/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:00:00+00:00" data-pub="9:00 AM CDT">Tuesday, August 25, 2026 at 9:00 AM CDT</time></small><a class="lozenge" href="subjects/health.html">Health</a></p>
-<p><small>KS / Kansas City / <a href="https://thebeaconnews.org/">The Kansas City Beacon</a></small></p>
-<h2><a href="https://thebeaconnews.org/stories/2026/08/25/kansas-city-health-commission-tries-to-resolve-health-levy-dispute/">Kansas City Health Commission proposes compromise to resolve health levy dispute</a></h2>
-<p class="byline"><small>By Suzanne King</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://thebeaconnews.org/support-local-journalism/">Donate</a></span></p>
-<a class="shot" href="https://thebeaconnews.org/stories/2026/08/25/kansas-city-health-commission-tries-to-resolve-health-levy-dispute/" tabindex="-1" aria-hidden="true"><img src="img/d16dfc48d3adfff6c2b3621235527293bd9c6915.webp" alt="A photo of the outside of the Kansas City Health Department from Troost Avenue." width="480" height="270" loading="lazy" decoding="async"></a>
-<p>The commission’s resolution, now heading to the City Council, recommends that the same safety-net providers continue getting health levy funds, while opening a path for new ones.</p>
-<p class="more"><a href="https://thebeaconnews.org/stories/2026/08/25/kansas-city-health-commission-tries-to-resolve-health-levy-dispute/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/health.html">Health</a><a class="lozenge" href="tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://www.rangemedia.co/support/">Donate</a></aside>
+<p class="source"><a href="https://rangemedia.co/"><strong>RANGE</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:35:55+00:00" data-pub="9:35 AM PDT">Tue, Aug 25 @ 9AM PDT</time><a class="lozenge place" href="/search?state=WA">Washington</a><a class="lozenge place" href="/search?place=Spokane&state=WA">Spokane</a></p>
+<h2><a href="https://www.rangemedia.co/abortion-access-telehealth-washington/">Abortion pills forever?</a></h2>
+<p class="byline">By Megan Burbank</p>
+<a class="shot" href="https://www.rangemedia.co/abortion-access-telehealth-washington/" tabindex="-1" aria-hidden="true"><img src="img/b48db75833ef18b975b8db373d35d09a41ebdee2.webp" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>Telehealth was supposed to simplify getting an abortion. UW researchers found a messier reality on the ground, affecting in-person reproductive care in states like Washington. <a class="lozenge more" href="https://www.rangemedia.co/abortion-access-telehealth-washington/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:00:00+00:00" data-pub="7:00 AM PDT">Tuesday, August 25, 2026 at 7:00 AM PDT</time></small><a class="lozenge" href="subjects/arts.html">Arts</a></p>
-<p><small>CA / San Diego / <a href="https://timesofsandiego.com/">Times of San Diego</a></small></p>
-<h2><a href="https://timesofsandiego.com/arts/2026/08/25/when-mission-bay-had-a-floating-stage/">When Mission Bay had a floating stage</a></h2>
-<p class="byline"><small>By Debbie L. Sklar • Times of San Diego</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://timesofsandiego.fundjournalism.org/donate/?_gl=1*14u3dte*_ga*Nzc0Nzg2NTIyLjE3NDM2OTA4NDU.*_ga_TEHJR60KD9*czE3NDc2NjYxMjUkbzE5JGcxJHQxNzQ3NjY2MTI1JGo2MCRsMCRoMTk1MDc1ODIzNiRkWUdIaTdfUUNkQ1l0My00Qm1pTzJyRkhkdDZIRWxtMzA0QQ..">Donate</a></span></p>
-<a class="shot" href="https://timesofsandiego.com/arts/2026/08/25/when-mission-bay-had-a-floating-stage/" tabindex="-1" aria-hidden="true"><img src="img/376fe7f05e30ef12a41cb49219fe64ea6594ef7a.webp" alt="" width="480" height="362" loading="lazy" decoding="async"></a>
-<p>To celebrate the official opening of Mission Bay Park, the city staged a three-day festival with a floating barge that served as a stage.</p>
-<p class="more"><a href="https://timesofsandiego.com/arts/2026/08/25/when-mission-bay-had-a-floating-stage/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://belmontvoice.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://belmontvoice.org/"><strong>Belmont Voice</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:35:05+00:00" data-pub="12:35 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=MA">Massachusetts</a><a class="lozenge place" href="/search?place=Belmont&state=MA">Belmont</a></p>
+<h2><a href="https://belmontvoice.org/obituary-catherine-a-sellers/">Obituary: Catherine A. Sellers</a></h2>
+<p class="byline">By Contributor</p>
+<p>Catherine A. “Cathy” Sellers, 70, passed away peacefully on Aug. 23, 2026, following complications related to cerebral palsy and other health complications. Cathy was a lifelong Massachusetts resident, spending much of her early life in Brockton before making her home in Bridgewater approximately 35 years ago. Born in Belmont, Cathy was the youngest of five children of the late Francis and Catheri <a class="lozenge more" href="https://belmontvoice.org/obituary-catherine-a-sellers/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:00:00+00:00" data-pub="7:00 AM PDT">Tuesday, August 25, 2026 at 7:00 AM PDT</time></small><a class="lozenge" href="subjects/politics.html">Politics</a></p>
-<p><small>CA / Berkeley / <a href="https://localnewsmatters.org/">Local News Matters</a></small></p>
-<h2><a href="https://localnewsmatters.org/2026/08/25/san-francisco-navigation-center-employees-charged/">SF navigation center employees accused of harboring suspect charged with felonies</a></h2>
-<p class="byline"><small>By Thomas Hughes, Bay City News</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://localnewsmatters.org/support-our-publication/">Donate</a></span></p>
-<a class="shot" href="https://localnewsmatters.org/2026/08/25/san-francisco-navigation-center-employees-charged/" tabindex="-1" aria-hidden="true"><img src="img/7f45e12645e086697fa9b53ba7990b2133cc3d3e.webp" alt="" width="480" height="253" loading="lazy" decoding="async"></a>
-<p>Two employees at a San Francisco homeless navigation center were charged Monday with two felonies for allegedly interfering with an investigation into the May shooting of a police officer. Oakland resident Erika Porter, 45, and San Francisco resident Oliver Barcenas, 36, were accused of harboring Norris Reed III at the Bayshore Navigation Center after he</p>
-<p class="more"><a href="https://localnewsmatters.org/2026/08/25/san-francisco-navigation-center-employees-charged/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/opinion.html">Opinion</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://laopinion.com">Support</a></aside>
+<p class="source"><a href="https://laopinion.com"><strong>La Opinión</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:34:00+00:00" data-pub="9:34 AM PDT">Tue, Aug 25 @ 9AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://laopinion.com/2026/08/25/los-oceanos-del-planeta-alcanzan-la-temperatura-media-mas-alta-jamas-registrada-mientras-el-nino-se-intensifica/">Los océanos del planeta alcanzan la temperatura media más alta jamás registrada mientras El Niño se intensifica</a></h2>
+<p class="byline">By BBC News Mundo</p>
+<a class="shot" href="https://laopinion.com/2026/08/25/los-oceanos-del-planeta-alcanzan-la-temperatura-media-mas-alta-jamas-registrada-mientras-el-nino-se-intensifica/" tabindex="-1" aria-hidden="true"><img src="img/a421666df2849ab582c154a7758997be1919b212.webp" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>Esta situación fortalece los efectos del fenómeno de El Niño, cuyo pico se espera para finales de año <a class="lozenge more" href="https://laopinion.com/2026/08/25/los-oceanos-del-planeta-alcanzan-la-temperatura-media-mas-alta-jamas-registrada-mientras-el-nino-se-intensifica/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:00:00+00:00" data-pub="6:00 AM AKDT">Tuesday, August 25, 2026 at 6:00 AM AKDT</time></small><a class="lozenge" href="subjects/news.html">News</a></p>
-<p><small>AK / Statewide / <a href="https://ictnews.org/category/news/">Indian Country Today</a></small></p>
-<h2><a href="https://ictnews.org/news/living-with-drought-has-taught-pastoralists-lessons-the-world-needs/">Living with drought has taught pastoralists lessons the world needs</a></h2>
-<p class="byline"><small>By Grist</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://ictnews.fundjournalism.org/donate/?campaign=701Uq00000pRjgPIAS&amp;utm_source=ictnews&amp;utm_medium=nav_button&amp;utm_campaign=support_page_2026_placements&amp;utm_content=header_donate_button">Donate</a></span></p>
-<a class="shot" href="https://ictnews.org/news/living-with-drought-has-taught-pastoralists-lessons-the-world-needs/" tabindex="-1" aria-hidden="true"><img src="img/2b4ba6ae57be5a1d1a098bf5b7eb58aa7adb062f.webp" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Half a billion pastoralists draw on generations of knowledge to thrive on rangelands. They say protecting their way of life would help others prepare for a hotter, drier world.</p>
-<p class="more"><a href="https://ictnews.org/news/living-with-drought-has-taught-pastoralists-lessons-the-world-needs/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/news.html">News</a><a class="lozenge" href="tags/journalist-owned.html">Journalist-owned</a><a class="lozenge give" href="https://www.404media.co/signup/">Subscribe</a></aside>
+<p class="source"><a href="https://www.404media.co/"><strong>404 Media</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:33:48+00:00" data-pub="12:33 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Technology">Technology</a></p>
+<h2><a href="https://www.404media.co/charges-dropped-against-person-who-clapped-at-a-city-data-center-meeting/">Charges Dropped Against Person Who Clapped at a City Data Center Meeting</a></h2>
+<p class="byline">By Matthew Gault</p>
+<a class="shot" href="https://www.404media.co/charges-dropped-against-person-who-clapped-at-a-city-data-center-meeting/" tabindex="-1" aria-hidden="true"><img src="img/ff988eae77759a6e1c3ed314c4ec26cb77bfceda.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Lux Claridge was dragged from a city meeting about data centers and charged with interfering with the police after they clapped during a presentation. <a class="lozenge more" href="https://www.404media.co/charges-dropped-against-person-who-clapped-at-a-city-data-center-meeting/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:00:00+00:00" data-pub="6:00 AM AKDT">Tuesday, August 25, 2026 at 6:00 AM AKDT</time></small></p>
-<p><small>AK / Statewide / <a href="https://www.newsminer.com/">Fairbanks Daily News-Miner</a></small></p>
-<h2><a href="https://www.newsminer.com/sanding-santas-suit/image_21600c69-3758-45b2-8bf6-8a4c8a6519c3.html">Sanding Santa&#x27;s suit</a></h2>
-<p class="byline"><small>By Courtesy Virginia Gourley</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.newsminer.com/">Support</a></span></p>
-<a class="shot" href="https://www.newsminer.com/sanding-santas-suit/image_21600c69-3758-45b2-8bf6-8a4c8a6519c3.html" tabindex="-1" aria-hidden="true"><img src="img/c97f2ba2bd4d90f649c988fd6b42d5219be80eb4.webp" alt="" width="300" height="226" loading="lazy" decoding="async"></a>
-<p>Courtesy Virginia GourleyKaeden Sandberg of Graham Construction Services helps refurbish Santa’s attire on the Santa Claus statue outside Santa Claus House in North Pole.</p>
-<p class="more"><a href="https://www.newsminer.com/sanding-santas-suit/image_21600c69-3758-45b2-8bf6-8a4c8a6519c3.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/education.html">Education</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://givebutter.com/mfpdonate">Donate</a></aside>
+<p class="source"><a href="https://www.mississippifreepress.org/"><strong>Mississippi Free Press</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:33:19+00:00" data-pub="11:33 AM CDT">Tue, Aug 25 @ 11AM CDT</time><a class="lozenge place" href="/search?state=MS">Mississippi</a></p>
+<h2><a href="https://www.mississippifreepress.org/police-execute-search-warrant-at-piney-woods-school-to-look-for-evidence-on-school-officials-death/">Police Execute Search Warrant at Piney Woods School to Look for Evidence on School Official’s Death</a></h2>
+<p class="byline">By Nick Judin</p>
+<a class="shot" href="https://www.mississippifreepress.org/police-execute-search-warrant-at-piney-woods-school-to-look-for-evidence-on-school-officials-death/" tabindex="-1" aria-hidden="true"><img src="img/819c9ca46240477bf06bd640bdf96c91aa4fdbd0.webp" alt="A closeup of a man in vest and tie with his hair pulled back, standing outside" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Police executed a search warrant at Piney Woods School in Rankin County, Mississippi, on Monday as part of the murder investigation of former COO William Boland. <a class="lozenge more" href="https://www.mississippifreepress.org/police-execute-search-warrant-at-piney-woods-school-to-look-for-evidence-on-school-officials-death/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:00:00+00:00" data-pub="6:00 AM AKDT">Tuesday, August 25, 2026 at 6:00 AM AKDT</time></small></p>
-<p><small>AK / Statewide / <a href="https://www.newsminer.com/">Fairbanks Daily News-Miner</a></small></p>
-<h2><a href="https://www.newsminer.com/boot-shine/image_5f7b807b-e688-40c8-8710-cc975e780c9f.html">Boot shine</a></h2>
-<p class="byline"><small>By Courtesy Virginia Gourley</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.newsminer.com/">Support</a></span></p>
-<a class="shot" href="https://www.newsminer.com/boot-shine/image_5f7b807b-e688-40c8-8710-cc975e780c9f.html" tabindex="-1" aria-hidden="true"><img src="img/db4a0f8ceefb070c8e2455b7a9e2cbdfe232f839.webp" alt="" width="300" height="226" loading="lazy" decoding="async"></a>
-<p>Courtesy Virginia GourleySanta’s boots get a thorough shining, as part of a refurbishment from head to toe.</p>
-<p class="more"><a href="https://www.newsminer.com/boot-shine/image_5f7b807b-e688-40c8-8710-cc975e780c9f.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/politics.html">Politics</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://floridaphoenix.com/">Support</a></aside>
+<p class="source"><a href="https://floridaphoenix.com/"><strong>Florida Phoenix</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:33:14+00:00" data-pub="12:33 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=FL">Florida</a></p>
+<h2><a href="https://floridaphoenix.com/2026/08/25/donalds-chooses-state-sen-bryan-avila-as-his-running-mate-for-florida-governor/">Donalds chooses state Sen. Bryan Avila as his running mate for Florida governor</a></h2>
+<p class="byline">By Mitch Perry</p>
+<a class="shot" href="https://floridaphoenix.com/2026/08/25/donalds-chooses-state-sen-bryan-avila-as-his-running-mate-for-florida-governor/" tabindex="-1" aria-hidden="true"><img src="img/96f609841d5a67a5b6818f94c2efa45ac9d6f26b.webp" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Republican gubernatorial candidate Byron Donalds named Miami-Dade County Sen. Bryan Avila to serve as his running mate Tuesday. The son of Cuban exiles, Avila, of Miami Springs, has served in the Florida Legislature since 2014, when he was first elected to the House of Representatives. He won a seat in the Senate while running unopposed <a class="lozenge more" href="https://floridaphoenix.com/2026/08/25/donalds-chooses-state-sen-bryan-avila-as-his-running-mate-for-florida-governor/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:00:00+00:00" data-pub="6:00 AM AKDT">Tuesday, August 25, 2026 at 6:00 AM AKDT</time></small></p>
-<p><small>AK / Statewide / <a href="https://www.newsminer.com/">Fairbanks Daily News-Miner</a></small></p>
-<h2><a href="https://www.newsminer.com/dana-von-bergen/image_f4a37e24-9cf4-404f-a2f6-9910f3300e3a.html">Dana von Bergen</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.newsminer.com/">Support</a></span></p>
-<a class="shot" href="https://www.newsminer.com/dana-von-bergen/image_f4a37e24-9cf4-404f-a2f6-9910f3300e3a.html" tabindex="-1" aria-hidden="true"><img src="img/659450d3fdded8581fbd4f981a3cf1034c121b56.webp" alt="" width="300" height="364" loading="lazy" decoding="async"></a>
-<p>Dana von Bergen</p>
-<p class="more"><a href="https://www.newsminer.com/dana-von-bergen/image_f4a37e24-9cf4-404f-a2f6-9910f3300e3a.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://eldiariony.com/">Support</a></aside>
+<p class="source"><a href="https://eldiariony.com/"><strong>El Diario NY</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:33:00+00:00" data-pub="12:33 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Brooklyn&state=NY">Brooklyn</a></p>
+<h2><a href="https://eldiariony.com/2026/08/25/el-cafe-engorda-expertos-dicen-la-verdad-definitiva/">¿El café engorda? Expertos dicen la verdad definitiva</a></h2>
+<p class="byline">By Alberto Daniel Barboza</p>
+<p>El café negro casi no aporta calorías, pero ciertos ingredientes y hábitos al consumirlo pueden favorecer el aumento de peso <a class="lozenge more" href="https://eldiariony.com/2026/08/25/el-cafe-engorda-expertos-dicen-la-verdad-definitiva/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:00:00+00:00" data-pub="6:00 AM AKDT">Tuesday, August 25, 2026 at 6:00 AM AKDT</time></small></p>
-<p><small>AK / Statewide / <a href="https://www.newsminer.com/">Fairbanks Daily News-Miner</a></small></p>
-<h2><a href="https://www.newsminer.com/from-top-to-bottom/image_ec98106d-a2b0-4696-907f-8741f2e1ac16.html">From top to bottom</a></h2>
-<p class="byline"><small>By Courtesy Virginia Gourley</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.newsminer.com/">Support</a></span></p>
-<a class="shot" href="https://www.newsminer.com/from-top-to-bottom/image_ec98106d-a2b0-4696-907f-8741f2e1ac16.html" tabindex="-1" aria-hidden="true"><img src="img/a77aadf15d2fbbda57960f6175db938c4c01357e.webp" alt="" width="300" height="226" loading="lazy" decoding="async"></a>
-<p>Courtesy Virginia GourleyCayden Kuhlman of Graham Construction Services helps give Santa Claus a fresh new look, from top to bottom.</p>
-<p class="more"><a href="https://www.newsminer.com/from-top-to-bottom/image_ec98106d-a2b0-4696-907f-8741f2e1ac16.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://blackbygod.org/support-us/">Donate</a></aside>
+<p class="source"><a href="https://blackbygod.org/"><strong>Black by God</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:32:37+00:00" data-pub="12:32 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=WV">West Virginia</a></p>
+<h2><a href="https://blackbygod.org/articles/community/woodyfest-the-recap-from-backstage/">Woodyfest: The recap from backstage</a></h2>
+<p class="byline">By Leeshia Lee</p>
+<a class="shot" href="https://blackbygod.org/articles/community/woodyfest-the-recap-from-backstage/" tabindex="-1" aria-hidden="true"><img src="img/6c0b5e4d0cf5e1b43a6dee3210aa559ccb3a245a.webp" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Relive Woodyfest: DJ Woody Woods brought national stars Waka Flocka &amp; Ying Yang Twins to Dunbar, WV alongside a powerhouse showcase of local hip-hop talent. <a class="lozenge more" href="https://blackbygod.org/articles/community/woodyfest-the-recap-from-backstage/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:00:00+00:00" data-pub="6:00 AM AKDT">Tuesday, August 25, 2026 at 6:00 AM AKDT</time></small></p>
-<p><small>AK / Statewide / <a href="https://www.newsminer.com/">Fairbanks Daily News-Miner</a></small></p>
-<h2><a href="https://www.newsminer.com/santa-claus-statue/image_28c93c88-c608-47f2-b522-b58c7005f292.html">Santa Claus statue</a></h2>
-<p class="byline"><small>By Courtesy Virginia Gourley</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.newsminer.com/">Support</a></span></p>
-<a class="shot" href="https://www.newsminer.com/santa-claus-statue/image_28c93c88-c608-47f2-b522-b58c7005f292.html" tabindex="-1" aria-hidden="true"><img src="img/881413ca02a39824fd58c465dda3deae8bfde879.webp" alt="" width="300" height="398" loading="lazy" decoding="async"></a>
-<p>Courtesy Virginia GourleySanta Claus stands atop a small candy cane-themed platform at Santa Claus House in North Pole.</p>
-<p class="more"><a href="https://www.newsminer.com/santa-claus-statue/image_28c93c88-c608-47f2-b522-b58c7005f292.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/sports.html">Sports</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://mosaic.nj.com/">Support</a></aside>
+<p class="source"><a href="https://mosaic.nj.com/"><strong>Mosaic</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:32:01+00:00" data-pub="12:32 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a></p>
+<h2><a href="https://www.nj.com/sports/2026/08/lebron-james-pga-tour-partner-to-launch-new-golf-event.html">LeBron James, PGA Tour partner to launch new golf event</a></h2>
+<p class="byline">By Zach Mentz</p>
+<a class="shot" href="https://www.nj.com/sports/2026/08/lebron-james-pga-tour-partner-to-launch-new-golf-event.html" tabindex="-1" aria-hidden="true"><img src="img/823dc124a2a8a7ad0775531bb543f26b6689dfde.webp" alt="" width="480" height="571" loading="lazy" decoding="async"></a>
+<p>The PGA Tour and LeBron James have partnered to launch the inaugural LeBron James Family Foundation Invitational next summer. <a class="lozenge more" href="https://www.nj.com/sports/2026/08/lebron-james-pga-tour-partner-to-launch-new-golf-event.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:00:00+00:00" data-pub="6:00 AM AKDT">Tuesday, August 25, 2026 at 6:00 AM AKDT</time></small><a class="lozenge" href="subjects/arts.html">Arts</a></p>
-<p><small>AK / Statewide / <a href="https://www.newsminer.com/">Fairbanks Daily News-Miner</a></small></p>
-<h2><a href="https://www.newsminer.com/santas-list/image_1ab402e3-dceb-4d24-b59f-0e885f8f4995.html">Santa&#x27;s list</a></h2>
-<p class="byline"><small>By Courtesy Virginia Gourley</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.newsminer.com/">Support</a></span></p>
-<a class="shot" href="https://www.newsminer.com/santas-list/image_1ab402e3-dceb-4d24-b59f-0e885f8f4995.html" tabindex="-1" aria-hidden="true"><img src="img/162c11440778bd9418123c8831b14d68680235f6.webp" alt="" width="300" height="398" loading="lazy" decoding="async"></a>
-<p>Courtesy Virginia GourleyIt isn’t likely that any names will change on Santa’s list during refurbishment of his statue outside Santa Claus House in North Pole.</p>
-<p class="more"><a href="https://www.newsminer.com/santas-list/image_1ab402e3-dceb-4d24-b59f-0e885f8f4995.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/politics.html">Politics</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://sourcenm.com/">Support</a></aside>
+<p class="source"><a href="https://sourcenm.com/"><strong>Source New Mexico</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:31:52+00:00" data-pub="10:31 AM MDT">Tue, Aug 25 @ 10AM MDT</time><a class="lozenge place" href="/search?state=NM">New Mexico</a></p>
+<h2><a href="https://sourcenm.com/2026/08/25/new-mexico-supreme-court-announces-new-term/">New Mexico Supreme Court announces new term</a></h2>
+<p class="byline">By Source NM Staff</p>
+<a class="shot" href="https://sourcenm.com/2026/08/25/new-mexico-supreme-court-announces-new-term/" tabindex="-1" aria-hidden="true"><img src="img/d74998f1dd03005b6025617c48c99f3e226848a7.webp" alt="" width="480" height="384" loading="lazy" decoding="async"></a>
+<p>The New Mexico Supreme Court on Tuesday announced its 2026/2027 term begins on Sept. 4, 2026, with decisions rendered by July 15, 2027. <a class="lozenge more" href="https://sourcenm.com/2026/08/25/new-mexico-supreme-court-announces-new-term/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:00:00+00:00" data-pub="6:00 AM AKDT">Tuesday, August 25, 2026 at 6:00 AM AKDT</time></small><a class="lozenge" href="subjects/opinion.html">Opinion</a></p>
-<p><small>AK / Statewide / <a href="https://www.newsminer.com/">Fairbanks Daily News-Miner</a></small></p>
-<h2><a href="https://www.newsminer.com/opinion/ai-should-be-managed-like-nuclear-weapons/article_004def50-d302-4964-9a13-43450a5f35bc.html">AI should be managed like nuclear weapons</a></h2>
-<p class="byline"><small>By Elizabeth Shackelford Chicago Tribune (TNS)</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.newsminer.com/">Support</a></span></p>
-<p>Last month, the tech world was shaken by an event that sounded like a science fiction plot: Artificial intelligence agents escaped from their closed testing environment, accessed the open internet and hacked into another company’s system without human knowledge. These</p>
-<p class="more"><a href="https://www.newsminer.com/opinion/ai-should-be-managed-like-nuclear-weapons/article_004def50-d302-4964-9a13-43450a5f35bc.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/food.html">Food</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://brookline.news/support-our-publication/">Donate</a></aside>
+<p class="source"><a href="https://brookline.news/news/"><strong>Brookline News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:31:22+00:00" data-pub="12:31 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=MA">Massachusetts</a><a class="lozenge place" href="/search?place=Brookline&state=MA">Brookline</a></p>
+<h2><a href="https://brookline.news/from-weekend-pop-up-to-permanent-cafe-newbery-street-is-bringing-thai-coffee-to-brookline/">From weekend pop-up to permanent café: Newbery Street is bringing Thai coffee to Brookline</a></h2>
+<p class="byline">By Sofia Torres</p>
+<a class="shot" href="https://brookline.news/from-weekend-pop-up-to-permanent-cafe-newbery-street-is-bringing-thai-coffee-to-brookline/" tabindex="-1" aria-hidden="true"><img src="img/658ef8e74714f43f95b6319a651c18e5549d76df.webp" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>The new coffee shop is moving into 240 Harvard Street, the former home of Cremeux. <a class="lozenge more" href="https://brookline.news/from-weekend-pop-up-to-permanent-cafe-newbery-street-is-bringing-thai-coffee-to-brookline/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:00:00+00:00" data-pub="6:00 AM AKDT">Tuesday, August 25, 2026 at 6:00 AM AKDT</time></small><a class="lozenge" href="subjects/opinion.html">Opinion</a></p>
-<p><small>AK / Statewide / <a href="https://www.newsminer.com/">Fairbanks Daily News-Miner</a></small></p>
-<h2><a href="https://www.newsminer.com/opinion/letters_to_editor/fairbanks-deserved-better/article_e0f56717-b255-4d06-b615-0dc1ed9792b0.html">Fairbanks deserved better</a></h2>
-<p class="byline"><small>By Jim Plaquet, Salcha</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.newsminer.com/">Support</a></span></p>
-<p>To the editor: I came to Fairbanks in 1974 from Tacoma, Washington, at age 19 to help build theTrans-Alaska Pipeline. From 1974 to 1977, roughly 70,000 workers built the 800-mile pipeline from Prudhoe Bay to Valdez through some of Alaska’s</p>
-<p class="more"><a href="https://www.newsminer.com/opinion/letters_to_editor/fairbanks-deserved-better/article_e0f56717-b255-4d06-b615-0dc1ed9792b0.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://queenslatino.com/">Support</a></aside>
+<p class="source"><a href="https://queenslatino.com/"><strong>Queens Latino</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:31:20+00:00" data-pub="12:31 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Queens&state=NY">Queens</a></p>
+<h2><a href="https://queenslatino.com/alcalde-mamdani-demanda-tiendas-comestibles-productos-baratos-la-marqueta/">Demanda contra tiendas de decomestibles del gobierno</a></h2>
+<p class="byline">By Javier Castaño</p>
+<p>Un grupo de propietarios de tiendas de comestibles demandó el lunes al alcalde Zohran Mamdani y a su administración por un plan para abrir cinco tiendas de comestibles financiadas por la ciudad en distintos puntos de la ciudad, que ofrecerían productos a precios considerablemente reducidos a los consumidores. Los demandantes argumentan que el plan es <a class="lozenge more" href="https://queenslatino.com/alcalde-mamdani-demanda-tiendas-comestibles-productos-baratos-la-marqueta/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:00:00+00:00" data-pub="7:00 AM PDT">Tuesday, August 25, 2026 at 7:00 AM PDT</time></small><a class="lozenge" href="subjects/politics.html">Politics</a></p>
-<p><small>NV / Las Vegas / <a href="https://thenevadaindependent.com/">The Nevada Independent</a></small></p>
-<h2><a href="https://thenevadaindependent.com/article/postal-service-blames-human-error-for-missing-nevada-mail-ballots/">Postal Service blames &#x27;human error&#x27; for missing Nevada mail ballots</a></h2>
-<p class="byline"><small>By Eric Neugeboren</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://nevadaindependent.fundjournalism.org/donate/?campaign=7013i000000tKk8AAE">Donate</a></span></p>
-<p>Plus: A key national Dem org has spent $0 on ads for Aaron Ford. Is that normal?</p>
-<p class="more"><a href="https://thenevadaindependent.com/article/postal-service-blames-human-error-for-missing-nevada-mail-ballots/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://laopinion.com">Support</a></aside>
+<p class="source"><a href="https://laopinion.com"><strong>La Opinión</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:31:00+00:00" data-pub="9:31 AM PDT">Tue, Aug 25 @ 9AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://laopinion.com/2026/08/25/ventas-de-viviendas-nuevas-en-ee-uu-cayeron-un-10-5-en-julio/">Ventas de viviendas nuevas en EE.UU. cayeron un 10.5% en julio</a></h2>
+<p class="byline">By Arlenys Tabare</p>
+<a class="shot" href="https://laopinion.com/2026/08/25/ventas-de-viviendas-nuevas-en-ee-uu-cayeron-un-10-5-en-julio/" tabindex="-1" aria-hidden="true"><img src="img/cb82bcf28f450da701e39d0c0b8d27a05eebab41.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Según el reporte de la Oficina del Censo del Departamento de Comercio, los precios de las viviendas cayeron un 0.9% en julio <a class="lozenge more" href="https://laopinion.com/2026/08/25/ventas-de-viviendas-nuevas-en-ee-uu-cayeron-un-10-5-en-julio/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 </div>
 <p><a id="more" href="everything-5.html">More stories</a></p>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="index.html">Today&#x27;s news</a> · <a href="map.html">Map</a> · <a href="catalog.html">Newsrooms</a> · <a href="big-stories.html">Big Stories</a> · <a href="story-links.html">Story Links</a> · <a href="resources.html">Resources</a> · <a href="text/">Plain text edition</a> · <a href="feeds.html">RSS Feeds</a> · <a href="about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="map.html">Map</a> · <a href="catalog.html">Newsrooms</a> · <a href="big-stories.html">Big Stories</a> · <a href="story-links.html">Story Links</a> · <a href="resources.html">Resources</a> · <a href="text/">Plain text edition</a> · <a href="feeds.html">RSS Feeds</a> · <a href="about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -403,6 +456,47 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>

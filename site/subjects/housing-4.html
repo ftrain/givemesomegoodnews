@@ -13,12 +13,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(../fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -27,22 +40,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -50,19 +69,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -75,7 +126,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -93,7 +144,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="../index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="../masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -106,7 +157,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="../subjects/news.html">News</a></li><li><a href="../subjects/politics.html">Politics</a></li><li><a href="../subjects/opinion.html">Opinion</a></li><li><a href="../subjects/health.html">Health</a></li><li><a href="../subjects/environment.html">Environment</a></li><li><a href="../subjects/education.html">Education</a></li><li><a href="../subjects/business.html">Business</a></li><li><a href="../subjects/housing.html">Housing</a></li><li><a href="../subjects/sports.html">Sports</a></li><li><a href="../subjects/food.html">Food</a></li><li><a href="../subjects/arts.html">Arts</a></li></ul></nav>
@@ -121,273 +172,275 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <main id="main">
 <div id="feed-items">
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T10:00:00+00:00" data-pub="6:00 AM EDT">Friday, August 21, 2026 at 6:00 AM EDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>NY / Immigration / <a href="https://documentedny.com/">Documented</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://wisconsinwatch.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://wisconsinwatch.org/"><strong>Wisconsin Watch</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T14:00:00+00:00" data-pub="9:00 AM CDT">Fri, Aug 21 @ 9AM CDT</time><a class="lozenge place" href="/search?state=WI">Wisconsin</a><a class="lozenge place" href="/search?place=Madison&state=WI">Madison</a></p>
+<h2><a href="https://wisconsinwatch.org/2026/08/milwaukee-sherman-park-investments-uprising-change-improvements-residents-benefit/">Investments changed Milwaukee’s Sherman Park after 2016 uprising, but who benefited remains unclear</a></h2>
+<p class="byline">By Meredith Melland / Milwaukee Neighborhood News Service</p>
+<a class="shot" href="https://wisconsinwatch.org/2026/08/milwaukee-sherman-park-investments-uprising-change-improvements-residents-benefit/" tabindex="-1" aria-hidden="true"><img src="../img/62dcf3850649dae8848298af394ce4d2ad9a8500.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>After the uprising, many government and civic leaders shared an interest in addressing long-standing systemic issues. Here&#x27;s what happened 10 years later. Investments changed Milwaukee’s Sherman Park after 2016 uprising, but who benefited remains unclear is a post from Wisconsin Watch, a non-profit investigative news site covering Wisconsin since 2009. Please consider making a contribution to supp <a class="lozenge more" href="https://wisconsinwatch.org/2026/08/milwaukee-sherman-park-investments-uprising-change-improvements-residents-benefit/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://ggwash.org/">Support</a></aside>
+<p class="source"><a href="https://ggwash.org/"><strong>Greater Greater Washington</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T12:51:00+00:00" data-pub="8:51 AM EDT">Fri, Aug 21 @ 8AM EDT</time><a class="lozenge place" href="/search?state=DC">Washington, D.C.</a><a class="lozenge place" href="/search?place=Washington&state=DC">Washington</a></p>
+<h2><a href="https://ggwash.org/view/104596/breakfast-links-virginia-drivers-would-give-up-more-than-4000-to-avoid-these-commutes">Breakfast links: Virginia drivers would give up more than $4,000 to avoid these commutes</a></h2>
+<p class="byline">By Melanie Pincus (Associate Editor)</p>
+<a class="shot" href="https://ggwash.org/view/104596/breakfast-links-virginia-drivers-would-give-up-more-than-4000-to-avoid-these-commutes" tabindex="-1" aria-hidden="true"><img src="../img/d55988317b8d4db1d13decd3e6ad41248a24c6e0.jpg" alt="" width="480" height="323" loading="lazy" decoding="async"></a>
+<p>Some commuters would cut pay before taking Northern Virginia routes Respondents to a recent survey said they’d take a $4,321 annual pay cut to avoid commuting through the Mixing Bowl I-95/I-495 interchange in Springfield. The survey of over 3,000 Virginians also found people would give up $4,931, on average, to avoid I-66 inside the Beltway between Arlington and DC. (InsideNoVa) Eight new DC mural <a class="lozenge more" href="https://ggwash.org/view/104596/breakfast-links-virginia-drivers-would-give-up-more-than-4000-to-avoid-these-commutes">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://wisconsinwatch.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://wisconsinwatch.org/"><strong>Wisconsin Watch</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T11:00:00+00:00" data-pub="6:00 AM CDT">Fri, Aug 21 @ 6AM CDT</time><a class="lozenge place" href="/search?state=WI">Wisconsin</a><a class="lozenge place" href="/search?place=Madison&state=WI">Madison</a></p>
+<h2><a href="https://wisconsinwatch.org/2026/08/milwaukee-sherman-park-neighborhood-10-years-after-uprising-challenges-poverty-housing/">10 years after uprising, stubborn challenges persist in Milwaukee’s Sherman Park neighborhood</a></h2>
+<p class="byline">By Devin Blake / Milwaukee Neighborhood News Service</p>
+<a class="shot" href="https://wisconsinwatch.org/2026/08/milwaukee-sherman-park-neighborhood-10-years-after-uprising-challenges-poverty-housing/" tabindex="-1" aria-hidden="true"><img src="../img/84327f3628db05e129c70ff930935cb04c75249c.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Poverty and housing instability remain major challenges for many residents 10 years after uprising made headlines across the world. 10 years after uprising, stubborn challenges persist in Milwaukee’s Sherman Park neighborhood is a post from Wisconsin Watch, a non-profit investigative news site covering Wisconsin since 2009. Please consider making a contribution to support our journalism. <a class="lozenge more" href="https://wisconsinwatch.org/2026/08/milwaukee-sherman-park-neighborhood-10-years-after-uprising-challenges-poverty-housing/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=72N6FKPHVCUGJ">Donate</a></aside>
+<p class="source"><a href="https://www.milwaukeeindependent.com/news/"><strong>Milwaukee Independent</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T10:00:53+00:00" data-pub="5:00 AM CDT">Fri, Aug 21 @ 5AM CDT</time><a class="lozenge place" href="/search?state=WI">Wisconsin</a><a class="lozenge place" href="/search?place=Milwaukee&state=WI">Milwaukee</a></p>
+<h2><a href="https://www.milwaukeeindependent.com/newswire/stolen-picasso-print-returned-milwaukee-gallery-landlord-finds-artwork-vacant-apartment/">Stolen Picasso print returned to Milwaukee gallery after a landlord finds artwork in vacant apartment</a></h2>
+<p class="byline">By Scott Bauer</p>
+<p><a class="lozenge more" href="https://www.milwaukeeindependent.com/newswire/stolen-picasso-print-returned-milwaukee-gallery-landlord-finds-artwork-vacant-apartment/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://arkansasadvocate.com/">Support</a></aside>
+<p class="source"><a href="https://arkansasadvocate.com/"><strong>Arkansas Advocate</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T10:00:13+00:00" data-pub="5:00 AM CDT">Fri, Aug 21 @ 5AM CDT</time><a class="lozenge place" href="/search?state=AR">Arkansas</a></p>
+<h2><a href="https://arkansasadvocate.com/2026/08/21/repub/cities-turn-to-ai-to-speed-housing-permitting/">Cities turn to AI to speed housing permitting</a></h2>
+<p class="byline">By Robbie Sequeira</p>
+<a class="shot" href="https://arkansasadvocate.com/2026/08/21/repub/cities-turn-to-ai-to-speed-housing-permitting/" tabindex="-1" aria-hidden="true"><img src="../img/3ef922f936019998db12a6d4aa1371b184752439.jpg" alt="" width="480" height="374" loading="lazy" decoding="async"></a>
+<p>New housing projects can sometimes stall out as a developer applies to city or county planning boards and goes through cycles of inspections, reviews and approvals. Now, cities are increasingly turning to artificial intelligence to address one of the most persistent sources of housing permitting delays: incomplete applications. And two new streams of federal money <a class="lozenge more" href="https://arkansasadvocate.com/2026/08/21/repub/cities-turn-to-ai-to-speed-housing-permitting/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://alabamareflector.com/2026/08/21/repub/cities-turn-to-ai-to-speed-housing-permitting/">Alabama Reflector</a> &middot; <a href="https://newhampshirebulletin.com/2026/08/21/repub/cities-turn-to-ai-to-speed-housing-permitting/">New Hampshire Bulletin</a> &middot; <a href="https://marylandmatters.org/2026/08/21/repub/cities-turn-to-ai-to-speed-housing-permitting/">Maryland Matters</a> &middot; <a href="https://wisconsinexaminer.com/2026/08/21/repub/cities-turn-to-ai-to-speed-housing-permitting/">Wisconsin Examiner</a> &middot; <a href="https://oregoncapitalchronicle.com/2026/08/20/repub/cities-turn-to-ai-to-speed-housing-permitting/">Oregon Capital Chronicle</a> &middot; <a href="https://ncnewsline.com/2026/08/20/repub/cities-turn-to-ai-to-speed-housing-permitting/">NC Newsline</a> &middot; <a href="https://sourcenm.com/2026/08/20/repub/cities-turn-to-ai-to-speed-housing-permitting/">Source New Mexico</a> &middot; <a href="https://nebraskaexaminer.com/2026/08/20/repub/cities-turn-to-ai-to-speed-housing-permitting/">Nebraska Examiner</a> &middot; <a href="https://azmirror.com/2026/08/20/repub/cities-turn-to-ai-to-speed-housing-permitting/">Arizona Mirror</a> &middot; <a href="https://penncapital-star.com/2026/08/20/repub/cities-turn-to-ai-to-speed-housing-permitting/">Pennsylvania Capital-Star</a> &middot; <a href="https://lailluminator.com/2026/08/20/repub/ai-housing/">Lousiana Illuminator</a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://bridgedetroit.fundjournalism.org/donate/?campaign=7011U000000m8QoQAI">Donate</a></aside>
+<p class="source"><a href="https://www.bridgedetroit.com/"><strong>Bridge Detroit</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T10:00:00+00:00" data-pub="6:00 AM EDT">Fri, Aug 21 @ 6AM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=Detroit&state=MI">Detroit</a></p>
+<h2><a href="https://www.bridgedetroit.com/are-you-behind-on-your-property-taxes-a-wayne-county-relief-program-is-back/">Are you behind on your property taxes? A Wayne County relief program is back.</a></h2>
+<p class="byline">By Nushrat Rahman</p>
+<a class="shot" href="https://www.bridgedetroit.com/are-you-behind-on-your-property-taxes-a-wayne-county-relief-program-is-back/" tabindex="-1" aria-hidden="true"><img src="../img/52d7f008f07e155fafce3332a9f8e40da2b4ec17.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>The deadline to apply for a property tax exemption to qualify for reduced taxes is Nov. 6. <a class="lozenge more" href="https://www.bridgedetroit.com/are-you-behind-on-your-property-taxes-a-wayne-county-relief-program-is-back/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://wisconsinwatch.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://wisconsinwatch.org/"><strong>Wisconsin Watch</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T10:00:00+00:00" data-pub="5:00 AM CDT">Fri, Aug 21 @ 5AM CDT</time><a class="lozenge place" href="/search?state=WI">Wisconsin</a><a class="lozenge place" href="/search?place=Madison&state=WI">Madison</a></p>
+<h2><a href="https://wisconsinwatch.org/2026/08/wisconsin-illinois-minnesota-residents-buying-more-waterfront-property/">Are Illinois residents buying more Wisconsin waterfront property than Minnesota residents?</a></h2>
+<p class="byline">By Tom Kertscher / Wisconsin Watch and Hongyu Liu / Wisconsin Watch</p>
+<a class="shot" href="https://wisconsinwatch.org/2026/08/wisconsin-illinois-minnesota-residents-buying-more-waterfront-property/" tabindex="-1" aria-hidden="true"><img src="../img/9cbabd212068d598391fb49fbe6b0489899df6db.jpg" alt="" width="480" height="252" loading="lazy" decoding="async"></a>
+<p>No. They&#x27;re buying about the same according to two analyses of property records. Are Illinois residents buying more Wisconsin waterfront property than Minnesota residents? is a post from Wisconsin Watch, a non-profit investigative news site covering Wisconsin since 2009. Please consider making a contribution to support our journalism. <a class="lozenge more" href="https://wisconsinwatch.org/2026/08/wisconsin-illinois-minnesota-residents-buying-more-waterfront-property/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://givebutter.com/67YVn6">Donate</a></aside>
+<p class="source"><a href="https://documentedny.com/"><strong>Documented</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T10:00:00+00:00" data-pub="6:00 AM EDT">Fri, Aug 21 @ 6AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Immigration&state=NY">Immigration</a></p>
 <h2><a href="https://documentedny.com/2026/08/21/transgender-immigrants-detention-medical/">Immigration News Today: Trans Immigrants Denied Basic Medical Care in Detention</a></h2>
-<p class="byline"><small>By Julia Malleck</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://givebutter.com/67YVn6">Donate</a></span></p>
-<p>Plus: Twenty people living in the U.S. were deported to Liberia this week, and more of the latest immigration news.</p>
-<p class="more"><a href="https://documentedny.com/2026/08/21/transgender-immigrants-detention-medical/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Julia Malleck</p>
+<p>Plus: Twenty people living in the U.S. were deported to Liberia this week, and more of the latest immigration news. <a class="lozenge more" href="https://documentedny.com/2026/08/21/transgender-immigrants-detention-medical/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T09:00:00+00:00" data-pub="4:00 AM CDT">Friday, August 21, 2026 at 4:00 AM CDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>AL / Statewide / <a href="https://www.propublica.org/south">Pro Publica - South</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.propublica.org/support/other-ways-to-give">Donate</a></aside>
+<p class="source"><a href="https://www.propublica.org/south"><strong>Pro Publica - South</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T09:00:00+00:00" data-pub="4:00 AM CDT">Fri, Aug 21 @ 4AM CDT</time><a class="lozenge place" href="/search?state=AL">Alabama</a></p>
 <h2><a href="https://www.propublica.org/article/oregon-affordable-housing-cost-secrecy">Oregon Is Spending More Than Ever on Low-Income Housing. A State Law Keeps the Details Secret.</a></h2>
-<p class="byline"><small>By Rob Davis</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.propublica.org/support/other-ways-to-give">Donate</a></span></p>
+<p class="byline">By Rob Davis</p>
 <a class="shot" href="https://www.propublica.org/article/oregon-affordable-housing-cost-secrecy" tabindex="-1" aria-hidden="true"><img src="../img/1f3d0fe74a8052221bd9a63747df0d2393d612cc.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p class="more"><a href="https://www.propublica.org/article/oregon-affordable-housing-cost-secrecy">Read more <span aria-hidden="true">→</span></a></p>
+<p><a class="lozenge more" href="https://www.propublica.org/article/oregon-affordable-housing-cost-secrecy">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T05:26:42+00:00" data-pub="10:26 PM PDT">Thursday, August 20, 2026 at 10:26 PM PDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>CA / Malibu / <a href="https://pepperdine-graphic.com/category/news/">Pepperdine Graphic</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/college.html">College</a><a class="lozenge give" href="https://pepperdine-graphic.com/join-pgm/">Become a member</a></aside>
+<p class="source"><a href="https://pepperdine-graphic.com/category/news/"><strong>Pepperdine Graphic</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T05:26:42+00:00" data-pub="10:26 PM PDT">Thu, Aug 20 @ 10PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Malibu&state=CA">Malibu</a></p>
 <h2><a href="https://pepperdine-graphic.com/good-news-community-found-in-house-hopping/">Good News: Community Found in House Hopping</a></h2>
-<p class="byline"><small>By Amanda Monahan</small><span class="aside"><a class="lozenge" href="../tags/college.html">College</a><a class="lozenge give" href="https://pepperdine-graphic.com/join-pgm/">Become a member</a></span></p>
+<p class="byline">By Amanda Monahan</p>
 <a class="shot" href="https://pepperdine-graphic.com/good-news-community-found-in-house-hopping/" tabindex="-1" aria-hidden="true"><img src="../img/36ff74c2b243cd134b8ed39caae354ece4139154.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Spending the past four years across seven different homes makes it hard to feel settled. Managing Editor Amanda Monahan reflects on her summer spent house hopping across campus and experiencing a Malibu summer.</p>
-<p class="more"><a href="https://pepperdine-graphic.com/good-news-community-found-in-house-hopping/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Spending the past four years across seven different homes makes it hard to feel settled. Managing Editor Amanda Monahan reflects on her summer spent house hopping across campus and experiencing a Malibu summer. <a class="lozenge more" href="https://pepperdine-graphic.com/good-news-community-found-in-house-hopping/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T00:38:46+00:00" data-pub="8:38 PM EDT">Thursday, August 20, 2026 at 8:38 PM EDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>NY / Rochester / <a href="https://rochesterbeacon.com/">Rochester Beacon</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://rochesterbeacon.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://rochesterbeacon.com/"><strong>Rochester Beacon</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T00:38:46+00:00" data-pub="8:38 PM EDT">Thu, Aug 20 @ 8PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Rochester&state=NY">Rochester</a></p>
 <h2><a href="https://rochesterbeacon.com/2026/08/20/evans-cites-progress-in-affordable-housing-efforts/">Evans cites progress in affordable housing efforts</a></h2>
-<p class="byline"><small>By DAVID WAZANA</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://rochesterbeacon.com/donate/">Donate</a></span></p>
+<p class="byline">By DAVID WAZANA</p>
 <a class="shot" href="https://rochesterbeacon.com/2026/08/20/evans-cites-progress-in-affordable-housing-efforts/" tabindex="-1" aria-hidden="true"><img src="../img/974e6b4260f2e575d87e28229c54eb159ff96935.jpg" alt="" width="480" height="417" loading="lazy" decoding="async"></a>
-<p>The city has a target of building 100 new affordable homes, Mayor Malik Evans said at a news conference Thursday.</p>
-<p class="more"><a href="https://rochesterbeacon.com/2026/08/20/evans-cites-progress-in-affordable-housing-efforts/">Read more <span aria-hidden="true">→</span></a></p>
+<p>The city has a target of building 100 new affordable homes, Mayor Malik Evans said at a news conference Thursday. <a class="lozenge more" href="https://rochesterbeacon.com/2026/08/20/evans-cites-progress-in-affordable-housing-efforts/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T00:00:26+00:00" data-pub="8:00 PM EDT">Thursday, August 20, 2026 at 8:00 PM EDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>MA / Lexington / <a href="https://lexobserver.org/">Lexington Observer</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://lexobserver.org/support-our-publication/">Donate</a></aside>
+<p class="source"><a href="https://lexobserver.org/"><strong>Lexington Observer</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T00:00:26+00:00" data-pub="8:00 PM EDT">Thu, Aug 20 @ 8PM EDT</time><a class="lozenge place" href="/search?state=MA">Massachusetts</a><a class="lozenge place" href="/search?place=Lexington&state=MA">Lexington</a></p>
 <h2><a href="https://lexobserver.org/2026/08/20/real-estate-listings-week-of-august-21-2026/">Real Estate Listings Week of August 21, 2026</a></h2>
-<p class="byline"><small>By Benjamin Liu</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://lexobserver.org/support-our-publication/">Donate</a></span></p>
-<p>155 Reed St, Lexington MA 02421 Sold by Ranjan, Sudhir and Vatsyayan, Jaya on 08/06/2026 to Gopala, Yogish and Kallianpur, Chaitra for $1,265,000 7 Burnham Rd, Lexington MA 02420 Sold</p>
-<p class="more"><a href="https://lexobserver.org/2026/08/20/real-estate-listings-week-of-august-21-2026/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Benjamin Liu</p>
+<p>155 Reed St, Lexington MA 02421 Sold by Ranjan, Sudhir and Vatsyayan, Jaya on 08/06/2026 to Gopala, Yogish and Kallianpur, Chaitra for $1,265,000 7 Burnham Rd, Lexington MA 02420 Sold <a class="lozenge more" href="https://lexobserver.org/2026/08/20/real-estate-listings-week-of-august-21-2026/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T22:06:49+00:00" data-pub="6:06 PM EDT">Thursday, August 20, 2026 at 6:06 PM EDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>NY / New York / <a href="https://citylimits.org/">City Limits</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://citylimits.org/get-involved">Donate</a></aside>
+<p class="source"><a href="https://citylimits.org/"><strong>City Limits</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T22:06:49+00:00" data-pub="6:06 PM EDT">Thu, Aug 20 @ 6PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=New+York&state=NY">New York</a></p>
 <h2><a href="https://citylimits.org/dates-dropped-for-citys-next-nycha-in-your-neighborhood-events-this-fall/">Dates Dropped for City’s Next ‘NYCHA in Your Neighborhood’ Events This Fall</a></h2>
-<p class="byline"><small>By Jeanmarie Evelly</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://citylimits.org/get-involved">Donate</a></span></p>
+<p class="byline">By Jeanmarie Evelly</p>
 <a class="shot" href="https://citylimits.org/dates-dropped-for-citys-next-nycha-in-your-neighborhood-events-this-fall/" tabindex="-1" aria-hidden="true"><img src="../img/e3f18cf28621e3f5aea189df81c6892632bac3a5.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Building on three earlier forums held this spring, the events are a chance for public housing residents to tell officials their concerns directly, City Hall said.</p>
-<p class="more"><a href="https://citylimits.org/dates-dropped-for-citys-next-nycha-in-your-neighborhood-events-this-fall/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Building on three earlier forums held this spring, the events are a chance for public housing residents to tell officials their concerns directly, City Hall said. <a class="lozenge more" href="https://citylimits.org/dates-dropped-for-citys-next-nycha-in-your-neighborhood-events-this-fall/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T21:00:32+00:00" data-pub="5:00 PM EDT">Thursday, August 20, 2026 at 5:00 PM EDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>VA / Fredericksburg / <a href="https://www.fredericksburgfreepress.com/about-fredericksburg-free-press/">Fredericksburg Free Press</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.fredericksburgfreepress.com/support/">Donate</a></aside>
+<p class="source"><a href="https://www.fredericksburgfreepress.com/about-fredericksburg-free-press/"><strong>Fredericksburg Free Press</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T21:00:32+00:00" data-pub="5:00 PM EDT">Thu, Aug 20 @ 5PM EDT</time><a class="lozenge place" href="/search?state=VA">Virginia</a><a class="lozenge place" href="/search?place=Fredericksburg&state=VA">Fredericksburg</a></p>
 <h2><a href="https://www.fredericksburgfreepress.com/2026/08/20/we-are-getting-ready-to-get-to-work-greater-fredericksburg-habitat-for-humanity-celebrates-groundbreaking-in-mayfield/">‘We are getting ready to get to work:’ Greater Fredericksburg Habitat for Humanity celebrates groundbreaking in Mayfield</a></h2>
-<p class="byline"><small>By Adele Uphaus</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.fredericksburgfreepress.com/support/">Donate</a></span></p>
+<p class="byline">By Adele Uphaus</p>
 <a class="shot" href="https://www.fredericksburgfreepress.com/2026/08/20/we-are-getting-ready-to-get-to-work-greater-fredericksburg-habitat-for-humanity-celebrates-groundbreaking-in-mayfield/" tabindex="-1" aria-hidden="true"><img src="../img/74681229c3ff7ca78d05104013a271cf09a009d2.jpg" alt="" width="480" height="307" loading="lazy" decoding="async"></a>
-<p>Work expected to begin on six-home, cul-de-sac development later this month.</p>
-<p class="more"><a href="https://www.fredericksburgfreepress.com/2026/08/20/we-are-getting-ready-to-get-to-work-greater-fredericksburg-habitat-for-humanity-celebrates-groundbreaking-in-mayfield/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Work expected to begin on six-home, cul-de-sac development later this month. <a class="lozenge more" href="https://www.fredericksburgfreepress.com/2026/08/20/we-are-getting-ready-to-get-to-work-greater-fredericksburg-habitat-for-humanity-celebrates-groundbreaking-in-mayfield/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T20:47:43+00:00" data-pub="4:47 PM EDT">Thursday, August 20, 2026 at 4:47 PM EDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>NH / Statewide / <a href="https://www.nhmagazine.com/603-diversity/">603 Diversity</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/employee-owned.html">Employee-owned</a><a class="lozenge give" href="https://www.nhmagazine.com/subscribe/">Subscribe</a></aside>
+<p class="source"><a href="https://www.nhmagazine.com/603-diversity/"><strong>603 Diversity</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T20:47:43+00:00" data-pub="4:47 PM EDT">Thu, Aug 20 @ 4PM EDT</time><a class="lozenge place" href="/search?state=NH">New Hampshire</a></p>
 <h2><a href="https://www.nhmagazine.com/immigrants-increasingly-help-care-for-new-hampshire-seniors/">Immigrants increasingly help care for New Hampshire seniors</a></h2>
-<p class="byline"><small>By Rony Camille</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/employee-owned.html">Employee-owned</a><a class="lozenge give" href="https://www.nhmagazine.com/subscribe/">Subscribe</a></span></p>
+<p class="byline">By Rony Camille</p>
 <a class="shot" href="https://www.nhmagazine.com/immigrants-increasingly-help-care-for-new-hampshire-seniors/" tabindex="-1" aria-hidden="true"><img src="../img/238c2782256949fd21bee5f10e0faf7024a969f6.jpg" alt="" width="427" height="270" loading="lazy" decoding="async"></a>
-<p>As New Hampshire’s population ages, caring for seniors increasingly depends on people whose work is often overlooked.</p>
-<p class="more"><a href="https://www.nhmagazine.com/immigrants-increasingly-help-care-for-new-hampshire-seniors/">Read more <span aria-hidden="true">→</span></a></p>
+<p>As New Hampshire’s population ages, caring for seniors increasingly depends on people whose work is often overlooked. <a class="lozenge more" href="https://www.nhmagazine.com/immigrants-increasingly-help-care-for-new-hampshire-seniors/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T20:38:34+00:00" data-pub="4:38 PM EDT">Thursday, August 20, 2026 at 4:38 PM EDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>VA / Richmond / <a href="https://www.richmonder.org/">The Richmonder</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://donate.stripe.com/4gw4h6f7o6MObcIfZ2">Donate</a></aside>
+<p class="source"><a href="https://www.richmonder.org/"><strong>The Richmonder</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T20:38:34+00:00" data-pub="4:38 PM EDT">Thu, Aug 20 @ 4PM EDT</time><a class="lozenge place" href="/search?state=VA">Virginia</a><a class="lozenge place" href="/search?place=Richmond&state=VA">Richmond</a></p>
 <h2><a href="https://www.richmonder.org/conversion-of-95-year-old-virginia-home-in-byrd-park-to-apartments-gets-thumbs-up-from-planning-commission/">Conversion of 95-year-old Virginia Home in Byrd Park to apartments gets thumbs-up from Planning Commission</a></h2>
-<p class="byline"><small>By Sarah Vogelsong</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://donate.stripe.com/4gw4h6f7o6MObcIfZ2">Donate</a></span></p>
+<p class="byline">By Sarah Vogelsong</p>
 <a class="shot" href="https://www.richmonder.org/conversion-of-95-year-old-virginia-home-in-byrd-park-to-apartments-gets-thumbs-up-from-planning-commission/" tabindex="-1" aria-hidden="true"><img src="../img/03b6e667d4308391ffd23d35f9a979dfea51669b.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>“I think it is an attractive, iconic building that is worth saving. It is historic.”</p>
-<p class="more"><a href="https://www.richmonder.org/conversion-of-95-year-old-virginia-home-in-byrd-park-to-apartments-gets-thumbs-up-from-planning-commission/">Read more <span aria-hidden="true">→</span></a></p>
+<p>“I think it is an attractive, iconic building that is worth saving. It is historic.” <a class="lozenge more" href="https://www.richmonder.org/conversion-of-95-year-old-virginia-home-in-byrd-park-to-apartments-gets-thumbs-up-from-planning-commission/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T20:28:21+00:00" data-pub="4:28 PM EDT">Thursday, August 20, 2026 at 4:28 PM EDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>NY / New York / <a href="https://citylimits.org/">City Limits</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://citylimits.org/get-involved">Donate</a></aside>
+<p class="source"><a href="https://citylimits.org/"><strong>City Limits</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T20:28:21+00:00" data-pub="4:28 PM EDT">Thu, Aug 20 @ 4PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=New+York&state=NY">New York</a></p>
 <h2><a href="https://citylimits.org/weigh-in-on-nycs-new-designs-for-long-loathed-sidewalk-sheds/">Weigh in On NYC’s New Designs For Long-Loathed Sidewalk Sheds</a></h2>
-<p class="byline"><small>By Jeanmarie Evelly</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://citylimits.org/get-involved">Donate</a></span></p>
+<p class="byline">By Jeanmarie Evelly</p>
 <a class="shot" href="https://citylimits.org/weigh-in-on-nycs-new-designs-for-long-loathed-sidewalk-sheds/" tabindex="-1" aria-hidden="true"><img src="../img/87935e09582858656ce78731256ef0b711f11e33.jpg" alt="" width="480" height="384" loading="lazy" decoding="async"></a>
-<p>Can a makeover make scaffolding, a ubiquitous feature at thousands of buildings across the city, less of a nuisance? The design plans come as officials roll out new rules to get more of the safety equipment down, and more quickly.</p>
-<p class="more"><a href="https://citylimits.org/weigh-in-on-nycs-new-designs-for-long-loathed-sidewalk-sheds/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Can a makeover make scaffolding, a ubiquitous feature at thousands of buildings across the city, less of a nuisance? The design plans come as officials roll out new rules to get more of the safety equipment down, and more quickly. <a class="lozenge more" href="https://citylimits.org/weigh-in-on-nycs-new-designs-for-long-loathed-sidewalk-sheds/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T20:16:00+00:00" data-pub="4:16 PM EDT">Thursday, August 20, 2026 at 4:16 PM EDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>MI / Grand Rapids / <a href="https://therapidian.org/">The Rapidian</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://therapidian.org/">Support</a></aside>
+<p class="source"><a href="https://therapidian.org/"><strong>The Rapidian</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T20:16:00+00:00" data-pub="4:16 PM EDT">Thu, Aug 20 @ 4PM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=Grand+Rapids&state=MI">Grand Rapids</a></p>
 <h2><a href="https://therapidian.org/grand-rapids-launches-food-scrap-program-renew-grand-rapids">Grand Rapids launches food scrap program, Renew Grand Rapids</a></h2>
-<p class="byline"><small>By Sabrina@grcmc.org (Sabrina Edwards)</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://therapidian.org/">Support</a></span></p>
+<p class="byline">By Sabrina@grcmc.org (Sabrina Edwards)</p>
 <a class="shot" href="https://therapidian.org/grand-rapids-launches-food-scrap-program-renew-grand-rapids" tabindex="-1" aria-hidden="true"><img src="../img/cbae7c8059457f2bf426ed08da36db95e97ca4c4.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>The food scrap program will allow residents to drop off scraps at seven different locations throughout the City.</p>
-<p class="more"><a href="https://therapidian.org/grand-rapids-launches-food-scrap-program-renew-grand-rapids">Read more <span aria-hidden="true">→</span></a></p>
+<p>The food scrap program will allow residents to drop off scraps at seven different locations throughout the City. <a class="lozenge more" href="https://therapidian.org/grand-rapids-launches-food-scrap-program-renew-grand-rapids">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T18:51:00+00:00" data-pub="1:51 PM CDT">Thursday, August 20, 2026 at 1:51 PM CDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>WI / Milwaukee / <a href="https://communityjournal.net/">The Milwaukee Community Journal</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="http://www.drtntscholarship.org">Donate</a></aside>
+<p class="source"><a href="https://communityjournal.net/"><strong>The Milwaukee Community Journal</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T18:51:00+00:00" data-pub="1:51 PM CDT">Thu, Aug 20 @ 1PM CDT</time><a class="lozenge place" href="/search?state=WI">Wisconsin</a><a class="lozenge place" href="/search?place=Milwaukee&state=WI">Milwaukee</a></p>
 <h2><a href="https://communityjournal.net/opinion-57000-empty-apartments-and-not-a-word-of-apology-city-limits/">OPINION: 57,000 Empty Apartments and Not a Word of Apology – City Limits</a></h2>
-<p class="byline"><small>By MKE Community Journal</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="http://www.drtntscholarship.org">Donate</a></span></p>
+<p class="byline">By MKE Community Journal</p>
 <a class="shot" href="https://communityjournal.net/opinion-57000-empty-apartments-and-not-a-word-of-apology-city-limits/" tabindex="-1" aria-hidden="true"><img src="../img/a829535359cc9c738ed5d3c9d1543dd506abab28.jpg" alt="" width="480" height="251" loading="lazy" decoding="async"></a>
-<p>BLACKPRESSUSA — BLACKPRESSUSA NEWSWIRE — “Short-term rental income was, for many of these families, not a luxury. It was the margin between keeping the house and losing it. Local Law</p>
-<p class="more"><a href="https://communityjournal.net/opinion-57000-empty-apartments-and-not-a-word-of-apology-city-limits/">Read more <span aria-hidden="true">→</span></a></p>
+<p>BLACKPRESSUSA—BLACKPRESSUSA NEWSWIRE—“Short-term rental income was, for many of these families, not a luxury. It was the margin between keeping the house and losing it. Local Law <a class="lozenge more" href="https://communityjournal.net/opinion-57000-empty-apartments-and-not-a-word-of-apology-city-limits/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T14:06:05+00:00" data-pub="10:06 AM EDT">Thursday, August 20, 2026 at 10:06 AM EDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>NY / New York / <a href="https://hellgatenyc.com/">Hell Gate</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://hellgatenyc.com/membership/">Become a member</a></aside>
+<p class="source"><a href="https://hellgatenyc.com/"><strong>Hell Gate</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T14:06:05+00:00" data-pub="10:06 AM EDT">Thu, Aug 20 @ 10AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=New+York&state=NY">New York</a></p>
 <h2><a href="https://hellgatenyc.com/mayor-mamdani-sues-the-city-council/">Mayor Mamdani Sues the City Council</a></h2>
-<p class="byline"><small>By Hell Gate</small><span class="aside"><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://hellgatenyc.com/membership/">Become a member</a></span></p>
+<p class="byline">By Hell Gate</p>
 <a class="shot" href="https://hellgatenyc.com/mayor-mamdani-sues-the-city-council/" tabindex="-1" aria-hidden="true"><img src="../img/0fa7c2959c1ad2bed1fe82769bb4b56c293785b5.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>$10K bonuses for paraprofessionals have put the mayor in a tricky spot. Plus more stories for your Thursday.</p>
-<p class="more"><a href="https://hellgatenyc.com/mayor-mamdani-sues-the-city-council/">Read more <span aria-hidden="true">→</span></a></p>
+<p>$10K bonuses for paraprofessionals have put the mayor in a tricky spot. Plus more stories for your Thursday. <a class="lozenge more" href="https://hellgatenyc.com/mayor-mamdani-sues-the-city-council/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T13:30:00+00:00" data-pub="9:30 AM EDT">Thursday, August 20, 2026 at 9:30 AM EDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>NY / Ithaca / <a href="https://ithacavoice.org/">The Ithaca Voice</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://ithacavoice.org/support-our-publication/">Donate</a></aside>
+<p class="source"><a href="https://ithacavoice.org/"><strong>The Ithaca Voice</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T13:30:00+00:00" data-pub="9:30 AM EDT">Thu, Aug 20 @ 9AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Ithaca&state=NY">Ithaca</a></p>
 <h2><a href="https://ithacavoice.org/2026/08/inside-the-groton-hotel-a-historic-property-gets-new-life/">Inside the Groton Hotel: A historic property gets new life</a></h2>
-<p class="byline"><small>By Hailea Potter</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://ithacavoice.org/support-our-publication/">Donate</a></span></p>
+<p class="byline">By Hailea Potter</p>
 <a class="shot" href="https://ithacavoice.org/2026/08/inside-the-groton-hotel-a-historic-property-gets-new-life/" tabindex="-1" aria-hidden="true"><img src="../img/b33f3979fb900f44b5668bb836aae68aedf1a871.jpg" alt="" width="400" height="298" loading="lazy" decoding="async"></a>
-<p>From the early-1900s tin ceiling to the wood flooring underfoot, the new management of the historic Groton Hotel hopes to keep it just that — historic. Residents wandering down Groton’s</p>
-<p class="more"><a href="https://ithacavoice.org/2026/08/inside-the-groton-hotel-a-historic-property-gets-new-life/">Read more <span aria-hidden="true">→</span></a></p>
+<p>From the early-1900s tin ceiling to the wood flooring underfoot, the new management of the historic Groton Hotel hopes to keep it just that—historic. Residents wandering down Groton’s <a class="lozenge more" href="https://ithacavoice.org/2026/08/inside-the-groton-hotel-a-historic-property-gets-new-life/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T13:00:40+00:00" data-pub="6:00 AM PDT">Thursday, August 20, 2026 at 6:00 AM PDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>WA / Puget Sound / <a href="https://www.theurbanist.org/about/">The Urbanist</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.theurbanist.org/membership/">Donate</a></aside>
+<p class="source"><a href="https://www.theurbanist.org/about/"><strong>The Urbanist</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T13:00:40+00:00" data-pub="6:00 AM PDT">Thu, Aug 20 @ 6AM PDT</time><a class="lozenge place" href="/search?state=WA">Washington</a><a class="lozenge place" href="/search?place=Puget+Sound&state=WA">Puget Sound</a></p>
 <h2><a href="https://www.theurbanist.org/wilson-launches-housing-task-force-pledging-to-streamline-permitting/">Wilson Launches Housing Task Force, Pledging to Streamline Permitting</a></h2>
-<p class="byline"><small>By Doug Trumm</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.theurbanist.org/membership/">Donate</a></span></p>
+<p class="byline">By Doug Trumm</p>
 <a class="shot" href="https://www.theurbanist.org/wilson-launches-housing-task-force-pledging-to-streamline-permitting/" tabindex="-1" aria-hidden="true"><img src="../img/003fa932b0ed4a512b78fdf15c861fd79467060f.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>A new Seattle task force was born Wednesday. Mayor Katie Wilson chartered the group to advise her housing agenda, looking for ways to streamline permitting and boost housing production over the long term.</p>
-<p class="more"><a href="https://www.theurbanist.org/wilson-launches-housing-task-force-pledging-to-streamline-permitting/">Read more <span aria-hidden="true">→</span></a></p>
+<p>A new Seattle task force was born Wednesday. Mayor Katie Wilson chartered the group to advise her housing agenda, looking for ways to streamline permitting and boost housing production over the long term. <a class="lozenge more" href="https://www.theurbanist.org/wilson-launches-housing-task-force-pledging-to-streamline-permitting/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T12:30:00+00:00" data-pub="5:30 AM PDT">Thursday, August 20, 2026 at 5:30 AM PDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>CA / San Diego / <a href="https://inewsource.org/">Inewsource</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://inewsource.org/planned-giving/">Donate</a></aside>
+<p class="source"><a href="https://inewsource.org/"><strong>Inewsource</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T12:30:00+00:00" data-pub="5:30 AM PDT">Thu, Aug 20 @ 5AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=San+Diego&state=CA">San Diego</a></p>
 <h2><a href="https://inewsource.org/2026/08/20/escondido-housing-development-opposition-neighbors/">Neighbors are nervous about plans for Escondido to annex county land for 140 new homes</a></h2>
-<p class="byline"><small>By Katie Futterman</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://inewsource.org/planned-giving/">Donate</a></span></p>
+<p class="byline">By Katie Futterman</p>
 <a class="shot" href="https://inewsource.org/2026/08/20/escondido-housing-development-opposition-neighbors/" tabindex="-1" aria-hidden="true"><img src="../img/e7baea73550dd861634e73aa64dc2e9eaa58ee84.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Developers say the two-story homes on 17 acres currently just outside Escondido would help the city with its housing needs. This content Neighbors are nervous about plans for Escondido to annex county land for 140 new homes appeared first on inewsource.</p>
-<p class="more"><a href="https://inewsource.org/2026/08/20/escondido-housing-development-opposition-neighbors/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Developers say the two-story homes on 17 acres currently just outside Escondido would help the city with its housing needs. This content Neighbors are nervous about plans for Escondido to annex county land for 140 new homes appeared first on inewsource. <a class="lozenge more" href="https://inewsource.org/2026/08/20/escondido-housing-development-opposition-neighbors/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T10:00:35+00:00" data-pub="6:00 AM EDT">Thursday, August 20, 2026 at 6:00 AM EDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>WV / Statewide / <a href="https://westvirginiawatch.com/">West Virginia Watch</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://westvirginiawatch.com/">Support</a></aside>
+<p class="source"><a href="https://westvirginiawatch.com/"><strong>West Virginia Watch</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T10:00:35+00:00" data-pub="6:00 AM EDT">Thu, Aug 20 @ 6AM EDT</time><a class="lozenge place" href="/search?state=WV">West Virginia</a></p>
 <h2><a href="https://westvirginiawatch.com/2026/08/20/we-have-nowhere-to-go-wv-handicap-accessible-housing-in-short-supply-for-low-income-residents/">‘We have nowhere to go’: WV handicap-accessible housing in short supply for low-income residents</a></h2>
-<p class="byline"><small>By Lori Kersey</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://westvirginiawatch.com/">Support</a></span></p>
+<p class="byline">By Lori Kersey</p>
 <a class="shot" href="https://westvirginiawatch.com/2026/08/20/we-have-nowhere-to-go-wv-handicap-accessible-housing-in-short-supply-for-low-income-residents/" tabindex="-1" aria-hidden="true"><img src="../img/731586a6bd1da4cfd951b807b8c1028d1c7f1ee8.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>Upshur and other regional counties already have a shortage of subsidized housing units that are accessible for seniors and those with disabilities, according to the 2025 Statewide Housing Needs Assessment by the West Virginia Housing Development Fund.</p>
-<p class="more"><a href="https://westvirginiawatch.com/2026/08/20/we-have-nowhere-to-go-wv-handicap-accessible-housing-in-short-supply-for-low-income-residents/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Upshur and other regional counties already have a shortage of subsidized housing units that are accessible for seniors and those with disabilities, according to the 2025 Statewide Housing Needs Assessment by the West Virginia Housing Development Fund. <a class="lozenge more" href="https://westvirginiawatch.com/2026/08/20/we-have-nowhere-to-go-wv-handicap-accessible-housing-in-short-supply-for-low-income-residents/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T10:00:00+00:00" data-pub="6:00 AM EDT">Thursday, August 20, 2026 at 6:00 AM EDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>NY / New York / <a href="https://citylimits.org/">City Limits</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://citylimits.org/get-involved">Donate</a></aside>
+<p class="source"><a href="https://citylimits.org/"><strong>City Limits</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T10:00:00+00:00" data-pub="6:00 AM EDT">Thu, Aug 20 @ 6AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=New+York&state=NY">New York</a></p>
 <h2><a href="https://citylimits.org/see-which-nyc-neighborhoods-are-behind-on-new-housing-targets/">See Which NYC Neighborhoods Are Behind On New Housing Targets</a></h2>
-<p class="byline"><small>By Jeanmarie Evelly</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://citylimits.org/get-involved">Donate</a></span></p>
+<p class="byline">By Jeanmarie Evelly</p>
 <a class="shot" href="https://citylimits.org/see-which-nyc-neighborhoods-are-behind-on-new-housing-targets/" tabindex="-1" aria-hidden="true"><img src="../img/63f32dd85714fb18fb02990a7b573b99f921c0ef.jpg" alt="" width="480" height="409" loading="lazy" decoding="async"></a>
-<p>The city needs 700,000 new homes over the next 10 years to catch up with current demand and accommodate future growth, officials announced Wednesday. See which neighborhoods they say aren’t growing fast enough.</p>
-<p class="more"><a href="https://citylimits.org/see-which-nyc-neighborhoods-are-behind-on-new-housing-targets/">Read more <span aria-hidden="true">→</span></a></p>
+<p>The city needs 700,000 new homes over the next 10 years to catch up with current demand and accommodate future growth, officials announced Wednesday. See which neighborhoods they say aren’t growing fast enough. <a class="lozenge more" href="https://citylimits.org/see-which-nyc-neighborhoods-are-behind-on-new-housing-targets/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T06:40:11+00:00" data-pub="11:40 PM PDT">Wednesday, August 19, 2026 at 11:40 PM PDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>CA / Inland Empire / <a href="https://precinctreporter.com/">Precinct Reporter</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://precinctreporter.com/subscribe/">Subscribe</a></aside>
+<p class="source"><a href="https://precinctreporter.com/"><strong>Precinct Reporter</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T06:40:11+00:00" data-pub="11:40 PM PDT">Wed, Aug 19 @ 11PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Inland+Empire&state=CA">Inland Empire</a></p>
 <h2><a href="https://precinctreporter.com/2026/08/20/1-2m-to-expand-affordable-housing-in-fontana/">$1.2M to Expand Affordable Housing in Fontana</a></h2>
-<p class="byline"><small>By Precinct Reporter News</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://precinctreporter.com/subscribe/">Subscribe</a></span></p>
-<p>The funding will help address affordable housing shortages in the City of Fontana and give more low-income Fontana residents pathways to permanent housing Rep. Pete Aguilar announced that he secured $1.2 million in community project funding for the City of Fontana’s Aldea Apartments Acquisition Phase II project. This grant funding will help expand affordable housing and address homelessness in the</p>
-<p class="more"><a href="https://precinctreporter.com/2026/08/20/1-2m-to-expand-affordable-housing-in-fontana/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Precinct Reporter News</p>
+<p>The funding will help address affordable housing shortages in the City of Fontana and give more low-income Fontana residents pathways to permanent housing Rep. Pete Aguilar announced that he secured $1.2 million in community project funding for the City of Fontana’s Aldea Apartments Acquisition Phase II project. This grant funding will help expand affordable housing and address homelessness in the <a class="lozenge more" href="https://precinctreporter.com/2026/08/20/1-2m-to-expand-affordable-housing-in-fontana/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T06:12:42+00:00" data-pub="11:12 PM PDT">Wednesday, August 19, 2026 at 11:12 PM PDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>CA / Inland Empire / <a href="https://precinctreporter.com/">Precinct Reporter</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://precinctreporter.com/subscribe/">Subscribe</a></aside>
+<p class="source"><a href="https://precinctreporter.com/"><strong>Precinct Reporter</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T06:12:42+00:00" data-pub="11:12 PM PDT">Wed, Aug 19 @ 11PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Inland+Empire&state=CA">Inland Empire</a></p>
 <h2><a href="https://precinctreporter.com/2026/08/20/lbcc-to-break-ground-on-new-student-housing/">LBCC To Break Ground On New Student Housing</a></h2>
-<p class="byline"><small>By Precinct Reporter News</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://precinctreporter.com/subscribe/">Subscribe</a></span></p>
-<p>Long Beach City College (LBCC) will break ground on a new student housing facility at its Liberal Arts Campus (LAC), marking a major investment in supporting students and addressing housing needs that can affect their educational goals. Members of the community are invited to attend the October 8 groundbreaking ceremony and learn more about the student housing project. “For the first time in Long </p>
-<p class="more"><a href="https://precinctreporter.com/2026/08/20/lbcc-to-break-ground-on-new-student-housing/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Precinct Reporter News</p>
+<p>Long Beach City College (LBCC) will break ground on a new student housing facility at its Liberal Arts Campus (LAC), marking a major investment in supporting students and addressing housing needs that can affect their educational goals. Members of the community are invited to attend the October 8 groundbreaking ceremony and learn more about the student housing project. “For the first time in Long  <a class="lozenge more" href="https://precinctreporter.com/2026/08/20/lbcc-to-break-ground-on-new-student-housing/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T02:14:44+00:00" data-pub="7:14 PM PDT">Wednesday, August 19, 2026 at 7:14 PM PDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>CA / Los Angeles / <a href="https://lasentinel.net/">Los Angeles Sentinel</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://lasentinel.net/">Support</a></aside>
+<p class="source"><a href="https://lasentinel.net/"><strong>Los Angeles Sentinel</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T02:14:44+00:00" data-pub="7:14 PM PDT">Wed, Aug 19 @ 7PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
 <h2><a href="https://lasentinel.net/saints-home-cogic-marks-110-years-of-ministry-in-los-angeles.html">Saints Home COGIC marks 110 years of ministry in Los Angeles</a></h2>
-<p class="byline"><small>By kbuck019</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://lasentinel.net/">Support</a></span></p>
-<p>For 110 years, Saints Home Church of God in Christ has helped shape the spiritual life of Los Angeles, carrying its ministry from one generation to the next through faith, service and sacrifice. This month, the historic congregation will celebrate that legacy while looking toward the work it believes God is still calling it to do.</p>
-<p class="more"><a href="https://lasentinel.net/saints-home-cogic-marks-110-years-of-ministry-in-los-angeles.html">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By kbuck019</p>
+<p>For 110 years, Saints Home Church of God in Christ has helped shape the spiritual life of Los Angeles, carrying its ministry from one generation to the next through faith, service and sacrifice. This month, the historic congregation will celebrate that legacy while looking toward the work it believes God is still calling it to do. <a class="lozenge more" href="https://lasentinel.net/saints-home-cogic-marks-110-years-of-ministry-in-los-angeles.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T00:56:46+00:00" data-pub="7:56 PM CDT">Wednesday, August 19, 2026 at 7:56 PM CDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>KS / Wichita / <a href="https://www.planetavenus.online/">Planeta Venus</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge" href="../tags/latino.html">Latino</a><a class="lozenge give" href="https://www.planetavenus.online/">Support</a></aside>
+<p class="source"><a href="https://www.planetavenus.online/"><strong>Planeta Venus</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T00:56:46+00:00" data-pub="7:56 PM CDT">Wed, Aug 19 @ 7PM CDT</time><a class="lozenge place" href="/search?state=KS">Kansas</a><a class="lozenge place" href="/search?place=Wichita&state=KS">Wichita</a></p>
 <h2><a href="https://www.planetavenus.online/post/a-bag-full-of-hope-atziri-campos-initiative-to-raise-awareness-and-support-the-homeless-community">A Bag Full of Hope: Atziri Campos&#x27; Initiative to Raise Awareness and Support the Homeless Community in Wichita</a></h2>
-<p class="byline"><small>By Claudia Amaro</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge" href="../tags/latino.html">Latino</a><a class="lozenge give" href="https://www.planetavenus.online/">Support</a></span></p>
-<p>Atziri Campos distributes basic hygiene items, coats, and food directly to those who need it most.</p>
-<p class="more"><a href="https://www.planetavenus.online/post/a-bag-full-of-hope-atziri-campos-initiative-to-raise-awareness-and-support-the-homeless-community">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Claudia Amaro</p>
+<p>Atziri Campos distributes basic hygiene items, coats, and food directly to those who need it most. <a class="lozenge more" href="https://www.planetavenus.online/post/a-bag-full-of-hope-atziri-campos-initiative-to-raise-awareness-and-support-the-homeless-community">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-19T23:28:05+00:00" data-pub="7:28 PM EDT">Wednesday, August 19, 2026 at 7:28 PM EDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>MI / - / <a href="https://www.secondwavemedia.com/">Second Wave</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://secondwavemedia.com/support-us/">Donate</a></aside>
+<p class="source"><a href="https://www.secondwavemedia.com/"><strong>Second Wave</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-19T23:28:05+00:00" data-pub="7:28 PM EDT">Wed, Aug 19 @ 7PM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=-&state=MI">-</a></p>
 <h2><a href="https://secondwavemedia.com/rivers-edge-apartments-expected-to-help-relieve-demand-for-housing/">River’s Edge Apartments expected to help relieve demand for housing</a></h2>
-<p class="byline"><small>By Mark Wedel</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://secondwavemedia.com/support-us/">Donate</a></span></p>
+<p class="byline">By Mark Wedel</p>
 <a class="shot" href="https://secondwavemedia.com/rivers-edge-apartments-expected-to-help-relieve-demand-for-housing/" tabindex="-1" aria-hidden="true"><img src="../img/88e27a8bb1ba613365bbe024b1fe61ca851d9c2c.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>This is one of the largest projects to date that Kalamazoo County has contributed to.</p>
-<p class="more"><a href="https://secondwavemedia.com/rivers-edge-apartments-expected-to-help-relieve-demand-for-housing/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-19T21:11:00+00:00" data-pub="5:11 PM EDT">Wednesday, August 19, 2026 at 5:11 PM EDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>NC / Raleigh / <a href="https://caro.news/">The Carolinian</a></small></p>
-<h2><a href="https://caro.news/data-center-project-in-southeast-raleigh-withdrawn-before-city-council-vote/">Data Center Project in Southeast Raleigh Withdrawn Before City Council Vote</a></h2>
-<p class="byline"><small>By Jordan Meadows</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://caro.news/">Support</a></span></p>
-<a class="shot" href="https://caro.news/data-center-project-in-southeast-raleigh-withdrawn-before-city-council-vote/" tabindex="-1" aria-hidden="true"><img src="../img/1d1cfc714e32c3e4cb240e2cb7c5c11f7f84ecdc.jpg" alt="" width="358" height="177" loading="lazy" decoding="async"></a>
-<p>By Jordan Meadows Staff Writer A proposed 100,000-square-foot data center in southeast Raleigh will not go before the City Council after all, after the project&#x27;s developer withdrew its annexation application</p>
-<p class="more"><a href="https://caro.news/data-center-project-in-southeast-raleigh-withdrawn-before-city-council-vote/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-19T19:41:35+00:00" data-pub="3:41 PM EDT">Wednesday, August 19, 2026 at 3:41 PM EDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>National / Education / <a href="https://www.chalkbeat.org/">Chalkbeat</a></small></p>
-<h2><a href="https://www.chalkbeat.org/newyork/2026/08/19/nyc-paraprofessionals-10000-pay-bump-law-mamdani/">NYC paraprofessionals’ $10,000 pay bump becomes law as City Hall vows a legal challenge</a></h2>
-<p class="byline"><small>By Alex Zimmerman</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://chalkbeat.fundjournalism.org/donate/?campaign=701Pc00000M3hQLIAZ">Donate</a></span></p>
-<a class="shot" href="https://www.chalkbeat.org/newyork/2026/08/19/nyc-paraprofessionals-10000-pay-bump-law-mamdani/" tabindex="-1" aria-hidden="true"><img src="../img/b59d89662e897b62653466b9287bd99c6c651e80.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>New York City teachers union members rally for paraprofessional raises in January, 2025. A bill that would grant $10,000 one-time pay bumps became law on Wednesday.</p>
-<p class="more"><a href="https://www.chalkbeat.org/newyork/2026/08/19/nyc-paraprofessionals-10000-pay-bump-law-mamdani/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-19T18:42:25+00:00" data-pub="1:42 PM CDT">Wednesday, August 19, 2026 at 1:42 PM CDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>WI / Milwaukee / <a href="https://communityjournal.net/">The Milwaukee Community Journal</a></small></p>
-<h2><a href="https://communityjournal.net/are-you-a-friend/">Are you a friend?</a></h2>
-<p class="byline"><small>By MKE Community Journal</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="http://www.drtntscholarship.org">Donate</a></span></p>
-<a class="shot" href="https://communityjournal.net/are-you-a-friend/" tabindex="-1" aria-hidden="true"><img src="../img/ea6a6f279a2acec52b90fdde51eeae5c12548983.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>I have had many things to be joyful about. I was one of the honorees celebrated during the 50th Anniversary of the Milwaukee Community Journal. We got the squatters out.</p>
-<p class="more"><a href="https://communityjournal.net/are-you-a-friend/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-19T16:44:03+00:00" data-pub="12:44 PM EDT">Wednesday, August 19, 2026 at 12:44 PM EDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>FL / Winter Park / <a href="https://winterparkvoice.com/">Winter Park Voice</a></small></p>
-<h2><a href="https://winterparkvoice.com/merrywood-sold-for-15-million-to-new-buyer/">Merrywood Sold for $15 Million to New Buyer</a></h2>
-<p class="byline"><small>By Beth Kassab</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://winterparkvoice.com/donations/">Donate</a></span></p>
-<p>Aug. 19, 2026: A city official says the request for a lot split will likely be tabled instead of heard at next week&#x27;s City Commission meeting</p>
-<p class="more"><a href="https://winterparkvoice.com/merrywood-sold-for-15-million-to-new-buyer/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-19T16:30:00+00:00" data-pub="9:30 AM PDT">Wednesday, August 19, 2026 at 9:30 AM PDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>CA / Los Angeles / <a href="https://knock-la.com/">Knock LA</a></small></p>
-<h2><a href="https://knock-la.com/breaking-down-political-narratives-surrounding-homelessness/">Breaking Down Political Narratives Surrounding Homelessness in Los Angeles</a></h2>
-<p class="byline"><small>By Angela Mariya Alejandro</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://knock-la.com/support/">Donate</a></span></p>
-<a class="shot" href="https://knock-la.com/breaking-down-political-narratives-surrounding-homelessness/" tabindex="-1" aria-hidden="true"><img src="../img/722b4890ecee2c72a41af83480f894084347f123.jpg" alt="" width="480" height="166" loading="lazy" decoding="async"></a>
-<p>Prominent narratives framing LA homelessness shifts poverty into a policing problem that normalizes encampment displacements and avoids genuine conversations on affordable housing and care investments.</p>
-<p class="more"><a href="https://knock-la.com/breaking-down-political-narratives-surrounding-homelessness/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-19T16:20:15+00:00" data-pub="11:20 AM CDT">Wednesday, August 19, 2026 at 11:20 AM CDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>MO / Kansas City / <a href="https://kansascitydefender.com/">Kansas City Defender</a></small></p>
-<h2><a href="https://kansascitydefender.com/justice/royals-stadium-worker-arrested-600-million-deal/">“I Can’t Breathe!” Black Community Leader Violently Attacked &amp; Arrested For Resisting KC Billioniare Stadium</a></h2>
-<p class="byline"><small>By Ryan S.</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://kansascitydefender.com/support-us">Donate</a></span></p>
-<a class="shot" href="https://kansascitydefender.com/justice/royals-stadium-worker-arrested-600-million-deal/" tabindex="-1" aria-hidden="true"><img src="../img/71abf58aa2d3c283366b81a08d89e7d6465708f7.jpg" alt="" width="480" height="372" loading="lazy" decoding="async"></a>
-<p>A Royals stadium worker was violently attacked and pinned to the ground at City Hall as Kansas City advanced the billionaire ballpark with no public vote.</p>
-<p class="more"><a href="https://kansascitydefender.com/justice/royals-stadium-worker-arrested-600-million-deal/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-19T16:00:00+00:00" data-pub="11:00 AM CDT">Wednesday, August 19, 2026 at 11:00 AM CDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>OK / Statewide / <a href="https://oklahomawatch.org/">Oklahoma Watch</a></small></p>
-<h2><a href="https://oklahomawatch.org/2026/08/19/utility-shock-housing-protections-and-juvenile-murder-laws/">Utility Shock, Housing Protections and Juvenile Murder Laws</a></h2>
-<p class="byline"><small>By Oklahoma Watch</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://oklahomawatch.org/donate/">Donate</a></span></p>
-<a class="shot" href="https://oklahomawatch.org/2026/08/19/utility-shock-housing-protections-and-juvenile-murder-laws/" tabindex="-1" aria-hidden="true"><img src="../img/8ee97080fbf8daaae36bfe8903bb44ece8b94e5a.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>Oklahoma Watch · Utility Shock, Housing Protections and Juvenile Murder Laws Andrea Eger breaks down what is driving the massive spike in Oklahomans’ electricity bills, while Jake Ramsey examines the lack of legal recourse for tenants dealing with negligent landlords failing to provide essential services. Plus, Brenna Witchey details Oklahoma’s controversial felony murder doctrine, which</p>
-<p class="more"><a href="https://oklahomawatch.org/2026/08/19/utility-shock-housing-protections-and-juvenile-murder-laws/">Read more <span aria-hidden="true">→</span></a></p>
+<p>This is one of the largest projects to date that Kalamazoo County has contributed to. <a class="lozenge more" href="https://secondwavemedia.com/rivers-edge-apartments-expected-to-help-relieve-demand-for-housing/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 </div>
 <p><a id="more" href="housing-5.html">More stories</a></p>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="../index.html">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -403,6 +456,47 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>

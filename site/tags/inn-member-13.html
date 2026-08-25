@@ -13,12 +13,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(../fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -27,22 +40,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -50,19 +69,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -75,7 +126,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -93,7 +144,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="../index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="../masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -106,7 +157,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="../subjects/news.html">News</a></li><li><a href="../subjects/politics.html">Politics</a></li><li><a href="../subjects/opinion.html">Opinion</a></li><li><a href="../subjects/health.html">Health</a></li><li><a href="../subjects/environment.html">Environment</a></li><li><a href="../subjects/education.html">Education</a></li><li><a href="../subjects/business.html">Business</a></li><li><a href="../subjects/housing.html">Housing</a></li><li><a href="../subjects/sports.html">Sports</a></li><li><a href="../subjects/food.html">Food</a></li><li><a href="../subjects/arts.html">Arts</a></li></ul></nav>
@@ -121,278 +172,275 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <main id="main">
 <div id="feed-items">
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T13:00:14+00:00" data-pub="9:00 AM EDT">Friday, August 21, 2026 at 9:00 AM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>NY / Cold Spring / <a href="https://highlandscurrent.org/">The Highlands Current</a></small></p>
-<h2><a href="https://highlandscurrent.org/2026/08/21/state-hhft-seek-ruling-on-dockside-access/">State, HHFT Seek Ruling on Dockside Access</a></h2>
-<p class="byline"><small>By Leonard Sparks</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://highlandscurrent.org/membership/short-form">Donate</a></span></p>
-<p>State, HHFT Seek Ruling on Dockside Access</p>
-<p class="more"><a href="https://highlandscurrent.org/2026/08/21/state-hhft-seek-ruling-on-dockside-access/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://myedmondsnews.com/">Support</a></aside>
+<p class="source"><a href="https://myedmondsnews.com/"><strong>My Edmonds News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T20:15:10+00:00" data-pub="1:15 PM PDT">Fri, Aug 21 @ 1PM PDT</time><a class="lozenge place" href="/search?state=WA">Washington</a><a class="lozenge place" href="/search?place=Snohomish+County&state=WA">Snohomish County</a></p>
+<h2><a href="https://myedmondsnews.com/2026/08/access-local-health-services-at-resources-on-wheels-aug-25/">Access local health services at Resources on Wheels Aug. 25</a></h2>
+<p class="byline">By MyEdmondsNews</p>
+<p>Volunteers of America Western Washington (VOAWW) is hosting a community resource event, Resources on Wheels, on Tuesday, Aug. 25 at the Lynnwood Neighborhood Center, 19509 64th Ave. W., Lynnwood. The <a class="lozenge more" href="https://myedmondsnews.com/2026/08/access-local-health-services-at-resources-on-wheels-aug-25/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://mylynnwoodnews.com/access-local-health-services-at-resources-on-wheels-aug-25/">Lynnwood Today</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T13:00:00+00:00" data-pub="8:00 AM CDT">Friday, August 21, 2026 at 8:00 AM CDT</time></small></p>
-<p><small>IL / Chicago / <a href="https://chicagoreader.com/">Chicago Reader</a></small></p>
-<h2><a href="https://chicagoreader.com/city-life/latina-sweat-project-yoga-teacher-graduation/">Más allá del estudio</a></h2>
-<p class="byline"><small>By Leslie Hurtado</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://donorbox.org/support-nonprofit-independent-journalism?preview=1743451927">Donate</a></span></p>
-<a class="shot" href="https://chicagoreader.com/city-life/latina-sweat-project-yoga-teacher-graduation/" tabindex="-1" aria-hidden="true"><img src="../img/0a2249bc669cb604f4a29426289c51f972f588ec.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>A sign on the front door of the Latina Sweat Project reminded me of the studio’s rhythm: class begins, and five minutes later, the doors close. There, I met Jocelyn Vega, a soon-to-be yoga teacher. We laughed at the exact timing on the notice, but she was serious. “It’s very important,” Vega said proudly. Once</p>
-<p class="more"><a href="https://chicagoreader.com/city-life/latina-sweat-project-yoga-teacher-graduation/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.rappnews.com/">Support</a></aside>
+<p class="source"><a href="https://www.rappnews.com/"><strong>Rappahannock News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T20:13:59+00:00" data-pub="4:13 PM EDT">Fri, Aug 21 @ 4PM EDT</time><a class="lozenge place" href="/search?state=VA">Virginia</a><a class="lozenge place" href="/search?place=Rappahannock+County&state=VA">Rappahannock County</a></p>
+<h2><a href="https://www.rappnews.com/crime-courts/flint-hill-volunteer-fire-and-rescue-company-versus-rappahannocks-board-of-supervisors-goes-to-trial-b13167e2">Flint Hill Volunteer Fire and Rescue Company versus Rappahannock’s Board of Supervisors goes to trial</a></h2>
+<p class="byline">By By Julia Shanahan</p>
+<a class="shot" href="https://www.rappnews.com/crime-courts/flint-hill-volunteer-fire-and-rescue-company-versus-rappahannocks-board-of-supervisors-goes-to-trial-b13167e2" tabindex="-1" aria-hidden="true"><img src="../img/be6acd1c7afc6a6e1c811fcf3d4ae3a63a4f79f8.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>A March 4 bench trial will decide whether former Flint Hill Volunteer Fire and Rescue officers can be reinstated, moving a three-year dispute with Rappahannock County toward resolution. <a class="lozenge more" href="https://www.rappnews.com/crime-courts/flint-hill-volunteer-fire-and-rescue-company-versus-rappahannocks-board-of-supervisors-goes-to-trial-b13167e2">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T12:58:00+00:00" data-pub="5:58 AM PDT">Friday, August 21, 2026 at 5:58 AM PDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>CA / Orange County / <a href="https://voiceofoc.org/">Voice of OC</a></small></p>
-<h2><a href="https://voiceofoc.org/2026/08/orange-countys-top-civic-headlines-as-e-bike-crackdowns-continue/">Orange County’s Top Civic Headlines as E-Bike Crackdowns Continue</a></h2>
-<p class="byline"><small>By Spencer Custodio</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://voiceofoc.org/donate">Donate</a></span></p>
-<a class="shot" href="https://voiceofoc.org/2026/08/orange-countys-top-civic-headlines-as-e-bike-crackdowns-continue/" tabindex="-1" aria-hidden="true"><img src="../img/b181524dfac5df52b1af1e659fec3aa0804460c1.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>A state bill that could mandate safety courses for e-bikes is making its way through the legislature, Brea officials doubled the city’s fines for unsafe e-bike riding – these are some of this week’s top civic headlines. Voice of OC is Orange County&#x27;s nonprofit newsroom. We rely on donations from people like you to sustain our news agency. Please make a contribution today: https://voiceofoc.org/don</p>
-<p class="more"><a href="https://voiceofoc.org/2026/08/orange-countys-top-civic-headlines-as-e-bike-crackdowns-continue/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://inn.org/about/network/?utm_source=web&amp;utm_medium=website&amp;utm_campaign=member+badge">Become a member</a></aside>
+<p class="source"><a href="https://www.therecordnorthshore.org/"><strong>The Record North Shore</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T20:12:48+00:00" data-pub="3:12 PM CDT">Fri, Aug 21 @ 3PM CDT</time><a class="lozenge place" href="/search?state=IL">Illinois</a><a class="lozenge place" href="/search?place=Wilmette&state=IL">Wilmette</a></p>
+<h2><a href="https://www.therecordnorthshore.org/2026/08/21/alleged-gunmen-charged-in-highwood-shooting-but-one-remains-on-lam/">Alleged gunmen charged in Highwood shooting—but one remains on lam</a></h2>
+<p class="byline">By Alessia Girardin</p>
+<p>Lake County authorities have filed charges against two men who reportedly unloaded nearly 20 gunshots on June 7 outside of a Highwood bar. Aaron Rosales, 24, of Highwood, and Jose A. Castrejon-Mancilla, 24, of Highland Park, were each charged with two counts of aggravated discharge of a firearm and aggravated unlawful possession of a weapon, <a class="lozenge more" href="https://www.therecordnorthshore.org/2026/08/21/alleged-gunmen-charged-in-highwood-shooting-but-one-remains-on-lam/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T12:30:00+00:00" data-pub="8:30 AM EDT">Friday, August 21, 2026 at 8:30 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>MI / Flint / <a href="https://flintbeat.com/">Flint Beat</a></small></p>
-<h2><a href="https://www.flintbeat.com/photos/move-in-day-begins-new-academic-year-for-u-of-m-flint-students-4d72963e">Move-In Day begins new academic year for U of M-Flint students</a></h2>
-<p class="byline"><small>By Anthony Summers</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://flintbeat.com/">Support</a></span></p>
-<a class="shot" href="https://www.flintbeat.com/photos/move-in-day-begins-new-academic-year-for-u-of-m-flint-students-4d72963e" tabindex="-1" aria-hidden="true"><img src="../img/36ba6452ffe34fafddd4a0cef0833568454ae669.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>U of M-Flint students moved into First Street Residence Hall as the fall semester begins, ahead of a State of the University address expected to include a campus experience announcement.</p>
-<p class="more"><a href="https://www.flintbeat.com/photos/move-in-day-begins-new-academic-year-for-u-of-m-flint-students-4d72963e">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.fredericksburgfreepress.com/support/">Donate</a></aside>
+<p class="source"><a href="https://www.fredericksburgfreepress.com/about-fredericksburg-free-press/"><strong>Fredericksburg Free Press</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T20:00:16+00:00" data-pub="4:00 PM EDT">Fri, Aug 21 @ 4PM EDT</time><a class="lozenge place" href="/search?state=VA">Virginia</a><a class="lozenge place" href="/search?place=Fredericksburg&state=VA">Fredericksburg</a></p>
+<h2><a href="https://www.fredericksburgfreepress.com/2026/08/21/del-josh-cole-is-almost-behind-a-statewide-data-center-moratorium/">Del. Josh Cole is ‘almost behind’ a statewide data center moratorium</a></h2>
+<p class="byline">By Adele Uphaus</p>
+<a class="shot" href="https://www.fredericksburgfreepress.com/2026/08/21/del-josh-cole-is-almost-behind-a-statewide-data-center-moratorium/" tabindex="-1" aria-hidden="true"><img src="../img/8b866c5b9dd48415bad4931c3cfe8c98867f1729.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>The 65th House District representative participated in a local forum on data centers this week. <a class="lozenge more" href="https://www.fredericksburgfreepress.com/2026/08/21/del-josh-cole-is-almost-behind-a-statewide-data-center-moratorium/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T12:23:18+00:00" data-pub="8:23 AM EDT">Friday, August 21, 2026 at 8:23 AM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>NC / Bladen / <a href="https://borderbelt.org/">Border Belt Independent</a></small></p>
-<h2><a href="https://borderbelt.org/nc-elections-board-limits-sunday-voting/">State Elections Board Nixes Sunday Voting in Columbus and Scotland Counties</a></h2>
-<p class="byline"><small>By Heidi Perez-Moreno</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.paypal.com/donate/?hosted_button_id=7NY38FMASQ9PQ">Donate</a></span></p>
-<a class="shot" href="https://borderbelt.org/nc-elections-board-limits-sunday-voting/" tabindex="-1" aria-hidden="true"><img src="../img/904b919c3eecf8f9736daf8f105ad311894b226c.jpg" alt="" width="480" height="319" loading="lazy" decoding="async"></a>
-<p>North Carolina officials largely sided with Republicans to limit Sunday voting across the state ahead of the November election.</p>
-<p class="more"><a href="https://borderbelt.org/nc-elections-board-limits-sunday-voting/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://voiceofoc.org/donate">Donate</a></aside>
+<p class="source"><a href="https://voiceofoc.org/"><strong>Voice of OC</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T20:00:00+00:00" data-pub="1:00 PM PDT">Fri, Aug 21 @ 1PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Orange+County&state=CA">Orange County</a></p>
+<h2><a href="https://voiceofoc.org/2026/08/these-pets-at-orange-county-animal-care-need-homes/">These Pets at Orange County Animal Care Need Homes</a></h2>
+<p class="byline">By Angelina Hicks</p>
+<a class="shot" href="https://voiceofoc.org/2026/08/these-pets-at-orange-county-animal-care-need-homes/" tabindex="-1" aria-hidden="true"><img src="../img/29e08ea53b6a3f87bdc69d1e35c51d843a39a51e.jpg" alt="" width="480" height="300" loading="lazy" decoding="async"></a>
+<p>As of Aug. 20, there are 94 dogs and 183 cats at OC Animal Care in Tustin waiting to be adopted. Voice of OC is Orange County&#x27;s nonprofit newsroom. We rely on donations from people like you to sustain our news agency. Please make a contribution today: https://voiceofoc.org/donate <a class="lozenge more" href="https://voiceofoc.org/2026/08/these-pets-at-orange-county-animal-care-need-homes/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T12:03:28+00:00" data-pub="8:03 AM EDT">Friday, August 21, 2026 at 8:03 AM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>OH / Columbus / <a href="https://www.matternews.org/contactus">Matter News</a></small></p>
-<h2><a href="https://matternews.org/community/politics/dual-charter-amendments-could-reshape-how-columbus-city-council-members-are-elected/">Dual charter amendments could reshape how Columbus City Council members are elected</a></h2>
-<p class="byline"><small>By Andy Downing</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.matternews.org/contactus">Support</a></span></p>
-<a class="shot" href="https://matternews.org/community/politics/dual-charter-amendments-could-reshape-how-columbus-city-council-members-are-elected/" tabindex="-1" aria-hidden="true"><img src="../img/ebcbfeda5170e8f155c9c2dd7e41bbd43483aaa8.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>With City Council set to introduce its own charter amendment to appear on the November ballot alongside the initiative spearheaded by Our City, Our Say, here’s a look at how we got here and what could be next.</p>
-<p class="more"><a href="https://matternews.org/community/politics/dual-charter-amendments-could-reshape-how-columbus-city-council-members-are-elected/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://jaxtoday.org/give">Donate</a></aside>
+<p class="source"><a href="https://jaxtoday.org/about/"><strong>Jacksonville Today</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T19:05:19+00:00" data-pub="3:05 PM EDT">Fri, Aug 21 @ 3PM EDT</time><a class="lozenge place" href="/search?state=FL">Florida</a><a class="lozenge place" href="/search?place=Jacksonville&state=FL">Jacksonville</a></p>
+<h2><a href="https://jaxtoday.org/2026/08/21/jax-acps-waives-fees-as-shelters-fill/">Jacksonville Animal Care and Protective Services waives adoption fees as shelter fills</a></h2>
+<p class="byline">By Simone Endress</p>
+<p>ACPS is promoting its AI-powered app JaxPawFinder to connect prospective owners with pets after a surge in shelter population. <a class="lozenge more" href="https://jaxtoday.org/2026/08/21/jax-acps-waives-fees-as-shelters-fill/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T12:02:08+00:00" data-pub="8:02 AM EDT">Friday, August 21, 2026 at 8:02 AM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>VA / Rappahannock County / <a href="https://www.rappnews.com/">Rappahannock News</a></small></p>
-<h2><a href="https://www.rappnews.com/health/fauquier-health-to-join-bon-secours-mercy-health-network-in-acquisition-8712d651">Fauquier Health to join Bon Secours Mercy Health network in acquisition</a></h2>
-<p class="byline"><small>By By Jack Bowman</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.rappnews.com/">Support</a></span></p>
-<a class="shot" href="https://www.rappnews.com/health/fauquier-health-to-join-bon-secours-mercy-health-network-in-acquisition-8712d651" tabindex="-1" aria-hidden="true"><img src="../img/0494afeb648333f2b4b2d1230ed8f7d8997c42f7.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>Fauquier Health is being acquired by Bon Secours Mercy Health this fall as part of a transition of ownership, with no expected changes to services, insurance coverage or scheduled care.</p>
-<p class="more"><a href="https://www.rappnews.com/health/fauquier-health-to-join-bon-secours-mercy-health-network-in-acquisition-8712d651">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.gigharbornow.org/about/donate/">Donate</a></aside>
+<p class="source"><a href="https://www.gigharbornow.org/"><strong>Gig Harbor Now</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T18:56:45+00:00" data-pub="11:56 AM PDT">Fri, Aug 21 @ 11AM PDT</time><a class="lozenge place" href="/search?state=WA">Washington</a><a class="lozenge place" href="/search?place=Gig+Harbor&state=WA">Gig Harbor</a></p>
+<h2><a href="https://www.gigharbornow.org/opinion/letters-to-the-editor/letter-to-the-editor-peninsula-school-district-isnt-meeting-needs-of-students-family-or-staff/">Letter to the Editor | Peninsula School District isn’t meeting needs of students, family or staff</a></h2>
+<p class="byline">By Gig Harbor Community Member</p>
+<a class="shot" href="https://www.gigharbornow.org/opinion/letters-to-the-editor/letter-to-the-editor-peninsula-school-district-isnt-meeting-needs-of-students-family-or-staff/" tabindex="-1" aria-hidden="true"><img src="../img/062a8ac36372b6f5b0b3a066b563f4b532bda536.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Letter to the editor by Sara Thompson of Lakebay. Read in browser » <a class="lozenge more" href="https://www.gigharbornow.org/opinion/letters-to-the-editor/letter-to-the-editor-peninsula-school-district-isnt-meeting-needs-of-students-family-or-staff/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T11:45:00+00:00" data-pub="6:45 AM CDT">Friday, August 21, 2026 at 6:45 AM CDT</time></small></p>
-<p><small>IL / Chicago / <a href="https://www.injusticewatch.org/news/">Injustice Watch</a></small></p>
-<h2><a href="https://www.injusticewatch.org/staff-news/2026/ruby-bailey-injustice-watch-executive-director/">Ruby Bailey joins Injustice Watch as executive director</a></h2>
-<p class="byline"><small>By Injustice Watch Staff</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.injusticewatch.org/donate/">Donate</a></span></p>
-<a class="shot" href="https://www.injusticewatch.org/staff-news/2026/ruby-bailey-injustice-watch-executive-director/" tabindex="-1" aria-hidden="true"><img src="../img/2634e38ced958367f990652a385f60c56f10e447.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>A veteran newsroom and nonprofit leader, Bailey brings more than three decades of experience to Injustice Watch.</p>
-<p class="more"><a href="https://www.injusticewatch.org/staff-news/2026/ruby-bailey-injustice-watch-executive-director/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://riverside-record.fundjournalism.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://riversiderecord.org/"><strong>The Riverside Record</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T18:36:16+00:00" data-pub="11:36 AM PDT">Fri, Aug 21 @ 11AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Riverside&state=CA">Riverside</a></p>
+<h2><a href="https://riversiderecord.org/riverside-county-public-health-celebrates-100-years-of-service/">Riverside County Public Health Celebrates 100 Years Of Service</a></h2>
+<p class="byline">By Alicia Ramirez</p>
+<a class="shot" href="https://riversiderecord.org/riverside-county-public-health-celebrates-100-years-of-service/" tabindex="-1" aria-hidden="true"><img src="../img/8e65eb481b5f98a318d3be585cfbea7f2578ddfa.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>In June 1926, the Riverside County Board of Supervisors approved an ordinance establishing the first full-time public health officer position. <a class="lozenge more" href="https://riversiderecord.org/riverside-county-public-health-celebrates-100-years-of-service/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T11:22:02+00:00" data-pub="7:22 AM EDT">Friday, August 21, 2026 at 7:22 AM EDT</time></small></p>
-<p><small>OH / Cleveland / <a href="https://thelandcle.org/">The Land</a></small></p>
-<h2><a href="https://thelandcle.org/stories/ghost-market-offers-cleveland-vendors-more-than-a-table-it-curates-safe-spaces-for-creatives/">Ghost Market offers Cleveland vendors more than a table — it curates safe spaces for creatives</a></h2>
-<p class="byline"><small>By Faith Boone</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://thelandcle.org/membership/">Donate</a></span></p>
-<a class="shot" href="https://thelandcle.org/stories/ghost-market-offers-cleveland-vendors-more-than-a-table-it-curates-safe-spaces-for-creatives/" tabindex="-1" aria-hidden="true"><img src="../img/618e0d06f312a2776bb59efa77eef7ef2a0fc2b8.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>If you&#x27;re working tirelessly at creating the things you love to share or sell to others, Ghost Market co-founders Tess Pell and Anna Matisak have created a traveling space for aspiring vendors like you.</p>
-<p class="more"><a href="https://thelandcle.org/stories/ghost-market-offers-cleveland-vendors-more-than-a-table-it-curates-safe-spaces-for-creatives/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://givebutter.com/local-news-that-answers-to-coastal-georgia-bdsovj">Donate</a></aside>
+<p class="source"><a href="https://thecurrentga.org/"><strong>The Current</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T18:28:42+00:00" data-pub="2:28 PM EDT">Fri, Aug 21 @ 2PM EDT</time><a class="lozenge place" href="/search?state=GA">Georgia</a><a class="lozenge place" href="/search?place=Savannah&state=GA">Savannah</a></p>
+<h2><a href="https://thecurrentga.org/2026/08/21/pridemore-to-resign-from-georgia-public-service-commission/">Pridemore to resign from Georgia Public Service Commission</a></h2>
+<p class="byline">By Emily Jones/WABE, Grist and Rahul Bali/WABE</p>
+<a class="shot" href="https://thecurrentga.org/2026/08/21/pridemore-to-resign-from-georgia-public-service-commission/" tabindex="-1" aria-hidden="true"><img src="../img/502d17396a2122f6c3f8e6d33f804c61cb58f425.jpg" alt="" width="480" height="321" loading="lazy" decoding="async"></a>
+<p>Georgia Public Service Commissioner Tricia Pridemore announced her resignation effective Sept. 4, leaving her seat open for Governor Brian Kemp to fill until the winner of the upcoming November election is sworn in. The Current is an inclusive nonprofit, non-partisan news organization providing in-depth watchdog journalism for Savannah and Coastal Georgia’s communities. <a class="lozenge more" href="https://thecurrentga.org/2026/08/21/pridemore-to-resign-from-georgia-public-service-commission/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T11:00:05+00:00" data-pub="7:00 AM EDT">Friday, August 21, 2026 at 7:00 AM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>FL / Key Biscayne / <a href="https://kbindependent.org/">Key Biscayne Independent</a></small></p>
-<h2><a href="https://kbindependent.org/2026/08/21/educator-joins-candidates-running-for-council-in-key-biscayne/">Educator joins candidates running for Council in Key Biscayne</a></h2>
-<p class="byline"><small>By Mike Schneider</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://kbindependent.org/faq-kbis-giving-wall/">Donate</a></span></p>
-<a class="shot" href="https://kbindependent.org/2026/08/21/educator-joins-candidates-running-for-council-in-key-biscayne/" tabindex="-1" aria-hidden="true"><img src="../img/5abbe14f823b399e4cd8311571bd46cbaeadfbe8.jpg" alt="" width="480" height="329" loading="lazy" decoding="async"></a>
-<p>A Key Biscayne educator has joined a list of well-known local leaders who are vying for seats on the Village Council this fall. A total of five candidates filed. Silvia Tarafa filed her candidacy papers on Wednesday, joining a group of community leaders who are running for three open Council positions. The candidate qualifying deadline</p>
-<p class="more"><a href="https://kbindependent.org/2026/08/21/educator-joins-candidates-running-for-council-in-key-biscayne/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://jaxtoday.org/give">Donate</a></aside>
+<p class="source"><a href="https://jaxtoday.org/about/"><strong>Jacksonville Today</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T18:14:59+00:00" data-pub="2:14 PM EDT">Fri, Aug 21 @ 2PM EDT</time><a class="lozenge place" href="/search?state=FL">Florida</a><a class="lozenge place" href="/search?place=Jacksonville&state=FL">Jacksonville</a></p>
+<h2><a href="https://jaxtoday.org/2026/08/21/sebastian-harbor-marina-to-open/">Sebastian Harbor Marina in St. Augustine to open in October after 20 years</a></h2>
+<p class="byline">By Jonathan Lundy - News4Jax</p>
+<p>The 64-slip marina on the San Sabastian River basin in St. Augustine will open after sitting idle for decades. <a class="lozenge more" href="https://jaxtoday.org/2026/08/21/sebastian-harbor-marina-to-open/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T10:00:00+00:00" data-pub="6:00 AM EDT">Friday, August 21, 2026 at 6:00 AM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>VA / Rappahannock County / <a href="https://www.rappnews.com/">Rappahannock News</a></small></p>
-<h2><a href="https://www.rappnews.com/health/virginia-health-department-improves-nursing-home-inspection-backlog-reforms-sanction-criteria-for-facilities-eb946c9d">Virginia health department improves nursing home inspection backlog, reforms sanction criteria for facilities</a></h2>
-<p class="byline"><small>By By Charlotte Rene Woods</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.rappnews.com/">Support</a></span></p>
-<a class="shot" href="https://www.rappnews.com/health/virginia-health-department-improves-nursing-home-inspection-backlog-reforms-sanction-criteria-for-facilities-eb946c9d" tabindex="-1" aria-hidden="true"><img src="../img/84a97a51504868bdd2712dff84a61b8b5cd07408.jpg" alt="" width="480" height="304" loading="lazy" decoding="async"></a>
-<p>Virginia is working to clear nursing home inspection backlogs and adopt sanctions that could suspend or revoke licenses for repeat violations.</p>
-<p class="more"><a href="https://www.rappnews.com/health/virginia-health-department-improves-nursing-home-inspection-backlog-reforms-sanction-criteria-for-facilities-eb946c9d">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://eastgreenwichnews.com/">Support</a></aside>
+<p class="source"><a href="https://eastgreenwichnews.com/"><strong>East Greenwich News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T17:59:37+00:00" data-pub="1:59 PM EDT">Fri, Aug 21 @ 1PM EDT</time><a class="lozenge place" href="/search?state=RI">Rhode Island</a><a class="lozenge place" href="/search?place=East+Greenwich&state=RI">East Greenwich</a></p>
+<h2><a href="https://eastgreenwichnews.com/eg-real-estate-5-new-listings-3-sold-2/">EG Real Estate: 5 New Listings, 3 Sold</a></h2>
+<p class="byline">By Chris Sceery</p>
+<a class="shot" href="https://eastgreenwichnews.com/eg-real-estate-5-new-listings-3-sold-2/" tabindex="-1" aria-hidden="true"><img src="../img/e31a450dab9ca025fec6c1b7122dfd44124addbe.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+<p>Above: 1 Mulberry Court. Data is compiled via Statewide MLS as of Friday morning, 8/21/26, and represents one week of transactions. Properties are in East Greenwich unless noted by an * indicating the Warwick sections of 02818. All information may be subject to change. There are 5 new listings, 3 sold properties, and 19 open <a class="lozenge more" href="https://eastgreenwichnews.com/eg-real-estate-5-new-listings-3-sold-2/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T10:00:00+00:00" data-pub="6:00 AM EDT">Friday, August 21, 2026 at 6:00 AM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>NY / Buffalo / <a href="https://www.investigativepost.org/">Investigative Post</a></small></p>
-<h2><a href="https://investigativepost.org/2026/08/21/downstate-union-pays-millions-to-bosses/">Union pays millions to bosses, pennies to members</a></h2>
-<p class="byline"><small>By Geoff Kelly</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://investigativepost.org/donate/">Donate</a></span></p>
-<a class="shot" href="https://investigativepost.org/2026/08/21/downstate-union-pays-millions-to-bosses/" tabindex="-1" aria-hidden="true"><img src="../img/e6ca8e1f9baea52a6cb8fe62d3088805a49cd6fe.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>The International Brotherhood of Trade Unions, a union based on Long Island. Photos: Sanjana Bhambhani / New York Focus; Sam Mellins / New York Focus | Illustration: Leor Stylar / New York Focus.</p>
-<p class="more"><a href="https://investigativepost.org/2026/08/21/downstate-union-pays-millions-to-bosses/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://donorbox.org/be-a-planet-detroiter-780440">Donate</a></aside>
+<p class="source"><a href="https://planetdetroit.org/"><strong>Planet Detroit</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T17:46:45+00:00" data-pub="1:46 PM EDT">Fri, Aug 21 @ 1PM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=Detroit&state=MI">Detroit</a></p>
+<h2><a href="https://planetdetroit.org/2026/08/detroit-energy-affordability-workshop/">Michigan’s utility regulator to host Detroit energy affordability workshop: ‘Ultimately this is about people’</a></h2>
+<p class="byline">By Brian Allnutt</p>
+<a class="shot" href="https://planetdetroit.org/2026/08/detroit-energy-affordability-workshop/" tabindex="-1" aria-hidden="true"><img src="../img/d2418a312718064d9ab5ffca5c3ad04ce5728fd3.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>The Michigan Public Service Commission is hosting a community workshop Sept. 3 in Detroit to discuss energy affordability challenges and hear from residents about barriers to accessing assistance programs. <a class="lozenge more" href="https://planetdetroit.org/2026/08/detroit-energy-affordability-workshop/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T10:00:00+00:00" data-pub="6:00 AM EDT">Friday, August 21, 2026 at 6:00 AM EDT</time></small></p>
-<p><small>MI / Flint / <a href="https://flintbeat.com/">Flint Beat</a></small></p>
-<h2><a href="https://www.flintbeat.com/events-section/the-crim-festival-of-races-is-back-heres-this-weekends-schedule-4933f45c">The Crim Festival of Races is back. Here&#x27;s this weekend&#x27;s schedule</a></h2>
-<p class="byline"><small>By Jiquanda Johnson</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://flintbeat.com/">Support</a></span></p>
-<a class="shot" href="https://www.flintbeat.com/events-section/the-crim-festival-of-races-is-back-heres-this-weekends-schedule-4933f45c" tabindex="-1" aria-hidden="true"><img src="../img/b9c57dee4683fc60d5ed16b37a564c9ac34b3477.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>About 11,000 participants are expected in downtown Flint for the 49th Crim Festival of Races, featuring events from Friday’s Michigan Mile to Saturday’s 10-mile run.</p>
-<p class="more"><a href="https://www.flintbeat.com/events-section/the-crim-festival-of-races-is-back-heres-this-weekends-schedule-4933f45c">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://advancement.mercer.edu/register/?id=1f6029c0-22d0-48c7-b497-6cad72a50b0c&amp;sys:gift:fund=01851d87-05c9-6167-6e49-d1556f7eafbc">Donate</a></aside>
+<p class="source"><a href="https://macon-newsroom.com/"><strong>The Macon Newsroom</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T17:40:39+00:00" data-pub="1:40 PM EDT">Fri, Aug 21 @ 1PM EDT</time><a class="lozenge place" href="/search?state=GA">Georgia</a><a class="lozenge place" href="/search?place=Macon&state=GA">Macon</a></p>
+<h2><a href="https://macon-newsroom.com/28369/news/not-enough-time-for-4th-early-voting-location-for-2026-elections-chair-says/">“Not enough time” for 4th early voting location for 2026, Elections chair says</a></h2>
+<p class="byline">By Liz Fabian, Peyton Anderson Civic Journalism Senior Fellow</p>
+<a class="shot" href="https://macon-newsroom.com/28369/news/not-enough-time-for-4th-early-voting-location-for-2026-elections-chair-says/" tabindex="-1" aria-hidden="true"><img src="../img/6d7bf17d39715a1b849b81d85560a097bc87aae8.jpg" alt="" width="480" height="354" loading="lazy" decoding="async"></a>
+<p>The Macon-Bibb County Board of Elections approved a fourth early voting location at the South Bibb Recreation Center—just not in time for the November governor’s race and Congressional Mid-Term election as several citizens urged them to do. Earlier this year when Mike Kaplan became chairman of the board, he introduced the idea of <a class="lozenge more" href="https://macon-newsroom.com/28369/news/not-enough-time-for-4th-early-voting-location-for-2026-elections-chair-says/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T09:08:45+00:00" data-pub="5:08 AM EDT">Friday, August 21, 2026 at 5:08 AM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>NY / Pine Plains / <a href="https://www.newpineplainsherald.org">The New Pine Plains Herald</a></small></p>
-<h2><a href="https://www.newpineplainsherald.org/stanford-advances-plan-for-student-position-on-town-board/">Stanford Advances Plan for Student Position on Town Board</a></h2>
-<p class="byline"><small>By Patrick Grego</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://form-renderer-app.donorperfect.io/give/new-pine-plains-herald/support-the-new-pine-plains-herald">Donate</a></span></p>
-<a class="shot" href="https://www.newpineplainsherald.org/stanford-advances-plan-for-student-position-on-town-board/" tabindex="-1" aria-hidden="true"><img src="../img/95f28fd9bfbaa52ca2774ab9fb08a16af1245c15.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>The Town Board approved a framework for a nonvoting high school representative, pending participation by the Pine Plains school district; officials also moved to preserve the option of exceeding the state tax cap.</p>
-<p class="more"><a href="https://www.newpineplainsherald.org/stanford-advances-plan-for-student-position-on-town-board/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://jaxtoday.org/give">Donate</a></aside>
+<p class="source"><a href="https://jaxtoday.org/about/"><strong>Jacksonville Today</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T17:29:33+00:00" data-pub="1:29 PM EDT">Fri, Aug 21 @ 1PM EDT</time><a class="lozenge place" href="/search?state=FL">Florida</a><a class="lozenge place" href="/search?place=Jacksonville&state=FL">Jacksonville</a></p>
+<h2><a href="https://jaxtoday.org/2026/08/21/becovic-27-mill-carling-11e-downtown/">Becovic pays $27 million for Carling and 11 East in Downtown Jacksonville</a></h2>
+<p class="byline">By Karen Brune Mathis - Jacksonville Daily Record</p>
+<p>The The Residences at Barnett and Laura Street Trio owner&#x27;s purchase adds two more historic Downtown Jacksonville buildings to its portfolio. <a class="lozenge more" href="https://jaxtoday.org/2026/08/21/becovic-27-mill-carling-11e-downtown/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T08:42:48+00:00" data-pub="4:42 AM EDT">Friday, August 21, 2026 at 4:42 AM EDT</time></small></p>
-<p><small>NY / Pine Plains / <a href="https://www.newpineplainsherald.org">The New Pine Plains Herald</a></small></p>
-<h2><a href="https://www.newpineplainsherald.org/in-rural-northern-dutchess-parents-navigate-patchwork-child-care-options/">In Rural Northern Dutchess, Parents Navigate Patchwork Child Care Options</a></h2>
-<p class="byline"><small>By Shuchi Shah and Patrick Grego</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://form-renderer-app.donorperfect.io/give/new-pine-plains-herald/support-the-new-pine-plains-herald">Donate</a></span></p>
-<a class="shot" href="https://www.newpineplainsherald.org/in-rural-northern-dutchess-parents-navigate-patchwork-child-care-options/" tabindex="-1" aria-hidden="true"><img src="../img/781686c211543fd11a5bda183ef90b298e8d2f72.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>At an Aug. 19 forum in Pine Plains, families, providers, employers, and elected officials described a system of long drives, waitlists, and informal arrangements as Dutchess County prepares a state-backed expansion.</p>
-<p class="more"><a href="https://www.newpineplainsherald.org/in-rural-northern-dutchess-parents-navigate-patchwork-child-care-options/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://checkout.fundjournalism.org/memberform?org_id=centralcurrent&amp;campaign=7018V000001hVNTQA2">Donate</a></aside>
+<p class="source"><a href="https://centralcurrent.org/"><strong>Central Current</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T17:17:33+00:00" data-pub="1:17 PM EDT">Fri, Aug 21 @ 1PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Syracuse&state=NY">Syracuse</a></p>
+<h2><a href="https://centralcurrent.org/onondaga-county-officials-come-to-term-limits-agreements-sidesteps-democracy-question/">Onondaga County officials come to term limits agreements, sidestep “democracy question”</a></h2>
+<p class="byline">By Laura Robertson</p>
+<a class="shot" href="https://centralcurrent.org/onondaga-county-officials-come-to-term-limits-agreements-sidesteps-democracy-question/" tabindex="-1" aria-hidden="true"><img src="../img/a50e446b072c33dc60d3506e7d4fac5f96e0f0e0.jpg" alt="" width="480" height="340" loading="lazy" decoding="async"></a>
+<p>Voters will have a chance to choose either 12 or 16 year term limits for the county executive and county comptroller. County officials have agreed that the saga will not create legal precedent. <a class="lozenge more" href="https://centralcurrent.org/onondaga-county-officials-come-to-term-limits-agreements-sidesteps-democracy-question/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T08:23:20+00:00" data-pub="4:23 AM EDT">Friday, August 21, 2026 at 4:23 AM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>NY / Pine Plains / <a href="https://www.newpineplainsherald.org">The New Pine Plains Herald</a></small></p>
-<h2><a href="https://www.newpineplainsherald.org/pine-plains-recognizes-police-union-backs-15-year-tax-deal-for-hudson-company/">Pine Plains Recognizes Police Union, Backs 15-Year Tax Deal for Hudson Company</a></h2>
-<p class="byline"><small>By Patrick Grego</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://form-renderer-app.donorperfect.io/give/new-pine-plains-herald/support-the-new-pine-plains-herald">Donate</a></span></p>
-<a class="shot" href="https://www.newpineplainsherald.org/pine-plains-recognizes-police-union-backs-15-year-tax-deal-for-hudson-company/" tabindex="-1" aria-hidden="true"><img src="../img/50e4e34db1b57c8e78a6ba575e5a2a7783d36778.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>The Town Board also kept two public hearings open until September and weighed how to proceed with an adult swim area after county health officials closed it.</p>
-<p class="more"><a href="https://www.newpineplainsherald.org/pine-plains-recognizes-police-union-backs-15-year-tax-deal-for-hudson-company/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://voiceofoc.org/donate">Donate</a></aside>
+<p class="source"><a href="https://voiceofoc.org/"><strong>Voice of OC</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T17:00:00+00:00" data-pub="10:00 AM PDT">Fri, Aug 21 @ 10AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Orange+County&state=CA">Orange County</a></p>
+<h2><a href="https://voiceofoc.org/2026/08/brea-rolls-out-facial-recognition-system/">Brea Rolls Out Facial Recognition System</a></h2>
+<p class="byline">By Sara Leon</p>
+<a class="shot" href="https://voiceofoc.org/2026/08/brea-rolls-out-facial-recognition-system/" tabindex="-1" aria-hidden="true"><img src="../img/bd0aadf8d2185aec29791aff408521738559a238.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>Amidst looming public concern of growing surveillance, the Brea Police Department will now be able to analyze faces using new facial recognition software. Voice of OC is Orange County&#x27;s nonprofit newsroom. We rely on donations from people like you to sustain our news agency. Please make a contribution today: https://voiceofoc.org/donate <a class="lozenge more" href="https://voiceofoc.org/2026/08/brea-rolls-out-facial-recognition-system/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T07:04:33+00:00" data-pub="3:04 AM EDT">Friday, August 21, 2026 at 3:04 AM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>NY / Pine Plains / <a href="https://www.newpineplainsherald.org">The New Pine Plains Herald</a></small></p>
-<h2><a href="https://www.newpineplainsherald.org/milan-tightens-safety-rules-for-short-term-rentals/">Milan Tightens Safety Rules for Short-Term Rentals</a></h2>
-<p class="byline"><small>By Shuchi Shah</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://form-renderer-app.donorperfect.io/give/new-pine-plains-herald/support-the-new-pine-plains-herald">Donate</a></span></p>
-<a class="shot" href="https://www.newpineplainsherald.org/milan-tightens-safety-rules-for-short-term-rentals/" tabindex="-1" aria-hidden="true"><img src="../img/a45cb24c567244cd9eca247c67da8c718e6cd184.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>The amended regulations add fire-safety requirements and require inspections before new or renewed rental certificates are issued.</p>
-<p class="more"><a href="https://www.newpineplainsherald.org/milan-tightens-safety-rules-for-short-term-rentals/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.fredericksburgfreepress.com/support/">Donate</a></aside>
+<p class="source"><a href="https://www.fredericksburgfreepress.com/about-fredericksburg-free-press/"><strong>Fredericksburg Free Press</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T17:00:00+00:00" data-pub="1:00 PM EDT">Fri, Aug 21 @ 1PM EDT</time><a class="lozenge place" href="/search?state=VA">Virginia</a><a class="lozenge place" href="/search?place=Fredericksburg&state=VA">Fredericksburg</a></p>
+<h2><a href="https://www.fredericksburgfreepress.com/2026/08/21/stuart-water-permit-to-amazon-would-be-indefensible/">Stuart: Water permit to Amazon would be ‘indefensible’</a></h2>
+<p class="byline">By Taft Coghill Jr.</p>
+<a class="shot" href="https://www.fredericksburgfreepress.com/2026/08/21/stuart-water-permit-to-amazon-would-be-indefensible/" tabindex="-1" aria-hidden="true"><img src="../img/e116873ae97695a0a059ee0563b612d78bd95061.jpg" alt="" width="250" height="250" loading="lazy" decoding="async"></a>
+<p>State senator sent a letter to DEQ Director Mike Rolband Thursday vehemently opposing Amazon&#x27;s permit to withdraw 6.4 million gallons of water per year from the Potomac aquifer. <a class="lozenge more" href="https://www.fredericksburgfreepress.com/2026/08/21/stuart-water-permit-to-amazon-would-be-indefensible/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T06:55:59+00:00" data-pub="2:55 AM EDT">Friday, August 21, 2026 at 2:55 AM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>NY / Pine Plains / <a href="https://www.newpineplainsherald.org">The New Pine Plains Herald</a></small></p>
-<h2><a href="https://www.newpineplainsherald.org/gallatin-weighs-property-tax-exemptions-for-seniors-people-with-disabilities/">Gallatin Weighs Property Tax Exemptions for Seniors, People With Disabilities</a></h2>
-<p class="byline"><small>By Shuchi Shah</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://form-renderer-app.donorperfect.io/give/new-pine-plains-herald/support-the-new-pine-plains-herald">Donate</a></span></p>
-<a class="shot" href="https://www.newpineplainsherald.org/gallatin-weighs-property-tax-exemptions-for-seniors-people-with-disabilities/" tabindex="-1" aria-hidden="true"><img src="../img/57cd635bd88c55455048a4c5b936e5a209d10c18.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>The Town Board will hold a Sept. 15 public hearing on a proposal mirroring new Columbia County income thresholds.</p>
-<p class="more"><a href="https://www.newpineplainsherald.org/gallatin-weighs-property-tax-exemptions-for-seniors-people-with-disabilities/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://marbleheadcurrent.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://marbleheadcurrent.org/"><strong>Marblehead Current</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T16:59:52+00:00" data-pub="12:59 PM EDT">Fri, Aug 21 @ 12PM EDT</time><a class="lozenge place" href="/search?state=MA">Massachusetts</a><a class="lozenge place" href="/search?place=Marblehead&state=MA">Marblehead</a></p>
+<h2><a href="https://marbleheadcurrent.org/2026/08/21/dollars-for-scholars-cook-pursues-nursing-career/">DOLLARS FOR SCHOLARS: Cook pursues nursing career</a></h2>
+<p class="byline">By Submitted Content</p>
+<a class="shot" href="https://marbleheadcurrent.org/2026/08/21/dollars-for-scholars-cook-pursues-nursing-career/" tabindex="-1" aria-hidden="true"><img src="../img/78514cbab1c6b5bdd8ac054a3671bfeb14a8dce5.jpg" alt="" width="201" height="300" loading="lazy" decoding="async"></a>
+<p>Submitted by Nancy Marrs Olivia Cook always had an aptitude for science and after excelling in AP environmental science and anatomy and physiology classes at Marblehead High School, she enrolled <a class="lozenge more" href="https://marbleheadcurrent.org/2026/08/21/dollars-for-scholars-cook-pursues-nursing-career/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T06:34:19+00:00" data-pub="2:34 AM EDT">Friday, August 21, 2026 at 2:34 AM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>NY / Pine Plains / <a href="https://www.newpineplainsherald.org">The New Pine Plains Herald</a></small></p>
-<h2><a href="https://www.newpineplainsherald.org/nearly-a-year-after-closing-pecks-market-faces-two-deadlines/">Nearly a Year After Closing, Peck’s Market Faces Two Deadlines</a></h2>
-<p class="byline"><small>By Patrick Grego</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://form-renderer-app.donorperfect.io/give/new-pine-plains-herald/support-the-new-pine-plains-herald">Donate</a></span></p>
-<a class="shot" href="https://www.newpineplainsherald.org/nearly-a-year-after-closing-pecks-market-faces-two-deadlines/" tabindex="-1" aria-hidden="true"><img src="../img/92743c29484dde72c84393993d1af527e506b347.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>The owners are approaching a one-year zoning cutoff that could affect the property’s grandfathered zoning status, while a $105,000 settlement with a former distributor must be paid in full by May 31, 2027.</p>
-<p class="more"><a href="https://www.newpineplainsherald.org/nearly-a-year-after-closing-pecks-market-faces-two-deadlines/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.gigharbornow.org/about/donate/">Donate</a></aside>
+<p class="source"><a href="https://www.gigharbornow.org/"><strong>Gig Harbor Now</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T16:50:57+00:00" data-pub="9:50 AM PDT">Fri, Aug 21 @ 9AM PDT</time><a class="lozenge place" href="/search?state=WA">Washington</a><a class="lozenge place" href="/search?place=Gig+Harbor&state=WA">Gig Harbor</a></p>
+<h2><a href="https://www.gigharbornow.org/news/community/two-in-tow-on-the-go-nature-and-industry-at-chambers-creek-regional-park/">Two in Tow &amp; On the Go | Nature and industry at Chambers Creek Regional Park</a></h2>
+<p class="byline">By Tonya Strickland</p>
+<a class="shot" href="https://www.gigharbornow.org/news/community/two-in-tow-on-the-go-nature-and-industry-at-chambers-creek-regional-park/" tabindex="-1" aria-hidden="true"><img src="../img/7cd22d8d4b8869e3fb847688c7c0f8d05a8a7ebb.jpg" alt="" width="480" height="252" loading="lazy" decoding="async"></a>
+<p>Tonya and the crew found trains, tunnels and scary bees on a recent trip to Chambers Creek Regional Park in University Place. Read in browser » <a class="lozenge more" href="https://www.gigharbornow.org/news/community/two-in-tow-on-the-go-nature-and-industry-at-chambers-creek-regional-park/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T04:30:20+00:00" data-pub="10:30 PM MDT">Thursday, August 20, 2026 at 10:30 PM MDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>CO / Boulder / <a href="https://boulderreportinglab.org/">Boulder Reporting Lab</a></small></p>
-<h2><a href="https://boulderreportinglab.org/2026/08/20/emails-show-bvsd-preparing-for-possible-school-closures-months-before-public-recommendation/">Emails show BVSD preparing for possible school closures months before public recommendation</a></h2>
-<p class="byline"><small>By Jenna Sampson</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://boulderreportinglab.org/donate-to-us/">Donate</a></span></p>
-<a class="shot" href="https://boulderreportinglab.org/2026/08/20/emails-show-bvsd-preparing-for-possible-school-closures-months-before-public-recommendation/" tabindex="-1" aria-hidden="true"><img src="../img/acc2ab9d217da2e66604f63e19ce9cff433ab1a3.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Records show the district analyzing facilities, planning for staffing changes and exploring uses for buildings that could become vacant. One email suggests officials discussed closing two elementary schools and possibly a middle school, which the superintendent disputes.</p>
-<p class="more"><a href="https://boulderreportinglab.org/2026/08/20/emails-show-bvsd-preparing-for-possible-school-closures-months-before-public-recommendation/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://givebutter.com/local-news-that-answers-to-coastal-georgia-bdsovj">Donate</a></aside>
+<p class="source"><a href="https://thecurrentga.org/"><strong>The Current</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T16:44:38+00:00" data-pub="12:44 PM EDT">Fri, Aug 21 @ 12PM EDT</time><a class="lozenge place" href="/search?state=GA">Georgia</a><a class="lozenge place" href="/search?place=Savannah&state=GA">Savannah</a></p>
+<h2><a href="https://thecurrentga.org/2026/08/21/georgia-lieutenant-governor-candidates-say-their-race-carries-weight/">Georgia lieutenant governor candidates say their race carries weight</a></h2>
+<p class="byline">By Sarah Kallis/GPB News</p>
+<a class="shot" href="https://thecurrentga.org/2026/08/21/georgia-lieutenant-governor-candidates-say-their-race-carries-weight/" tabindex="-1" aria-hidden="true"><img src="../img/7fa0dc794eabb4b9bf6351747a2b11eba8f4f354.jpg" alt="" width="480" height="350" loading="lazy" decoding="async"></a>
+<p>Georgia state senators Josh McLaurin and Greg Dolezal are campaigning for the lieutenant governor position ahead of their November 3 election. The Current is an inclusive nonprofit, non-partisan news organization providing in-depth watchdog journalism for Savannah and Coastal Georgia’s communities. <a class="lozenge more" href="https://thecurrentga.org/2026/08/21/georgia-lieutenant-governor-candidates-say-their-race-carries-weight/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T04:29:43+00:00" data-pub="10:29 PM MDT">Thursday, August 20, 2026 at 10:29 PM MDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>CO / Boulder / <a href="https://boulderreportinglab.org/">Boulder Reporting Lab</a></small></p>
-<h2><a href="https://boulderreportinglab.org/2026/08/20/environmental-group-sues-trump-administration-over-plan-to-dismantle-boulders-ncar/">Environmental group sues Trump administration over plan to dismantle Boulder’s NCAR</a></h2>
-<p class="byline"><small>By Brooke Stephenson</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://boulderreportinglab.org/donate-to-us/">Donate</a></span></p>
-<a class="shot" href="https://boulderreportinglab.org/2026/08/20/environmental-group-sues-trump-administration-over-plan-to-dismantle-boulders-ncar/" tabindex="-1" aria-hidden="true"><img src="../img/7eb86c4d01d4c0e4be174a07f25f61eee2b28140.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>The Environmental Defense Fund filed a lawsuit against the Trump administration on Aug. 20 seeking to stop its attempt to dismantle Boulder’s National Center for Atmospheric Research. The lawsuit follows a similar lawsuit filed in March by the University Corporation for Atmospheric Research, a nonprofit consortium of 129 universities that manages NCAR. Like UCAR’s lawsuit,</p>
-<p class="more"><a href="https://boulderreportinglab.org/2026/08/20/environmental-group-sues-trump-administration-over-plan-to-dismantle-boulders-ncar/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://mylynnwoodnews.com/membership/">Donate</a></aside>
+<p class="source"><a href="https://mylynnwoodnews.com/"><strong>Lynnwood Today</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T16:39:03+00:00" data-pub="9:39 AM PDT">Fri, Aug 21 @ 9AM PDT</time><a class="lozenge place" href="/search?state=WA">Washington</a><a class="lozenge place" href="/search?place=Lynnwood&state=WA">Lynnwood</a></p>
+<h2><a href="https://mylynnwoodnews.com/former-county-councilmember-and-edmonds-mayor-mike-cooper-dies/">Former County Councilmember and Edmonds Mayor Mike Cooper dies</a></h2>
+<p class="byline">By Administrator</p>
+<a class="shot" href="https://mylynnwoodnews.com/former-county-councilmember-and-edmonds-mayor-mike-cooper-dies/" tabindex="-1" aria-hidden="true"><img src="../img/7e4d61a6539eae350c727c468185baf147b5a7e2.jpg" alt="" width="305" height="450" loading="lazy" decoding="async"></a>
+<p>Former Snohomish County Councilmember, state legislator and Edmonds Mayor James “Mike” Cooper died Aug. 20 in Elma, Wash. at the age of 74. He is a former Edmonds and Shoreline <a class="lozenge more" href="https://mylynnwoodnews.com/former-county-councilmember-and-edmonds-mayor-mike-cooper-dies/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T04:28:56+00:00" data-pub="10:28 PM MDT">Thursday, August 20, 2026 at 10:28 PM MDT</time></small></p>
-<p><small>CO / Boulder / <a href="https://boulderreportinglab.org/">Boulder Reporting Lab</a></small></p>
-<h2><a href="https://boulderreportinglab.org/2026/08/20/colorado-connector-passenger-rail-could-reach-boulder-by-2029-heres-how-the-plan-would-work/">Colorado Connector passenger rail could reach Boulder by 2029. Here’s how the plan would work.</a></h2>
-<p class="byline"><small>By BRL Staff</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://boulderreportinglab.org/donate-to-us/">Donate</a></span></p>
-<a class="shot" href="https://boulderreportinglab.org/2026/08/20/colorado-connector-passenger-rail-could-reach-boulder-by-2029-heres-how-the-plan-would-work/" tabindex="-1" aria-hidden="true"><img src="../img/698bf0aa102ea2709998987448219d6fa019979f.jpg" alt="" width="480" height="268" loading="lazy" decoding="async"></a>
-<p>The planned intercity train would connect Fort Collins and Denver through eight communities, including Longmont and Boulder, using mostly existing tracks and committed state and RTD funding.</p>
-<p class="more"><a href="https://boulderreportinglab.org/2026/08/20/colorado-connector-passenger-rail-could-reach-boulder-by-2029-heres-how-the-plan-would-work/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://mylynnwoodnews.com/membership/">Donate</a></aside>
+<p class="source"><a href="https://mylynnwoodnews.com/"><strong>Lynnwood Today</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T16:25:56+00:00" data-pub="9:25 AM PDT">Fri, Aug 21 @ 9AM PDT</time><a class="lozenge place" href="/search?state=WA">Washington</a><a class="lozenge place" href="/search?place=Lynnwood&state=WA">Lynnwood</a></p>
+<h2><a href="https://mylynnwoodnews.com/court-rebuffs-attempt-to-ax-ballot-statement-on-wa-income-tax-measures-budget-effects/">Court rebuffs attempt to ax ballot statement on WA income tax measure’s budget effects</a></h2>
+<p class="byline">By Administrator</p>
+<a class="shot" href="https://mylynnwoodnews.com/court-rebuffs-attempt-to-ax-ballot-statement-on-wa-income-tax-measures-budget-effects/" tabindex="-1" aria-hidden="true"><img src="../img/6efa45aa040515dadc6f714c2574e8cd6ba453f4.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>A citizen activist lost his bid Thursday to keep a one-sentence statement off ballots that summarizes how an initiative to repeal Washington’s new income tax on high earners would affect <a class="lozenge more" href="https://mylynnwoodnews.com/court-rebuffs-attempt-to-ax-ballot-statement-on-wa-income-tax-measures-budget-effects/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T03:53:41+00:00" data-pub="8:53 PM PDT">Thursday, August 20, 2026 at 8:53 PM PDT</time></small></p>
-<p><small>WA / Lynnwood / <a href="https://mylynnwoodnews.com/">Lynnwood Today</a></small></p>
-<h2><a href="https://mylynnwoodnews.com/on-video-time-lapse-of-pyrocumulus-cloud-from-the-little-giant-fire/">On video: Time lapse of pyrocumulus cloud from the Little Giant Fire</a></h2>
-<p class="byline"><small>By Administrator</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://mylynnwoodnews.com/membership/">Donate</a></span></p>
-<p>A time lapse of the pyrocumulus cloud from the Little Giant Fire shot from Kingston, Washington Aug. 20, 2026. According to the Lake Chelan (Wash.) Mirror, the lightning-caused fire started</p>
-<p class="more"><a href="https://mylynnwoodnews.com/on-video-time-lapse-of-pyrocumulus-cloud-from-the-little-giant-fire/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://givebutter.com/local-news-that-answers-to-coastal-georgia-bdsovj">Donate</a></aside>
+<p class="source"><a href="https://thecurrentga.org/"><strong>The Current</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T16:10:54+00:00" data-pub="12:10 PM EDT">Fri, Aug 21 @ 12PM EDT</time><a class="lozenge place" href="/search?state=GA">Georgia</a><a class="lozenge place" href="/search?place=Savannah&state=GA">Savannah</a></p>
+<h2><a href="https://thecurrentga.org/2026/08/21/rick-jackson-says-he-will-cancel-newly-extended-state-contract-if-elected-georgias-next-governor/">Rick Jackson says he will cancel newly extended state contract if elected Georgia’s next governor</a></h2>
+<p class="byline">By Ross Williams/Georgia Recorder</p>
+<a class="shot" href="https://thecurrentga.org/2026/08/21/rick-jackson-says-he-will-cancel-newly-extended-state-contract-if-elected-georgias-next-governor/" tabindex="-1" aria-hidden="true"><img src="../img/e6fec6988212476001b0e5149d90f1844928c715.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Republican gubernatorial candidate Rick Jackson pledged to terminate his companies&#x27; state contracts upon winning the election, despite recent findings that a subsidiary had secured a contract extension through mid-next year. The Current is an inclusive nonprofit, non-partisan news organization providing in-depth watchdog journalism for Savannah and Coastal Georgia’s communities. <a class="lozenge more" href="https://thecurrentga.org/2026/08/21/rick-jackson-says-he-will-cancel-newly-extended-state-contract-if-elected-georgias-next-governor/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T03:11:41+00:00" data-pub="11:11 PM EDT">Thursday, August 20, 2026 at 11:11 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>MA / Marblehead / <a href="https://marbleheadcurrent.org/">Marblehead Current</a></small></p>
-<h2><a href="https://marbleheadcurrent.org/2026/08/20/moulton-markey-face-off-in-final-debate-before-sept-1-primary/">In-person early voting underway in Sept. 1 primary</a></h2>
-<p class="byline"><small>By Leigh Blander</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://marbleheadcurrent.org/donate/">Donate</a></span></p>
-<a class="shot" href="https://marbleheadcurrent.org/2026/08/20/moulton-markey-face-off-in-final-debate-before-sept-1-primary/" tabindex="-1" aria-hidden="true"><img src="../img/802125144b084892a17caab51f26e3cdc27eef96.jpg" alt="" width="480" height="272" loading="lazy" decoding="async"></a>
-<p>Marblehead native and Congressman Seth Moulton and Sen. Ed Markey faced off Thursday night in their third and final debate before the Sept. 1 Democratic primary for Markey’s seat. Moulton,</p>
-<p class="more"><a href="https://marbleheadcurrent.org/2026/08/20/moulton-markey-face-off-in-final-debate-before-sept-1-primary/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.rappnews.com/">Support</a></aside>
+<p class="source"><a href="https://www.rappnews.com/"><strong>Rappahannock News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T16:00:00+00:00" data-pub="12:00 PM EDT">Fri, Aug 21 @ 12PM EDT</time><a class="lozenge place" href="/search?state=VA">Virginia</a><a class="lozenge place" href="/search?place=Rappahannock+County&state=VA">Rappahannock County</a></p>
+<h2><a href="https://www.rappnews.com/crime-courts/canopy-collapses-at-culpeper-gas-station-after-dui-crash-83d6b9e4">Canopy collapses at Culpeper gas station after DUI crash</a></h2>
+<p class="byline">By InsideNoVa staff</p>
+<a class="shot" href="https://www.rappnews.com/crime-courts/canopy-collapses-at-culpeper-gas-station-after-dui-crash-83d6b9e4" tabindex="-1" aria-hidden="true"><img src="../img/5729139d0625ab15a40c615521072d976f9fe352.jpg" alt="" width="480" height="341" loading="lazy" decoding="async"></a>
+<p>A DUI crash in Culpeper caused a gas station canopy to collapse, a power outage and an estimated $100,000 in damage. The driver was hospitalized and charged with DUI. <a class="lozenge more" href="https://www.rappnews.com/crime-courts/canopy-collapses-at-culpeper-gas-station-after-dui-crash-83d6b9e4">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T01:09:28+00:00" data-pub="9:09 PM EDT">Thursday, August 20, 2026 at 9:09 PM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>FL / Jacksonville / <a href="https://jaxtoday.org/about/">Jacksonville Today</a></small></p>
-<h2><a href="https://jaxtoday.org/2026/08/20/regency-square-eyed-duval-schools-headquarters/">Regency Square Mall among locations eyed for Duval Schools headquarters move</a></h2>
-<p class="byline"><small>By Megan Mallicoat</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://jaxtoday.org/give">Donate</a></span></p>
-<a class="shot" href="https://jaxtoday.org/2026/08/20/regency-square-eyed-duval-schools-headquarters/" tabindex="-1" aria-hidden="true"><img src="../img/ea16fb64c824141a8aaf422aeadd70f036f575b6.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Duval Schools is considering four options for a headquarters relocation as it also weighs two purchase offers on its Southbank HQ.</p>
-<p class="more"><a href="https://jaxtoday.org/2026/08/20/regency-square-eyed-duval-schools-headquarters/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://highlandscurrent.org/membership/short-form">Donate</a></aside>
+<p class="source"><a href="https://highlandscurrent.org/"><strong>The Highlands Current</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T15:59:21+00:00" data-pub="11:59 AM EDT">Fri, Aug 21 @ 11AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Cold+Spring&state=NY">Cold Spring</a></p>
+<h2><a href="https://highlandscurrent.org/2026/08/21/real-conservative-joins-putnam-race/">‘Real’ Conservative Joins Putnam Race</a></h2>
+<p class="byline">By Leonard Sparks</p>
+<p>Republican incumbent calls nominee ‘grossly unqualified’ <a class="lozenge more" href="https://highlandscurrent.org/2026/08/21/real-conservative-joins-putnam-race/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T01:03:18+00:00" data-pub="6:03 PM PDT">Thursday, August 20, 2026 at 6:03 PM PDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>CA / Shasta County / <a href="https://shastascout.org/">Shasta Scout</a></small></p>
-<h2><a href="https://shastascout.org/california-requires-county-jails-to-meet-minimum-standards-that-hasnt-prevented-shastas-high-rate-of-in-custody-deaths/">California requires county jails to meet minimum standards. That hasn’t prevented Shasta’s high rate of in-custody deaths</a></h2>
-<p class="byline"><small>By Nevin Kallepalli</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://shastascout.org/donate/">Donate</a></span></p>
-<a class="shot" href="https://shastascout.org/california-requires-county-jails-to-meet-minimum-standards-that-hasnt-prevented-shastas-high-rate-of-in-custody-deaths/" tabindex="-1" aria-hidden="true"><img src="../img/30e69a3cc3181f8de67fdc0ba4b02858fcbd7acc.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Shasta’s jail has consistently passed most aspects of state inspections amid a worrying level of deaths. A close look at the state’s standards — and the California board responsible for examining deaths in jails — shows key gaps in oversight.</p>
-<p class="more"><a href="https://shastascout.org/california-requires-county-jails-to-meet-minimum-standards-that-hasnt-prevented-shastas-high-rate-of-in-custody-deaths/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://winterparkvoice.com/donations/">Donate</a></aside>
+<p class="source"><a href="https://winterparkvoice.com/"><strong>Winter Park Voice</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T15:51:54+00:00" data-pub="11:51 AM EDT">Fri, Aug 21 @ 11AM EDT</time><a class="lozenge place" href="/search?state=FL">Florida</a><a class="lozenge place" href="/search?place=Winter+Park&state=FL">Winter Park</a></p>
+<h2><a href="https://winterparkvoice.com/how-healthy-is-lake-virginia-new-buoy-sends-real-time-data/">How Healthy is Lake Virginia? New Buoy Sends Real-Time Data</a></h2>
+<p class="byline">By Beth Kassab</p>
+<a class="shot" href="https://winterparkvoice.com/how-healthy-is-lake-virginia-new-buoy-sends-real-time-data/" tabindex="-1" aria-hidden="true"><img src="../img/a32bedef96bef86b6cdd997b63b78bd0ecfe1bab.jpg" alt="" width="480" height="306" loading="lazy" decoding="async"></a>
+<p>Aug. 21, 2026: The project from the Freshwater Alliance at Rollins will help scientists and average lake goers know more about water quality <a class="lozenge more" href="https://winterparkvoice.com/how-healthy-is-lake-virginia-new-buoy-sends-real-time-data/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T00:38:46+00:00" data-pub="8:38 PM EDT">Thursday, August 20, 2026 at 8:38 PM EDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>NY / Rochester / <a href="https://rochesterbeacon.com/">Rochester Beacon</a></small></p>
-<h2><a href="https://rochesterbeacon.com/2026/08/20/evans-cites-progress-in-affordable-housing-efforts/">Evans cites progress in affordable housing efforts</a></h2>
-<p class="byline"><small>By DAVID WAZANA</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://rochesterbeacon.com/donate/">Donate</a></span></p>
-<a class="shot" href="https://rochesterbeacon.com/2026/08/20/evans-cites-progress-in-affordable-housing-efforts/" tabindex="-1" aria-hidden="true"><img src="../img/974e6b4260f2e575d87e28229c54eb159ff96935.jpg" alt="" width="480" height="417" loading="lazy" decoding="async"></a>
-<p>The city has a target of building 100 new affordable homes, Mayor Malik Evans said at a news conference Thursday.</p>
-<p class="more"><a href="https://rochesterbeacon.com/2026/08/20/evans-cites-progress-in-affordable-housing-efforts/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://donorbox.org/be-a-planet-detroiter-780440">Donate</a></aside>
+<p class="source"><a href="https://planetdetroit.org/"><strong>Planet Detroit</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T15:44:31+00:00" data-pub="11:44 AM EDT">Fri, Aug 21 @ 11AM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=Detroit&state=MI">Detroit</a></p>
+<h2><a href="https://planetdetroit.org/2026/08/michigan-environment-fall-colors-invasive-carp/">Michigan environmental news: Fall colors forecast, butterfly rescue success, summer COVID uptick</a></h2>
+<p class="byline">By Dustin Blitchok</p>
+<a class="shot" href="https://planetdetroit.org/2026/08/michigan-environment-fall-colors-invasive-carp/" tabindex="-1" aria-hidden="true"><img src="../img/4f8508a4cc86c44121ac07cb3e88afa0b23e2031.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>This week&#x27;s Michigan environmental news includes a fall foliage forecast, a contentious Detroit blight settlement, successful butterfly conservation efforts, and growing concerns about invasive carp approaching Lake Michigan. <a class="lozenge more" href="https://planetdetroit.org/2026/08/michigan-environment-fall-colors-invasive-carp/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T00:20:10+00:00" data-pub="7:20 PM CDT">Thursday, August 20, 2026 at 7:20 PM CDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>IL / Wilmette / <a href="https://www.therecordnorthshore.org/">The Record North Shore</a></small></p>
-<h2><a href="https://www.therecordnorthshore.org/2026/08/20/weather-among-reasons-for-glencoe-golf-clubhouse-delays-cost-increase-but-opening-a-putt-away/">Weather among reasons for Glencoe golf clubhouse delays, cost increase — but opening a putt away</a></h2>
-<p class="byline"><small>By Peter Kaspari</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://inn.org/about/network/?utm_source=web&amp;utm_medium=website&amp;utm_campaign=member+badge">Become a member</a></span></p>
-<p>The new clubhouse at the Glencoe Golf Club is getting closer to tee off. After more than a year of construction, officials are now saying that the clubhouse is expecting to be ready by Sept. 11. That date, which is when the clubhouse is expected to be “substantially” completed, was included as part of a</p>
-<p class="more"><a href="https://www.therecordnorthshore.org/2026/08/20/weather-among-reasons-for-glencoe-golf-clubhouse-delays-cost-increase-but-opening-a-putt-away/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://baltimorewitness.org/">Support</a></aside>
+<p class="source"><a href="https://baltimorewitness.org/"><strong>Baltimore Witness</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T15:25:43+00:00" data-pub="11:25 AM EDT">Fri, Aug 21 @ 11AM EDT</time><a class="lozenge place" href="/search?state=MD">Maryland</a><a class="lozenge place" href="/search?place=Baltimore&state=MD">Baltimore</a></p>
+<h2><a href="https://baltimorewitness.org/non-fatal-shooting-in-southern-district/">Non-Fatal Shooting In Southern District</a></h2>
+<p class="byline">By kaileewilliams</p>
+<p>Southern District Shooting InvestigationOn August 20, 2026, at approximately 1:51 a.m., Southern District patrol officers responded to the3500 block of 7th Street for a report of a shooting.Once there, officers located a 33-year-old male suffering from apparent gunshot wounds.The victim was transported to an area hospital with non-life-threatening injuries.Southern District Detectives are asking a <a class="lozenge more" href="https://baltimorewitness.org/non-fatal-shooting-in-southern-district/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T00:02:00+00:00" data-pub="8:02 PM EDT">Thursday, August 20, 2026 at 8:02 PM EDT</time></small></p>
-<p><small>FL / Key Biscayne / <a href="https://kbindependent.org/">Key Biscayne Independent</a></small></p>
-<h2><a href="https://kbindependent.org/2026/08/20/miami-restaurateur-among-7-killed-in-a-kenya-helicopter-crash/">Miami restaurateur among 7 killed in a Kenya helicopter crash</a></h2>
-<p class="byline"><small>By David Fischer</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://kbindependent.org/faq-kbis-giving-wall/">Donate</a></span></p>
-<a class="shot" href="https://kbindependent.org/2026/08/20/miami-restaurateur-among-7-killed-in-a-kenya-helicopter-crash/" tabindex="-1" aria-hidden="true"><img src="../img/bba07fd391425921000e32618a5845b7f9653f74.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>MIAMI — The family of a Miami restaurateur say they are “devastated and heartbroken” after he and six others were killed by a safari helicopter crash in a remote part of northern Kenya. A helicopter crashed Wednesday morning while flying from the Loisaba Conservancy to the Ewaso Nyiro area in Samburu County, according to the Kenya Civil Aviation</p>
-<p class="more"><a href="https://kbindependent.org/2026/08/20/miami-restaurateur-among-7-killed-in-a-kenya-helicopter-crash/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://ithacavoice.org/support-our-publication/">Donate</a></aside>
+<p class="source"><a href="https://ithacavoice.org/"><strong>The Ithaca Voice</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T15:10:00+00:00" data-pub="11:10 AM EDT">Fri, Aug 21 @ 11AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Ithaca&state=NY">Ithaca</a></p>
+<h2><a href="https://ithacavoice.org/2026/08/elm-street-apartments-housing-project/">Common Council moves controversial Elm Street housing project to next step in review process</a></h2>
+<p class="byline">By Brian Crandall</p>
+<a class="shot" href="https://ithacavoice.org/2026/08/elm-street-apartments-housing-project/" tabindex="-1" aria-hidden="true"><img src="../img/42e585d02336dcad6c410e4463b6774878901bda.jpg" alt="" width="400" height="267" loading="lazy" decoding="async"></a>
+<p>The City of Ithaca’s Common Council gave the green light Wednesday for a contentious apartment complex proposal to flesh out its concept plan and schedule public information sessions. The proposal, <a class="lozenge more" href="https://ithacavoice.org/2026/08/elm-street-apartments-housing-project/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T23:29:22+00:00" data-pub="4:29 PM PDT">Thursday, August 20, 2026 at 4:29 PM PDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>CA / Bakersfield / <a href="https://sjvwater.org/">SJV Water</a></small></p>
-<h2><a href="https://sjvwater.org/are-kings-county-farmers-getting-a-bad-rap-from-bad-data/">Are Kings County farmers getting a bad rap from bad data?</a></h2>
-<p class="byline"><small>By Monserrat Solis</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://sjvwater.org/support-sjv-water/donate/">Donate</a></span></p>
-<a class="shot" href="https://sjvwater.org/are-kings-county-farmers-getting-a-bad-rap-from-bad-data/" tabindex="-1" aria-hidden="true"><img src="../img/0b2681818904b450aa079e97cf83eac7742ea9e8.jpg" alt="" width="480" height="357" loading="lazy" decoding="async"></a>
-<p>Kings County farmers are either underreporting how much groundwater they pump – by a lot. Or bad data is to blame. According to the state Water Resources Control Board, farmers in the Tulare Lake subbasin, most of Kings County, have reported less than 35% of their actual groundwater extractions under a mandate aimed at measuring</p>
-<p class="more"><a href="https://sjvwater.org/are-kings-county-farmers-getting-a-bad-rap-from-bad-data/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://shastascout.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://shastascout.org/"><strong>Shasta Scout</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T15:00:55+00:00" data-pub="8:00 AM PDT">Fri, Aug 21 @ 8AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Shasta+County&state=CA">Shasta County</a></p>
+<h2><a href="https://shastascout.org/redding-shows-up-hundreds-of-volunteers-power-ironman-70-3-northern-californias-debut/">Redding shows up: Hundreds of volunteers power Ironman 70.3 Northern California’s debut</a></h2>
+<p class="byline">By Madison Holcomb</p>
+<a class="shot" href="https://shastascout.org/redding-shows-up-hundreds-of-volunteers-power-ironman-70-3-northern-californias-debut/" tabindex="-1" aria-hidden="true"><img src="../img/ee3ac261435680122ac5163b4d7f44601337f0d8.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Nearly 750 people volunteered for the Ironman 70.3 Northern California, a number that impressed both Redding officials and those from Ironman. Volunteers saw the race as a way to put Redding on the map in a positive way. <a class="lozenge more" href="https://shastascout.org/redding-shows-up-hundreds-of-volunteers-power-ironman-70-3-northern-californias-debut/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 </div>
 <p><a id="more" href="inn-member-14.html">More stories</a></p>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="../index.html">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -408,6 +456,47 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>

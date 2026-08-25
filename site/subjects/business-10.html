@@ -13,12 +13,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(../fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -27,22 +40,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -50,19 +69,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -75,7 +126,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -93,7 +144,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="../index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="../masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -106,7 +157,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="../subjects/news.html">News</a></li><li><a href="../subjects/politics.html">Politics</a></li><li><a href="../subjects/opinion.html">Opinion</a></li><li><a href="../subjects/health.html">Health</a></li><li><a href="../subjects/environment.html">Environment</a></li><li><a href="../subjects/education.html">Education</a></li><li><a href="../subjects/business.html">Business</a></li><li><a href="../subjects/housing.html">Housing</a></li><li><a href="../subjects/sports.html">Sports</a></li><li><a href="../subjects/food.html">Food</a></li><li><a href="../subjects/arts.html">Arts</a></li></ul></nav>
@@ -121,271 +172,275 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <main id="main">
 <div id="feed-items">
 <article>
-<p class="stamp"><small><time datetime="2026-08-18T14:55:28+00:00" data-pub="10:55 AM EDT">Tuesday, August 18, 2026 at 10:55 AM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>MD / Silver Spring / <a href="https://www.mymcmedia.org">MyMCMedia</a></small></p>
-<h2><a href="https://www.mymcmedia.org/montgomery-county-bike-lanes/">Bike riders did the math on County’s cycling network</a></h2>
-<p class="byline"><small>By Alexandria Barnes</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.mymcmedia.org/donate/">Donate</a></span></p>
-<a class="shot" href="https://www.mymcmedia.org/montgomery-county-bike-lanes/" tabindex="-1" aria-hidden="true"><img src="../img/418aaa9482bb907f5e23d1d0c7713af3c714db74.jpg" alt="" width="480" height="630" loading="lazy" decoding="async"></a>
-<p>The shortest way across Montgomery County on a bike is rarely the safest one. Riders here learn to add miles, detour through neighborhoods and cut over to trails, all to</p>
-<p class="more"><a href="https://www.mymcmedia.org/montgomery-county-bike-lanes/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.virginiamercury.com/">Support</a></aside>
+<p class="source"><a href="https://www.virginiamercury.com/"><strong>Virginia Mercury</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-19T09:25:49+00:00" data-pub="5:25 AM EDT">Wed, Aug 19 @ 5AM EDT</time><a class="lozenge place" href="/search?state=VA">Virginia</a></p>
+<h2><a href="https://virginiamercury.com/2026/08/19/scc-commissioner-former-nextera-attorney-declines-to-recuse-herself-from-merger-case/">SCC commissioner, former NextEra attorney declines to recuse herself from merger case</a></h2>
+<p class="byline">By Shannon Heckt</p>
+<a class="shot" href="https://virginiamercury.com/2026/08/19/scc-commissioner-former-nextera-attorney-declines-to-recuse-herself-from-merger-case/" tabindex="-1" aria-hidden="true"><img src="../img/03df14540fdeb40a2f24f68fc592a306e18e5b4b.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>On Tuesday, Virginia lawmakers heard from utility regulation experts on the potential impact of the proposed merger between Dominion Energy and NextEra Energy. If approved, the merger would create the largest electric utility in the country. In the days preceding this week’s Energy Commission of Virginia meeting, legislators asked State Corporation Commission Chair Kelsey Bagot, <a class="lozenge more" href="https://virginiamercury.com/2026/08/19/scc-commissioner-former-nextera-attorney-declines-to-recuse-herself-from-merger-case/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-18T14:46:42+00:00" data-pub="9:46 AM CDT">Tuesday, August 18, 2026 at 9:46 AM CDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>OK / Statewide / <a href="https://osagenews.org/">Osage News</a></small></p>
-<h2><a href="https://osagenews.org/osage-broadband-expands-fiber-network-across-reservation/">Osage Broadband expands fiber network across reservation</a></h2>
-<p class="byline"><small>By Collyn Combs</small><span class="aside"><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://osagenews.org/subscribe-to-updates/">Subscribe</a></span></p>
-<p>Fiber optic internet by Osage Broadband, powered by AtLink, continues to expand across the Osage Nation Reservation. Wahzhazhe Connect has completed installing fiber along the entire Highway 60 corridor, Highway</p>
-<p class="more"><a href="https://osagenews.org/osage-broadband-expands-fiber-network-across-reservation/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://scdailygazette.com/">Support</a></aside>
+<p class="source"><a href="https://scdailygazette.com/"><strong>South Carolina Daily Gazette</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-19T09:00:44+00:00" data-pub="5:00 AM EDT">Wed, Aug 19 @ 5AM EDT</time><a class="lozenge place" href="/search?state=SC">South Carolina</a></p>
+<h2><a href="https://scdailygazette.com/2026/08/19/less-cargo-has-sc-ports-authority-cutting-its-way-toward-growth/">Less cargo has SC Ports Authority cutting its way toward growth</a></h2>
+<p class="byline">By David Wren</p>
+<a class="shot" href="https://scdailygazette.com/2026/08/19/less-cargo-has-sc-ports-authority-cutting-its-way-toward-growth/" tabindex="-1" aria-hidden="true"><img src="../img/09456d2195d3bdfabb774351bcbb020efa51b98e.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>MOUNT PLEASANT—With cargo volumes and revenue on the decline, the owner and operator of the Port of Charleston is looking to cut costs as a way to keep its budget on track. The S.C. State Ports Authority on Tuesday reported a 4.6% drop in the number of cargo containers of all sizes moving <a class="lozenge more" href="https://scdailygazette.com/2026/08/19/less-cargo-has-sc-ports-authority-cutting-its-way-toward-growth/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-18T14:45:08+00:00" data-pub="10:45 AM EDT">Tuesday, August 18, 2026 at 10:45 AM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>NY / Peekskill / <a href="https://peekskillherald.com/">Peekskill Herald</a></small></p>
-<h2><a href="https://peekskillherald.com/41510/news/floating-patio-is-newest-option-for-rolling-on-the-river/">‘Floating Patio’ Is Newest Option for Rolling on the River</a></h2>
-<p class="byline"><small>By By Eric Harvey, eric@peekskillherald.com</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://peekskillherald.com/donation-form/">Donate</a></span></p>
-<a class="shot" href="https://peekskillherald.com/41510/news/floating-patio-is-newest-option-for-rolling-on-the-river/" tabindex="-1" aria-hidden="true"><img src="../img/5a89e8ec8ef3d42202dc0b148acbe9e6de2ee942.jpg" alt="" width="450" height="600" loading="lazy" decoding="async"></a>
-<p>Pontoon boat is making its debut at Fleischmann Pier, offering private excursions to small groups</p>
-<p class="more"><a href="https://peekskillherald.com/41510/news/floating-patio-is-newest-option-for-rolling-on-the-river/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://lailluminator.com/">Support</a></aside>
+<p class="source"><a href="https://lailluminator.com/"><strong>Lousiana Illuminator</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-19T09:00:07+00:00" data-pub="4:00 AM CDT">Wed, Aug 19 @ 4AM CDT</time><a class="lozenge place" href="/search?state=LA">Louisiana</a></p>
+<h2><a href="https://lailluminator.com/2026/08/19/pecan-island-spacex/">Pecan Island residents fight to be heard on SpaceX</a></h2>
+<p class="byline">By Dean Boudreaux, The Current</p>
+<a class="shot" href="https://lailluminator.com/2026/08/19/pecan-island-spacex/" tabindex="-1" aria-hidden="true"><img src="../img/6cd5b86c2ae848880479dd63e6d81df7d9c0d480.jpg" alt="" width="480" height="331" loading="lazy" decoding="async"></a>
+<p>Pecan Island residents haven’t heard much about a potential SpaceX project, at least from official sources, perhaps in part because state officials have pushed for elected leaders to sign nondisclosure agreements. <a class="lozenge more" href="https://lailluminator.com/2026/08/19/pecan-island-spacex/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-18T14:19:38+00:00" data-pub="10:19 AM EDT">Tuesday, August 18, 2026 at 10:19 AM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>National / Arts / <a href="https://burnaway.org/">Burnaway</a></small></p>
-<h2><a href="https://burnaway.org/daily/announcing-open-book-burnaways-new-book-club/">Announcing Open Book, Burnaway’s new book club</a></h2>
-<p class="byline"><small>By Madeline Benfield</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/arts.html">Arts</a><a class="lozenge give" href="https://burnaway.org/support">Donate</a></span></p>
-<p>Burnaway is excited to announce Open Book, our first editorial book club! Held in-person and virtually, Open Book is a literary program for curious readers who are interested in engaging with stories touching on both art and our coverage region of the South and Caribbean.</p>
-<p class="more"><a href="https://burnaway.org/daily/announcing-open-book-burnaways-new-book-club/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://nysfocus.com/donate">Donate</a></aside>
+<p class="source"><a href="https://nysfocus.com/"><strong>New York Focus</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-19T09:00:00+00:00" data-pub="5:00 AM EDT">Wed, Aug 19 @ 5AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=New+York&state=NY">New York</a></p>
+<h2><a href="https://nysfocus.com/2026/08/19/ibotu-local-713-union-salaries-employers">This New York Union Gives Millions to Its Bosses, Pennies to the Rank-and-File</a></h2>
+<p class="byline">By Sam Mellins</p>
+<a class="shot" href="https://nysfocus.com/2026/08/19/ibotu-local-713-union-salaries-employers" tabindex="-1" aria-hidden="true"><img src="../img/ec9e6e0cd692cadff73c76bf1754c4b77754c968.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Employers have sought out the family-run IBOTU to fend off more aggressive unions. Five of its officers collected more than $27 million over the past decade—nearly half the dues its members paid. <a class="lozenge more" href="https://nysfocus.com/2026/08/19/ibotu-local-713-union-salaries-employers">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-18T13:01:20+00:00" data-pub="6:01 AM PDT">Tuesday, August 18, 2026 at 6:01 AM PDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>NV / Statewide / <a href="https://nevadacurrent.com/">Nevada Current</a></small></p>
-<h2><a href="https://nevadacurrent.com/2026/08/18/nv-joins-suit-as-trumps-anti-immigrant-agenda-targets-truck-drivers/">NV joins suit as Trump’s anti-immigrant agenda targets truck drivers</a></h2>
-<p class="byline"><small>By April Corbin Girnus</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://nevadacurrent.com/">Support</a></span></p>
-<a class="shot" href="https://nevadacurrent.com/2026/08/18/nv-joins-suit-as-trumps-anti-immigrant-agenda-targets-truck-drivers/" tabindex="-1" aria-hidden="true"><img src="../img/1babcc5fee09e150526d83efb310eded7519f89e.jpg" alt="" width="480" height="303" loading="lazy" decoding="async"></a>
-<p>Nevada Attorney General Aaron Ford has joined a multistate lawsuit against the federal government over commercial driver license data—a move that is receiving pushback from the Nevada Trucking Association, which supports new federal rules that restrict noncitizen commercial drivers. Ford, a Democrat, announced last week he joined a coalition of 22 states suing the Trump</p>
-<p class="more"><a href="https://nevadacurrent.com/2026/08/18/nv-joins-suit-as-trumps-anti-immigrant-agenda-targets-truck-drivers/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://grist.org/support-us/">Donate</a></aside>
+<p class="source"><a href="https://grist.org/"><strong>Grist</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-19T08:45:00+00:00" data-pub="4:45 AM EDT">Wed, Aug 19 @ 4AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Climate">Climate</a></p>
+<h2><a href="https://grist.org/transportation/all-aboard-amtraks-sleeker-cleaner-new-trains/">All aboard Amtrak’s sleeker, cleaner new trains</a></h2>
+<p class="byline">By Benton Graham</p>
+<p><a class="lozenge more" href="https://grist.org/transportation/all-aboard-amtraks-sleeker-cleaner-new-trains/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-18T11:03:40+00:00" data-pub="7:03 AM EDT">Tuesday, August 18, 2026 at 7:03 AM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>NC / Asheville / <a href="https://avlwatchdog.org/">Asheville Watchdog</a></small></p>
-<h2><a href="https://avlwatchdog.org/answer-man-mold-and-peeling-paint-in-the-thomas-wolfe-auditorium-replacement-plan-still-moving-could-railroad-tracks-in-south-asheville-become-a-bike-path/">Answer Man: Mold and peeling paint in the Thomas Wolfe Auditorium? Replacement plan still moving? Could railroad tracks in south Asheville become a bike path?</a></h2>
-<p class="byline"><small>By JOHN BOYLE</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://ashevillewatchdog.fundjournalism.org/donate/?campaign=701Vu00000ZBTCfIAP">Donate</a></span></p>
-<a class="shot" href="https://avlwatchdog.org/answer-man-mold-and-peeling-paint-in-the-thomas-wolfe-auditorium-replacement-plan-still-moving-could-railroad-tracks-in-south-asheville-become-a-bike-path/" tabindex="-1" aria-hidden="true"><img src="../img/6a5bc44b2e96250f3be34b6c6fba4651f25afb6f.jpg" alt="" width="480" height="325" loading="lazy" decoding="async"></a>
-<p>Today’s round of questions, my smart-aleck replies and the real answers: Question: The last time we attended Thomas Wolfe Auditorium was in April 2025 for a Bonnie Raitt show. We sat in the balcony and watched as the house crew put over a dozen large yellow mop buckets in seats to catch the rain from</p>
-<p class="more"><a href="https://avlwatchdog.org/answer-man-mold-and-peeling-paint-in-the-thomas-wolfe-auditorium-replacement-plan-still-moving-could-railroad-tracks-in-south-asheville-become-a-bike-path/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/college.html">College</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://dailytrojan.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://dailytrojan.com/news/"><strong>Daily Trojan</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-19T07:00:55+00:00" data-pub="12:00 AM PDT">Wed, Aug 19 @ 12AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://dailytrojan.com/2026/08/19/usc-research-on-waymo/">USC finds new trends in Waymo data</a></h2>
+<p class="byline">By April Mao</p>
+<a class="shot" href="https://dailytrojan.com/2026/08/19/usc-research-on-waymo/" tabindex="-1" aria-hidden="true"><img src="../img/9091eba9c46a1f7db706d7abedea8c6219b1018b.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Research reveals user concerns and demographic differences. <a class="lozenge more" href="https://dailytrojan.com/2026/08/19/usc-research-on-waymo/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-18T09:26:51+00:00" data-pub="5:26 AM EDT">Tuesday, August 18, 2026 at 5:26 AM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>VA / Statewide / <a href="https://www.virginiamercury.com/">Virginia Mercury</a></small></p>
-<h2><a href="https://virginiamercury.com/briefs/virginia-secures-17-million-to-upgrade-rail-service-and-improve-transportation-infrastructure/">Virginia secures $17 million to upgrade rail service and improve transportation infrastructure</a></h2>
-<p class="byline"><small>By Nathaniel Cline</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.virginiamercury.com/">Support</a></span></p>
-<a class="shot" href="https://virginiamercury.com/briefs/virginia-secures-17-million-to-upgrade-rail-service-and-improve-transportation-infrastructure/" tabindex="-1" aria-hidden="true"><img src="../img/377dad37b166948cf08757f1f15d92baf24d6169.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Virginia has received $17 million in federal funding to improve transportation in Staunton and Chesterfield County, and to invest in new Amtrak trains serving routes across the commonwealth. U.S. Sens. Tim Kaine and Mark Warner said the funding comes from the Department of Transportation’s Federal-State Partnership for Intercity Passenger Rail Grant Program, created by the</p>
-<p class="more"><a href="https://virginiamercury.com/briefs/virginia-secures-17-million-to-upgrade-rail-service-and-improve-transportation-infrastructure/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://ashevillewatchdog.fundjournalism.org/donate/?campaign=701Vu00000ZBTCfIAP">Donate</a></aside>
+<p class="source"><a href="https://avlwatchdog.org/"><strong>Asheville Watchdog</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-19T02:14:28+00:00" data-pub="10:14 PM EDT">Tue, Aug 18 @ 10PM EDT</time><a class="lozenge place" href="/search?state=NC">North Carolina</a><a class="lozenge place" href="/search?place=Asheville&state=NC">Asheville</a></p>
+<h2><a href="https://avlwatchdog.org/global-finance-leaders-to-descend-on-asheville-for-g20-summit/">Global finance leaders to descend on Asheville for G20 summit</a></h2>
+<p class="byline">By PETER H. LEWIS</p>
+<a class="shot" href="https://avlwatchdog.org/global-finance-leaders-to-descend-on-asheville-for-g20-summit/" tabindex="-1" aria-hidden="true"><img src="../img/f64cdeaa213ca6e7818497d6b3b64fd8607d721c.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Finance ministers and central bank governors from the world’s 20 largest economies are set to converge on Asheville this month for a pair of high-level meetings that U.S. officials say will help shape global economic policy for the coming year—and put the recovery of post-Helene Asheville in the international spotlight. Asheville is the <a class="lozenge more" href="https://avlwatchdog.org/global-finance-leaders-to-descend-on-asheville-for-g20-summit/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-18T08:23:52+00:00" data-pub="4:23 AM EDT">Tuesday, August 18, 2026 at 4:23 AM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>PA / Statewide / <a href="https://www.penncapital-star.com/">Pennsylvania Capital-Star</a></small></p>
-<h2><a href="https://penncapital-star.com/technology-information/pennsylvanias-innovate-in-pa-2-0-takes-cues-from-pittsburghs-science-and-tech-economy-2/">Pennsylvania’s ‘Innovate in PA 2.0’ takes cues from Pittsburgh’s science and tech economy</a></h2>
-<p class="byline"><small>By Rachel McDevitt, WESA</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.penncapital-star.com/">Support</a></span></p>
-<a class="shot" href="https://penncapital-star.com/technology-information/pennsylvanias-innovate-in-pa-2-0-takes-cues-from-pittsburghs-science-and-tech-economy-2/" tabindex="-1" aria-hidden="true"><img src="../img/d596fac6c4194d7ce6a63a13f51bd01de6854caa.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>VoxEQ is one of a few companies created with help from Carnegie Foundry, which seeks to commercialize the science coming out of universities.</p>
-<p class="more"><a href="https://penncapital-star.com/technology-information/pennsylvanias-innovate-in-pa-2-0-takes-cues-from-pittsburghs-science-and-tech-economy-2/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://theurbannews.com/subscribe-2/">Subscribe</a></aside>
+<p class="source"><a href="https://theurbannews.com/"><strong>The Urban News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T23:57:50+00:00" data-pub="7:57 PM EDT">Tue, Aug 18 @ 7PM EDT</time><a class="lozenge place" href="/search?state=NC">North Carolina</a><a class="lozenge place" href="/search?place=Asheville&state=NC">Asheville</a></p>
+<h2><a href="https://theurbannews.com/our-town/2026/beyond-the-dream/">Beyond the Dream</a></h2>
+<p class="byline">By Staff Reports</p>
+<a class="shot" href="https://theurbannews.com/our-town/2026/beyond-the-dream/" tabindex="-1" aria-hidden="true"><img src="../img/fd46fb7c2ca21118f7a824414cdceed88d765eb7.jpg" alt="" width="220" height="195" loading="lazy" decoding="async"></a>
+<p>In Asheville’s tough housing market, some families are still finding a path to homeownership. <a class="lozenge more" href="https://theurbannews.com/our-town/2026/beyond-the-dream/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-18T08:17:51+00:00" data-pub="1:17 AM PDT">Tuesday, August 18, 2026 at 1:17 AM PDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>CA / Los Angeles / <a href="https://www.lafocusnews.com">LA Focus</a></small></p>
-<h2><a href="https://www.lafocusnews.com/people/malcolm-jamal-warners-daughter-poised-to-receive-bulk-of-remaining-estate-f1eb522c">Malcolm-Jamal Warner’s Daughter Poised to Receive Bulk of Remaining Estate</a></h2>
-<p class="byline"><small>By Staff Report</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.lafocusnews.com">Support</a></span></p>
-<a class="shot" href="https://www.lafocusnews.com/people/malcolm-jamal-warners-daughter-poised-to-receive-bulk-of-remaining-estate-f1eb522c" tabindex="-1" aria-hidden="true"><img src="../img/8d3cf57cdb8cf09b378813baf214708a413f2acd.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Malcolm-Jamal Warner’s 9-year-old daughter could receive most of his remaining estate under a proposed settlement that still requires court approval.</p>
-<p class="more"><a href="https://www.lafocusnews.com/people/malcolm-jamal-warners-daughter-poised-to-receive-bulk-of-remaining-estate-f1eb522c">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://sanquentinnews.com/donate-subscribe/">Donate</a></aside>
+<p class="source"><a href="https://sanquentinnews.com/"><strong>San Quentin News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T23:45:48+00:00" data-pub="4:45 PM PDT">Tue, Aug 18 @ 4PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=San+Quentin&state=CA">San Quentin</a></p>
+<h2><a href="https://sanquentinnews.com/san-quentin-holds-20th-annual-day-of-peace/">San Quentin holds 20th Annual Day of Peace</a></h2>
+<p class="byline">By Jerry Maleek Gearin</p>
+<a class="shot" href="https://sanquentinnews.com/san-quentin-holds-20th-annual-day-of-peace/" tabindex="-1" aria-hidden="true"><img src="../img/bfca243563519d103abea184cf913823572ea948.jpg" alt="" width="480" height="251" loading="lazy" decoding="async"></a>
+<p>On July 25, 2026, San Quentin Rehabilitation Center held its 20th Anniversary of the Day of Peace on the facility’s Lower Yard. The event was hosted by the SQRC Day of Peace committee. As a gesture of peace, incarcerated people displayed on table tops their leisure-time artwork of homemade chess pieces that resembled fantasy figurines. <a class="lozenge more" href="https://sanquentinnews.com/san-quentin-holds-20th-annual-day-of-peace/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-18T06:06:13+00:00" data-pub="2:06 AM EDT">Tuesday, August 18, 2026 at 2:06 AM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>MA / Boston / <a href="https://binj.news/">Boston Institute for Nonprofit Journalism</a></small></p>
-<h2><a href="https://binj.news/2026/08/18/binj-at-the-movies-reflections-from-a-year-of-slumming-it-on-social-media/">BINJ At The Movies: Reflections From A Year Of Slumming It On Social Media</a></h2>
-<p class="byline"><small>By CHRIS FARAONE</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://givebutter.com/binj">Donate</a></span></p>
-<p>Back then, we did what many said couldn’t be done. Now, we’re doing what we said we wouldn’t do.*</p>
-<p class="more"><a href="https://binj.news/2026/08/18/binj-at-the-movies-reflections-from-a-year-of-slumming-it-on-social-media/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://washingtonstatestandard.com/">Support</a></aside>
+<p class="source"><a href="https://washingtonstatestandard.com/"><strong>Washington State Standard</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T23:43:08+00:00" data-pub="4:43 PM PDT">Tue, Aug 18 @ 4PM PDT</time><a class="lozenge place" href="/search?state=WA">Washington</a></p>
+<h2><a href="https://washingtonstatestandard.com/2026/08/18/repub/dozens-of-cities-and-counties-sue-fire-truck-makers-over-soaring-costs-delivery-delays/">Dozens of cities and counties sue fire truck makers over soaring costs, delivery delays</a></h2>
+<p class="byline">By Anna Claire Vollers</p>
+<a class="shot" href="https://washingtonstatestandard.com/2026/08/18/repub/dozens-of-cities-and-counties-sue-fire-truck-makers-over-soaring-costs-delivery-delays/" tabindex="-1" aria-hidden="true"><img src="../img/664c48fd61ff6853a76f9bcf29b93699e0cdd9f4.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>In the summer of 2023, a third of the fire engines owned by the fire department in Kansas City, Kansas, were unusable. Five of 15 pumper trucks were out of commission, and the department was waiting on parts from the manufacturer. So Kansas City fire officials went on a nationwide hunt for trucks. But their <a class="lozenge more" href="https://washingtonstatestandard.com/2026/08/18/repub/dozens-of-cities-and-counties-sue-fire-truck-makers-over-soaring-costs-delivery-delays/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-18T04:02:00+00:00" data-pub="12:02 AM EDT">Tuesday, August 18, 2026 at 12:02 AM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>KY / Northern Kentucky / <a href="https://www.nkythrives.com/">NKY Thrives</a></small></p>
-<h2><a href="https://soapboxmedia.com/non-conventional-by-design-a-new-conference-puts-scaling-entrepreneurs-at-the-center/">Non-conventional by design: A new conference puts scaling entrepreneurs at the center</a></h2>
-<p class="byline"><small>By Erin Pierce</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://www.nkythrives.com/support-us/">Donate</a></span></p>
-<a class="shot" href="https://soapboxmedia.com/non-conventional-by-design-a-new-conference-puts-scaling-entrepreneurs-at-the-center/" tabindex="-1" aria-hidden="true"><img src="../img/3ddcb02ab76458bb9a9efd4c1a4c6f4e143c75e0.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Non-Con brings entrepreneurs, creatives and small business owners together in Northern Kentucky to share practical lessons on growing businesses outside traditional pathways.</p>
-<p class="more"><a href="https://soapboxmedia.com/non-conventional-by-design-a-new-conference-puts-scaling-entrepreneurs-at-the-center/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://givebutter.com/40Forward">Donate</a></aside>
+<p class="source"><a href="https://baltimoretimes-online.com/"><strong>The Baltimore Times</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T23:38:46+00:00" data-pub="7:38 PM EDT">Tue, Aug 18 @ 7PM EDT</time><a class="lozenge place" href="/search?state=MD">Maryland</a><a class="lozenge place" href="/search?place=Baltimore&state=MD">Baltimore</a></p>
+<h2><a href="https://baltimoretimes-online.com/detail/stephen-a-smith-calls-nabj-rebuke-a-hit-job-group-stands-by-criticism-of-him-and-four-others">Stephen A. Smith calls NABJ rebuke a ‘hit job.’ Group stands by criticism of him and four others</a></h2>
+<p class="byline">By MMCxchange</p>
+<a class="shot" href="https://baltimoretimes-online.com/detail/stephen-a-smith-calls-nabj-rebuke-a-hit-job-group-stands-by-criticism-of-him-and-four-others" tabindex="-1" aria-hidden="true"><img src="../img/84486cfdb379b889500045fb4d4f0e6ff3bc54bd.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Collaborated by MMCxchange from MMCxchange. ATLANTA—The National Association of Black Journalists is standing by its decision to rebuke Stephen A. Smith and four other powerful figures and <a class="lozenge more" href="https://baltimoretimes-online.com/detail/stephen-a-smith-calls-nabj-rebuke-a-hit-job-group-stands-by-criticism-of-him-and-four-others">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-18T00:19:29+00:00" data-pub="8:19 PM EDT">Monday, August 17, 2026 at 8:19 PM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>MD / Baltimore / <a href="https://baltimoretimes-online.com/">The Baltimore Times</a></small></p>
-<h2><a href="https://baltimoretimes-online.com/detail/know-your-numbers-the-vital-signs-of-a-healthy-black-business">Know Your Numbers: The Vital Signs of a Healthy Black Business</a></h2>
-<p class="byline"><small>By The Baltimore Times</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://givebutter.com/40Forward">Donate</a></span></p>
-<a class="shot" href="https://baltimoretimes-online.com/detail/know-your-numbers-the-vital-signs-of-a-healthy-black-business" tabindex="-1" aria-hidden="true"><img src="../img/64cd31bf7774e743cd3fce8bfc60c3a9bc9d45b0.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>Growing up, I could name the Black professionals in my community without much thought. We had plenty of teachers and preachers, two doctors, a lawyer,</p>
-<p class="more"><a href="https://baltimoretimes-online.com/detail/know-your-numbers-the-vital-signs-of-a-healthy-black-business">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://theurbannews.com/subscribe-2/">Subscribe</a></aside>
+<p class="source"><a href="https://theurbannews.com/"><strong>The Urban News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T23:26:07+00:00" data-pub="7:26 PM EDT">Tue, Aug 18 @ 7PM EDT</time><a class="lozenge place" href="/search?state=NC">North Carolina</a><a class="lozenge place" href="/search?place=Asheville&state=NC">Asheville</a></p>
+<h2><a href="https://theurbannews.com/business/2026/the-importance-of-filing-probate-when-a-loved-one-passes/">The Importance of Filing Probate When a Loved One Passes</a></h2>
+<p class="byline">By Staff Reports</p>
+<a class="shot" href="https://theurbannews.com/business/2026/the-importance-of-filing-probate-when-a-loved-one-passes/" tabindex="-1" aria-hidden="true"><img src="../img/c059689cba70a4a9f57567171ded0514c74b3af7.jpg" alt="" width="220" height="208" loading="lazy" decoding="async"></a>
+<p>By Sandra Kilgore, GRI, ABR, SFR – Losing a loved one brings profound emotional grief, <a class="lozenge more" href="https://theurbannews.com/business/2026/the-importance-of-filing-probate-when-a-loved-one-passes/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T23:57:21+00:00" data-pub="7:57 PM EDT">Monday, August 17, 2026 at 7:57 PM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>MD / Baltimore / <a href="https://baltimoretimes-online.com/">The Baltimore Times</a></small></p>
-<h2><a href="https://baltimoretimes-online.com/detail/securityplus-federal-credit-union-launches-securityplus-investments-empowering-members-to-build-wealth-through-self-directed-investing">Securityplus Federal Credit Union Launches Securityplus Investments, Empowering Members to Build Wealth Through Self-Directed Investing</a></h2>
-<p class="byline"><small>By The Baltimore Times</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://givebutter.com/40Forward">Donate</a></span></p>
-<a class="shot" href="https://baltimoretimes-online.com/detail/securityplus-federal-credit-union-launches-securityplus-investments-empowering-members-to-build-wealth-through-self-directed-investing" tabindex="-1" aria-hidden="true"><img src="../img/70b4c54870e58db2d92a36368187e9d9d7335e40.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>BALTIMORE, Md. – Securityplus Federal Credit Union today announced the launch of Securityplus Investments, a new self-directed investing platform</p>
-<p class="more"><a href="https://baltimoretimes-online.com/detail/securityplus-federal-credit-union-launches-securityplus-investments-empowering-members-to-build-wealth-through-self-directed-investing">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://theurbannews.com/subscribe-2/">Subscribe</a></aside>
+<p class="source"><a href="https://theurbannews.com/"><strong>The Urban News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T23:11:35+00:00" data-pub="7:11 PM EDT">Tue, Aug 18 @ 7PM EDT</time><a class="lozenge place" href="/search?state=NC">North Carolina</a><a class="lozenge place" href="/search?place=Asheville&state=NC">Asheville</a></p>
+<h2><a href="https://theurbannews.com/lifestyles/2026/wake-up-take-command-with-man-camp-rx/">Wake Up, Take Command with Man Camp-RX</a></h2>
+<p class="byline">By Staff Reports</p>
+<a class="shot" href="https://theurbannews.com/lifestyles/2026/wake-up-take-command-with-man-camp-rx/" tabindex="-1" aria-hidden="true"><img src="../img/17ca623424ab4e75763f822b4a1222f9602738d9.jpg" alt="" width="220" height="177" loading="lazy" decoding="async"></a>
+<p>Increase your capacity to serve your family, your community, and yourself with integrity. <a class="lozenge more" href="https://theurbannews.com/lifestyles/2026/wake-up-take-command-with-man-camp-rx/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T23:19:53+00:00" data-pub="7:19 PM EDT">Monday, August 17, 2026 at 7:19 PM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>National / Climate / <a href="https://grist.org/">Grist</a></small></p>
-<h2><a href="https://grist.org/transportation/californias-new-tire-efficiency-rules-could-save-drivers-1b-a-year/">California’s new tire efficiency rules could save drivers $1B a year</a></h2>
-<p class="byline"><small>By Tik Root</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://grist.org/support-us/">Donate</a></span></p>
-<p class="more"><a href="https://grist.org/transportation/californias-new-tire-efficiency-rules-could-save-drivers-1b-a-year/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.thetruecitizen.com/subscribe/">Subscribe</a></aside>
+<p class="source"><a href="https://www.thetruecitizen.com/"><strong>Tacoma True Citizen</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T23:01:34+00:00" data-pub="4:01 PM PDT">Tue, Aug 18 @ 4PM PDT</time><a class="lozenge place" href="/search?state=WA">Washington</a><a class="lozenge place" href="/search?place=Tacoma&state=WA">Tacoma</a></p>
+<h2><a href="https://www.thetruecitizen.com/articles/440-miscellaneous-services-78/">440 Miscellaneous Services</a></h2>
+<p class="byline">By True Citizen Staff</p>
+<p>COOPER’S CARPET CLEAN- ING. Free Estimates. 706-871-7470. <a class="lozenge more" href="https://www.thetruecitizen.com/articles/440-miscellaneous-services-78/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T23:05:25+00:00" data-pub="6:05 PM CDT">Monday, August 17, 2026 at 6:05 PM CDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>KS / Wichita / <a href="https://communityvoiceks.com/">The Community Voice</a></small></p>
-<h2><a href="https://www.communityvoiceks.com/2026/08/17/sigma-gamma-rho-honors-jackson-mortuary-100-years/">Sigma Gamma Rho Honors Jackson Mortuary’s Century of Service</a></h2>
-<p class="byline"><small>By Bonita, Editor-in-Chief</small><span class="aside"><a class="lozenge give" href="https://www.communityvoiceks.com/contribute/">Donate</a></span></p>
-<a class="shot" href="https://www.communityvoiceks.com/2026/08/17/sigma-gamma-rho-honors-jackson-mortuary-100-years/" tabindex="-1" aria-hidden="true"><img src="../img/cafa0c0247fb1ceb2ce1c63e10ba71d090692cff.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>As Jackson Mortuary celebrates its 100th anniversary this summer, members of Sigma Gamma Rho Sorority, Inc. took time to recognize not only the historic Wichita business, but also the family</p>
-<p class="more"><a href="https://www.communityvoiceks.com/2026/08/17/sigma-gamma-rho-honors-jackson-mortuary-100-years/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://theurbannews.com/subscribe-2/">Subscribe</a></aside>
+<p class="source"><a href="https://theurbannews.com/"><strong>The Urban News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T22:39:43+00:00" data-pub="6:39 PM EDT">Tue, Aug 18 @ 6PM EDT</time><a class="lozenge place" href="/search?state=NC">North Carolina</a><a class="lozenge place" href="/search?place=Asheville&state=NC">Asheville</a></p>
+<h2><a href="https://theurbannews.com/lifestyles/2026/culture-fragments-a-coalition-of-the-willing/">Culture Fragments™ – A Coalition of  the Willing</a></h2>
+<p class="byline">By Staff Reports</p>
+<a class="shot" href="https://theurbannews.com/lifestyles/2026/culture-fragments-a-coalition-of-the-willing/" tabindex="-1" aria-hidden="true"><img src="../img/c342874202bd60875157827bc907746c7d4381e9.jpg" alt="" width="220" height="178" loading="lazy" decoding="async"></a>
+<p>Building the place behind the destination. <a class="lozenge more" href="https://theurbannews.com/lifestyles/2026/culture-fragments-a-coalition-of-the-willing/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T22:26:40+00:00" data-pub="5:26 PM CDT">Monday, August 17, 2026 at 5:26 PM CDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>KS / Wichita / <a href="https://communityvoiceks.com/">The Community Voice</a></small></p>
-<h2><a href="https://www.communityvoiceks.com/2026/08/17/cox-spectrum-merger-wichita-customers/">Cox Is Becoming Spectrum: What Cox Customers Need to Know</a></h2>
-<p class="byline"><small>By The VOICE News Service</small><span class="aside"><a class="lozenge give" href="https://www.communityvoiceks.com/contribute/">Donate</a></span></p>
-<a class="shot" href="https://www.communityvoiceks.com/2026/08/17/cox-spectrum-merger-wichita-customers/" tabindex="-1" aria-hidden="true"><img src="../img/689dc7ce96b8181802060dd93fed1007bfdf8e0e.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>Cox customers in Wichita — and across the nation — will soon become Spectrum customers following final regulatory approval of the massive combination of Cox Communications and Charter Communications, the</p>
-<p class="more"><a href="https://www.communityvoiceks.com/2026/08/17/cox-spectrum-merger-wichita-customers/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://baltimorebeat.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://baltimorebeat.com/"><strong>Baltimore Beat</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T21:33:25+00:00" data-pub="5:33 PM EDT">Tue, Aug 18 @ 5PM EDT</time><a class="lozenge place" href="/search?state=MD">Maryland</a><a class="lozenge place" href="/search?place=Baltimore&state=MD">Baltimore</a></p>
+<h2><a href="https://baltimorebeat.com/op-ed-my-wife-is-detained-by-the-philippine-government-and-our-taxes-fund-it/">OP-ED: My wife is detained by the Philippine government and our taxes fund it</a></h2>
+<p class="byline">By Vivian Pasion</p>
+<a class="shot" href="https://baltimorebeat.com/op-ed-my-wife-is-detained-by-the-philippine-government-and-our-taxes-fund-it/" tabindex="-1" aria-hidden="true"><img src="../img/9963d474d67f120a5c3baa9126f7a4bf0c9f4f81.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>On July 30, combined elements of the Armed Forces of the Philippines (AFP) and the Philippine National Police (PNP) arrested my wife, Christina Pasion, and Indigenous community organizer Binay Serrano in an early morning raid in Cabuyao, Laguna. My wife, an American citizen, has been detained in Camp Bagong Diwa under the custody of the <a class="lozenge more" href="https://baltimorebeat.com/op-ed-my-wife-is-detained-by-the-philippine-government-and-our-taxes-fund-it/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T22:20:37+00:00" data-pub="3:20 PM PDT">Monday, August 17, 2026 at 3:20 PM PDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>NV / Statewide / <a href="https://nevadacurrent.com/">Nevada Current</a></small></p>
-<h2><a href="https://nevadacurrent.com/2026/08/17/kalshi-and-nv-gaming-control-board-spar-over-geolocation-mandate/">Kalshi and NV Gaming Control Board spar over geolocation mandate</a></h2>
-<p class="byline"><small>By Dana Gentry</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://nevadacurrent.com/">Support</a></span></p>
-<a class="shot" href="https://nevadacurrent.com/2026/08/17/kalshi-and-nv-gaming-control-board-spar-over-geolocation-mandate/" tabindex="-1" aria-hidden="true"><img src="../img/326468ef8bb717b18d6a150928d793a5fa92c190.jpg" alt="" width="480" height="296" loading="lazy" decoding="async"></a>
-<p>Attorneys for Kalshi say Nevada gaming regulators are targeting the prediction market and wasting taxpayer money on behalf of casinos. The state contends Kalshi is dragging its feet when it comes to complying with a court mandate to prohibit people in Nevada from placing bets on the platform. Kalshi is engaged in a high-stakes lawsuit</p>
-<p class="more"><a href="https://nevadacurrent.com/2026/08/17/kalshi-and-nv-gaming-control-board-spar-over-geolocation-mandate/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://missionlocal.org/support-our-publication/">Donate</a></aside>
+<p class="source"><a href="https://missionlocal.org/"><strong>Mission Local</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T21:07:33+00:00" data-pub="2:07 PM PDT">Tue, Aug 18 @ 2PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=San+Francisco&state=CA">San Francisco</a></p>
+<h2><a href="https://missionlocal.org/2026/08/cinderella-to-finally-debut-in-the-mission-district-by-months-end/">Cinderella Bakery will finally debut in the Mission District: Opening set for month’s end</a></h2>
+<p class="byline">By Oscar Palma</p>
+<a class="shot" href="https://missionlocal.org/2026/08/cinderella-to-finally-debut-in-the-mission-district-by-months-end/" tabindex="-1" aria-hidden="true"><img src="../img/6836c4a011588eefa6c5905e6a135a97b706037b.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Cinderella&#x27;s opening in the Mission District is set for Aug. 28. The Russian bakery will open at 24th and Alabama streets. Cinderella Bakery will finally debut in the Mission District: Opening set for month’s end <a class="lozenge more" href="https://missionlocal.org/2026/08/cinderella-to-finally-debut-in-the-mission-district-by-months-end/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T22:10:17+00:00" data-pub="6:10 PM EDT">Monday, August 17, 2026 at 6:10 PM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>SC / Statewide / <a href="https://scdailygazette.com/">South Carolina Daily Gazette</a></small></p>
-<h2><a href="https://scdailygazette.com/2026/08/17/sc-governor-vetoes-delay-on-paying-agency-overruns-at-scout-motors-site/">SC governor vetoes delay on paying agency overruns at Scout Motors site</a></h2>
-<p class="byline"><small>By Skylar Laird</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://scdailygazette.com/">Support</a></span></p>
-<a class="shot" href="https://scdailygazette.com/2026/08/17/sc-governor-vetoes-delay-on-paying-agency-overruns-at-scout-motors-site/" tabindex="-1" aria-hidden="true"><img src="../img/6be8613c1c73b5ef59540d575fe34768976ef1c5.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>The budget clause was one of 14 vetoes Gov. Henry McMaster issued, most of which dealt with technical changes and not actual money.</p>
-<p class="more"><a href="https://scdailygazette.com/2026/08/17/sc-governor-vetoes-delay-on-paying-agency-overruns-at-scout-motors-site/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.mymcmedia.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://www.mymcmedia.org"><strong>MyMCMedia</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T21:02:18+00:00" data-pub="5:02 PM EDT">Tue, Aug 18 @ 5PM EDT</time><a class="lozenge place" href="/search?state=MD">Maryland</a><a class="lozenge place" href="/search?place=Silver+Spring&state=MD">Silver Spring</a></p>
+<h2><a href="https://www.mymcmedia.org/bethesda-game-developers-keep-up-fight-against-xbox-layoffs/">Bethesda game developers keep up fight against XBOX layoffs</a></h2>
+<p class="byline">By Maryam Shahzad</p>
+<a class="shot" href="https://www.mymcmedia.org/bethesda-game-developers-keep-up-fight-against-xbox-layoffs/" tabindex="-1" aria-hidden="true"><img src="../img/fe6422ebdc8dafecee4758621add4af4084c003d.jpg" alt="" width="480" height="252" loading="lazy" decoding="async"></a>
+<p>Video game developers gathered again in Rockville to protest and keep up the fight against local job cuts under XBOX studios. Last month, game developers rallied after Microsoft announced mass <a class="lozenge more" href="https://www.mymcmedia.org/bethesda-game-developers-keep-up-fight-against-xbox-layoffs/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T19:29:33+00:00" data-pub="3:29 PM EDT">Monday, August 17, 2026 at 3:29 PM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>National / Climate / <a href="https://grist.org/">Grist</a></small></p>
-<h2><a href="https://grist.org/transportation/the-market-for-used-evs-is-so-hot-right-now/">The market for used EVs ‘is so hot’ right now</a></h2>
-<p class="byline"><small>By Tik Root</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://grist.org/support-us/">Donate</a></span></p>
-<p class="more"><a href="https://grist.org/transportation/the-market-for-used-evs-is-so-hot-right-now/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://indiacurrents.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://indiacurrents.com/"><strong>India Currents</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T21:00:00+00:00" data-pub="2:00 PM PDT">Tue, Aug 18 @ 2PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=San+Jose&state=CA">San Jose</a></p>
+<h2><a href="https://indiacurrents.com/states-take-meta-to-trial-in-california-over-social-media-harm-to-children/">States Take META To Trial In California Over Social Media Harm To Children</a></h2>
+<p class="byline">By AP</p>
+<p>Copyright 2026 The Associated Press. All rights reserved. This material may not be published, broadcast, rewritten or redistributed without permission. Of the thousands of lawsuits Meta faces over child safety <a class="lozenge more" href="https://indiacurrents.com/states-take-meta-to-trial-in-california-over-social-media-harm-to-children/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T16:40:30+00:00" data-pub="12:40 PM EDT">Monday, August 17, 2026 at 12:40 PM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>GA / Atlanta / <a href="https://theatlantavoice.com/category/news/">The Atlanta Voice</a></small></p>
-<h2><a href="https://www.theatlantavoice.com/business/atlanta-descends-on-marthas-vineyard-for-a-weekend-of-fashion-tech-and-culture-bf34e025">Atlanta Descends on Martha&#x27;s Vineyard for a Weekend of Fashion, Tech, and Culture</a></h2>
-<p class="byline"><small>By Noah Washington</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://theatlantavoice.com/category/news/">Support</a></span></p>
-<a class="shot" href="https://www.theatlantavoice.com/business/atlanta-descends-on-marthas-vineyard-for-a-weekend-of-fashion-tech-and-culture-bf34e025" tabindex="-1" aria-hidden="true"><img src="../img/0d3e9c468ce5ae9c823b6a4d68c6758612c004bf.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>Atlanta made its mark on Martha’s Vineyard as designer Jai Lyle joined a Nike charity auction and RenderATL convened tech leaders, investors, and Atlanta Mayor Andre Dickens around the South’s innovation economy.</p>
-<p class="more"><a href="https://www.theatlantavoice.com/business/atlanta-descends-on-marthas-vineyard-for-a-weekend-of-fashion-tech-and-culture-bf34e025">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://givebutter.com/599GYN">Donate</a></aside>
+<p class="source"><a href="https://figcitynews.com/about/"><strong>Fig CIty News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T20:03:24+00:00" data-pub="4:03 PM EDT">Tue, Aug 18 @ 4PM EDT</time><a class="lozenge place" href="/search?state=MA">Massachusetts</a><a class="lozenge place" href="/search?place=Newton&state=MA">Newton</a></p>
+<h2><a href="https://www.figcitynews.com/2026/08/what-opened-what-closed-and-whats-next-among-newtons-places-to-eat/">What opened, what closed, and what’s next among Newton’s places to eat</a></h2>
+<p class="byline">By Jack Prior</p>
+<a class="shot" href="https://www.figcitynews.com/2026/08/what-opened-what-closed-and-whats-next-among-newtons-places-to-eat/" tabindex="-1" aria-hidden="true"><img src="../img/fd9fa5d7047063e53031655960ab3f3a91b6c311.jpg" alt="" width="300" height="201" loading="lazy" decoding="async"></a>
+<p>Newton’s food scene has continued to evolve since our last summary, with at least 12 openings and reopenings against nine closings. Nine of those 12 are one-of-a-kind, local businesses. Overall, 62% of Newton’s 187 places to eat are independently owned, with an additional 14% being local chains and 24% regional <a class="lozenge more" href="https://www.figcitynews.com/2026/08/what-opened-what-closed-and-whats-next-among-newtons-places-to-eat/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T15:00:55+00:00" data-pub="11:00 AM EDT">Monday, August 17, 2026 at 11:00 AM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>NY / Rochester / <a href="https://rochesterbeacon.com/">Rochester Beacon</a></small></p>
-<h2><a href="https://rochesterbeacon.com/2026/08/17/wheel-works-brewing-gives-shortsville-factory-a-new-very-different-life/">Wheel Works Brewing gives Shortsville factory a new, very different life</a></h2>
-<p class="byline"><small>By WILL CLEVELAND</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://rochesterbeacon.com/donate/">Donate</a></span></p>
-<a class="shot" href="https://rochesterbeacon.com/2026/08/17/wheel-works-brewing-gives-shortsville-factory-a-new-very-different-life/" tabindex="-1" aria-hidden="true"><img src="../img/7d09315f425b4201cf696ace68c8e0cf44a4de5f.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>The Ontario County brewery and restaurant is set to open Sept. 15 inside a 147-year-old industrial building along the Canandaigua Lake Outlet.</p>
-<p class="more"><a href="https://rochesterbeacon.com/2026/08/17/wheel-works-brewing-gives-shortsville-factory-a-new-very-different-life/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.afampointofview.com/">Support</a></aside>
+<p class="source"><a href="https://www.afampointofview.com/"><strong>An African-American Point of View (Point of View)</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T18:35:52+00:00" data-pub="2:35 PM EDT">Tue, Aug 18 @ 2PM EDT</time><a class="lozenge place" href="/search?state=MA">Massachusetts</a><a class="lozenge place" href="/search?place=Springfield&state=MA">Springfield</a></p>
+<h2><a href="https://afampointofview.com/stopping-gun-violence-by-building-healthier-communities-and-creating-lasting-change/">Stopping Gun Violence by Building Healthier Communities and Creating Lasting Change</a></h2>
+<p class="byline">By Af-Am Point of View</p>
+<p>The streets of Springfield&#x27;s Black community are carrying a heavy burden, one measured not just in statistics, but in shattered lives and futures cut short. Gun violence has become a pervasive crisis, rippling through neighborhoods, eroding safety, and stealing the promise of the next generation. <a class="lozenge more" href="https://afampointofview.com/stopping-gun-violence-by-building-healthier-communities-and-creating-lasting-change/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T13:46:51+00:00" data-pub="9:46 AM EDT">Monday, August 17, 2026 at 9:46 AM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>VA / Charlottesville / <a href="https://communityengagement.substack.com/">Charlottesville Community Engagement</a></small></p>
-<h2><a href="https://communityengagement.substack.com/p/monday-august-17-2026-cost-estimates">Monday, August 17, 2026: Cost estimates increase for three area transportation projects</a></h2>
-<p class="byline"><small>By Sean Tubbs</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://communityengagement.substack.com/">Support</a></span></p>
-<a class="shot" href="https://communityengagement.substack.com/p/monday-august-17-2026-cost-estimates" tabindex="-1" aria-hidden="true"><img src="../img/e5f578b9617a0785abe86900aa470140c37e4cb2.jpg" alt="" width="480" height="269" loading="lazy" decoding="async"></a>
-<p>Plus: The National Weather Service has details on Friday’s microburst</p>
-<p class="more"><a href="https://communityengagement.substack.com/p/monday-august-17-2026-cost-estimates">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://thewinooskinews.com/">Support</a></aside>
+<p class="source"><a href="https://thewinooskinews.com/"><strong>Winooski News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T18:24:51+00:00" data-pub="2:24 PM EDT">Tue, Aug 18 @ 2PM EDT</time><a class="lozenge place" href="/search?state=VT">Vermont</a><a class="lozenge place" href="/search?place=Winooski&state=VT">Winooski</a></p>
+<h2><a href="https://vtcommunitynews.org/2026/08/18/artisan-cannabis-cultivators-are-struggling-to-make-money-in-vermont/">Artisan cannabis cultivators are struggling to make money in Vermont</a></h2>
+<p class="byline">By Otis Roessler</p>
+<a class="shot" href="https://vtcommunitynews.org/2026/08/18/artisan-cannabis-cultivators-are-struggling-to-make-money-in-vermont/" tabindex="-1" aria-hidden="true"><img src="../img/ecc5454450541a38d2e8d0223b1919ce8ebdbe62.jpg" alt="" width="480" height="367" loading="lazy" decoding="async"></a>
+<p>Independent growers want a way to sell their product directly to consumers. <a class="lozenge more" href="https://vtcommunitynews.org/2026/08/18/artisan-cannabis-cultivators-are-struggling-to-make-money-in-vermont/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T12:58:00+00:00" data-pub="5:58 AM PDT">Monday, August 17, 2026 at 5:58 AM PDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>CA / Orange County / <a href="https://voiceofoc.org/">Voice of OC</a></small></p>
-<h2><a href="https://voiceofoc.org/2026/08/e-bike-safety-registry-launches-in-orange-county-looks-to-partner-with-schools-police/">E-bike Safety Registry Launches in Orange County, Looks to Partner With Schools &amp; Police</a></h2>
-<p class="byline"><small>By Angelina Hicks</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://voiceofoc.org/donate">Donate</a></span></p>
-<a class="shot" href="https://voiceofoc.org/2026/08/e-bike-safety-registry-launches-in-orange-county-looks-to-partner-with-schools-police/" tabindex="-1" aria-hidden="true"><img src="../img/fa543d10e0e14525ff4b3db3bc388bbbb61bb2f1.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>An e-bike registry and compliance dashboard that seeks partnerships with school districts and law enforcement agencies across the state is launching a pilot program in Orange County. Voice of OC is Orange County&#x27;s nonprofit newsroom. We rely on donations from people like you to sustain our news agency. Please make a contribution today: https://voiceofoc.org/donate</p>
-<p class="more"><a href="https://voiceofoc.org/2026/08/e-bike-safety-registry-launches-in-orange-county-looks-to-partner-with-schools-police/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://qcitymetro.com/">Support</a></aside>
+<p class="source"><a href="https://qcitymetro.com/"><strong>QCity Metro</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T18:21:34+00:00" data-pub="2:21 PM EDT">Tue, Aug 18 @ 2PM EDT</time><a class="lozenge place" href="/search?state=NC">North Carolina</a><a class="lozenge place" href="/search?place=Charlotte&state=NC">Charlotte</a></p>
+<h2><a href="https://www.qcitymetro.com/business/how-saint-society-built-a-jewelry-community-in-charlotte-06d19c44">Saint &amp; Society brings personalized jewelry to Charlotte’s NoDa</a></h2>
+<p class="byline">By Jasmine Ballard</p>
+<a class="shot" href="https://www.qcitymetro.com/business/how-saint-society-built-a-jewelry-community-in-charlotte-06d19c44" tabindex="-1" aria-hidden="true"><img src="../img/48a2a667f083d5f184b85314630365610b609cfa.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>After building a local following through pop-ups, Naomi Calvin and Vee Jones opened Black- and Latina-owned boutique NoDa shop with custom jewelry bars, affordable pieces and space for Charlotte makers. <a class="lozenge more" href="https://www.qcitymetro.com/business/how-saint-society-built-a-jewelry-community-in-charlotte-06d19c44">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T12:30:32+00:00" data-pub="7:30 AM CDT">Monday, August 17, 2026 at 7:30 AM CDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>IL / Cook County / <a href="https://ndigo.com/">N&#x27;Digo</a></small></p>
-<h2><a href="https://ndigo.com/2026/08/17/aisha-jackson-model-and-creative-director/">Aisha Jackson, Model and Creative Director</a></h2>
-<p class="byline"><small>By TJ Armour</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.illinoislottery.com/giving-back/education?utm_source=multicultural&amp;utm_medium=ndigo&amp;utm_campaign=awareness&amp;utm_term=education">Donate</a></span></p>
-<a class="shot" href="https://ndigo.com/2026/08/17/aisha-jackson-model-and-creative-director/" tabindex="-1" aria-hidden="true"><img src="../img/bbb083ab56c298f60f3d6b66f9b7ccef5a800eca.jpg" alt="" width="480" height="640" loading="lazy" decoding="async"></a>
-<p>Chicago-based model and Creative Director Aisha Jackson has been a fixture on the Chicago fashion scene for more than two decades. First coming on</p>
-<p class="more"><a href="https://ndigo.com/2026/08/17/aisha-jackson-model-and-creative-director/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://lailluminator.com/">Support</a></aside>
+<p class="source"><a href="https://lailluminator.com/"><strong>Lousiana Illuminator</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T17:50:44+00:00" data-pub="12:50 PM CDT">Tue, Aug 18 @ 12PM CDT</time><a class="lozenge place" href="/search?state=LA">Louisiana</a></p>
+<h2><a href="https://lailluminator.com/2026/08/18/amazons-data-center-network-in-northwest-louisiana-is-going-to-get-bigger/">Amazon’s data center network in Northwest Louisiana is going to get bigger</a></h2>
+<p class="byline">By Elise Plunk</p>
+<a class="shot" href="https://lailluminator.com/2026/08/18/amazons-data-center-network-in-northwest-louisiana-is-going-to-get-bigger/" tabindex="-1" aria-hidden="true"><img src="../img/e1e1ba3c610e148adea5d82ac8678680d1b635f3.jpg" alt="" width="480" height="311" loading="lazy" decoding="async"></a>
+<p>A third facility, not officially part of Amazon’s original $12 billion investment announced in February, will bring the total project value to $18 million. <a class="lozenge more" href="https://lailluminator.com/2026/08/18/amazons-data-center-network-in-northwest-louisiana-is-going-to-get-bigger/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T12:20:00+00:00" data-pub="8:20 AM EDT">Monday, August 17, 2026 at 8:20 AM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>MA / Newton / <a href="https://figcitynews.com/about/">Fig CIty News</a></small></p>
-<h2><a href="https://www.figcitynews.com/2026/08/announcements-intro/">RESET DATE EVERY WEEK: Announcements intro</a></h2>
-<p class="byline"><small>By FCN</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://givebutter.com/599GYN">Donate</a></span></p>
-<p>Fig City‘s weekly newsletter of Community Announcements shows only the soonest 25 upcoming events. We have many more events online. All current announcements are on the web — and in the Fig City Community Calendar. Send announcements to info@figcitynews.com. Yes, it’s important to support your community newspaper — one-time or monthly.</p>
-<p class="more"><a href="https://www.figcitynews.com/2026/08/announcements-intro/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://appvoices.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://appvoices.org/press/"><strong>Appalachian Voices</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T17:13:31+00:00" data-pub="1:13 PM EDT">Tue, Aug 18 @ 1PM EDT</time><a class="lozenge place" href="/search?state=VA">Virginia</a></p>
+<h2><a href="https://appvoices.org/2026/08/18/aml-map/">A new map shows the funding need for abandoned mine cleanup across the U.S.</a></h2>
+<p class="byline">By AV&#x27;s Intern Team</p>
+<p>Three million people live near water polluted by acid mine drainage, open mine portals, underground mine fires, polluting mine waste, dilapidated infrastructure and a number of other abandoned mine features. <a class="lozenge more" href="https://appvoices.org/2026/08/18/aml-map/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T12:18:05+00:00" data-pub="8:18 AM EDT">Monday, August 17, 2026 at 8:18 AM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>NJ / South Jersey / <a href="https://frontrunnernewjersey.com">Front Runner</a></small></p>
-<h2><a href="https://frontrunnernewjersey.com/2026/08/17/atlantic-citys-goute-creole-scores-on-world-stage-after-serving-haiti-national-team-during-fifa-world-cup/">Atlantic City’s Goute Creole Scores on World Stage After Serving Haiti National Team During FIFA World Cup</a></h2>
-<p class="byline"><small>By AC Joseph Media</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://frontrunnernewjersey.com/support-frnj/">Donate</a></span></p>
-<a class="shot" href="https://frontrunnernewjersey.com/2026/08/17/atlantic-citys-goute-creole-scores-on-world-stage-after-serving-haiti-national-team-during-fifa-world-cup/" tabindex="-1" aria-hidden="true"><img src="../img/e19be1e22241b6f1a0f53caa6746ca794f9c4b45.jpg" alt="" width="480" height="60" loading="lazy" decoding="async"></a>
-<p>EDITOR’S NOTE: This is a continuation of stories celebrating National Black Business Month as Front</p>
-<p class="more"><a href="https://frontrunnernewjersey.com/2026/08/17/atlantic-citys-goute-creole-scores-on-world-stage-after-serving-haiti-national-team-during-fifa-world-cup/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://blackwestchester.com/giving-children-fun-scholarly-reasons-to-smile/#respond">Donate</a></aside>
+<p class="source"><a href="https://blackwestchester.com/"><strong>Black Westchester</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T16:16:26+00:00" data-pub="12:16 PM EDT">Tue, Aug 18 @ 12PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Westchester+County&state=NY">Westchester County</a></p>
+<h2><a href="https://blackwestchester.com/who-is-policing-black-journalism-the-stephen-a-smith-controversy-exposes-a-bigger-problem/">Who Is Policing Black Journalism? The Stephen A. Smith Controversy Exposes a Bigger Problem</a></h2>
+<p class="byline">By DAMON K JONES</p>
+<a class="shot" href="https://blackwestchester.com/who-is-policing-black-journalism-the-stephen-a-smith-controversy-exposes-a-bigger-problem/" tabindex="-1" aria-hidden="true"><img src="../img/cc38837c63e92c443aad68f8aa42acfb348b6822.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>Black Westchester Who Is Policing Black Journalism? The Stephen A. Smith Controversy Exposes a Bigger Problem The controversy involving Stephen A. Smith and the National Association of Black Journalists should prompt Black journalists to engage in a broader conversation that extends beyond Smith himself, any specific award, or personal opinions about him. While I do not agree with all of Smith’s’s <a class="lozenge more" href="https://blackwestchester.com/who-is-policing-black-journalism-the-stephen-a-smith-controversy-exposes-a-bigger-problem/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T10:00:00+00:00" data-pub="6:00 AM EDT">Monday, August 17, 2026 at 6:00 AM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>National / Education / <a href="https://hechingerreport.org/">The Hechinger Report</a></small></p>
-<h2><a href="https://hechingerreport.org/proof-points-ai-mastery-learning/">Slow math: Kids may learn more when AI makes them review mistakes</a></h2>
-<p class="byline"><small>By Jill Barshay and Kristin Fasiang</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://hechingerreport.org/support-the-hechinger-report/?utm_source=website&amp;utm_medium=homepage&amp;utm_campaign=header">Donate</a></span></p>
-<a class="shot" href="https://hechingerreport.org/proof-points-ai-mastery-learning/" tabindex="-1" aria-hidden="true"><img src="../img/4230eb047e4e774376777e73d155ffaadaab9255.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Artificial intelligence makes many tasks faster and easier. But a new study suggests that students may learn more when AI makes them slow down. In an experiment involving more than 6,000 middle schoolers in Tennessee, students learned slightly more math when an AI tutor walked them through their mistakes and then required them to demonstrate</p>
-<p class="more"><a href="https://hechingerreport.org/proof-points-ai-mastery-learning/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.coastalreview.org/support/">Donate</a></aside>
+<p class="source"><a href="https://www.coastalreview.org"><strong>Coastal Review Online</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T15:39:28+00:00" data-pub="11:39 AM EDT">Tue, Aug 18 @ 11AM EDT</time><a class="lozenge place" href="/search?state=NC">North Carolina</a><a class="lozenge place" href="/search?place=Newport&state=NC">Newport</a></p>
+<h2><a href="https://coastalreview.org/2026/08/ncdot-to-host-hearings-on-bridge-replacement-alternatives/">NCDOT to host hearings on bridge replacement alternatives</a></h2>
+<p class="byline">By Staff Report</p>
+<a class="shot" href="https://coastalreview.org/2026/08/ncdot-to-host-hearings-on-bridge-replacement-alternatives/" tabindex="-1" aria-hidden="true"><img src="../img/7368b4c33279833a9e349a9b939c593ceb8737cd.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Transportation officials have scheduled two public hearings on the proposed alternatives to replace the 57-year-old Cape Fear Memorial Bridge in Brunswick and New Hanover counties. <a class="lozenge more" href="https://coastalreview.org/2026/08/ncdot-to-host-hearings-on-bridge-replacement-alternatives/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T09:00:57+00:00" data-pub="5:00 AM EDT">Monday, August 17, 2026 at 5:00 AM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>IN / Statewide / <a href="https://indianacapitalchronicle.com/">Indiana Capital Chronicle</a></small></p>
-<h2><a href="https://indianacapitalchronicle.com/2026/08/17/indiana-working-to-preserve-local-businesses-across-ownership-changes/">Indiana working to preserve local businesses across ownership changes</a></h2>
-<p class="byline"><small>By Leslie Bonilla Muñiz</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://indianacapitalchronicle.com/">Support</a></span></p>
-<a class="shot" href="https://indianacapitalchronicle.com/2026/08/17/indiana-working-to-preserve-local-businesses-across-ownership-changes/" tabindex="-1" aria-hidden="true"><img src="../img/a772523a3e54385bf632df4eff6f548495098609.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>The &quot;Keep IN&quot; initiative is meant to get small business owners thinking about how to hand off their companies when they leave, instead of closing them down — and prompt potential successors to consider entrepreneurship through acquisition.</p>
-<p class="more"><a href="https://indianacapitalchronicle.com/2026/08/17/indiana-working-to-preserve-local-businesses-across-ownership-changes/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://phinneywood.com/2026/08/donate-school-supplies-for-local-families/">Donate</a></aside>
+<p class="source"><a href="https://PhinneyWood.com"><strong>PhinneyWood.com</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T15:30:00+00:00" data-pub="8:30 AM PDT">Tue, Aug 18 @ 8AM PDT</time><a class="lozenge place" href="/search?state=WA">Washington</a><a class="lozenge place" href="/search?place=Seattle&state=WA">Seattle</a></p>
+<h2><a href="https://phinneywood.com/2026/08/half-moon-boulderings-free-youth-open-houses/">Try Something New at Half Moon Bouldering’s Free Youth Open Houses</a></h2>
+<p class="byline">By Chris Maykut</p>
+<p>Curious about climbing? Half Moon Bouldering is inviting neighborhood families to come give it a try. On Wednesday, August 19 and Wednesday, August 26, from 4–6 p.m., Half Moon Bouldering <a class="lozenge more" href="https://phinneywood.com/2026/08/half-moon-boulderings-free-youth-open-houses/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T01:23:43+00:00" data-pub="9:23 PM EDT">Sunday, August 16, 2026 at 9:23 PM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>MA / Newton / <a href="https://figcitynews.com/about/">Fig CIty News</a></small></p>
-<h2><a href="https://www.figcitynews.com/2026/08/board-and-commission-meetings-week-of-8-16-2026/">Board and Commission Meetings – Week of 8/16/2026</a></h2>
-<p class="byline"><small>By FCN</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://givebutter.com/599GYN">Donate</a></span></p>
-<p>Newton Cultural Council Reception Committee will meet virtually (Zoom link) on Monday, August 17 at 7:30PM. The agenda includes: Board of License Commissioners will meet virtually (Zoom link) on Tuesday, August 18 at 7:30PM. The agenda includes: Board of Assessors will meet in person (City Hall, Room 108) on Wednesday,</p>
-<p class="more"><a href="https://www.figcitynews.com/2026/08/board-and-commission-meetings-week-of-8-16-2026/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://communityengagement.substack.com/">Support</a></aside>
+<p class="source"><a href="https://communityengagement.substack.com/"><strong>Charlottesville Community Engagement</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T15:12:10+00:00" data-pub="11:12 AM EDT">Tue, Aug 18 @ 11AM EDT</time><a class="lozenge place" href="/search?state=VA">Virginia</a><a class="lozenge place" href="/search?place=Charlottesville&state=VA">Charlottesville</a></p>
+<h2><a href="https://communityengagement.substack.com/p/tuesday-august-18-2026-charlottesville">Tuesday, August 18, 2026: Charlottesville still on track to end Rivanna River encampments around September 1</a></h2>
+<p class="byline">By Sean Tubbs</p>
+<a class="shot" href="https://communityengagement.substack.com/p/tuesday-august-18-2026-charlottesville" tabindex="-1" aria-hidden="true"><img src="../img/2b87d4b654054193e67bf65629f1bfc08dda6c0c.jpg" alt="" width="480" height="376" loading="lazy" decoding="async"></a>
+<p>Plus: Charlottesville offering free debris pick-up for two city neighborhoods affected by microburst <a class="lozenge more" href="https://communityengagement.substack.com/p/tuesday-august-18-2026-charlottesville">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-16T15:59:32+00:00" data-pub="11:59 AM EDT">Sunday, August 16, 2026 at 11:59 AM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>DE / Statewide / <a href="https://hoyendelaware.com/">Hoy en Delaware</a></small></p>
-<h2><a href="https://hoyendelaware.com/duniesky-landa-responde-tus-preguntas-de-negocios-duniesky-landa-answer-you-business-questions/">Duniesky Landa responde tus preguntas de negocios / Duniesky Landa answer your business questions</a></h2>
-<p class="byline"><small>By Hoy en Delaware</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://hoyendelaware.com/">Support</a></span></p>
-<p>Preguntas y respuestas con Duniesky Landa Ruiz “coach” de negocios del Programa West End Launcher (beneficiaria de Arsht-Cannon) ¿Cuál es tu función en el Programa West End Launcher y qué haces? Soy coach de negocios en el Programa Launcher, donde trabajo directamente con emprendedores para ayudarlos a convertir sus ideas en negocios sostenibles y</p>
-<p class="more"><a href="https://hoyendelaware.com/duniesky-landa-responde-tus-preguntas-de-negocios-duniesky-landa-answer-you-business-questions/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://rochesterbeacon.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://rochesterbeacon.com/"><strong>Rochester Beacon</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T15:00:36+00:00" data-pub="11:00 AM EDT">Tue, Aug 18 @ 11AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Rochester&state=NY">Rochester</a></p>
+<h2><a href="https://rochesterbeacon.com/2026/08/18/books-come-first-at-new-secondhand-store/">Books come first at new secondhand store</a></h2>
+<p class="byline">By DANIK SOUDAKOFF</p>
+<a class="shot" href="https://rochesterbeacon.com/2026/08/18/books-come-first-at-new-secondhand-store/" tabindex="-1" aria-hidden="true"><img src="../img/4b804ec7e80769fafe0c9d5f2d9c2730d49cfcd5.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Unlike many other bookstores, McFall’s Books on Monroe Avenue sells only books. That’s by plan, owner Gregory Logan says. <a class="lozenge more" href="https://rochesterbeacon.com/2026/08/18/books-come-first-at-new-secondhand-store/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 </div>
 <p><a id="more" href="business-11.html">More stories</a></p>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="../index.html">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -401,6 +456,47 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>

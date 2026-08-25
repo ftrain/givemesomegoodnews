@@ -13,12 +13,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(../fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -27,22 +40,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -50,19 +69,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -75,7 +126,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -93,7 +144,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="../index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="../masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -106,7 +157,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="../subjects/news.html">News</a></li><li><a href="../subjects/politics.html">Politics</a></li><li><a href="../subjects/opinion.html">Opinion</a></li><li><a href="../subjects/health.html">Health</a></li><li><a href="../subjects/environment.html">Environment</a></li><li><a href="../subjects/education.html">Education</a></li><li><a href="../subjects/business.html">Business</a></li><li><a href="../subjects/housing.html">Housing</a></li><li><a href="../subjects/sports.html">Sports</a></li><li><a href="../subjects/food.html">Food</a></li><li><a href="../subjects/arts.html">Arts</a></li></ul></nav>
@@ -121,268 +172,275 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <main id="main">
 <div id="feed-items">
 <article>
-<p class="stamp"><small><time datetime="2026-07-06T01:27:24+00:00" data-pub="9:27 PM EDT">Sunday, July 5, 2026 at 9:27 PM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>NY / New York City / <a href="https://newyorkparrot.com/">New York Parrot</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://trentonjournal.com/support-us/">Donate</a></aside>
+<p class="source"><a href="https://www.trentonjournal.com/"><strong>Trenton Journal</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-14T12:39:29+00:00" data-pub="8:39 AM EDT">Fri, Aug 14 @ 8AM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a><a class="lozenge place" href="/search?place=Trenton&state=NJ">Trenton</a></p>
+<h2><a href="https://trentonjournal.com/trenton-makes-connects-youth-activism-to-local-issues/">Trenton Makes connects youth activism to local issues</a></h2>
+<p class="byline">By Cienago Eastman</p>
+<a class="shot" href="https://trentonjournal.com/trenton-makes-connects-youth-activism-to-local-issues/" tabindex="-1" aria-hidden="true"><img src="../img/6f6b5b1e7364b18277ecc150db8dbbea9f9fe0ef.jpg" alt="" width="480" height="362" loading="lazy" decoding="async"></a>
+<p>Recently at Mill Hill Park, a group of young people gathered as part of Trenton Makes, a youth-led grassroots organization focused on building community power and connecting young people to fight against issues such as historical redlining, gentrification, and homelessness. Composed primarily of college-aged young adults, the group meets weekly, holding tablings and discussions with <a class="lozenge more" href="https://trentonjournal.com/trenton-makes-connects-youth-activism-to-local-issues/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.fivewardsmedia.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://www.fivewardsmedia.com"><strong>Five Wards Media</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-13T16:26:48+00:00" data-pub="12:26 PM EDT">Thu, Aug 13 @ 12PM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a><a class="lozenge place" href="/search?place=Newark&state=NJ">Newark</a></p>
+<h2><a href="https://www.fivewardsmedia.com/join-the-airport-city-newark-public-meeting-today/">Join the Airport City Newark Public Meeting | TODAY!</a></h2>
+<p class="byline">By Devonne Campbell</p>
+<p>RSVP for the Airport City Newark Public Meeting today, August 13, at 6:00 PM. We appreciate your continued engagement. Your voice remains essential as we work to ensure Newark residents and stakeholders are centered in this once-in-a-generation development effort. Meeting Details Airport City <a class="lozenge more" href="https://www.fivewardsmedia.com/join-the-airport-city-newark-public-meeting-today/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://trentonjournal.com/support-us/">Donate</a></aside>
+<p class="source"><a href="https://www.trentonjournal.com/"><strong>Trenton Journal</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-13T14:21:57+00:00" data-pub="10:21 AM EDT">Thu, Aug 13 @ 10AM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a><a class="lozenge place" href="/search?place=Trenton&state=NJ">Trenton</a></p>
+<h2><a href="https://trentonjournal.com/trenton-awarded-1-7-million-to-support-business-growth-and-investment-in-the-capital-city/">Trenton Awarded $1.7 Million to Support Business Growth and Investment in the Capital City</a></h2>
+<p class="byline">By Trenton Journal</p>
+<a class="shot" href="https://trentonjournal.com/trenton-awarded-1-7-million-to-support-business-growth-and-investment-in-the-capital-city/" tabindex="-1" aria-hidden="true"><img src="../img/954a70755d2a3171ee3d634cc32369553d0cf14e.jpg" alt="" width="480" height="371" loading="lazy" decoding="async"></a>
+<p>The City of Trenton has been awarded $1.7 million from the New Jersey Urban Enterprise Zone Authority (UEZA) to establish a new loan fund aimed at attracting significant business investment, creating economic activity, and strengthening commercial areas within Trenton’s Urban Enterprise Zone. The funding will support the Trenton UEZ Anchor Loan Fund, which will provide <a class="lozenge more" href="https://trentonjournal.com/trenton-awarded-1-7-million-to-support-business-growth-and-investment-in-the-capital-city/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.lafocusnews.com">Support</a></aside>
+<p class="source"><a href="https://www.lafocusnews.com"><strong>LA Focus</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-11T22:37:59+00:00" data-pub="3:37 PM PDT">Tue, Aug 11 @ 3PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://www.lafocusnews.com/news/la-jazz-festival-abruptly-postponed-heres-what-happened-whats-next-acb392a1">L.A. Jazz Festival Abruptly Postponed: Here’s What Happened &amp; What’s Next</a></h2>
+<p class="byline">By Lisa Collins</p>
+<a class="shot" href="https://www.lafocusnews.com/news/la-jazz-festival-abruptly-postponed-heres-what-happened-whats-next-acb392a1" tabindex="-1" aria-hidden="true"><img src="../img/9e9a774170c7fc03eebd3c982dc3300cd043ef80.jpg" alt="" width="480" height="384" loading="lazy" decoding="async"></a>
+<p>Last-minute cancellation leaves artists, vendors and organizers facing losses as founder Martin Ludlow vows the ambitious citywide celebration will return in 2027 <a class="lozenge more" href="https://www.lafocusnews.com/news/la-jazz-festival-abruptly-postponed-heres-what-happened-whats-next-acb392a1">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://kansascitydefender.com/support-us">Donate</a></aside>
+<p class="source"><a href="https://kansascitydefender.com/"><strong>Kansas City Defender</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-11T18:44:56+00:00" data-pub="1:44 PM CDT">Tue, Aug 11 @ 1PM CDT</time><a class="lozenge place" href="/search?state=MO">Missouri</a><a class="lozenge place" href="/search?place=Kansas+City&state=MO">Kansas City</a></p>
+<h2><a href="https://kansascitydefender.com/world/argentina-racism-world-cup-maga-milei-2/">‘All They Got to Do is Stop Talking Honky’: How Argentina’s Racist Display at the World Cup Mirrors the MAGA Backlash in the US</a></h2>
+<p class="byline">By Mili Mansaray and Jon Jeter</p>
+<a class="shot" href="https://kansascitydefender.com/world/argentina-racism-world-cup-maga-milei-2/" tabindex="-1" aria-hidden="true"><img src="../img/b5cafe5f66f9b163a4196040f12a0d7f7b7fb3ad.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>A month after the World Cup ended, the spectacle is gone. The racial and political tensions it exposed are not, as Argentina’s President Javier Milei, much like Trump, stokes racial tensions to cover for a sick economy and its savage inequalities. <a class="lozenge more" href="https://kansascitydefender.com/world/argentina-racism-world-cup-maga-milei-2/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://trentonjournal.com/support-us/">Donate</a></aside>
+<p class="source"><a href="https://www.trentonjournal.com/"><strong>Trenton Journal</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-11T16:20:30+00:00" data-pub="12:20 PM EDT">Tue, Aug 11 @ 12PM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a><a class="lozenge place" href="/search?place=Trenton&state=NJ">Trenton</a></p>
+<h2><a href="https://trentonjournal.com/statement-on-state-police-activity-at-city-hall/">Statement On State Police Activity at City Hall</a></h2>
+<p class="byline">By Trenton Journal</p>
+<a class="shot" href="https://trentonjournal.com/statement-on-state-police-activity-at-city-hall/" tabindex="-1" aria-hidden="true"><img src="../img/a4827772e9622f23a0305d03659f50ab5a9ede91.jpg" alt="" width="480" height="640" loading="lazy" decoding="async"></a>
+<p>The City of Trenton became aware this morning that members of the New Jersey State Police were at City Hall in connection with an investigation involving alleged misconduct by a former City employee. The investigation concerns a matter that the City itself identified, investigated, and referred to the New Jersey Attorney General’s Office approximately two <a class="lozenge more" href="https://trentonjournal.com/statement-on-state-police-activity-at-city-hall/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.lafocusnews.com">Support</a></aside>
+<p class="source"><a href="https://www.lafocusnews.com"><strong>LA Focus</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-11T06:50:53+00:00" data-pub="11:50 PM PDT">Mon, Aug 10 @ 11PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://www.lafocusnews.com/community/can-destination-crenshaw-still-deliver-on-its-promise-ee68587f">Can Destination Crenshaw Still Deliver on Its Promise?</a></h2>
+<a class="shot" href="https://www.lafocusnews.com/community/can-destination-crenshaw-still-deliver-on-its-promise-ee68587f" tabindex="-1" aria-hidden="true"><img src="../img/e4343049d61030fbac8f272e8ba722844592b499.jpg" alt="" width="480" height="363" loading="lazy" decoding="async"></a>
+<p>Crenshaw Corridor leaders are demanding a one-year completion plan for Destination Crenshaw after years of construction disrupted churches, schools and businesses. <a class="lozenge more" href="https://www.lafocusnews.com/community/can-destination-crenshaw-still-deliver-on-its-promise-ee68587f">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.lafocusnews.com">Support</a></aside>
+<p class="source"><a href="https://www.lafocusnews.com"><strong>LA Focus</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-11T06:47:25+00:00" data-pub="11:47 PM PDT">Mon, Aug 10 @ 11PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://www.lafocusnews.com/crime/nearly-30-years-later-tupac-shakur-murder-trial-takes-center-stage-in-a-las-vegas-court-0a498121">Nearly 30 Years Later, Tupac Shakur Murder Trial Takes Center Stage in a Las Vegas Court</a></h2>
+<p class="byline">By D.T. Carson</p>
+<a class="shot" href="https://www.lafocusnews.com/crime/nearly-30-years-later-tupac-shakur-murder-trial-takes-center-stage-in-a-las-vegas-court-0a498121" tabindex="-1" aria-hidden="true"><img src="../img/5d254679906aa2ca8c7edbe97cb08260943eaac1.jpg" alt="" width="480" height="359" loading="lazy" decoding="async"></a>
+<p>Jury selection has begun in Las Vegas for Duane “Keffe D” Davis, accused of orchestrating Tupac Shakur’s 1996 killing nearly 30 years after the rapper’s death. <a class="lozenge more" href="https://www.lafocusnews.com/crime/nearly-30-years-later-tupac-shakur-murder-trial-takes-center-stage-in-a-las-vegas-court-0a498121">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.lafocusnews.com">Support</a></aside>
+<p class="source"><a href="https://www.lafocusnews.com"><strong>LA Focus</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-11T06:43:06+00:00" data-pub="11:43 PM PDT">Mon, Aug 10 @ 11PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://www.lafocusnews.com/community/price-launches-push-to-clear-abandoned-cars-from-south-la-streets-cbc526e2">Price Launches Push to Clear Abandoned Cars from South L.A. Streets</a></h2>
+<p class="byline">By Staff Report</p>
+<a class="shot" href="https://www.lafocusnews.com/community/price-launches-push-to-clear-abandoned-cars-from-south-la-streets-cbc526e2" tabindex="-1" aria-hidden="true"><img src="../img/55e3f3258c4a098bc605ac72d1498714201c0b76.jpg" alt="" width="480" height="358" loading="lazy" decoding="async"></a>
+<p>New “Clear the Streets” initiative aims to tackle blight, illegal dumping and neighborhood safety <a class="lozenge more" href="https://www.lafocusnews.com/community/price-launches-push-to-clear-abandoned-cars-from-south-la-streets-cbc526e2">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.lafocusnews.com">Support</a></aside>
+<p class="source"><a href="https://www.lafocusnews.com"><strong>LA Focus</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-11T06:32:56+00:00" data-pub="11:32 PM PDT">Mon, Aug 10 @ 11PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://www.lafocusnews.com/healthcare/national-blood-crisis-hits-close-to-home-for-black-community-30922b09">National Blood Crisis Hits Close to Home for Black Community</a></h2>
+<p class="byline">By D.T. Carson</p>
+<a class="shot" href="https://www.lafocusnews.com/healthcare/national-blood-crisis-hits-close-to-home-for-black-community-30922b09" tabindex="-1" aria-hidden="true"><img src="../img/e9f4970316c15f322d376768d22c6ac7509d031b.jpg" alt="" width="480" height="341" loading="lazy" decoding="async"></a>
+<p>The Red Cross says a national blood crisis is straining hospitals, with Type O supplies especially low. Black donors are crucial for sickle cell patients who often need closely matched blood. <a class="lozenge more" href="https://www.lafocusnews.com/healthcare/national-blood-crisis-hits-close-to-home-for-black-community-30922b09">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.lafocusnews.com">Support</a></aside>
+<p class="source"><a href="https://www.lafocusnews.com"><strong>LA Focus</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-11T06:17:32+00:00" data-pub="11:17 PM PDT">Mon, Aug 10 @ 11PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://www.lafocusnews.com/business/beyonc-takes-full-ownership-of-sirdavis-whiskey-brand-43e70d33">Beyoncé Takes Full Ownership of SirDavis Whiskey Brand</a></h2>
+<p class="byline">By Staff Report</p>
+<a class="shot" href="https://www.lafocusnews.com/business/beyonc-takes-full-ownership-of-sirdavis-whiskey-brand-43e70d33" tabindex="-1" aria-hidden="true"><img src="../img/fc22ee93b094a646bdefaa17c95d8c72f7ef1298.jpg" alt="" width="480" height="346" loading="lazy" decoding="async"></a>
+<p>Beyoncé has bought full ownership of SirDavis from LVMH’s Moët Hennessy, taking sole control of the Houston-finished whiskey brand named for her great-grandfather. <a class="lozenge more" href="https://www.lafocusnews.com/business/beyonc-takes-full-ownership-of-sirdavis-whiskey-brand-43e70d33">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.lafocusnews.com">Support</a></aside>
+<p class="source"><a href="https://www.lafocusnews.com"><strong>LA Focus</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-11T06:08:54+00:00" data-pub="11:08 PM PDT">Mon, Aug 10 @ 11PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://www.lafocusnews.com/california/three-black-women-among-gov-newsoms-recent-judicial-appointments-614ab217">Three Black Women Among Gov. Newsom’s Recent Judicial Appointments</a></h2>
+<p class="byline">By Bo Tefu | CA Black Media</p>
+<a class="shot" href="https://www.lafocusnews.com/california/three-black-women-among-gov-newsoms-recent-judicial-appointments-614ab217" tabindex="-1" aria-hidden="true"><img src="../img/2367b295207309e54efab7245dfb7ee8ef797532.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Gov. Gavin Newsom nominated three Black women to California appellate courts as part of eight new appellate selections, alongside nine Superior Court appointments across five counties. <a class="lozenge more" href="https://www.lafocusnews.com/california/three-black-women-among-gov-newsoms-recent-judicial-appointments-614ab217">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.lafocusnews.com">Support</a></aside>
+<p class="source"><a href="https://www.lafocusnews.com"><strong>LA Focus</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-11T06:04:07+00:00" data-pub="11:04 PM PDT">Mon, Aug 10 @ 11PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://www.lafocusnews.com/government/elhawary-bill-would-make-it-illegal-for-police-to-block-emergency-medical-care-e4671d10">Elhawary Bill Would Make It Illegal for Police to Block Emergency Medical Care</a></h2>
+<p class="byline">By Antonio Ray Harvey</p>
+<a class="shot" href="https://www.lafocusnews.com/government/elhawary-bill-would-make-it-illegal-for-police-to-block-emergency-medical-care-e4671d10" tabindex="-1" aria-hidden="true"><img src="../img/30c90198a22a0cd5f4dd63ec3974dc4d55ee614f.jpg" alt="" width="480" height="328" loading="lazy" decoding="async"></a>
+<p>A California bill would bar officers from delaying emergency medical care when it is safe to provide it. AB 2318 faces a key Senate Appropriations hearing after cost concerns. <a class="lozenge more" href="https://www.lafocusnews.com/government/elhawary-bill-would-make-it-illegal-for-police-to-block-emergency-medical-care-e4671d10">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.lafocusnews.com">Support</a></aside>
+<p class="source"><a href="https://www.lafocusnews.com"><strong>LA Focus</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-11T05:58:26+00:00" data-pub="10:58 PM PDT">Mon, Aug 10 @ 10PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://www.lafocusnews.com/politics/on-your-november-ballot-prop-42-would-ban-new-taxes-on-retirement-savings-and-personal-assets-dc118c68">On Your November Ballot: Prop 42 Would Ban New Taxes on Retirement Savings and Personal Assets</a></h2>
+<p class="byline">By Edward Henderson</p>
+<a class="shot" href="https://www.lafocusnews.com/politics/on-your-november-ballot-prop-42-would-ban-new-taxes-on-retirement-savings-and-personal-assets-dc118c68" tabindex="-1" aria-hidden="true"><img src="../img/bd9c0f2c65b09886e17c4da0bbccafc40e29875b.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>California voters will decide Nov. 3 whether Prop 42 should constitutionally bar new taxes on retirement savings and personal assets, or preserve lawmakers’ future tax options. <a class="lozenge more" href="https://www.lafocusnews.com/politics/on-your-november-ballot-prop-42-would-ban-new-taxes-on-retirement-savings-and-personal-assets-dc118c68">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://kansascitydefender.com/support-us">Donate</a></aside>
+<p class="source"><a href="https://kansascitydefender.com/"><strong>Kansas City Defender</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-11T01:42:07+00:00" data-pub="8:42 PM CDT">Mon, Aug 10 @ 8PM CDT</time><a class="lozenge place" href="/search?state=MO">Missouri</a><a class="lozenge place" href="/search?place=Kansas+City&state=MO">Kansas City</a></p>
+<h2><a href="https://kansascitydefender.com/aboltion/abolition/missouri-forced-detransition-trans-prisoners/">Missouri Begins the Medical Torture of Trans People in Its Prisons. The People It Caged Are Fighting Back</a></h2>
+<p class="byline">By Ryan S.</p>
+<a class="shot" href="https://kansascitydefender.com/aboltion/abolition/missouri-forced-detransition-trans-prisoners/" tabindex="-1" aria-hidden="true"><img src="../img/ed55f7ac1fcf885aaeb79136061ca5d585fe1032.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Da&#x27;Shae Breeze learned to write at Maya Angelou&#x27;s desk. Now she writes to The Defender from a solitary confinement cell as Missouri strips away her medical care. She spoke to us from inside state prison, alongside Jessica Hicklin, who spent 26 years in maximum security and won the federal ruling the state just defied. <a class="lozenge more" href="https://kansascitydefender.com/aboltion/abolition/missouri-forced-detransition-trans-prisoners/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://trentonjournal.com/support-us/">Donate</a></aside>
+<p class="source"><a href="https://www.trentonjournal.com/"><strong>Trenton Journal</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-10T15:54:01+00:00" data-pub="11:54 AM EDT">Mon, Aug 10 @ 11AM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a><a class="lozenge place" href="/search?place=Trenton&state=NJ">Trenton</a></p>
+<h2><a href="https://trentonjournal.com/quick-thinking-nursing-students-help-bring-wandering-dementia-patient-home/">Quick-thinking nursing students help bring wandering dementia patient home</a></h2>
+<p class="byline">By Maryanne Christiano-Mistretta</p>
+<a class="shot" href="https://trentonjournal.com/quick-thinking-nursing-students-help-bring-wandering-dementia-patient-home/" tabindex="-1" aria-hidden="true"><img src="../img/82035c417c373ad0fea25e05a3bf202f69270c37.jpg" alt="" width="480" height="600" loading="lazy" decoding="async"></a>
+<p>Earlier this summer, Melissa Matamoros was driving to class at Jersey College School of Nursing in Ewing when an unexpected encounter put her healthcare training into practice. Matamoros, a practical nursing student, arrived at the campus parking lot around 6:40 a.m. for her 7 a.m. class when an older man approached her holding a wallet. <a class="lozenge more" href="https://trentonjournal.com/quick-thinking-nursing-students-help-bring-wandering-dementia-patient-home/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://kansascitydefender.com/support-us">Donate</a></aside>
+<p class="source"><a href="https://kansascitydefender.com/"><strong>Kansas City Defender</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-06T17:41:49+00:00" data-pub="12:41 PM CDT">Thu, Aug 6 @ 12PM CDT</time><a class="lozenge place" href="/search?state=MO">Missouri</a><a class="lozenge place" href="/search?place=Kansas+City&state=MO">Kansas City</a></p>
+<h2><a href="https://kansascitydefender.com/technology-ai/kansas-city-data-center-tax-scheme/">Kansas City Killed the Data Center. The Tax Scheme It Was Feeding Is Still Alive</a></h2>
+<p class="byline">By Ryan S.</p>
+<a class="shot" href="https://kansascitydefender.com/technology-ai/kansas-city-data-center-tax-scheme/" tabindex="-1" aria-hidden="true"><img src="../img/df1f39cd1c1647f5209c2b5a7570ac982932c338.jpg" alt="" width="480" height="410" loading="lazy" decoding="async"></a>
+<p>A Miami fund bought a 126-year-old downtown building, quietly signed away the right to demolish it, then asked Kansas City for permission to demolish it anyway and build a 20-story data center. A leading legal scholar reviewed the paperwork The Defender obtained and called it by its name. This week, Kansas City said no. <a class="lozenge more" href="https://kansascitydefender.com/technology-ai/kansas-city-data-center-tax-scheme/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://kansascitydefender.com/support-us">Donate</a></aside>
+<p class="source"><a href="https://kansascitydefender.com/"><strong>Kansas City Defender</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-03T17:28:06+00:00" data-pub="12:28 PM CDT">Mon, Aug 3 @ 12PM CDT</time><a class="lozenge place" href="/search?state=MO">Missouri</a><a class="lozenge place" href="/search?place=Kansas+City&state=MO">Kansas City</a></p>
+<h2><a href="https://kansascitydefender.com/revolutionary-politics/if-we-must-die-a-black-august-tribute-from-the-heart-of-the-country/">If We Must Die: A Black August Tribute from the Heart of the Country</a></h2>
+<p class="byline">By Ryan S.</p>
+<a class="shot" href="https://kansascitydefender.com/revolutionary-politics/if-we-must-die-a-black-august-tribute-from-the-heart-of-the-country/" tabindex="-1" aria-hidden="true"><img src="../img/17c9cc8bcfe4cc1620e203557c3cff67e0f82ca1.jpg" alt="" width="480" height="303" loading="lazy" decoding="async"></a>
+<p>Born behind prison walls, carried across the diaspora, Black August is the month we count our martyrs and sharpen ourselves. McKay gave us the vow. Missouri and Kansas gave us the battleground. <a class="lozenge more" href="https://kansascitydefender.com/revolutionary-politics/if-we-must-die-a-black-august-tribute-from-the-heart-of-the-country/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://wordpress.org/support/forums/">Donate</a></aside>
+<p class="source"><a href="https://newyorkparrot.com/"><strong>New York Parrot</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-03T13:47:11+00:00" data-pub="9:47 AM EDT">Mon, Aug 3 @ 9AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=New+York+City&state=NY">New York City</a></p>
+<h2><a href="https://newyorkparrot.com/2026/08/us-based-diaspora-group-donates-vehicles-to-support-oyo-state-gubernatorial-candidate/">US-based diaspora group donates vehicles to support Oyo State gubernatorial candidate</a></h2>
+<p class="byline">By Mutiu Olawuyi</p>
+<a class="shot" href="https://newyorkparrot.com/2026/08/us-based-diaspora-group-donates-vehicles-to-support-oyo-state-gubernatorial-candidate/" tabindex="-1" aria-hidden="true"><img src="../img/99fd74991d7c013c3a330406b3e3b1cccdc4d4f2.jpg" alt="" width="300" height="270" loading="lazy" decoding="async"></a>
+<p>The Oriyomi Support Group USA has donated three branded campaign vehicles to Oriyomi Hamzat’s gubernatorial <a class="lozenge more" href="https://newyorkparrot.com/2026/08/us-based-diaspora-group-donates-vehicles-to-support-oyo-state-gubernatorial-candidate/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://afrolanews.org/donate">Donate</a></aside>
+<p class="source"><a href="https://afrolanews.org/"><strong>Afro-LA</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-02T07:02:48+00:00" data-pub="12:02 AM PDT">Sun, Aug 2 @ 12AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://afrolanews.org/2026/08/impact-of-incarceration-on-families/">The day I took my students to prison, my past walked in with me</a></h2>
+<p class="byline">By Dr. Vanda Seward</p>
+<p>A personal account of how a prison visit reveals the broader impact of incarceration on families, and why it should be viewed as a public health crisis. <a class="lozenge more" href="https://afrolanews.org/2026/08/impact-of-incarceration-on-families/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://kansascitydefender.com/support-us">Donate</a></aside>
+<p class="source"><a href="https://kansascitydefender.com/"><strong>Kansas City Defender</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-01T16:35:22+00:00" data-pub="11:35 AM CDT">Sat, Aug 1 @ 11AM CDT</time><a class="lozenge place" href="/search?state=MO">Missouri</a><a class="lozenge place" href="/search?place=Kansas+City&state=MO">Kansas City</a></p>
+<h2><a href="https://kansascitydefender.com/propagandaobserver/816-day-founder-bizzy-benton-plaza/">Put Some Respek on Bizzy’s Name: The Plaza, White Media, and the “Inaugural” Theft of 816 Day</a></h2>
+<p class="byline">By Ryan S.</p>
+<a class="shot" href="https://kansascitydefender.com/propagandaobserver/816-day-founder-bizzy-benton-plaza/" tabindex="-1" aria-hidden="true"><img src="../img/4a89f588902c15e1c26341247ebc5c0048535b14.jpg" alt="" width="480" height="470" loading="lazy" decoding="async"></a>
+<p>Black entrepreneur and widely beloved Promoter Brian &quot;Bizzy&quot; Benton founded 816 Day in 2017. Now in 2026 KCTV5 calls the event &quot;inaugural.&quot; Black Kansas City has a lot to say. <a class="lozenge more" href="https://kansascitydefender.com/propagandaobserver/816-day-founder-bizzy-benton-plaza/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://kansascitydefender.com/support-us">Donate</a></aside>
+<p class="source"><a href="https://kansascitydefender.com/"><strong>Kansas City Defender</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-31T22:16:40+00:00" data-pub="5:16 PM CDT">Fri, Jul 31 @ 5PM CDT</time><a class="lozenge place" href="/search?state=MO">Missouri</a><a class="lozenge place" href="/search?place=Kansas+City&state=MO">Kansas City</a></p>
+<h2><a href="https://kansascitydefender.com/politics/americas-most-important-election-the-peoples-ballot-is-here/">📰 America’s Most Important Election? The People’s Ballot Is Here.</a></h2>
+<p class="byline">By KC Defender Staff</p>
+<a class="shot" href="https://kansascitydefender.com/politics/americas-most-important-election-the-peoples-ballot-is-here/" tabindex="-1" aria-hidden="true"><img src="../img/052f62f2c22c74724f90e24635aa2fec41154475.jpg" alt="" width="480" height="480" loading="lazy" decoding="async"></a>
+<p>The Defender&#x27;s 2026 election guide covers every amendment, every race, and every dollar, in plain language, before Tuesday. <a class="lozenge more" href="https://kansascitydefender.com/politics/americas-most-important-election-the-peoples-ballot-is-here/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://kansascitydefender.com/support-us">Donate</a></aside>
+<p class="source"><a href="https://kansascitydefender.com/"><strong>Kansas City Defender</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-31T17:46:51+00:00" data-pub="12:46 PM CDT">Fri, Jul 31 @ 12PM CDT</time><a class="lozenge place" href="/search?state=MO">Missouri</a><a class="lozenge place" href="/search?place=Kansas+City&state=MO">Kansas City</a></p>
+<h2><a href="https://kansascitydefender.com/politics/wyandotte-county-ballots-returned-undeliverable-primary/">Major Voter Disenfranchisement in Kansas? Black and Latino Majority County Mailed Ballots With a Return Address the Post Office Won’t Deliver To</a></h2>
+<p class="byline">By Ryan S.</p>
+<a class="shot" href="https://kansascitydefender.com/politics/wyandotte-county-ballots-returned-undeliverable-primary/" tabindex="-1" aria-hidden="true"><img src="../img/38dfcbcd993a3ed815124416430f348b4003ae1f.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Voters in a Black and brown majority county are finding their completed ballots back in their own mailboxes, sealed and uncounted, four days before the Kansas primary. The county printed a retired post office box on the return envelope and the Postal Service stopped delivering to it. Nobody will say how many votes it hit. <a class="lozenge more" href="https://kansascitydefender.com/politics/wyandotte-county-ballots-returned-undeliverable-primary/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.afampointofview.com/">Support</a></aside>
+<p class="source"><a href="https://www.afampointofview.com/"><strong>An African-American Point of View (Point of View)</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-30T18:35:35+00:00" data-pub="2:35 PM EDT">Thu, Jul 30 @ 2PM EDT</time><a class="lozenge place" href="/search?state=MA">Massachusetts</a><a class="lozenge place" href="/search?place=Springfield&state=MA">Springfield</a></p>
+<h2><a href="https://afampointofview.com/dr-yolanda-marrow-dnp-rn-joins-cooley-dickinson-hospital-as-nursing-director-for-the-emergency-department/">Dr. Yolanda Marrow, DNP, RN Joins Cooley Dickinson Hospital as Nursing Director for the Emergency Department</a></h2>
+<p class="byline">By Af-Am Point of View</p>
+<p>Dr. Marrow brings more than 25 years of progressive nursing leadership experience with expertise in emergency and trauma care, quality and safety, regulatory excellence, and clinical operations. <a class="lozenge more" href="https://afampointofview.com/dr-yolanda-marrow-dnp-rn-joins-cooley-dickinson-hospital-as-nursing-director-for-the-emergency-department/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.afampointofview.com/">Support</a></aside>
+<p class="source"><a href="https://www.afampointofview.com/"><strong>An African-American Point of View (Point of View)</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-30T18:32:58+00:00" data-pub="2:32 PM EDT">Thu, Jul 30 @ 2PM EDT</time><a class="lozenge place" href="/search?state=MA">Massachusetts</a><a class="lozenge place" href="/search?place=Springfield&state=MA">Springfield</a></p>
+<h2><a href="https://afampointofview.com/it-will-take-bold-leadership-and-a-united-community/">IT WILL TAKE BOLD LEADERSHIP AND A UNITED COMMUNITY</a></h2>
+<p class="byline">By Af-Am Point of View</p>
+<p>At a meeting between myself, State Representative Bud Williams and Springfield City Councilor Justin Hurst, I raised the topic of gun violence that I had recently discussed with Charles Stokes, who has become a dominant voice in Springfield’s Black community. <a class="lozenge more" href="https://afampointofview.com/it-will-take-bold-leadership-and-a-united-community/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://afrolanews.org/donate">Donate</a></aside>
+<p class="source"><a href="https://afrolanews.org/"><strong>Afro-LA</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-29T19:46:20+00:00" data-pub="12:46 PM PDT">Wed, Jul 29 @ 12PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://afrolanews.org/2026/07/black-owned-businesses-westside-los-angeles/">Looking for Black-owned businesses on L.A.’s Westside? Start with these</a></h2>
+<p class="byline">By Marina Peña</p>
+<p>Meet five Black-owned businesses on L.A.’s Westside, from Culver City to Santa Monica, offering books, coffee, cookies, skincare and more. <a class="lozenge more" href="https://afrolanews.org/2026/07/black-owned-businesses-westside-los-angeles/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge" href="../tags/college.html">College</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://subscribepage.io/IvgmqZ">Subscribe</a></aside>
+<p class="source"><a href="https://hunewsservice.com/about-us/"><strong>Howard University News Service</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-16T02:22:00+00:00" data-pub="10:22 PM EDT">Wed, Jul 15 @ 10PM EDT</time><a class="lozenge place" href="/search?state=DC">Washington, D.C.</a><a class="lozenge place" href="/search?place=Washington&state=DC">Washington</a></p>
+<h2><a href="https://hunewsservice.com/race/true-reformer-celebrates-123-years-of-community-and-collective-progress/">True Reformer Celebrates 123 Years of Community and Collective Progress</a></h2>
+<p class="byline">By Nailah Williams</p>
+<a class="shot" href="https://hunewsservice.com/race/true-reformer-celebrates-123-years-of-community-and-collective-progress/" tabindex="-1" aria-hidden="true"><img src="../img/d89cfbae3dd2cebf82f5228841af63b129561411.jpg" alt="" width="480" height="480" loading="lazy" decoding="async"></a>
+<p>The grand, five-story True Reformer Building is one of the most significant structures on the U Street Heritage Trail. It stands out among nearby historic landmarks like Lee’s Flower Shop, Ben’s Chili Bowl and the Lincoln Theatre. Celebrating its 123rd anniversary this week, the building represents more than a century of history, resilience and community leadership “All of these historic, Black-ow <a class="lozenge more" href="https://hunewsservice.com/race/true-reformer-celebrates-123-years-of-community-and-collective-progress/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://wordpress.org/support/forums/">Donate</a></aside>
+<p class="source"><a href="https://newyorkparrot.com/"><strong>New York Parrot</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-10T13:19:26+00:00" data-pub="9:19 AM EDT">Fri, Jul 10 @ 9AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=New+York+City&state=NY">New York City</a></p>
+<h2><a href="https://newyorkparrot.com/2026/07/anti-bds-coalition-launches-unbreakable-bond-investment-elects-soraya-deen-president/">Anti-BDS coalition launches Unbreakable Bond Investment, elects Soraya Deen President</a></h2>
+<p class="byline">By Sheikh Musa Drammeh</p>
+<a class="shot" href="https://newyorkparrot.com/2026/07/anti-bds-coalition-launches-unbreakable-bond-investment-elects-soraya-deen-president/" tabindex="-1" aria-hidden="true"><img src="../img/e1d8092d3000d08338219da8b47254d0fa0f2ba8.jpg" alt="" width="480" height="720" loading="lazy" decoding="async"></a>
+<p>Anti-BDS activists launch the Unbreakable Bond Investment Initiative in New York, electing Soraya Deen as president to promote investment, dialogue and Israeli-Palestinian cooperation. <a class="lozenge more" href="https://newyorkparrot.com/2026/07/anti-bds-coalition-launches-unbreakable-bond-investment-elects-soraya-deen-president/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://wordpress.org/support/forums/">Donate</a></aside>
+<p class="source"><a href="https://newyorkparrot.com/"><strong>New York Parrot</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-06T01:27:24+00:00" data-pub="9:27 PM EDT">Sun, Jul 5 @ 9PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=New+York+City&state=NY">New York City</a></p>
 <h2><a href="https://newyorkparrot.com/2026/07/america250-problems-america-must-stop-calling-permanent/">America@250: Problems America Must Stop Calling Permanent</a></h2>
-<p class="byline"><small>By muslimmediacorporation</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://wordpress.org/support/forums/">Donate</a></span></p>
+<p class="byline">By muslimmediacorporation</p>
 <a class="shot" href="https://newyorkparrot.com/2026/07/america250-problems-america-must-stop-calling-permanent/" tabindex="-1" aria-hidden="true"><img src="../img/d59a838c312f8ff247d823f72c5237aac4c7f8fa.jpg" alt="" width="480" height="480" loading="lazy" decoding="async"></a>
-<p>Lawrence Seiler argues that America at 250 must confront food insecurity, obesity, unsafe housing, low wages and public health failures through dignity-centered reform.</p>
-<p class="more"><a href="https://newyorkparrot.com/2026/07/america250-problems-america-must-stop-calling-permanent/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Lawrence Seiler argues that America at 250 must confront food insecurity, obesity, unsafe housing, low wages and public health failures through dignity-centered reform. <a class="lozenge more" href="https://newyorkparrot.com/2026/07/america250-problems-america-must-stop-calling-permanent/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-07-04T18:27:42+00:00" data-pub="2:27 PM EDT">Saturday, July 4, 2026 at 2:27 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>NY / New York City / <a href="https://newyorkparrot.com/">New York Parrot</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://wordpress.org/support/forums/">Donate</a></aside>
+<p class="source"><a href="https://newyorkparrot.com/"><strong>New York Parrot</strong></a></p>
+<p class="whenwhere"><time datetime="2026-07-04T18:27:42+00:00" data-pub="2:27 PM EDT">Sat, Jul 4 @ 2PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=New+York+City&state=NY">New York City</a></p>
 <h2><a href="https://newyorkparrot.com/2026/07/muslim-interfaith-coalition-to-launch-anti-bds-investment-campaign-in-new-york/">Muslim, interfaith coalition to launch anti-BDS investment campaign in New York</a></h2>
-<p class="byline"><small>By muslimmediacorporation</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://wordpress.org/support/forums/">Donate</a></span></p>
+<p class="byline">By muslimmediacorporation</p>
 <a class="shot" href="https://newyorkparrot.com/2026/07/muslim-interfaith-coalition-to-launch-anti-bds-investment-campaign-in-new-york/" tabindex="-1" aria-hidden="true"><img src="../img/7b10f46173a2608c66adc2aa5d467ff2d1e2faac.jpg" alt="" width="447" height="303" loading="lazy" decoding="async"></a>
-<p>The Unbreakable Bond Coalition launches a global Anti-BDS Investment Campaign in New York, calling for Muslim-Jewish partnership, coexistence and peace through investment.</p>
-<p class="more"><a href="https://newyorkparrot.com/2026/07/muslim-interfaith-coalition-to-launch-anti-bds-investment-campaign-in-new-york/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-07-01T19:24:07+00:00" data-pub="3:24 PM EDT">Wednesday, July 1, 2026 at 3:24 PM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>NY / New York City / <a href="https://newyorkparrot.com/">New York Parrot</a></small></p>
-<h2><a href="https://newyorkparrot.com/2026/07/beyond-infrastructure-and-jobs-experts-say-africas-development-story-needs-a-human-wellbeing-strategy/">Beyond Infrastructure and Jobs: Experts Say Africa’s Development Story Needs a Human Wellbeing Strategy</a></h2>
-<p class="byline"><small>By New York Parrot</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://wordpress.org/support/forums/">Donate</a></span></p>
-<p>By Ridwan Oyenuga For decades, discussions about Africa’s development have focused on infrastructure, trade, technology,</p>
-<p class="more"><a href="https://newyorkparrot.com/2026/07/beyond-infrastructure-and-jobs-experts-say-africas-development-story-needs-a-human-wellbeing-strategy/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-07-01T13:43:13+00:00" data-pub="9:43 AM EDT">Wednesday, July 1, 2026 at 9:43 AM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>NY / New York City / <a href="https://newyorkparrot.com/">New York Parrot</a></small></p>
-<h2><a href="https://newyorkparrot.com/2026/07/america-must-build-systems-that-care-before-people-break/">America Must Build Systems That Care Before People Break</a></h2>
-<p class="byline"><small>By muslimmediacorporation</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://wordpress.org/support/forums/">Donate</a></span></p>
-<a class="shot" href="https://newyorkparrot.com/2026/07/america-must-build-systems-that-care-before-people-break/" tabindex="-1" aria-hidden="true"><img src="../img/eaed741102889d2c16039a12a0eece4b2d7b6a7a.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Lawrence Seiler argues that America must strengthen disability care, juvenile rehabilitation, caregiver support, and justice systems so vulnerable people receive help before crisis, punishment, or institutional failure.</p>
-<p class="more"><a href="https://newyorkparrot.com/2026/07/america-must-build-systems-that-care-before-people-break/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-06-30T22:14:01+00:00" data-pub="6:14 PM EDT">Tuesday, June 30, 2026 at 6:14 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>NY / New York City / <a href="https://newyorkparrot.com/">New York Parrot</a></small></p>
-<h2><a href="https://newyorkparrot.com/2026/06/open-primaries-lawsuit-targets-ny-governor-nyc-mayor/">Open primaries lawsuit targets NY Governor, NYC Mayor</a></h2>
-<p class="byline"><small>By muslimmediacorporation</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://wordpress.org/support/forums/">Donate</a></span></p>
-<p>New York governor and NYC mayor face lawsuit over an open primaries proposal as Charter Revision Commission seeks to place election reform on the 2026 ballot.</p>
-<p class="more"><a href="https://newyorkparrot.com/2026/06/open-primaries-lawsuit-targets-ny-governor-nyc-mayor/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-06-28T23:09:10+00:00" data-pub="7:09 PM EDT">Sunday, June 28, 2026 at 7:09 PM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>NY / New York City / <a href="https://newyorkparrot.com/">New York Parrot</a></small></p>
-<h2><a href="https://newyorkparrot.com/2026/06/student-leader-singh-honored-for-youth-advocacy-mental-health-awareness-in-queens/">Student leader Singh honored for youth advocacy, mental health awareness in Queens</a></h2>
-<p class="byline"><small>By muslimmediacorporation</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://wordpress.org/support/forums/">Donate</a></span></p>
-<a class="shot" href="https://newyorkparrot.com/2026/06/student-leader-singh-honored-for-youth-advocacy-mental-health-awareness-in-queens/" tabindex="-1" aria-hidden="true"><img src="../img/171f8659f58cd8ed8ccddef908cac501ee50e32e.jpg" alt="" width="480" height="301" loading="lazy" decoding="async"></a>
-<p>Student leader Jaskaran Singh is honored in Queens for youth advocacy, mental health awareness, mentorship and community leadership.</p>
-<p class="more"><a href="https://newyorkparrot.com/2026/06/student-leader-singh-honored-for-youth-advocacy-mental-health-awareness-in-queens/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-06-24T21:00:46+00:00" data-pub="2:00 PM PDT">Wednesday, June 24, 2026 at 2:00 PM PDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>CA / Los Angeles / <a href="https://afrolanews.org/">Afro-LA</a></small></p>
-<h2><a href="https://afrolanews.org/2026/06/doulas-pay-for-billing-help/">Medi-Cal program creates billing headache for doulas</a></h2>
-<p class="byline"><small>By Elizabeth Moss</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://afrolanews.org/donate">Donate</a></span></p>
-<p>California doulas face billing struggles with a new Medi-Cal program, leading some to third-party services for administrative help.</p>
-<p class="more"><a href="https://afrolanews.org/2026/06/doulas-pay-for-billing-help/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-06-19T06:07:46+00:00" data-pub="11:07 PM PDT">Thursday, June 18, 2026 at 11:07 PM PDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>CA / Los Angeles / <a href="https://afrolanews.org/">Afro-LA</a></small></p>
-<h2><a href="https://afrolanews.org/2026/06/inglewood-high-school-turnaround-iusd-fired-principal-lamar-collins/">An IUSD high school is turning a corner. The district removed the principal. Why?</a></h2>
-<p class="byline"><small>By Dana Amihere</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://afrolanews.org/donate">Donate</a></span></p>
-<p>Inglewood High Principal Dr. Lamar Collins improved test scores and curbed violence, but he isn&#x27;t coming back next year.</p>
-<p class="more"><a href="https://afrolanews.org/2026/06/inglewood-high-school-turnaround-iusd-fired-principal-lamar-collins/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-06-18T15:22:11+00:00" data-pub="11:22 AM EDT">Thursday, June 18, 2026 at 11:22 AM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>NY / New York City / <a href="https://newyorkparrot.com/">New York Parrot</a></small></p>
-<h2><a href="https://newyorkparrot.com/2026/06/us-embassy-in-dakar-marks-americas-250th-anniversary-with-call-for-partnership-democracy-and-shared-progress/">US Embassy in Dakar marks America’s 250th anniversary with call for partnership, democracy and shared progress</a></h2>
-<p class="byline"><small>By Sheikh Musa Drammeh</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://wordpress.org/support/forums/">Donate</a></span></p>
-<a class="shot" href="https://newyorkparrot.com/2026/06/us-embassy-in-dakar-marks-americas-250th-anniversary-with-call-for-partnership-democracy-and-shared-progress/" tabindex="-1" aria-hidden="true"><img src="../img/6eb40f1624e5931d6dc8d83a07c6f3284972aa07.jpg" alt="" width="300" height="227" loading="lazy" decoding="async"></a>
-<p>U.S. Embassy in Dakar marks America’s 250th anniversary with diplomats, Senegalese officials and community guests, celebrating U.S.-Senegal friendship and shared progress.</p>
-<p class="more"><a href="https://newyorkparrot.com/2026/06/us-embassy-in-dakar-marks-americas-250th-anniversary-with-call-for-partnership-democracy-and-shared-progress/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-06-18T14:37:21+00:00" data-pub="10:37 AM EDT">Thursday, June 18, 2026 at 10:37 AM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>NY / New York City / <a href="https://newyorkparrot.com/">New York Parrot</a></small></p>
-<h2><a href="https://newyorkparrot.com/2026/06/nyc-public-schools-launches-district-working-groups-to-build-stronger-more-integrated-schools/">NYC public schools launches district working groups to build stronger, more integrated schools</a></h2>
-<p class="byline"><small>By muslimmediacorporation</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://wordpress.org/support/forums/">Donate</a></span></p>
-<p>By Mutiu Olawuyi New York City Public Schools Chancellor Kamar Samuels has launched new District</p>
-<p class="more"><a href="https://newyorkparrot.com/2026/06/nyc-public-schools-launches-district-working-groups-to-build-stronger-more-integrated-schools/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-06-14T21:36:03+00:00" data-pub="5:36 PM EDT">Sunday, June 14, 2026 at 5:36 PM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>NY / New York City / <a href="https://newyorkparrot.com/">New York Parrot</a></small></p>
-<h2><a href="https://newyorkparrot.com/2026/06/employment-for-all-disability-must-not-mean-exclusion/">Employment for All: Disability Must Not Mean Exclusion</a></h2>
-<p class="byline"><small>By Mutiu Olawuyi</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://wordpress.org/support/forums/">Donate</a></span></p>
-<a class="shot" href="https://newyorkparrot.com/2026/06/employment-for-all-disability-must-not-mean-exclusion/" tabindex="-1" aria-hidden="true"><img src="../img/de63fe9806199b456a104041683f6e55d4670447.jpg" alt="" width="300" height="169" loading="lazy" decoding="async"></a>
-<p>By Lawrence Seiler New York Parrot Journalist | Abled and on Air Work is</p>
-<p class="more"><a href="https://newyorkparrot.com/2026/06/employment-for-all-disability-must-not-mean-exclusion/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-06-10T20:32:36+00:00" data-pub="4:32 PM EDT">Wednesday, June 10, 2026 at 4:32 PM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>NY / New York City / <a href="https://newyorkparrot.com/">New York Parrot</a></small></p>
-<h2><a href="https://newyorkparrot.com/2026/06/us-state-department-dismantles-birth-tourism-networks-across-3-regions/">US State Department dismantles birth tourism networks across 3 regions</a></h2>
-<p class="byline"><small>By Sheikh Musa Drammeh</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://wordpress.org/support/forums/">Donate</a></span></p>
-<p>The U.S. Department of State says it has shut down several birth tourism operations across</p>
-<p class="more"><a href="https://newyorkparrot.com/2026/06/us-state-department-dismantles-birth-tourism-networks-across-3-regions/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-06-10T20:28:28+00:00" data-pub="4:28 PM EDT">Wednesday, June 10, 2026 at 4:28 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>NY / New York City / <a href="https://newyorkparrot.com/">New York Parrot</a></small></p>
-<h2><a href="https://newyorkparrot.com/2026/06/un-conference-in-new-york-pushes-disability-rights-from-access-to-leadership/">UN Conference in New York pushes disability rights from access to leadership</a></h2>
-<p class="byline"><small>By muslimmediacorporation</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://wordpress.org/support/forums/">Donate</a></span></p>
-<a class="shot" href="https://newyorkparrot.com/2026/06/un-conference-in-new-york-pushes-disability-rights-from-access-to-leadership/" tabindex="-1" aria-hidden="true"><img src="../img/5d1af7dd7c9362f1e704758cee512470c227266a.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>UN disability conference in New York focuses on advancing rights, accessibility, protection and leadership for persons with disabilities worldwide.</p>
-<p class="more"><a href="https://newyorkparrot.com/2026/06/un-conference-in-new-york-pushes-disability-rights-from-access-to-leadership/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-06-09T23:10:36+00:00" data-pub="4:10 PM PDT">Tuesday, June 9, 2026 at 4:10 PM PDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>CA / Los Angeles / <a href="https://afrolanews.org/">Afro-LA</a></small></p>
-<h2><a href="https://afrolanews.org/2026/06/state-budget-cuts-threaten-market-match/">State budget cuts threaten lifeline food program for residents, farmers</a></h2>
-<p class="byline"><small>By Eliza Partika</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://afrolanews.org/donate">Donate</a></span></p>
-<p>Eliminating Market Match could undo years of trust-building and community outreach, with potential long-term health consequences.</p>
-<p class="more"><a href="https://afrolanews.org/2026/06/state-budget-cuts-threaten-market-match/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-06-03T21:35:45+00:00" data-pub="5:35 PM EDT">Wednesday, June 3, 2026 at 5:35 PM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>NY / New York City / <a href="https://newyorkparrot.com/">New York Parrot</a></small></p>
-<h2><a href="https://newyorkparrot.com/2026/06/nypd-reports-historic-drop-in-murders-shootings-as-city-enters-summer/">NYPD reports historic drop in murders, shootings as City enters Summer</a></h2>
-<p class="byline"><small>By muslimmediacorporation</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://wordpress.org/support/forums/">Donate</a></span></p>
-<p>NYPD reports record-low murders and shootings for the first five months of 2026, with major crime down citywide, transit and public housing gains, and Bronx reductions leading the city.</p>
-<p class="more"><a href="https://newyorkparrot.com/2026/06/nypd-reports-historic-drop-in-murders-shootings-as-city-enters-summer/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-05-31T06:37:33+00:00" data-pub="2:37 AM EDT">Sunday, May 31, 2026 at 2:37 AM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>NY / New York City / <a href="https://newyorkparrot.com/">New York Parrot</a></small></p>
-<h2><a href="https://newyorkparrot.com/2026/05/staten-island-honors-israeli-consul-general-in-historic-visit/">Staten Island honors Israeli Consul General in historic visit</a></h2>
-<p class="byline"><small>By muslimmediacorporation</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://wordpress.org/support/forums/">Donate</a></span></p>
-<a class="shot" href="https://newyorkparrot.com/2026/05/staten-island-honors-israeli-consul-general-in-historic-visit/" tabindex="-1" aria-hidden="true"><img src="../img/47feadcdad0de3b99930d0c2d9fabcb826559633.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Israeli Consul General Ofir Akunis makes a borough-wide Staten Island visit, meeting first responders, civic leaders and Jewish community institutions to strengthen ties with Israel.</p>
-<p class="more"><a href="https://newyorkparrot.com/2026/05/staten-island-honors-israeli-consul-general-in-historic-visit/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-05-30T08:32:24+00:00" data-pub="4:32 AM EDT">Saturday, May 30, 2026 at 4:32 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>NY / New York City / <a href="https://newyorkparrot.com/">New York Parrot</a></small></p>
-<h2><a href="https://newyorkparrot.com/2026/05/mamdani-appoints-edwin-raymond-as-new-york-city-sheriff/">Mamdani appoints Edwin Raymond as New York City Sheriff</a></h2>
-<p class="byline"><small>By Sheikh Musa Drammeh</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://wordpress.org/support/forums/">Donate</a></span></p>
-<p>Mayor Zohran Mamdani appoints retired NYPD lieutenant Edwin Raymond as New York City Sheriff, citing his record on public safety, accountability and trust.</p>
-<p class="more"><a href="https://newyorkparrot.com/2026/05/mamdani-appoints-edwin-raymond-as-new-york-city-sheriff/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-05-29T00:09:09+00:00" data-pub="8:09 PM EDT">Thursday, May 28, 2026 at 8:09 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>NY / New York City / <a href="https://newyorkparrot.com/">New York Parrot</a></small></p>
-<h2><a href="https://newyorkparrot.com/2026/05/mala-invites-muslim-americans-to-tell-their-stories-for-americas-250th-anniversary/">MALA invites Muslim Americans to tell their stories for America’s 250th anniversary</a></h2>
-<p class="byline"><small>By Sheikh Musa Drammeh</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://wordpress.org/support/forums/">Donate</a></span></p>
-<a class="shot" href="https://newyorkparrot.com/2026/05/mala-invites-muslim-americans-to-tell-their-stories-for-americas-250th-anniversary/" tabindex="-1" aria-hidden="true"><img src="../img/970e587992318faca8edf122c8b47d03b2552c65.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>MALA invites Muslim Americans to share stories of liberty, legacy, belonging and contribution through a national creative contest for America’s 250th anniversary.</p>
-<p class="more"><a href="https://newyorkparrot.com/2026/05/mala-invites-muslim-americans-to-tell-their-stories-for-americas-250th-anniversary/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-05-28T23:20:41+00:00" data-pub="7:20 PM EDT">Thursday, May 28, 2026 at 7:20 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>NY / New York City / <a href="https://newyorkparrot.com/">New York Parrot</a></small></p>
-<h2><a href="https://newyorkparrot.com/2026/05/nyc-charter-commission-moves-open-primaries-proposal-toward-2026-ballot/">NYC Charter Commission moves open primaries proposal toward 2026 ballot</a></h2>
-<p class="byline"><small>By Sheikh Musa Drammeh</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://wordpress.org/support/forums/">Donate</a></span></p>
-<p>NYC Charter Revision Commission advances a proposal for open primaries and nonpartisan general elections for mayor and other local offices on the 2026 ballot.</p>
-<p class="more"><a href="https://newyorkparrot.com/2026/05/nyc-charter-commission-moves-open-primaries-proposal-toward-2026-ballot/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-05-22T07:12:31+00:00" data-pub="3:12 AM EDT">Friday, May 22, 2026 at 3:12 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>NY / New York City / <a href="https://newyorkparrot.com/">New York Parrot</a></small></p>
-<h2><a href="https://newyorkparrot.com/2026/05/fordham-professor-says-80th-birthday-silence-reveals-corporate-university-culture/">Fordham Professor says 80th birthday silence reveals “corporate university” culture</a></h2>
-<p class="byline"><small>By Sheikh Musa Drammeh</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://wordpress.org/support/forums/">Donate</a></span></p>
-<a class="shot" href="https://newyorkparrot.com/2026/05/fordham-professor-says-80th-birthday-silence-reveals-corporate-university-culture/" tabindex="-1" aria-hidden="true"><img src="../img/9786fb24879f5c9fb91ec1ea931824557881ea52.jpg" alt="" width="480" height="640" loading="lazy" decoding="async"></a>
-<p>A longtime Fordham professor reflects on turning 80 without institutional recognition, raising questions about loyalty, legacy and the corporate culture of universities.</p>
-<p class="more"><a href="https://newyorkparrot.com/2026/05/fordham-professor-says-80th-birthday-silence-reveals-corporate-university-culture/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-05-21T20:04:55+00:00" data-pub="4:04 PM EDT">Thursday, May 21, 2026 at 4:04 PM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>NY / New York City / <a href="https://newyorkparrot.com/">New York Parrot</a></small></p>
-<h2><a href="https://newyorkparrot.com/2026/05/jewish-leaders-join-interfaith-vigil-for-san-diego-mosque-victims-call-for-protection-of-sacred-spaces/">Jewish leaders join interfaith vigil for San Diego Mosque victims, call for protection of sacred spaces</a></h2>
-<p class="byline"><small>By muslimmediacorporation</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://wordpress.org/support/forums/">Donate</a></span></p>
-<a class="shot" href="https://newyorkparrot.com/2026/05/jewish-leaders-join-interfaith-vigil-for-san-diego-mosque-victims-call-for-protection-of-sacred-spaces/" tabindex="-1" aria-hidden="true"><img src="../img/ddf1066542eb792f10f08cc3ec7ee17c06c45461.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>JCRC-NY and UJA-Federation join an interfaith vigil mourning victims of the San Diego mosque attack, calling for religious freedom, solidarity and dignity.</p>
-<p class="more"><a href="https://newyorkparrot.com/2026/05/jewish-leaders-join-interfaith-vigil-for-san-diego-mosque-victims-call-for-protection-of-sacred-spaces/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-05-20T16:55:51+00:00" data-pub="12:55 PM EDT">Wednesday, May 20, 2026 at 12:55 PM EDT</time></small></p>
-<p><small>NY / New York City / <a href="https://newyorkparrot.com/">New York Parrot</a></small></p>
-<h2><a href="https://newyorkparrot.com/2026/05/china-says-xi-trump-summit-sets-new-path-for-strategic-stability/">China says Xi-Trump Summit sets new path for strategic stability</a></h2>
-<p class="byline"><small>By Mutiu Olawuyi</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://wordpress.org/support/forums/">Donate</a></span></p>
-<p>Chinese Foreign Minister Wang Yi has said the recent summit between President Xi Jinping and</p>
-<p class="more"><a href="https://newyorkparrot.com/2026/05/china-says-xi-trump-summit-sets-new-path-for-strategic-stability/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-05-19T16:18:56+00:00" data-pub="12:18 PM EDT">Tuesday, May 19, 2026 at 12:18 PM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>NY / New York City / <a href="https://newyorkparrot.com/">New York Parrot</a></small></p>
-<h2><a href="https://newyorkparrot.com/2026/05/jerusalem-interfaith-center-condemns-san-diego-mosque-killings-calls-for-healing-and-shared-humanity/">Jerusalem Interfaith Center condemns San Diego mosque killings, calls for healing and shared humanity</a></h2>
-<p class="byline"><small>By muslimmediacorporation</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://wordpress.org/support/forums/">Donate</a></span></p>
-<p>Jerusalem Interfaith Center mourns victims of the reported San Diego Mosque killings, condemning hatred and calling for healing, compassion and interfaith solidarity.</p>
-<p class="more"><a href="https://newyorkparrot.com/2026/05/jerusalem-interfaith-center-condemns-san-diego-mosque-killings-calls-for-healing-and-shared-humanity/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-05-14T22:14:35+00:00" data-pub="6:14 PM EDT">Thursday, May 14, 2026 at 6:14 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>DC / Washington / <a href="https://hunewsservice.com/about-us/">Howard University News Service</a></small></p>
-<h2><a href="https://hunewsservice.com/features/targeted-or-neglected-the-high-separation-of-ward-8-families/">Targeted or Neglected? The High Separation of Ward 8 Families</a></h2>
-<p class="byline"><small>By Tatiana Allen</small><span class="aside"><a class="lozenge" href="../tags/college.html">College</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://subscribepage.io/IvgmqZ">Subscribe</a></span></p>
-<a class="shot" href="https://hunewsservice.com/features/targeted-or-neglected-the-high-separation-of-ward-8-families/" tabindex="-1" aria-hidden="true"><img src="../img/5d801bb2ca72433466b4648901c569e6478fe2e0.jpg" alt="" width="320" height="240" loading="lazy" decoding="async"></a>
-<p>WASHINGTON — Agencies like DC’s Child &amp; Family Services investigate reports of abuse and aim to protect the well-being of children, but some believe it might be instilling fear of separation into the families it is obligated to protect. “It was very stressful, very embarrassing. I felt like I was under a microscope and judged,” says Amy Wilkins-Allen, single mom of three, who was placed under inve</p>
-<p class="more"><a href="https://hunewsservice.com/features/targeted-or-neglected-the-high-separation-of-ward-8-families/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-05-12T20:03:56+00:00" data-pub="4:03 PM EDT">Tuesday, May 12, 2026 at 4:03 PM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>DC / Washington / <a href="https://hunewsservice.com/about-us/">Howard University News Service</a></small></p>
-<h2><a href="https://hunewsservice.com/news/doulas-and-midwives-aiding-the-fight-against-black-maternal-mortality/">Doulas and Midwives — Aiding the Fight Against Black Maternal Mortality</a></h2>
-<p class="byline"><small>By Khariss Bender</small><span class="aside"><a class="lozenge" href="../tags/college.html">College</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://subscribepage.io/IvgmqZ">Subscribe</a></span></p>
-<a class="shot" href="https://hunewsservice.com/news/doulas-and-midwives-aiding-the-fight-against-black-maternal-mortality/" tabindex="-1" aria-hidden="true"><img src="../img/df9a9e94d24c9ad1cafb9f047416e9e18853967a.jpg" alt="" width="480" height="480" loading="lazy" decoding="async"></a>
-<p>Maternal mortality rates are dropping—except for Black women, who continue to face alarming disparities in maternal health outcomes, according to the Policy Center for Maternal Mental Health. Studies show this is due to the systemic disparities affecting maternal health outcomes HU NewsVision Reporter Khariss Bender takes a look at how doulas and midwives are working to change that.</p>
-<p class="more"><a href="https://hunewsservice.com/news/doulas-and-midwives-aiding-the-fight-against-black-maternal-mortality/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-05-12T19:55:44+00:00" data-pub="3:55 PM EDT">Tuesday, May 12, 2026 at 3:55 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>DC / Washington / <a href="https://hunewsservice.com/about-us/">Howard University News Service</a></small></p>
-<h2><a href="https://hunewsservice.com/news/power-of-the-press-how-the-white-house-correspondents-association-underscores-its-mission/">Power of the Press: How the White House Correspondents’ Association Underscores Its Mission</a></h2>
-<p class="byline"><small>By Khariss Bender</small><span class="aside"><a class="lozenge" href="../tags/college.html">College</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://subscribepage.io/IvgmqZ">Subscribe</a></span></p>
-<a class="shot" href="https://hunewsservice.com/news/power-of-the-press-how-the-white-house-correspondents-association-underscores-its-mission/" tabindex="-1" aria-hidden="true"><img src="../img/1daadf7e957105997102027b1910bfb116689290.jpg" alt="" width="480" height="480" loading="lazy" decoding="async"></a>
-<p>The White House Correspondents’ Association is best known for its annual dinner, but its impact goes far beyond the ballroom. NewsVision reporter Khariss Bender takes a closer look at how the organization has been protecting press freedom and shaping the future of journalism for more than a century.</p>
-<p class="more"><a href="https://hunewsservice.com/news/power-of-the-press-how-the-white-house-correspondents-association-underscores-its-mission/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-05-12T19:11:24+00:00" data-pub="3:11 PM EDT">Tuesday, May 12, 2026 at 3:11 PM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>DC / Washington / <a href="https://hunewsservice.com/about-us/">Howard University News Service</a></small></p>
-<h2><a href="https://hunewsservice.com/multimedia/from-someone-elses-chair-to-his-own-a-dc-barber-is-fading-into-the-limelight/">From Someone Else’s Chair to his Own: A DC Barber is “Fading” Into the Limelight</a></h2>
-<p class="byline"><small>By Jennifer Thomas</small><span class="aside"><a class="lozenge" href="../tags/college.html">College</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://subscribepage.io/IvgmqZ">Subscribe</a></span></p>
-<a class="shot" href="https://hunewsservice.com/multimedia/from-someone-elses-chair-to-his-own-a-dc-barber-is-fading-into-the-limelight/" tabindex="-1" aria-hidden="true"><img src="../img/e2a3b24be1225c7aaceece22db76b058a347df34.jpg" alt="" width="480" height="480" loading="lazy" decoding="async"></a>
-<p>There are an estimated 2 million Black-owned businesses in the United States, according to Prince George’s County’s Economic Development Corporation. Seventy percent of Black business owners say they are happy with their business. That certainly appears to be the case for a DC-area barber who is turning a simple haircut into something much bigger. He’s building a business centered around community</p>
-<p class="more"><a href="https://hunewsservice.com/multimedia/from-someone-elses-chair-to-his-own-a-dc-barber-is-fading-into-the-limelight/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-05-12T17:31:51+00:00" data-pub="1:31 PM EDT">Tuesday, May 12, 2026 at 1:31 PM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>DC / Washington / <a href="https://hunewsservice.com/about-us/">Howard University News Service</a></small></p>
-<h2><a href="https://hunewsservice.com/news/education-101-learning-the-abcs-of-autism-among-black-girls/">Education 101: Learning the ABCs of Autism Among Black Girls</a></h2>
-<p class="byline"><small>By Jennifer Thomas</small><span class="aside"><a class="lozenge" href="../tags/college.html">College</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://subscribepage.io/IvgmqZ">Subscribe</a></span></p>
-<a class="shot" href="https://hunewsservice.com/news/education-101-learning-the-abcs-of-autism-among-black-girls/" tabindex="-1" aria-hidden="true"><img src="../img/2d885e1a0b1b16aacfb21b8e9f5e30ee12376c1a.jpg" alt="" width="480" height="480" loading="lazy" decoding="async"></a>
-<p>New research and educators are raising concerns about misdiagnosis and delayed diagnosis for autism and delayed diagnosis for autism and Attention-deficit/hyperactivity disorder (ADHD) among Black girls. According to the organization Black Voices, these disparities can lead to negative educational, medical, and employment outcomes, high anxiety, low self-esteem, and suicidal ideation. NewsVision r</p>
-<p class="more"><a href="https://hunewsservice.com/news/education-101-learning-the-abcs-of-autism-among-black-girls/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-05-09T00:31:31+00:00" data-pub="8:31 PM EDT">Friday, May 8, 2026 at 8:31 PM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>NY / New York City / <a href="https://newyorkparrot.com/">New York Parrot</a></small></p>
-<h2><a href="https://newyorkparrot.com/2026/05/nyc-tightens-cooling-tower-rules-to-prevent-legionnaires-disease-as-summer-nears/">NYC tightens cooling tower rules to prevent legionnaires’ disease as Summer nears</a></h2>
-<p class="byline"><small>By Mutiu Olawuyi</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://wordpress.org/support/forums/">Donate</a></span></p>
-<p>The New York City Department of Health and Mental Hygiene has implemented new citywide regulations</p>
-<p class="more"><a href="https://newyorkparrot.com/2026/05/nyc-tightens-cooling-tower-rules-to-prevent-legionnaires-disease-as-summer-nears/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-05-08T22:02:56+00:00" data-pub="6:02 PM EDT">Friday, May 8, 2026 at 6:02 PM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>NY / New York City / <a href="https://newyorkparrot.com/">New York Parrot</a></small></p>
-<h2><a href="https://newyorkparrot.com/2026/05/hochul-budget-deal-aims-to-ease-costs-strengthen-communities/">Hochul Budget Deal Aims to Ease Costs, Strengthen Communities</a></h2>
-<p class="byline"><small>By Mutiu Olawuyi</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://wordpress.org/support/forums/">Donate</a></span></p>
-<a class="shot" href="https://newyorkparrot.com/2026/05/hochul-budget-deal-aims-to-ease-costs-strengthen-communities/" tabindex="-1" aria-hidden="true"><img src="../img/e37d970dd8b7c9ea961254f1886a471e76a5ccdc.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Governor Hochul announces New York’s FY 2027 budget agreement, focusing on affordability, child care, public safety, immigrant protections and family support.</p>
-<p class="more"><a href="https://newyorkparrot.com/2026/05/hochul-budget-deal-aims-to-ease-costs-strengthen-communities/">Read more <span aria-hidden="true">→</span></a></p>
+<p>The Unbreakable Bond Coalition launches a global Anti-BDS Investment Campaign in New York, calling for Muslim-Jewish partnership, coexistence and peace through investment. <a class="lozenge more" href="https://newyorkparrot.com/2026/07/muslim-interfaith-coalition-to-launch-anti-bds-investment-campaign-in-new-york/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 </div>
 <p><a id="more" href="black-audience-5.html">More stories</a></p>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="../index.html">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -398,6 +456,47 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>

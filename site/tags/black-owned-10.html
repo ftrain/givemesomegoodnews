@@ -13,12 +13,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(../fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -27,22 +40,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -50,19 +69,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -75,7 +126,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -93,7 +144,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="../index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="../masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -106,7 +157,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="../subjects/news.html">News</a></li><li><a href="../subjects/politics.html">Politics</a></li><li><a href="../subjects/opinion.html">Opinion</a></li><li><a href="../subjects/health.html">Health</a></li><li><a href="../subjects/environment.html">Environment</a></li><li><a href="../subjects/education.html">Education</a></li><li><a href="../subjects/business.html">Business</a></li><li><a href="../subjects/housing.html">Housing</a></li><li><a href="../subjects/sports.html">Sports</a></li><li><a href="../subjects/food.html">Food</a></li><li><a href="../subjects/arts.html">Arts</a></li></ul></nav>
@@ -121,270 +172,266 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <main id="main">
 <div id="feed-items">
 <article>
-<p class="stamp"><small><time datetime="2026-08-23T12:26:11+00:00" data-pub="8:26 AM EDT">Sunday, August 23, 2026 at 8:26 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>NY / New York City / <a href="https://amsterdamnews.com/">New York Amsterdam News</a></small></p>
-<h2><a href="https://amsterdamnews.com/news/2026/08/23/karmelo-anthony-judge-denies-new-trial/">Texas judge denies Karmelo Anthony’s request for new trial in deadly stabbing at track meet</a></h2>
-<p class="byline"><small>By JAMIE STENGLE Associated Press</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://amsterdamnews.com/legacygiving/">Donate</a></span></p>
-<a class="shot" href="https://amsterdamnews.com/news/2026/08/23/karmelo-anthony-judge-denies-new-trial/" tabindex="-1" aria-hidden="true"><img src="../img/924eb77577797d4c8d41620db2823708d1dcfc2d.jpg" alt="" width="480" height="274" loading="lazy" decoding="async"></a>
-<p>A Texas judge denied a new trial for Karmelo Anthony on Saturday in the stabbing death of a 17-year-old athlete at a high school track meet.</p>
-<p class="more"><a href="https://amsterdamnews.com/news/2026/08/23/karmelo-anthony-judge-denies-new-trial/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://buy.stripe.com/8wM4gOal085h3Wo7ss">Donate</a></aside>
+<p class="source"><a href="https://nycaribnews.com/"><strong>New York Carib News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T11:56:14+00:00" data-pub="7:56 AM EDT">Mon, Aug 24 @ 7AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=New+York+City&state=NY">New York City</a></p>
+<h2><a href="https://nycaribnews.com/jamaica-opposition-party-returns-to-the-path-of-democratic-socialism/">Jamaica – Opposition Party Returns To The Path Of Democratic Socialism</a></h2>
+<p class="byline">By nycaribnews</p>
+<p>The People’s National Party (PNP) is placing democratic socialism back at the centre of its political identity, with Opposition Leader Mark Golding signalling that the party intends to draw from the philosophy associated with former Prime Minister Michael Manley while developing an economic approach focused more directly on ordinary Jamaicans. Golding made the declaration while <a class="lozenge more" href="https://nycaribnews.com/jamaica-opposition-party-returns-to-the-path-of-democratic-socialism/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-23T12:00:00+00:00" data-pub="8:00 AM EDT">Sunday, August 23, 2026 at 8:00 AM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>DC / Washington / <a href="https://afro.com/section/news/washington-d-c-news/">Afro-American</a></small></p>
-<h2><a href="https://www.afro.com/health/new-legislation-seeks-long-term-investment-in-maternal-health-research-3ffb25ea">New legislation seeks long-term investment in maternal health research</a></h2>
-<p class="byline"><small>By Megan Sayles</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://afro.com/section/news/washington-d-c-news/">Support</a></span></p>
-<a class="shot" href="https://www.afro.com/health/new-legislation-seeks-long-term-investment-in-maternal-health-research-3ffb25ea" tabindex="-1" aria-hidden="true"><img src="../img/dcf5f71bd8295f3d5fc12e23f53365f4cfffa9c8.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>The House unanimously passed the NIH IMPROVE Act. Now, it awaits Senate action.</p>
-<p class="more"><a href="https://www.afro.com/health/new-legislation-seeks-long-term-investment-in-maternal-health-research-3ffb25ea">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://flintbeat.com/">Support</a></aside>
+<p class="source"><a href="https://flintbeat.com/"><strong>Flint Beat</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T10:00:00+00:00" data-pub="6:00 AM EDT">Mon, Aug 24 @ 6AM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=Flint&state=MI">Flint</a></p>
+<h2><a href="https://www.flintbeat.com/government/flint-proposes-licensing-updates-for-gas-stations-snow-removal-and-more-d1db9009">From Flint clerk to planning: Hearings set to shift department responsibilities</a></h2>
+<p class="byline">By Jiquanda Johnson</p>
+<a class="shot" href="https://www.flintbeat.com/government/flint-proposes-licensing-updates-for-gas-stations-snow-removal-and-more-d1db9009" tabindex="-1" aria-hidden="true"><img src="../img/2e636b6f863769c769734d2273380319bcde095d.jpg" alt="" width="480" height="384" loading="lazy" decoding="async"></a>
+<p>Flint residents can weigh in Aug. 24 on 15 ordinance changes that would move licensing duties for businesses and contractors to Planning and Development. <a class="lozenge more" href="https://www.flintbeat.com/government/flint-proposes-licensing-updates-for-gas-stations-snow-removal-and-more-d1db9009">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-23T11:57:04+00:00" data-pub="7:57 AM EDT">Sunday, August 23, 2026 at 7:57 AM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>VA / Norfolk / <a href="https://thenewjournalandguide.com/">New Journal &amp; Guide</a></small></p>
-<h2><a href="https://thenewjournalandguide.com/defend-the-vote-momentum-building-for-63rd-anniversary-of-march-on-washington/">“Defend The Vote” Momentum Building For 63rd Anniversary of March on Washington</a></h2>
-<p class="byline"><small>By Web Staff</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://thenewjournalandguide.com/donate/">Donate</a></span></p>
-<a class="shot" href="https://thenewjournalandguide.com/defend-the-vote-momentum-building-for-63rd-anniversary-of-march-on-washington/" tabindex="-1" aria-hidden="true"><img src="../img/02b18a1a6c64dc9f65293eb70e58bf32c255f381.jpg" alt="" width="480" height="274" loading="lazy" decoding="async"></a>
-<p>Civil rights leaders are preparing for the 63rd anniversary of the March on Washington with a “Defend the Vote” rally focused on voting rights, economic dignity and affordability. #MarchOnWashington #DefendTheVote #VotingRights #CivilRights #BlackLeadership #BlackVoters #MidtermElections #VotingRightsAct #CivilRightsMovement #WashingtonDC</p>
-<p class="more"><a href="https://thenewjournalandguide.com/defend-the-vote-momentum-building-for-63rd-anniversary-of-march-on-washington/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://qcitymetro.com/">Support</a></aside>
+<p class="source"><a href="https://qcitymetro.com/"><strong>QCity Metro</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T08:50:28+00:00" data-pub="4:50 AM EDT">Mon, Aug 24 @ 4AM EDT</time><a class="lozenge place" href="/search?state=NC">North Carolina</a><a class="lozenge place" href="/search?place=Charlotte&state=NC">Charlotte</a></p>
+<h2><a href="https://www.qcitymetro.com/hbcu-news/johnson-c-smith-university-will-receive-over-1-million-for-stem-education-e0d1e0d3">Johnson C. Smith University will receive over $1 million for STEM education</a></h2>
+<a class="shot" href="https://www.qcitymetro.com/hbcu-news/johnson-c-smith-university-will-receive-over-1-million-for-stem-education-e0d1e0d3" tabindex="-1" aria-hidden="true"><img src="../img/ebb11da022e2bd257a6a77c699ed62f6a77e86c0.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>The federal funding will support the purchase of research equipment, undergraduate projects and specialized training in fields including environmental chemistry, biology and agriculture. <a class="lozenge more" href="https://www.qcitymetro.com/hbcu-news/johnson-c-smith-university-will-receive-over-1-million-for-stem-education-e0d1e0d3">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-23T08:51:00+00:00" data-pub="4:51 AM EDT">Sunday, August 23, 2026 at 4:51 AM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>MI / Detroit / <a href="https://www.telegramnews.net/about">The Telegram Newspaper</a></small></p>
-<h2><a href="https://www.telegramnews.net/page/submit-a-public-notices-or-legals-ad/953.html">Submit a Public Notices or Legals ad</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://donorbox.org/support-local-journalism-23">Donate</a></span></p>
-<p>To submit a Legal advertisement, please email it to telegram@telegramnews.net, along with your phone number, and someone will contact you for payment. Thank you, Telegram</p>
-<p class="more"><a href="https://www.telegramnews.net/page/submit-a-public-notices-or-legals-ad/953.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://philasun.com/subscribe/">Subscribe</a></aside>
+<p class="source"><a href="https://philasun.com/category/local/"><strong>Philadelphia Sunday Sun</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T08:25:55+00:00" data-pub="4:25 AM EDT">Mon, Aug 24 @ 4AM EDT</time><a class="lozenge place" href="/search?state=PA">Pennsylvania</a><a class="lozenge place" href="/search?place=Philadelphia&state=PA">Philadelphia</a></p>
+<h2><a href="https://philasun.com/election-2025/democrats-2028-presidential-calendar-gives-black-and-latino-voters-and-union-members-an-early-say/">Democrats’ 2028 presidential calendar gives Black and Latino voters and union members an early say</a></h2>
+<p class="byline">By Teresa Emerson</p>
+<p>Democratic National Committee member Donna Brazile attends a Black Caucus meeting as part of the DNC Summer Meeting, Thursday, Aug. 13, 2026, in Austin, Texas. (AP Photo/Joel Angel Juarez) By Mike Catalini and Bill Barrow ASSOCIATED PRESS AUSTIN, Texas—Democrats seeking the party’s presidential nomination in 2028 will need to prove themselves early on <a class="lozenge more" href="https://philasun.com/election-2025/democrats-2028-presidential-calendar-gives-black-and-latino-voters-and-union-members-an-early-say/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-23T08:51:00+00:00" data-pub="4:51 AM EDT">Sunday, August 23, 2026 at 4:51 AM EDT</time></small></p>
-<p><small>MI / Detroit / <a href="https://www.telegramnews.net/about">The Telegram Newspaper</a></small></p>
-<h2><a href="https://www.telegramnews.net/directory/category/church-directory">Church Directory</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://donorbox.org/support-local-journalism-23">Donate</a></span></p>
-<p class="more"><a href="https://www.telegramnews.net/directory/category/church-directory">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://philasun.com/subscribe/">Subscribe</a></aside>
+<p class="source"><a href="https://philasun.com/category/local/"><strong>Philadelphia Sunday Sun</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T08:22:11+00:00" data-pub="4:22 AM EDT">Mon, Aug 24 @ 4AM EDT</time><a class="lozenge place" href="/search?state=PA">Pennsylvania</a><a class="lozenge place" href="/search?place=Philadelphia&state=PA">Philadelphia</a></p>
+<h2><a href="https://philasun.com/election-2025/what-to-know-about-the-fake-election-poll-numbers-shared-and-retracted-by-a-mysterious-company/">What to know about the fake election poll numbers shared and retracted by a mysterious company</a></h2>
+<p class="byline">By Teresa Emerson</p>
+<p>Voters cast their ballots at a voting center on the UCLA campus, June 2, 2026, in Los Angeles. (AP Photo/Jae C. Hong, File) By Steve Peoples, AmeliaThomson-Deveaux and Ken Sweet ASSOCIATED PRESS NEW YORK—Locked in a competitive reelection race, Los Angeles Mayor Karen Bass declared on social media last week that a new <a class="lozenge more" href="https://philasun.com/election-2025/what-to-know-about-the-fake-election-poll-numbers-shared-and-retracted-by-a-mysterious-company/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-23T08:51:00+00:00" data-pub="4:51 AM EDT">Sunday, August 23, 2026 at 4:51 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>MI / Detroit / <a href="https://www.telegramnews.net/about">The Telegram Newspaper</a></small></p>
-<h2><a href="https://www.telegramnews.net/story/2026/08/20/news/statewide-survey-shows-important-role-for-local-newspapers-in-promoting-transparency/3586.html">Statewide survey shows important role for local newspapers in promoting transparency</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://donorbox.org/support-local-journalism-23">Donate</a></span></p>
-<a class="shot" href="https://www.telegramnews.net/story/2026/08/20/news/statewide-survey-shows-important-role-for-local-newspapers-in-promoting-transparency/3586.html" tabindex="-1" aria-hidden="true"><img src="../img/919fe1c27774c13ad028c0ebc6cd1dd470010813.jpg" alt="" width="336" height="200" loading="lazy" decoding="async"></a>
-<p>LANSING, Mich. - A recent statewide poll shows Michigan voters trust local newspapers and their digital platforms to provide them with accurate information about the actions of elected officials. The poll of likely November 2026 voters commissioned by EPIC-MRA showed that Michigan voters continue to view local newspapers and their digital platforms as the most trusted and effective source for</p>
-<p class="more"><a href="https://www.telegramnews.net/story/2026/08/20/news/statewide-survey-shows-important-role-for-local-newspapers-in-promoting-transparency/3586.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://philasun.com/subscribe/">Subscribe</a></aside>
+<p class="source"><a href="https://philasun.com/category/local/"><strong>Philadelphia Sunday Sun</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T08:18:23+00:00" data-pub="4:18 AM EDT">Mon, Aug 24 @ 4AM EDT</time><a class="lozenge place" href="/search?state=PA">Pennsylvania</a><a class="lozenge place" href="/search?place=Philadelphia&state=PA">Philadelphia</a></p>
+<h2><a href="https://philasun.com/election-2025/americans-have-only-elected-3-black-governors-this-year-8-major-party-candidates-are-on-the-ballot/">Americans have only elected 3 Black governors. This year, 8 major party candidates are on the ballot</a></h2>
+<p class="byline">By Teresa Emerson</p>
+<a class="shot" href="https://philasun.com/election-2025/americans-have-only-elected-3-black-governors-this-year-8-major-party-candidates-are-on-the-ballot/" tabindex="-1" aria-hidden="true"><img src="../img/23f376954f499c2ed1042e7465e056e679bf6441.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Florida Republican congressman and gubernatorial candidate Byron Donalds gives a thumbs up as he visits the Hispanic Police Officers Association in Doral, Fla., Thursday, Aug. 6, 2026. (AP Photo/Rebecca Blackwell) By Bill Barrow and Steven Sloan ASSOCIATED PRESS ORLANDO, Fla.—Across 250 years, only three elected governors out of thousands have been Black –- <a class="lozenge more" href="https://philasun.com/election-2025/americans-have-only-elected-3-black-governors-this-year-8-major-party-candidates-are-on-the-ballot/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-23T08:51:00+00:00" data-pub="4:51 AM EDT">Sunday, August 23, 2026 at 4:51 AM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>MI / Detroit / <a href="https://www.telegramnews.net/about">The Telegram Newspaper</a></small></p>
-<h2><a href="https://www.telegramnews.net/story/2026/08/20/opinion/commentary-big-mama-said-when-spider-webs-unite-they-can-tie-up-a-lion/3585.html">COMMENTARY: Big Mama Said: &quot;When Spider Webs Unite, They Can Tie up a Lion&quot;</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://donorbox.org/support-local-journalism-23">Donate</a></span></p>
-<a class="shot" href="https://www.telegramnews.net/story/2026/08/20/opinion/commentary-big-mama-said-when-spider-webs-unite-they-can-tie-up-a-lion/3585.html" tabindex="-1" aria-hidden="true"><img src="../img/9a258bf72810a8922466d906db2304726f7508a0.jpg" alt="" width="350" height="183" loading="lazy" decoding="async"></a>
-<p>There is a powerful Ethiopian proverb: &quot;When spider webs unite, they can tie up a lion.&quot; Big Mama understood that kind of wisdom. One spider web looks fragile and insignificant. But connect enough strands, working together with purpose, and what appeared powerless becomes powerful. That is the story of voting in America-and especially the Black American experience. The Voting Rights Act</p>
-<p class="more"><a href="https://www.telegramnews.net/story/2026/08/20/opinion/commentary-big-mama-said-when-spider-webs-unite-they-can-tie-up-a-lion/3585.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://philasun.com/subscribe/">Subscribe</a></aside>
+<p class="source"><a href="https://philasun.com/category/local/"><strong>Philadelphia Sunday Sun</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T07:38:55+00:00" data-pub="3:38 AM EDT">Mon, Aug 24 @ 3AM EDT</time><a class="lozenge place" href="/search?state=PA">Pennsylvania</a><a class="lozenge place" href="/search?place=Philadelphia&state=PA">Philadelphia</a></p>
+<h2><a href="https://philasun.com/week-in-review/jackson-state-university-pursues-top-research-status/">Jackson State University pursues top research status</a></h2>
+<p class="byline">By Teresa Emerson</p>
+<p>Jackson State Professor of Electrical and Computer Engineering Kamal Ali, left, and Canhao Wang, a computer engineering student, work out a project Thursday, Aug. 6, 2026, in Jackson, Miss. (Vickie D. King/Mississippi Today via AP) By Candice Wilder Mississippi Today Professor Kamal Ali and his team of Jackson State University student researchers spent their summer <a class="lozenge more" href="https://philasun.com/week-in-review/jackson-state-university-pursues-top-research-status/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-23T08:51:00+00:00" data-pub="4:51 AM EDT">Sunday, August 23, 2026 at 4:51 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>MI / Detroit / <a href="https://www.telegramnews.net/about">The Telegram Newspaper</a></small></p>
-<h2><a href="https://www.telegramnews.net/story/2026/08/20/education/us-department-of-education-offers-student-loan/3584.html">U.S. Department of Education Offers Student Loan</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://donorbox.org/support-local-journalism-23">Donate</a></span></p>
-<a class="shot" href="https://www.telegramnews.net/story/2026/08/20/education/us-department-of-education-offers-student-loan/3584.html" tabindex="-1" aria-hidden="true"><img src="../img/5d132562c96e0e87c22763c3f80de0d364f9f68a.jpg" alt="" width="350" height="196" loading="lazy" decoding="async"></a>
-<p>This past June, the U.S. Department of Education announced that federal student loan borrowers enrolled in auto pay will be eligible for a 1 percent interest rate reduction starting July 1 of this year. Borrowers who enroll in auto pay by September 30, 2026 or who are already enrolled will benefit from the interest rate reduction through June 30, 2028. This means a student loan borrower with a</p>
-<p class="more"><a href="https://www.telegramnews.net/story/2026/08/20/education/us-department-of-education-offers-student-loan/3584.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://philasun.com/subscribe/">Subscribe</a></aside>
+<p class="source"><a href="https://philasun.com/category/local/"><strong>Philadelphia Sunday Sun</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T07:34:53+00:00" data-pub="3:34 AM EDT">Mon, Aug 24 @ 3AM EDT</time><a class="lozenge place" href="/search?state=PA">Pennsylvania</a><a class="lozenge place" href="/search?place=Philadelphia&state=PA">Philadelphia</a></p>
+<h2><a href="https://philasun.com/week-in-review/appeals-court-upholds-ban-on-immigration-enforcement-at-or-near-churches-across-33-states-dc/">Appeals court upholds ban on immigration enforcement ‘at or near’ churches across 33 states, DC</a></h2>
+<p class="byline">By Teresa Emerson</p>
+<p>A masked ICE agent stands guard outside the Delaney Hall detention during a protest against the transfer of detainees on Tuesday, May 26, 2026, in Newark, N.J. (AP Photo/Andres Kudacki) A coalition of Quaker, Sikh and Baptist congregations had sued to block Trump administration policy. By William J. Ford STATELINE.ORG A federal appeals court Tuesday <a class="lozenge more" href="https://philasun.com/week-in-review/appeals-court-upholds-ban-on-immigration-enforcement-at-or-near-churches-across-33-states-dc/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-23T08:51:00+00:00" data-pub="4:51 AM EDT">Sunday, August 23, 2026 at 4:51 AM EDT</time></small></p>
-<p><small>MI / Detroit / <a href="https://www.telegramnews.net/about">The Telegram Newspaper</a></small></p>
-<h2><a href="https://www.telegramnews.net/story/2026/08/20/lifestyles/detroit-hosts-the-6th-annual-black-girl-picnic/3583.html">Detroit Hosts the 6th Annual Black Girl Picnic</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://donorbox.org/support-local-journalism-23">Donate</a></span></p>
-<a class="shot" href="https://www.telegramnews.net/story/2026/08/20/lifestyles/detroit-hosts-the-6th-annual-black-girl-picnic/3583.html" tabindex="-1" aria-hidden="true"><img src="../img/a961bc1a8f6a0815165a12924597a66ea61277a9.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
-<p>On Saturday, August 15th, hundreds of black women congregated at Roosevelt Park to enjoy the 6th annual Black Girl Picnic. &quot;Black women need a space to rest,&quot; said Torie Anderson-Lloyd, the creator and sole organizer of Black Girl Picnic. &quot;A space where black women can come, connect with each other and do absolutely nothing.&quot; Women either arrived at 1 p.m. with beat the crowd</p>
-<p class="more"><a href="https://www.telegramnews.net/story/2026/08/20/lifestyles/detroit-hosts-the-6th-annual-black-girl-picnic/3583.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://sacobserver.com/">Support</a></aside>
+<p class="source"><a href="https://sacobserver.com/"><strong>Sacramento Observer</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T07:00:00+00:00" data-pub="12:00 AM PDT">Mon, Aug 24 @ 12AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Sacramento&state=CA">Sacramento</a></p>
+<h2><a href="https://www.theobserver.media/politics/a-fake-poll-fooled-the-la-mayors-campaign-its-a-wake-up-call-for-other-politicians-23018f57">A Fake Poll Fooled The LA Mayor’s Campaign. It’s a ‘Wake-Up Call’ for Other Politicians</a></h2>
+<p class="byline">By CalMatters</p>
+<a class="shot" href="https://www.theobserver.media/politics/a-fake-poll-fooled-the-la-mayors-campaign-its-a-wake-up-call-for-other-politicians-23018f57" tabindex="-1" aria-hidden="true"><img src="../img/f1b68034c8333202f5e62f2f2c59c7628d1efcf1.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>A fabricated poll showing Los Angeles Mayor Karen Bass ahead fooled news outlets and her campaign, raising alarms about election misinformation and prediction markets. <a class="lozenge more" href="https://www.theobserver.media/politics/a-fake-poll-fooled-the-la-mayors-campaign-its-a-wake-up-call-for-other-politicians-23018f57">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-23T08:51:00+00:00" data-pub="4:51 AM EDT">Sunday, August 23, 2026 at 4:51 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>MI / Detroit / <a href="https://www.telegramnews.net/about">The Telegram Newspaper</a></small></p>
-<h2><a href="https://www.telegramnews.net/story/2026/08/20/education/ecorse-high-school-class-of-1976-celebrates-50th-reunion/3582.html">Ecorse High School Class of 1976 Celebrates 50th Reunion</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://donorbox.org/support-local-journalism-23">Donate</a></span></p>
-<p>The Ecorse High School Class of 1976 announces its 50th reunion on Saturday, September 12, 2026, at 6:00 p.m. at Crystal Gardens Banquet Center, 16703 Fort Street, Southgate, Michigan. A Friday night mixer will be held September 11, 2026, at 7:00 p.m. at Riverfront Restaurant, 507 Biddle Avenue, Wyandotte, Michigan. The reunion will celebrate 50 years of memories, friendship, and fellowship, with</p>
-<p class="more"><a href="https://www.telegramnews.net/story/2026/08/20/education/ecorse-high-school-class-of-1976-celebrates-50th-reunion/3582.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://sacobserver.com/">Support</a></aside>
+<p class="source"><a href="https://sacobserver.com/"><strong>Sacramento Observer</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T07:00:00+00:00" data-pub="12:00 AM PDT">Mon, Aug 24 @ 12AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Sacramento&state=CA">Sacramento</a></p>
+<h2><a href="https://www.theobserver.media/california/secretary-of-state-shirley-n-weber-urges-californians-to-vote-early-as-voter-id-battle-intensifies-8c727093">Secretary of State Shirley N. Weber Urges Californians to Vote Early as Voter ID Battle Intensifies</a></h2>
+<p class="byline">By California Black Media</p>
+<a class="shot" href="https://www.theobserver.media/california/secretary-of-state-shirley-n-weber-urges-californians-to-vote-early-as-voter-id-battle-intensifies-8c727093" tabindex="-1" aria-hidden="true"><img src="../img/41378cd410a768584b7d7e5de0a10ca67f8e7600.jpg" alt="" width="480" height="319" loading="lazy" decoding="async"></a>
+<p>California Secretary of State Shirley N. Weber urged voters to cast ballots early for the Nov. 3, 2026 election as debate over Proposition 39’s voter ID requirements grows. <a class="lozenge more" href="https://www.theobserver.media/california/secretary-of-state-shirley-n-weber-urges-californians-to-vote-early-as-voter-id-battle-intensifies-8c727093">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-23T08:51:00+00:00" data-pub="4:51 AM EDT">Sunday, August 23, 2026 at 4:51 AM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>MI / Detroit / <a href="https://www.telegramnews.net/about">The Telegram Newspaper</a></small></p>
-<h2><a href="https://www.telegramnews.net/story/2026/08/20/opinion/our-history-our-future-the-role-of-baby-boomers-in-guiding-the-next-generation/3580.html">Our History, Our Future: The Role of Baby Boomers in Guiding the Next Generation</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://donorbox.org/support-local-journalism-23">Donate</a></span></p>
-<a class="shot" href="https://www.telegramnews.net/story/2026/08/20/opinion/our-history-our-future-the-role-of-baby-boomers-in-guiding-the-next-generation/3580.html" tabindex="-1" aria-hidden="true"><img src="../img/14b9a80ec12e43bfe60f5daed33f4b8be96a1e20.jpg" alt="" width="350" height="200" loading="lazy" decoding="async"></a>
-<p>very generation has a responsibility to help prepare the next generation for the future. For Baby Boomers, that responsibility includes sharing the history, experiences and lessons that shaped our lives with Millennials and the generations coming behind them. For African Americans, knowing our history is more than remembering dates and names. It is understanding the struggles, sacrifices, courage</p>
-<p class="more"><a href="https://www.telegramnews.net/story/2026/08/20/opinion/our-history-our-future-the-role-of-baby-boomers-in-guiding-the-next-generation/3580.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://dallasweekly.com/organ-donation-and-transplantation-research/">Donate</a></aside>
+<p class="source"><a href="https://dallasweekly.com/"><strong>The Dallas Weekly</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T05:18:27+00:00" data-pub="12:18 AM CDT">Mon, Aug 24 @ 12AM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=Dallas&state=TX">Dallas</a></p>
+<h2><a href="https://dallasweekly.com/2026/08/trusting-god-greater-blessings/">Preserved by Purpose: Taking the Limits off of God</a></h2>
+<p class="byline">By Shewanda Riley</p>
+<a class="shot" href="https://dallasweekly.com/2026/08/trusting-god-greater-blessings/" tabindex="-1" aria-hidden="true"><img src="../img/733dd5f09fb20c519f9f3b46e129779caeedcecb.jpg" alt="" width="480" height="322" loading="lazy" decoding="async"></a>
+<p>Author Shewanda Riley discusses the importance of overcoming narrow faith and low expectations to embrace the limitless blessings offered by God. <a class="lozenge more" href="https://dallasweekly.com/2026/08/trusting-god-greater-blessings/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-23T08:51:00+00:00" data-pub="4:51 AM EDT">Sunday, August 23, 2026 at 4:51 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>MI / Detroit / <a href="https://www.telegramnews.net/about">The Telegram Newspaper</a></small></p>
-<h2><a href="https://www.telegramnews.net/story/2026/08/20/education/more-than-backpacks-back-to-school-blitz-brings-community-resources-and-opportunity-together/3579.html">More Than Backpacks: Back-to-School Blitz Brings Community, Resources and Opportunity Together</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://donorbox.org/support-local-journalism-23">Donate</a></span></p>
-<a class="shot" href="https://www.telegramnews.net/story/2026/08/20/education/more-than-backpacks-back-to-school-blitz-brings-community-resources-and-opportunity-together/3579.html" tabindex="-1" aria-hidden="true"><img src="../img/66460759cf05f586ac676d28f02cc2a269889c89.jpg" alt="" width="267" height="200" loading="lazy" decoding="async"></a>
-<p>The lines were long, the food was going fast and children filled Kemeny Recreation Center with the excitement of a summer day spent with family and friends. But beyond the laughter and activities, the 7th Annual Back-to-School Blitz Community Event was delivering something far more important, resources, healthcare, opportunity and a strong reminder of what can happen when a community comes</p>
-<p class="more"><a href="https://www.telegramnews.net/story/2026/08/20/education/more-than-backpacks-back-to-school-blitz-brings-community-resources-and-opportunity-together/3579.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://defendernetwork.com/defender-95th-donate/">Donate</a></aside>
+<p class="source"><a href="https://defendernetwork.com/"><strong>Houston Defender</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T05:00:00+00:00" data-pub="12:00 AM CDT">Mon, Aug 24 @ 12AM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=Houston&state=TX">Houston</a></p>
+<h2><a href="https://defendernetwork.com/under-40/popular-houston-clubs-shutting-down-whats-happening/">Popular Houston clubs shutting down? What’s happening?</a></h2>
+<p class="byline">By Laura Onyeneho</p>
+<a class="shot" href="https://defendernetwork.com/under-40/popular-houston-clubs-shutting-down-whats-happening/" tabindex="-1" aria-hidden="true"><img src="../img/469746f0bb06a3bde21fa56694b551f17ce4bb8f.jpg" alt="" width="480" height="323" loading="lazy" decoding="async"></a>
+<p>Kamp and The Address closures signal a troubling shift in Houston nightlife culture. <a class="lozenge more" href="https://defendernetwork.com/under-40/popular-houston-clubs-shutting-down-whats-happening/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-23T08:51:00+00:00" data-pub="4:51 AM EDT">Sunday, August 23, 2026 at 4:51 AM EDT</time></small></p>
-<p><small>MI / Detroit / <a href="https://www.telegramnews.net/about">The Telegram Newspaper</a></small></p>
-<h2><a href="https://www.telegramnews.net/story/2026/08/20/lifestyles/the-donation-of-life-why-minority-blood-donors-matter-in-metro-detroit/3578.html">The Donation of Life: Why Minority Blood Donors Matter in Metro Detroit</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://donorbox.org/support-local-journalism-23">Donate</a></span></p>
-<a class="shot" href="https://www.telegramnews.net/story/2026/08/20/lifestyles/the-donation-of-life-why-minority-blood-donors-matter-in-metro-detroit/3578.html" tabindex="-1" aria-hidden="true"><img src="../img/5e9739b3c76b1bbbc066f623fa77b588577fedb9.jpg" alt="" width="293" height="200" loading="lazy" decoding="async"></a>
-<p>August is National Minority Donor Awareness Month, but for patients whose lives depend on blood transfusions, the need does not begin or end with a month on the calendar. Across Metro Detroit and Southeast Michigan, the call is for communities to roll up their sleeves and become part of a lifesaving supply that cannot be manufactured. For people living with sickle cell disease, the connection</p>
-<p class="more"><a href="https://www.telegramnews.net/story/2026/08/20/lifestyles/the-donation-of-life-why-minority-blood-donors-matter-in-metro-detroit/3578.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.paypal.com/donate/?hosted_button_id=CSYL9VMKB2Y2E">Donate</a></aside>
+<p class="source"><a href="https://aframnews.com/"><strong>African-American News and Issues</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T04:07:40+00:00" data-pub="11:07 PM CDT">Sun, Aug 23 @ 11PM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=Houston&state=TX">Houston</a></p>
+<h2><a href="https://aframnews.com/opinion/texas-expands-prison-capacity-w-ith-5600-new-beds/">TEXAS EXPANDS PRISON CAPACITY W ITH 5,600 NEW BEDS</a></h2>
+<p class="byline">By Roy Malonson</p>
+<p>Texas is planning to add 5,600 new prison beds as state officials anticipate an increase in the overall inmate population. The expansion is intended to provide additional housing capacity and help the Texas Department of Criminal Justice manage future growth without overcrowding existing facilities. More than $300 million is expected to be invested in the <a class="lozenge more" href="https://aframnews.com/opinion/texas-expands-prison-capacity-w-ith-5600-new-beds/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-23T06:34:28+00:00" data-pub="11:34 PM PDT">Saturday, August 22, 2026 at 11:34 PM PDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>WA / Seattle / <a href="https://www.thefactsnewspaper.com">The Facts</a></small></p>
-<h2><a href="https://www.thefactsnewspaper.com/post/a-legacy-illuminated-black-theater-in-the-pacific-northwest">A Legacy Illuminated: Black Theater in the Pacific Northwest</a></h2>
-<p class="byline"><small>By Marla Beaver</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.thefactsnewspaper.com/post/join-black-families-for-a-conversation-with-sps-superintendent-ben-schuldiner">Become a member</a></span></p>
-<p>by Art Beat on July 27, 2026 &quot;New from Tee,&quot; Pictured L to R: Unknown, David Roebuck, Mary Doresey, Earnest, Patricia Towers, Tee Dennard On view Aug. 6 – Oct. 3, 2026 Reception: Aug. 6, 2026, 5-8 PM A Legacy Illuminated: Black Theater in the Pacific Northwest was created with the collaboration of a generation of actors whose work helped shape Seattle’s theater scene in the 1970s. Emerging in the </p>
-<p class="more"><a href="https://www.thefactsnewspaper.com/post/a-legacy-illuminated-black-theater-in-the-pacific-northwest">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.washingtoninformer.com/support-our-publication/">Donate</a></aside>
+<p class="source"><a href="http://www.washingtoninformer.com/"><strong>The Washington Informer</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T04:00:00+00:00" data-pub="12:00 AM EDT">Mon, Aug 24 @ 12AM EDT</time><a class="lozenge place" href="/search?state=DC">Washington, D.C.</a><a class="lozenge place" href="/search?place=Washington&state=DC">Washington</a></p>
+<h2><a href="https://www.washingtoninformer.com/dpr-expands-dog-parks/">Our Parks Are Going to the Dogs—And We’re Here for It</a></h2>
+<p class="byline">By DPR Director Thennie Freeman</p>
+<a class="shot" href="https://www.washingtoninformer.com/dpr-expands-dog-parks/" tabindex="-1" aria-hidden="true"><img src="../img/6a5c1495096e31a38e6a13a38d9c757b700e8804.jpg" alt="" width="480" height="582" loading="lazy" decoding="async"></a>
+<p>The Department of Parks and Recreation continues to expand its network of 20 designated dog parks across Washington, D.C., emphasizing community building and responsible pet ownership. <a class="lozenge more" href="https://www.washingtoninformer.com/dpr-expands-dog-parks/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-23T05:00:37+00:00" data-pub="1:00 AM EDT">Sunday, August 23, 2026 at 1:00 AM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>NY / Westchester County / <a href="https://blackwestchester.com/">Black Westchester</a></small></p>
-<h2><a href="https://blackwestchester.com/yonkers-has-the-village-now-we-have-to-move-like-one/">Yonkers Has the Village. Now We Have to Move Like One.</a></h2>
-<p class="byline"><small>By AJ Woodson</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://blackwestchester.com/giving-children-fun-scholarly-reasons-to-smile/#respond">Donate</a></span></p>
-<a class="shot" href="https://blackwestchester.com/yonkers-has-the-village-now-we-have-to-move-like-one/" tabindex="-1" aria-hidden="true"><img src="../img/a304165c73511afbf9d169c28d73ada86356a8a0.jpg" alt="" width="480" height="293" loading="lazy" decoding="async"></a>
-<p>Black Westchester Yonkers Has the Village. Now We Have to Move Like One. Project RISE showed me something I haven’t seen enough of in seven years of living in Yonkers: organizations actually moving together. Now we have to make sure the village reaches the whole family, not just the child. By Larnez Kinsey Yonkers is home to an estimated 212,603 people packed into just 18 square miles. Nearly […] </p>
-<p class="more"><a href="https://blackwestchester.com/yonkers-has-the-village-now-we-have-to-move-like-one/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://afro.com/section/news/washington-d-c-news/">Support</a></aside>
+<p class="source"><a href="https://afro.com/section/news/washington-d-c-news/"><strong>Afro-American</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T03:15:00+00:00" data-pub="11:15 PM EDT">Sun, Aug 23 @ 11PM EDT</time><a class="lozenge place" href="/search?state=DC">Washington, D.C.</a><a class="lozenge place" href="/search?place=Washington&state=DC">Washington</a></p>
+<h2><a href="https://www.afro.com/education/how-to-help-your-kids-make-friends-at-a-new-school-452a15a4">How to help your kids make friends at a new school.</a></h2>
+<p class="byline">By By Cheyanne Mumphrey,  AP Education Writer</p>
+<a class="shot" href="https://www.afro.com/education/how-to-help-your-kids-make-friends-at-a-new-school-452a15a4" tabindex="-1" aria-hidden="true"><img src="../img/2598f2d7883e354a7260c2e4b519103ba8b95615.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Parents can help children build connections at a new school through playdates, activities and conversations about friendship—while giving them room to navigate relationships themselves. <a class="lozenge more" href="https://www.afro.com/education/how-to-help-your-kids-make-friends-at-a-new-school-452a15a4">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-23T04:13:00+00:00" data-pub="12:13 AM EDT">Sunday, August 23, 2026 at 12:13 AM EDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>NY / New York City / <a href="https://blackstarnews.com/articles/ny-watch/">Black Star News</a></small></p>
-<h2><a href="https://blackstarnews.com/sec-retreat-raises-new-questions-about-par-funding-receivership-and-its-60-5-million-cost/">SEC Retreat Raises New Questions About Par Funding Receivership And Its $60.5 Million Cost</a></h2>
-<p class="byline"><small>By Milton Allimadi</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.blackstarnews.com/subscribe-html/">Subscribe</a></span></p>
-<a class="shot" href="https://blackstarnews.com/sec-retreat-raises-new-questions-about-par-funding-receivership-and-its-60-5-million-cost/" tabindex="-1" aria-hidden="true"><img src="../img/9c965e55c906e6f9739e846dae9c9b03f1d96013.jpg" alt="" width="480" height="558" loading="lazy" decoding="async"></a>
-<p class="more"><a href="https://blackstarnews.com/sec-retreat-raises-new-questions-about-par-funding-receivership-and-its-60-5-million-cost/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://blackiowanews.com/support-us">Donate</a></aside>
+<p class="source"><a href="https://blackiowanews.com"><strong>Black Iowa News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T01:23:00+00:00" data-pub="8:23 PM CDT">Sun, Aug 23 @ 8PM CDT</time><a class="lozenge place" href="/search?state=IA">Iowa</a></p>
+<h2><a href="https://blackiowanews.com/2028-independent-presidential-candidate-diane-sare-has-a-message-for-black-voters-look-beyond-democrats-and-republicans/">2028 Independent Presidential Candidate Diane Sare Has a Message for Black Voters: Look Beyond Democrats and Republicans</a></h2>
+<p class="byline">By Dana James</p>
+<a class="shot" href="https://blackiowanews.com/2028-independent-presidential-candidate-diane-sare-has-a-message-for-black-voters-look-beyond-democrats-and-republicans/" tabindex="-1" aria-hidden="true"><img src="../img/c52480808236a626b6b37242408fd019c2edf0c6.jpg" alt="" width="480" height="252" loading="lazy" decoding="async"></a>
+<p>Diane Sare, an independent presidential candidate, decries the “billionaire perverts running things.” Says the U.S. needs a mission, as she laid out her plan during a campaign visit to Iowa. <a class="lozenge more" href="https://blackiowanews.com/2028-independent-presidential-candidate-diane-sare-has-a-message-for-black-voters-look-beyond-democrats-and-republicans/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-23T00:25:00+00:00" data-pub="8:25 PM EDT">Saturday, August 22, 2026 at 8:25 PM EDT</time></small></p>
-<p><small>NY / Westchester County / <a href="https://blackwestchester.com/">Black Westchester</a></small></p>
-<h2><a href="https://blackwestchester.com/independent-investigation-underway-into-tuckahoe-police-response-following-yonkers-incident/">Was There Special Treatment? Questions Surround Tuckahoe Police Response to Former Chief’s Wife</a></h2>
-<p class="byline"><small>By AJ Woodson</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://blackwestchester.com/giving-children-fun-scholarly-reasons-to-smile/#respond">Donate</a></span></p>
-<a class="shot" href="https://blackwestchester.com/independent-investigation-underway-into-tuckahoe-police-response-following-yonkers-incident/" tabindex="-1" aria-hidden="true"><img src="../img/c565218677ffa1987dacc6ab89592d6cd341227b.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Black Westchester Was There Special Treatment? Questions Surround Tuckahoe Police Response to Former Chief’s Wife Former Tuckahoe Police Chief’s Wife at Center of Incident Now Under DA Review An independent investigation is underway into the Tuckahoe Police Department’s handling of an August 14th incident that allegedly began in Yonkers and ended in Tuckahoe. The incident allegedly involved Donna </p>
-<p class="more"><a href="https://blackwestchester.com/independent-investigation-underway-into-tuckahoe-police-response-following-yonkers-incident/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://theatlantavoice.com/category/news/">Support</a></aside>
+<p class="source"><a href="https://theatlantavoice.com/category/news/"><strong>The Atlanta Voice</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T00:47:02+00:00" data-pub="8:47 PM EDT">Sun, Aug 23 @ 8PM EDT</time><a class="lozenge place" href="/search?state=GA">Georgia</a><a class="lozenge place" href="/search?place=Atlanta&state=GA">Atlanta</a></p>
+<h2><a href="https://www.theatlantavoice.com/politics/the-word-tonight-is-wake-up-bishop-barber-and-others-preach-voting-rights-at-big-bethel-927573eb">‘The word tonight is Wake Up’: Bishop Barber, and others preach voting rights at Big Bethel</a></h2>
+<p class="byline">By Donnell Suggs</p>
+<a class="shot" href="https://www.theatlantavoice.com/politics/the-word-tonight-is-wake-up-bishop-barber-and-others-preach-voting-rights-at-big-bethel-927573eb" tabindex="-1" aria-hidden="true"><img src="../img/4002c0571d785f3c730538f5a394eda2d54d2ee4.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>At Atlanta’s Big Bethel AME, Bishop William J. Barber II urged Black voters to “wake up,” framing voting rights as sacred ahead of Election Day. <a class="lozenge more" href="https://www.theatlantavoice.com/politics/the-word-tonight-is-wake-up-bishop-barber-and-others-preach-voting-rights-at-big-bethel-927573eb">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-23T00:00:00+00:00" data-pub="8:00 PM EDT">Saturday, August 22, 2026 at 8:00 PM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>DC / Washington / <a href="https://afro.com/section/news/washington-d-c-news/">Afro-American</a></small></p>
-<h2><a href="https://www.afro.com/baltimore/baltimore-leaders-sue-kalshi-polymarket-over-alleged-illegal-sports-betting-37cdee29">Baltimore leaders sue Kalshi, Polymarket over alleged illegal sports betting</a></h2>
-<p class="byline"><small>By Megan Sayles</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://afro.com/section/news/washington-d-c-news/">Support</a></span></p>
-<a class="shot" href="https://www.afro.com/baltimore/baltimore-leaders-sue-kalshi-polymarket-over-alleged-illegal-sports-betting-37cdee29" tabindex="-1" aria-hidden="true"><img src="../img/066a8884ca71d31d3dcf3bc0debf74d9a5ccf9f0.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Baltimore leaders are suing prediction market companies Kalshi and Polymarket, alleging they are operating as unlicensed sportsbooks and violating the city’s consumer protection laws.</p>
-<p class="more"><a href="https://www.afro.com/baltimore/baltimore-leaders-sue-kalshi-polymarket-over-alleged-illegal-sports-betting-37cdee29">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://atlantablackstar.com/">Support</a></aside>
+<p class="source"><a href="https://atlantablackstar.com/"><strong>Atlanta Black Star</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T00:10:26+00:00" data-pub="8:10 PM EDT">Sun, Aug 23 @ 8PM EDT</time><a class="lozenge place" href="/search?state=GA">Georgia</a><a class="lozenge place" href="/search?place=Atlanta&state=GA">Atlanta</a></p>
+<h2><a href="https://atlantablackstar.com/2026/08/23/trump-unveils-shocking-new-reflecting-pool-design/">‘Are You Serious’: Trump Unveils Shocking New Reflecting Pool Design—Fans Zoom In and Say He’s Taken It Way Too Far</a></h2>
+<p class="byline">By Nicole Duncan-Smith</p>
+<a class="shot" href="https://atlantablackstar.com/2026/08/23/trump-unveils-shocking-new-reflecting-pool-design/" tabindex="-1" aria-hidden="true"><img src="../img/fab5496ca92f2d6693e3147cf49248eaebe8cee6.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>President Donald Trump is putting his stamp on the Lincoln Memorial Reflecting Pool once again. The president has unveiled another dramatic makeover for the iconic […] ‘Are You Serious’: Trump Unveils Shocking New Reflecting Pool Design—Fans Zoom In and Say He’s Taken It Way Too Far <a class="lozenge more" href="https://atlantablackstar.com/2026/08/23/trump-unveils-shocking-new-reflecting-pool-design/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-22T22:03:53+00:00" data-pub="5:03 PM CDT">Saturday, August 22, 2026 at 5:03 PM CDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>OK / Tulsa / <a href="https://theblackwallsttimes.com/">Black Wall Street Times</a></small></p>
-<h2><a href="https://theblackwallsttimes.com/2026/08/22/judge-denies-new-trial-for-karmelo-anthony-appeal-moves-forward/">Judge denies new trial for Karmelo Anthony; appeal moves forward</a></h2>
-<p class="byline"><small>By The Black Wall Street Times</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://theblackwallsttimes.com/support-black-media/">Donate</a></span></p>
-<a class="shot" href="https://theblackwallsttimes.com/2026/08/22/judge-denies-new-trial-for-karmelo-anthony-appeal-moves-forward/" tabindex="-1" aria-hidden="true"><img src="../img/e19d529ad5c6883461a0c817ed9b078846fb03c8.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>MCKINNEY, Texas — A Texas judge denied Karmelo Anthony’s request for a new trial Saturday, leaving his murder conviction and 35-year prison sentence intact while his attorneys continue challenging the case through the appeals process. Visiting Judge Michael Chitty, a retired Kaufman County judge assigned to the case, issued the ruling after two days of</p>
-<p class="more"><a href="https://theblackwallsttimes.com/2026/08/22/judge-denies-new-trial-for-karmelo-anthony-appeal-moves-forward/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://chicagocrusader.com/donation/">Donate</a></aside>
+<p class="source"><a href="https://chicagocrusader.com/category/news/chicago-local-news/"><strong>Chicago Crusader</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T00:04:32+00:00" data-pub="7:04 PM CDT">Sun, Aug 23 @ 7PM CDT</time><a class="lozenge place" href="/search?state=IL">Illinois</a><a class="lozenge place" href="/search?place=Chicago&state=IL">Chicago</a></p>
+<h2><a href="https://chicagocrusader.com/gary-churches-hold-sunday-services-in-the-dark/">Gary churches hold Sunday services in the dark</a></h2>
+<p class="byline">By Erick Johnson</p>
+<p>Pastor Dwight Mobley, Sr. posed a question to his congregation at Van Buren Missionary Baptist Church. “How many of you all had to throw food away?” A dozen people raised their hands. “Now, I need you to look at your waistline,” Pastor Mobley said before laughter erupted among the congregation. With no electricity, Pastor Mobley <a class="lozenge more" href="https://chicagocrusader.com/gary-churches-hold-sunday-services-in-the-dark/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-22T21:50:00+00:00" data-pub="4:50 PM CDT">Saturday, August 22, 2026 at 4:50 PM CDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>LA / Monroe / <a href="https://www.monroedispatchonline.com/">The Monroe Dispatch</a></small></p>
-<h2><a href="https://www.monroedispatchonline.com/story/2026/07/23/business/advertisement-for-bids/8448.html">ADVERTISEMENT FOR BIDS</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.monroedispatchonline.com/subscribe/start">Subscribe</a></span></p>
-<p>Separate sealed BIDS for the construction of WTP Control Room HVAC Modifications will be received by the City of Monroe, at the Purchasing Division, located at 1014 Grammont Street, Monroe, Louisiana 71201. Bids will be received until 1:45 P.M. on September 3, 2026. Bids will be opened and read aloud in the Purchasing Division, at 2:00 P.M. There will be a PRE-BID CONFERENCE held at 9:00 AM on</p>
-<p class="more"><a href="https://www.monroedispatchonline.com/story/2026/07/23/business/advertisement-for-bids/8448.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://atlantablackstar.com/">Support</a></aside>
+<p class="source"><a href="https://atlantablackstar.com/"><strong>Atlanta Black Star</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T23:00:09+00:00" data-pub="7:00 PM EDT">Sun, Aug 23 @ 7PM EDT</time><a class="lozenge place" href="/search?state=GA">Georgia</a><a class="lozenge place" href="/search?place=Atlanta&state=GA">Atlanta</a></p>
+<h2><a href="https://atlantablackstar.com/2026/08/23/sako-breaks-her-silence-after-divorce-announcement/">‘I’m Never Looking Back’: Sako Breaks Her Silence After Husband Dalton Ain’t Worried Announces Their Divorce and Accuses Her of Cheating</a></h2>
+<p class="byline">By Morgan Bridgeman</p>
+<a class="shot" href="https://atlantablackstar.com/2026/08/23/sako-breaks-her-silence-after-divorce-announcement/" tabindex="-1" aria-hidden="true"><img src="../img/a8977c61523bf13f189aa03d6ab849ba9ff60b84.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>Social media couple Dalton Ain’t Worried and Sako have recently found themselves at the center of swirling speculation about the state of their relationship. Dalton […] ‘I’m Never Looking Back’: Sako Breaks Her Silence After Husband Dalton Ain’t Worried Announces Their Divorce and Accuses Her of Cheating <a class="lozenge more" href="https://atlantablackstar.com/2026/08/23/sako-breaks-her-silence-after-divorce-announcement/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-22T21:48:23+00:00" data-pub="5:48 PM EDT">Saturday, August 22, 2026 at 5:48 PM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>DC / Washington / <a href="https://afro.com/section/news/washington-d-c-news/">Afro-American</a></small></p>
-<h2><a href="https://www.afro.com/opinion/stephen-a-smiths-problem-isnt-his-opinions-its-accountability-e1a7b447">Stephen A. Smith’s problem isn’t his opinions. It’s accountability</a></h2>
-<p class="byline"><small>By Joseph Williams</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://afro.com/section/news/washington-d-c-news/">Support</a></span></p>
-<a class="shot" href="https://www.afro.com/opinion/stephen-a-smiths-problem-isnt-his-opinions-its-accountability-e1a7b447" tabindex="-1" aria-hidden="true"><img src="../img/3a0daa3f5edd15922a5b37a57967ce203a50a989.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Stephen A. Smith says NABJ’s Thumbs Down Award was “Christmas arriving early.” But his furious reaction to criticism from an organization he once embraced reveals something more interesting about power, accountability and his relationship with Black America.</p>
-<p class="more"><a href="https://www.afro.com/opinion/stephen-a-smiths-problem-isnt-his-opinions-its-accountability-e1a7b447">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://afro.com/section/news/washington-d-c-news/">Support</a></aside>
+<p class="source"><a href="https://afro.com/section/news/washington-d-c-news/"><strong>Afro-American</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T23:00:00+00:00" data-pub="7:00 PM EDT">Sun, Aug 23 @ 7PM EDT</time><a class="lozenge place" href="/search?state=DC">Washington, D.C.</a><a class="lozenge place" href="/search?place=Washington&state=DC">Washington</a></p>
+<h2><a href="https://www.afro.com/baltimore-events/baltimore-beats-inaugural-legacy-gala-celebrates-the-guardians-of-black-storytelling-987c7992">Baltimore Beat&#x27;s inaugural legacy gala celebrates the guardians of Black storytelling</a></h2>
+<p class="byline">By Ericka Alston Buck</p>
+<a class="shot" href="https://www.afro.com/baltimore-events/baltimore-beats-inaugural-legacy-gala-celebrates-the-guardians-of-black-storytelling-987c7992" tabindex="-1" aria-hidden="true"><img src="../img/e80bb3b3881507f3feeae1457e0e67d92b3399e7.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>Baltimore Beat’s inaugural Legacy Gala celebrated W. Paul Coates, Dr. Leslie King-Hammond and Afro Charities for their contributions to preserving and advancing Black journalism, publishing, art and history. <a class="lozenge more" href="https://www.afro.com/baltimore-events/baltimore-beats-inaugural-legacy-gala-celebrates-the-guardians-of-black-storytelling-987c7992">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-22T20:59:00+00:00" data-pub="4:59 PM EDT">Saturday, August 22, 2026 at 4:59 PM EDT</time></small></p>
-<p><small>NC / Raleigh / <a href="https://caro.news/">The Carolinian</a></small></p>
-<h2><a href="https://caro.news/fugees-will-headline-global-citizens-antipoverty-festival/">Fugees’ Will Headline Global Citizen’s Antipoverty Festival</a></h2>
-<p class="byline"><small>By The Carolinian</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://caro.news/">Support</a></span></p>
-<a class="shot" href="https://caro.news/fugees-will-headline-global-citizens-antipoverty-festival/" tabindex="-1" aria-hidden="true"><img src="../img/498b6d8072732cf849c45ae51ac805b74bec20c5.jpg" alt="" width="480" height="640" loading="lazy" decoding="async"></a>
-<p>NEW YORK (AP) — Ms. Lauryn Hill and her Fugees’ bandmate Wyclef Jean will bring their pointed and political music to Global Citizen Festival this fall. The headliners, announced Thursday,</p>
-<p class="more"><a href="https://caro.news/fugees-will-headline-global-citizens-antipoverty-festival/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://theroanoketribune.org/subscribe/">Subscribe</a></aside>
+<p class="source"><a href="https://theroanoketribune.org/"><strong>The Roanoke Tribune</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T22:01:00+00:00" data-pub="6:01 PM EDT">Sun, Aug 23 @ 6PM EDT</time><a class="lozenge place" href="/search?state=VA">Virginia</a><a class="lozenge place" href="/search?place=Roanoke&state=VA">Roanoke</a></p>
+<h2><a href="https://theroanoketribune.org/dababy-headlines-star-studded-concert-at-elmwood-park/">DaBaby headlines star studded concert at Elmwood Park</a></h2>
+<p class="byline">By Mountain Media, LLC</p>
+<p>by Shawn Nowlin One of the biggest hip-hop stars in the world recently gave thousands of fans an unforgettable experience in downtown Roanoke. Presented by the Royal Jewelz Social Club, the “Something in the Mountains” concert took place on Aug. 8 at Elmwood Park, the city’s premier outdoor concert venue. With DaBaby, real name Jonathan <a class="lozenge more" href="https://theroanoketribune.org/dababy-headlines-star-studded-concert-at-elmwood-park/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-22T19:25:40+00:00" data-pub="2:25 PM CDT">Saturday, August 22, 2026 at 2:25 PM CDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>TX / Houston / <a href="https://aframnews.com/">African-American News and Issues</a></small></p>
-<h2><a href="https://aframnews.com/education/the-legacy-of-klein-isds-last-all-black-school/">THE LEGACY OF KLEIN ISD’S LAST ALL-BLACK SCHOOL</a></h2>
-<p class="byline"><small>By Nicole Washington</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.paypal.com/donate/?hosted_button_id=CSYL9VMKB2Y2E">Donate</a></span></p>
-<p>The Kohrville School- house holds an important place in the history of Klein Independent School District and the Black community in northwest Harris County. Once the last all-Black school in Klein ISD, the small school represents both the hardships created by segregation and the determination of Black families to provide their children with an education.</p>
-<p class="more"><a href="https://aframnews.com/education/the-legacy-of-klein-isds-last-all-black-school/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://theroanoketribune.org/subscribe/">Subscribe</a></aside>
+<p class="source"><a href="https://theroanoketribune.org/"><strong>The Roanoke Tribune</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T22:01:00+00:00" data-pub="6:01 PM EDT">Sun, Aug 23 @ 6PM EDT</time><a class="lozenge place" href="/search?state=VA">Virginia</a><a class="lozenge place" href="/search?place=Roanoke&state=VA">Roanoke</a></p>
+<h2><a href="https://theroanoketribune.org/sharon-hicks-hired-as-new-smith-mountain-lake-christian-academy-principal/">Sharon Hicks hired as new Smith Mountain Lake Christian Academy Principal</a></h2>
+<p class="byline">By Mountain Media, LLC</p>
+<p>by Shawn Nowlin Smith Mountain Lake Christian Academy (SMLCA), a private, coeducational school, has hired Sharon Hicks as its new high school principal. Her hiring comes after Lincoln Bryan served in the role for several years. More than three decades of experience is what Hicks comes with. In addition to being an instructional coach, she <a class="lozenge more" href="https://theroanoketribune.org/sharon-hicks-hired-as-new-smith-mountain-lake-christian-academy-principal/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-22T19:15:13+00:00" data-pub="2:15 PM CDT">Saturday, August 22, 2026 at 2:15 PM CDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>TX / Houston / <a href="https://aframnews.com/">African-American News and Issues</a></small></p>
-<h2><a href="https://aframnews.com/opinion/free-enterprise-capitalism-corporate-capitalism/">FREE ENTERPRISE CAPITALISM/ CORPORATE CAPITALISM</a></h2>
-<p class="byline"><small>By Bobby E Mills, PhD</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.paypal.com/donate/?hosted_button_id=CSYL9VMKB2Y2E">Donate</a></span></p>
-<p>America must recognize the important distinction between free enterprise capitalism and vulgar capitalism. Free enterprise is grounded in private property, competition among private businesses, profit, and the forces of supply and demand rather than government control. Vulgar capitalism, by contrast, enables corporations to exploit working-class labor and gouge the middle class through inflated pr</p>
-<p class="more"><a href="https://aframnews.com/opinion/free-enterprise-capitalism-corporate-capitalism/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://theroanoketribune.org/subscribe/">Subscribe</a></aside>
+<p class="source"><a href="https://theroanoketribune.org/"><strong>The Roanoke Tribune</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T22:01:00+00:00" data-pub="6:01 PM EDT">Sun, Aug 23 @ 6PM EDT</time><a class="lozenge place" href="/search?state=VA">Virginia</a><a class="lozenge place" href="/search?place=Roanoke&state=VA">Roanoke</a></p>
+<h2><a href="https://theroanoketribune.org/malachi-coleman-takes-his-place-among-william-fleming-greats/">Malachi Coleman takes his place among William Fleming greats</a></h2>
+<p class="byline">By Mountain Media, LLC</p>
+<p>by Victor Q. Banks, Roanoke Rambler For generations, William Fleming High School has produced athletes whose accomplishments have carried the Colonels’ name well beyond Roanoke. This summer, another name was formally added to that tradition. Malachi Coleman, now a running back at Syracuse University, returned home to William Fleming where he was honored as the <a class="lozenge more" href="https://theroanoketribune.org/malachi-coleman-takes-his-place-among-william-fleming-greats/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-22T18:00:00+00:00" data-pub="1:00 PM CDT">Saturday, August 22, 2026 at 1:00 PM CDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>MO / St. Louis / <a href="https://www.stlamerican.com/">St. Louis American</a></small></p>
-<h2><a href="https://www.stlamerican.com/news/dems-must-address-black-male-economic-woes/">Dems must address Black male economic woes</a></h2>
-<p class="byline"><small>By Kevin Harris</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.stlamerican.com/support/">Donate</a></span></p>
-<a class="shot" href="https://www.stlamerican.com/news/dems-must-address-black-male-economic-woes/" tabindex="-1" aria-hidden="true"><img src="../img/6c0c78790465d62ddf16db9a51f7c390288c44c2.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Democrats aspire to be the party of working people. But if they want that message to resonate with one of their most loyal constituencies, they need to speak more directly — and more consistently — about the specific economic challenges confronting Black men and boys. A new report from the Virginia State University John Mercer</p>
-<p class="more"><a href="https://www.stlamerican.com/news/dems-must-address-black-male-economic-woes/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://theroanoketribune.org/subscribe/">Subscribe</a></aside>
+<p class="source"><a href="https://theroanoketribune.org/"><strong>The Roanoke Tribune</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T22:01:00+00:00" data-pub="6:01 PM EDT">Sun, Aug 23 @ 6PM EDT</time><a class="lozenge place" href="/search?state=VA">Virginia</a><a class="lozenge place" href="/search?place=Roanoke&state=VA">Roanoke</a></p>
+<h2><a href="https://theroanoketribune.org/judge-orders-virginia-county-to-replace-confederate-names-it-restored-to-schools/">Judge orders Virginia county to replace Confederate names it restored to schools</a></h2>
+<p class="byline">By Mountain Media, LLC</p>
+<p>Harrisonburg, VA – A federal judge in the U.S. District Court for the Western District of Virginia issued an opinion on August 6, 2026, finding that the Shenandoah County School Board discriminated against Black students by reinstating school names that honor Confederate generals. The Court found that the evidence at trial overwhelmingly supported the students’ <a class="lozenge more" href="https://theroanoketribune.org/judge-orders-virginia-county-to-replace-confederate-names-it-restored-to-schools/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-22T15:56:12+00:00" data-pub="11:56 AM EDT">Saturday, August 22, 2026 at 11:56 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>MI / Flint / <a href="https://flintbeat.com/">Flint Beat</a></small></p>
-<h2><a href="https://www.flintbeat.com/photos/despite-flint-storms-and-delays-crim-races-forge-ahead-2293e7e0">Despite Flint storms and delays, Crim races forge ahead</a></h2>
-<p class="byline"><small>By Jiquanda Johnson, Anthony Summers</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://flintbeat.com/">Support</a></span></p>
-<a class="shot" href="https://www.flintbeat.com/photos/despite-flint-storms-and-delays-crim-races-forge-ahead-2293e7e0" tabindex="-1" aria-hidden="true"><img src="../img/d263ba106dad0adb6a7083e6b70d9f4fa34fd4b6.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Storms delayed the Crim Festival of Races and canceled its signature 10-mile event, but Flint runners still filled the streets for the 5-mile and 5K races during the tradition’s 49th year.</p>
-<p class="more"><a href="https://www.flintbeat.com/photos/despite-flint-storms-and-delays-crim-races-forge-ahead-2293e7e0">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://afro.com/section/news/washington-d-c-news/">Support</a></aside>
+<p class="source"><a href="https://afro.com/section/news/washington-d-c-news/"><strong>Afro-American</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T22:00:00+00:00" data-pub="6:00 PM EDT">Sun, Aug 23 @ 6PM EDT</time><a class="lozenge place" href="/search?state=DC">Washington, D.C.</a><a class="lozenge place" href="/search?place=Washington&state=DC">Washington</a></p>
+<h2><a href="https://www.afro.com/black-history/how-globe-poster-printing-corp-preserved-black-history-one-poster-at-a-time-7668dac5">How Globe Poster Printing Corp. preserved Black history, one poster at a time</a></h2>
+<p class="byline">By Ericka Alston Buck</p>
+<a class="shot" href="https://www.afro.com/black-history/how-globe-poster-printing-corp-preserved-black-history-one-poster-at-a-time-7668dac5" tabindex="-1" aria-hidden="true"><img src="../img/48cfd6fd04121a1ce4e00358681064d568c41230.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Globe Poster’s vivid prints, once used to promote Baltimore events, became a lasting visual record of Black music, civil rights and community life. <a class="lozenge more" href="https://www.afro.com/black-history/how-globe-poster-printing-corp-preserved-black-history-one-poster-at-a-time-7668dac5">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-22T15:51:10+00:00" data-pub="10:51 AM CDT">Saturday, August 22, 2026 at 10:51 AM CDT</time></small></p>
-<p><small>LA / Baton Rouge / <a href="https://www.brweeklypress.com/">Weekly Press</a></small></p>
-<h2><a href="https://www.brweeklypress.com/bakers-children-have-a-stake-in-the-citys-fight-against-violence/">Baker’s Children Have a Stake in the City’s Fight Against Violence</a></h2>
-<p class="byline"><small>By Ivory D. Payne</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.brweeklypress.com/subscribe">Subscribe</a></span></p>
-<a class="shot" href="https://www.brweeklypress.com/bakers-children-have-a-stake-in-the-citys-fight-against-violence/" tabindex="-1" aria-hidden="true"><img src="../img/99f40620e27b34d9fdc7ca0bf70176aa08d7a052.jpg" alt="" width="480" height="319" loading="lazy" decoding="async"></a>
-<p>Baker’s new violence-prevention effort is asking a fundamental question: What will it take to make sure the city’s children can grow up safe, supported and full of hope?</p>
-<p class="more"><a href="https://www.brweeklypress.com/bakers-children-have-a-stake-in-the-citys-fight-against-violence/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.thekansascityglobe.com/etype-subscribe">Subscribe</a></aside>
+<p class="source"><a href="https://www.thekansascityglobe.com/"><strong>Kansas City Globe</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T21:07:45+00:00" data-pub="4:07 PM CDT">Sun, Aug 23 @ 4PM CDT</time><a class="lozenge place" href="/search?state=MO">Missouri</a><a class="lozenge place" href="/search?place=Kansas+City&state=MO">Kansas City</a></p>
+<h2><a href="https://www.thekansascityglobe.com/news/rep-anthony-ealy-weekly-jefferson-city-update">Rep. Anthony Ealy Weekly Jefferson City Update</a></h2>
+<p class="byline">By News Staff</p>
+<p>Rep. Anthony Ealy Weekly Jefferson City UpdateNews StaffSun, 08/23/2026 - 16:07 <a class="lozenge more" href="https://www.thekansascityglobe.com/news/rep-anthony-ealy-weekly-jefferson-city-update">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-22T14:55:23+00:00" data-pub="7:55 AM PDT">Saturday, August 22, 2026 at 7:55 AM PDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>CA / Bay / <a href="https://thesunreporter.com/">San Francisco Sun Reporter</a></small></p>
-<h2><a href="https://thesunreporter.com/sixth-streets-lifeline-isnt-closing-its-moving/">Sixth Street’s Lifeline Isn’t Closing , It’s Moving</a></h2>
-<p class="byline"><small>By Evan Ward</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://thesunreporter.com/subscribe/">Subscribe</a></span></p>
-<p>Here’s what survives the city’s Sixth Street shake-up: the work. The Sixth Street Self-Help Center at 169 Sixth St. will close at the end of the year, after Mayor Daniel Lurie’s administration ended the center’s city contract as part of its plan to revitalize the corridor. The services move with the nonprofit that provides them:</p>
-<p class="more"><a href="https://thesunreporter.com/sixth-streets-lifeline-isnt-closing-its-moving/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://atlantablackstar.com/">Support</a></aside>
+<p class="source"><a href="https://atlantablackstar.com/"><strong>Atlanta Black Star</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T20:30:00+00:00" data-pub="4:30 PM EDT">Sun, Aug 23 @ 4PM EDT</time><a class="lozenge place" href="/search?state=GA">Georgia</a><a class="lozenge place" href="/search?place=Atlanta&state=GA">Atlanta</a></p>
+<h2><a href="https://atlantablackstar.com/2026/08/23/hundreds-of-black-children-buried-in-unmarked-graves/">‘It’s Heart-Wrenching’: Hundreds of Black Children Buried in Unmarked Graves at Maryland Juvenile Detention Center, New Research Exposes a Dark Past</a></h2>
+<p class="byline">By Mary Ginther</p>
+<a class="shot" href="https://atlantablackstar.com/2026/08/23/hundreds-of-black-children-buried-in-unmarked-graves/" tabindex="-1" aria-hidden="true"><img src="../img/994c33164311b3d6e3039fcc2aae4373dc3a428c.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>A group of lawmakers, local leaders, and citizens are working to investigate hundreds of graves at the site of a former Maryland juvenile detention center. […] ‘It’s Heart-Wrenching’: Hundreds of Black Children Buried in Unmarked Graves at Maryland Juvenile Detention Center, New Research Exposes a Dark Past <a class="lozenge more" href="https://atlantablackstar.com/2026/08/23/hundreds-of-black-children-buried-in-unmarked-graves/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-22T14:25:00+00:00" data-pub="10:25 AM EDT">Saturday, August 22, 2026 at 10:25 AM EDT</time></small></p>
-<p><small>NY / Brooklyn / <a href="https://bkreader.com/">BK Reader</a></small></p>
-<h2><a href="https://www.bkreader.com/business-innovation/brooklyn-brewery-to-close-this-month-new-location-to-be-nearly-quadruple-the-size-12691975">Brooklyn Brewery to Close This Month, New Location to be Nearly Quadruple The Size</a></h2>
-<p class="byline"><small>By BK Reader Staff</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://bkreader.com/">Support</a></span></p>
-<a class="shot" href="https://www.bkreader.com/business-innovation/brooklyn-brewery-to-close-this-month-new-location-to-be-nearly-quadruple-the-size-12691975" tabindex="-1" aria-hidden="true"><img src="../img/3d0ae6bd36d74a0dcdeddc7a99b7a4a14ba3ed1c.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>After a Farewell Party for its 30 year home in Williamsburg, Brooklyn Brewery will relocate to a larger space just four blocks away.</p>
-<p class="more"><a href="https://www.bkreader.com/business-innovation/brooklyn-brewery-to-close-this-month-new-location-to-be-nearly-quadruple-the-size-12691975">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.paypal.com/donate/?hosted_button_id=CSYL9VMKB2Y2E">Donate</a></aside>
+<p class="source"><a href="https://aframnews.com/"><strong>African-American News and Issues</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T19:12:34+00:00" data-pub="2:12 PM CDT">Sun, Aug 23 @ 2PM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=Houston&state=TX">Houston</a></p>
+<h2><a href="https://aframnews.com/education/african-american-museum-set-to-become-one-of-the-nations-largest/">AFRICAN AMERICAN MUSEUM SET TO BECOME ONE OF THE NATION’S LARGEST</a></h2>
+<p class="byline">By Marcus Williams</p>
+<p>San Antonio is preparing to make a major contribution to the preservation of African American history with the expansion of the San Antonio African American Community Archive and Museum, known as SAAACAM. The organization plans to transform the historic Kress-Grant buildings downtown into a 103,000-square-foot cultural center. Once completed, the project is expected to become <a class="lozenge more" href="https://aframnews.com/education/african-american-museum-set-to-become-one-of-the-nations-largest/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-22T14:03:00+00:00" data-pub="10:03 AM EDT">Saturday, August 22, 2026 at 10:03 AM EDT</time></small></p>
-<p><small>NY / Brooklyn / <a href="https://bkreader.com/">BK Reader</a></small></p>
-<h2><a href="https://www.bkreader.com/best-of-brooklyn/neighborhood-profilebrownsville-8623698">Neighborhood Profile|Brownsville</a></h2>
-<p class="byline"><small>By BK Reader Staff</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://bkreader.com/">Support</a></span></p>
-<a class="shot" href="https://www.bkreader.com/best-of-brooklyn/neighborhood-profilebrownsville-8623698" tabindex="-1" aria-hidden="true"><img src="../img/e7029c8b69853eb6ec3ab8ee5bcd595aec5b1317.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p class="more"><a href="https://www.bkreader.com/best-of-brooklyn/neighborhood-profilebrownsville-8623698">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://mydigitalpublication.com/publication/register.php?&amp;publication_id=3254&amp;subscription_id=2301">Subscribe</a></aside>
+<p class="source"><a href="https://floridasunreview.com/"><strong>The Florida Sun</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T18:47:56+00:00" data-pub="2:47 PM EDT">Sun, Aug 23 @ 2PM EDT</time><a class="lozenge place" href="/search?state=FL">Florida</a><a class="lozenge place" href="/search?place=Orlando&state=FL">Orlando</a></p>
+<h2><a href="https://floridasunreview.com/every-inch-a-lady-review/">Every Inch a Lady Review: Audrey Smaltz’s Fabulous Life in Fashion</a></h2>
+<p class="byline">By Florida Sun Review</p>
+<p>Audrey Smaltz recounts a remarkable journey from Harlem to the heights of the fashion industry in “Every Inch a Lady.” The lively memoir takes readers through modeling, Ebony magazine, entrepreneurship, racism, romance and a career that helped make Smaltz a force in American fashion. <a class="lozenge more" href="https://floridasunreview.com/every-inch-a-lady-review/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 </div>
 <p><a id="more" href="black-owned-11.html">More stories</a></p>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="../index.html">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -400,6 +447,47 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>

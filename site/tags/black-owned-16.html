@@ -13,12 +13,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(../fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -27,22 +40,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -50,19 +69,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -75,7 +126,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -93,7 +144,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="../index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="../masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -106,7 +157,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="../subjects/news.html">News</a></li><li><a href="../subjects/politics.html">Politics</a></li><li><a href="../subjects/opinion.html">Opinion</a></li><li><a href="../subjects/health.html">Health</a></li><li><a href="../subjects/environment.html">Environment</a></li><li><a href="../subjects/education.html">Education</a></li><li><a href="../subjects/business.html">Business</a></li><li><a href="../subjects/housing.html">Housing</a></li><li><a href="../subjects/sports.html">Sports</a></li><li><a href="../subjects/food.html">Food</a></li><li><a href="../subjects/arts.html">Arts</a></li></ul></nav>
@@ -121,269 +172,274 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <main id="main">
 <div id="feed-items">
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T07:00:00+00:00" data-pub="12:00 AM PDT">Thursday, August 20, 2026 at 12:00 AM PDT</time></small></p>
-<p><small>CA / Sacramento / <a href="https://sacobserver.com/">Sacramento Observer</a></small></p>
-<h2><a href="https://www.theobserver.media/california/political-playback-california-black-caucus-elects-jackson-as-next-chair-e3818b42">Political Playback: California Black Caucus Elects Jackson as Next Chair</a></h2>
-<p class="byline"><small>By California Black Media</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://sacobserver.com/">Support</a></span></p>
-<a class="shot" href="https://www.theobserver.media/california/political-playback-california-black-caucus-elects-jackson-as-next-chair-e3818b42" tabindex="-1" aria-hidden="true"><img src="../img/46d76cd2376e6d7b927d89eca9379faf7bd25a9a.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>California political roundup: Black Caucus picks new leaders, Becerra leads Hilton in governor poll, and Newsom expands AI tools and heat tracking.</p>
-<p class="more"><a href="https://www.theobserver.media/california/political-playback-california-black-caucus-elects-jackson-as-next-chair-e3818b42">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://inlandvalleynews.com/paper-subscription/">Subscribe</a></aside>
+<p class="source"><a href="https://inlandvalleynews.com/"><strong>Inland Valley News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T22:59:26+00:00" data-pub="3:59 PM PDT">Thu, Aug 20 @ 3PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Upland&state=CA">Upland</a></p>
+<h2><a href="https://inlandvalleynews.com/on-your-november-ballot-prop-37-would-assist-middle-income-californians-to-take-out-second-mortgages-to-buy-new-homes/">On Your November Ballot: Prop 37 Would Assist Middle-Income Californians to Take Out Second Mortgages to Buy New Homes</a></h2>
+<p class="byline">By talese morrow</p>
+<a class="shot" href="https://inlandvalleynews.com/on-your-november-ballot-prop-37-would-assist-middle-income-californians-to-take-out-second-mortgages-to-buy-new-homes/" tabindex="-1" aria-hidden="true"><img src="../img/0b36d2ce71ac134cb29014eb643ad3a2248edf5d.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>On Your November Ballot: Prop 37 Would Assist Middle-Income Californians to Take Out Second Mortgages to Buy New Homes Headline talese morrow Shutterstock This November, California voters will decide whether to establish a second-mortgage program to help eligible middle-income homebuyers purchase qualifying homes. Proposition (Prop 37), the Second Mortgage Homebuyer Program and Revenue Bond Initia <a class="lozenge more" href="https://inlandvalleynews.com/on-your-november-ballot-prop-37-would-assist-middle-income-californians-to-take-out-second-mortgages-to-buy-new-homes/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T07:00:00+00:00" data-pub="12:00 AM PDT">Thursday, August 20, 2026 at 12:00 AM PDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>CA / Sacramento / <a href="https://sacobserver.com/">Sacramento Observer</a></small></p>
-<h2><a href="https://www.theobserver.media/opinion/why-nolan-wells-death-has-left-black-parents-grieving">Why Nolan Wells’ Death Has Left Black Parents Grieving</a></h2>
-<p class="byline"><small>By Word In Black</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://sacobserver.com/">Support</a></span></p>
-<a class="shot" href="https://www.theobserver.media/opinion/why-nolan-wells-death-has-left-black-parents-grieving" tabindex="-1" aria-hidden="true"><img src="../img/6342d476a2fc848af27c6185054f1477176da456.jpg" alt="" width="480" height="600" loading="lazy" decoding="async"></a>
-<p>Nolan Wells’ undetermined death has intensified grief and fear among Black parents, evoking historic trauma and distrust in institutions as his family seeks answers.</p>
-<p class="more"><a href="https://www.theobserver.media/opinion/why-nolan-wells-death-has-left-black-parents-grieving">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.thereporternewspaperonline.com/">Support</a></aside>
+<p class="source"><a href="https://www.thereporternewspaperonline.com/"><strong>The Akron Reporter</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T22:56:05+00:00" data-pub="6:56 PM EDT">Thu, Aug 20 @ 6PM EDT</time><a class="lozenge place" href="/search?state=OH">Ohio</a><a class="lozenge place" href="/search?place=Akron&state=OH">Akron</a></p>
+<h2><a href="https://www.thereporternewspaperonline.com/single-post/city-of-akron-terminates-officer-davon-fields">City of Akron Terminates Officer Davon Fields</a></h2>
+<p class="byline">By Editor Ellis</p>
+<p>Today, the City of Akron is announcing the results of the disciplinary processes associated with two police officers involved in the fatal shooting of Jazmir Tucker in November 2024. The City of Akron has terminated Officer Davon Fields after finding multiple policy violations, including failing to properly provide medical aid following the shooting and violating the Department&#x27;s Body Worn Camera  <a class="lozenge more" href="https://www.thereporternewspaperonline.com/single-post/city-of-akron-terminates-officer-davon-fields">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T07:00:00+00:00" data-pub="12:00 AM PDT">Thursday, August 20, 2026 at 12:00 AM PDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>CA / Sacramento / <a href="https://sacobserver.com/">Sacramento Observer</a></small></p>
-<h2><a href="https://www.theobserver.media/national/karmelo-anthonys-attorney-asks-judge-for-new-trial-in-texas-track-meet-killing-f054f996">Karmelo Anthony’s Attorney Asks Judge for New Trial in Texas Track Meet Killing</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://sacobserver.com/">Support</a></span></p>
-<a class="shot" href="https://www.theobserver.media/national/karmelo-anthonys-attorney-asks-judge-for-new-trial-in-texas-track-meet-killing-f054f996" tabindex="-1" aria-hidden="true"><img src="../img/4340e61567b712bd5313c59b9014e33ddac7a517.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Karmelo Anthony’s attorney seeks a new trial in the Texas track meet stabbing case, alleging off-the-record proceedings and an unfulfilled agreement with prosecutors.</p>
-<p class="more"><a href="https://www.theobserver.media/national/karmelo-anthonys-attorney-asks-judge-for-new-trial-in-texas-track-meet-killing-f054f996">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://flintbeat.com/">Support</a></aside>
+<p class="source"><a href="https://flintbeat.com/"><strong>Flint Beat</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T22:00:00+00:00" data-pub="6:00 PM EDT">Thu, Aug 20 @ 6PM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=Flint&state=MI">Flint</a></p>
+<h2><a href="https://www.flintbeat.com/government/flint-city-council-approves-782-million-for-berston-field-house-expansion-e200da1b">Berston Field House expansion gains $7.89M to finish first phase</a></h2>
+<p class="byline">By Mitchell Kukulka</p>
+<a class="shot" href="https://www.flintbeat.com/government/flint-city-council-approves-782-million-for-berston-field-house-expansion-e200da1b" tabindex="-1" aria-hidden="true"><img src="../img/47b01e35188a735f5765caff07228f98877637cc.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Flint City Council approved $7.82 million to fund the first phase of Berston Field House’s expansion, moving the 103-year-old community center closer to a major renovation that could triple its size and double its visitor capacity. <a class="lozenge more" href="https://www.flintbeat.com/government/flint-city-council-approves-782-million-for-berston-field-house-expansion-e200da1b">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T07:00:00+00:00" data-pub="12:00 AM PDT">Thursday, August 20, 2026 at 12:00 AM PDT</time></small></p>
-<p><small>CA / Sacramento / <a href="https://sacobserver.com/">Sacramento Observer</a></small></p>
-<h2><a href="https://www.theobserver.media/national/jealous-wins-anti-slapp-ruling-against-sierra-club-7306f46f">Jealous Wins Anti-SLAPP Ruling Against Sierra Club</a></h2>
-<p class="byline"><small>By Dr. Angelo A. Williams | OBSERVER Correspondent</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://sacobserver.com/">Support</a></span></p>
-<a class="shot" href="https://www.theobserver.media/national/jealous-wins-anti-slapp-ruling-against-sierra-club-7306f46f" tabindex="-1" aria-hidden="true"><img src="../img/f4856c82f0dbb0df0db2c0322222627f9bbf4b3d.jpg" alt="" width="480" height="658" loading="lazy" decoding="async"></a>
-<p>Arbitrator Dismisses Sierra Club’s Counterclaims, Clearing The Way For Former Executive Director’s Racial Discrimination Case To Proceed</p>
-<p class="more"><a href="https://www.theobserver.media/national/jealous-wins-anti-slapp-ruling-against-sierra-club-7306f46f">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://givebutter.com/VNZPG6">Donate</a></aside>
+<p class="source"><a href="https://www.ourweekly.com/"><strong>Our Weekly</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T21:30:00+00:00" data-pub="2:30 PM PDT">Thu, Aug 20 @ 2PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://www.ourweekly.com/2026/08/20/state-warns-of-west-nile-virus-activity-at-a-five-year-high/">State warns of West Nile Virus activity at a five-year high</a></h2>
+<p class="byline">By City News Service</p>
+<p>California health officials warned on Thursday that West Nile virus activity has reached a five-year high statewide, weeks after Los Angeles County reported its first human case of the year. <a class="lozenge more" href="https://www.ourweekly.com/2026/08/20/state-warns-of-west-nile-virus-activity-at-a-five-year-high/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T06:57:48+00:00" data-pub="11:57 PM PDT">Wednesday, August 19, 2026 at 11:57 PM PDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>CA / Sacramento / <a href="https://sacobserver.com/">Sacramento Observer</a></small></p>
-<h2><a href="https://www.theobserver.media/health/nichelle-nichols-death-highlights-gaps-in-emergency-care">Nichelle Nichols’ Death Highlights Gaps in Emergency Care</a></h2>
-<p class="byline"><small>By Genoa Barrow</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://sacobserver.com/">Support</a></span></p>
-<a class="shot" href="https://www.theobserver.media/health/nichelle-nichols-death-highlights-gaps-in-emergency-care" tabindex="-1" aria-hidden="true"><img src="../img/c91048cf393c5975dfe014b089f50276f1bf4207.jpg" alt="" width="480" height="712" loading="lazy" decoding="async"></a>
-<p>Nichelle Nichols’ estate won a $13 million wrongful-death verdict over claims that failures at a New Mexico emergency room led to the “Star Trek” icon’s death.</p>
-<p class="more"><a href="https://www.theobserver.media/health/nichelle-nichols-death-highlights-gaps-in-emergency-care">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://givebutter.com/VNZPG6">Donate</a></aside>
+<p class="source"><a href="https://www.ourweekly.com/"><strong>Our Weekly</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T21:27:00+00:00" data-pub="2:27 PM PDT">Thu, Aug 20 @ 2PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://www.ourweekly.com/2026/08/20/la-county-rescue-team-returning-from-colombia-quake-mission/">LA County Rescue Team returning from Colombia Quake Mission</a></h2>
+<p class="byline">By City News Service</p>
+<a class="shot" href="https://www.ourweekly.com/2026/08/20/la-county-rescue-team-returning-from-colombia-quake-mission/" tabindex="-1" aria-hidden="true"><img src="../img/91dd4415ba3307ea3f8e989669072255e251f182.jpg" alt="" width="480" height="321" loading="lazy" decoding="async"></a>
+<p>An urban search and rescue team from the Los Angeles County Fire Department will return tonight from Colombia, where it was sent to assist with recovery efforts from last week’s <a class="lozenge more" href="https://www.ourweekly.com/2026/08/20/la-county-rescue-team-returning-from-colombia-quake-mission/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T06:49:38+00:00" data-pub="11:49 PM PDT">Wednesday, August 19, 2026 at 11:49 PM PDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>CA / Sacramento / <a href="https://sacobserver.com/">Sacramento Observer</a></small></p>
-<h2><a href="https://www.theobserver.media/health/data-shows-gaps-in-sacramento-emergency-care-for-black-patients">Data Shows Gaps in Sacramento Emergency Care for Black Patients</a></h2>
-<p class="byline"><small>By Genoa Barrow</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://sacobserver.com/">Support</a></span></p>
-<a class="shot" href="https://www.theobserver.media/health/data-shows-gaps-in-sacramento-emergency-care-for-black-patients" tabindex="-1" aria-hidden="true"><img src="../img/5d7d2dae8cda79be3b8d593e3cdb8986f0dd8033.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Sacramento’s emergency care delays and outdated EMS policies are straining hospitals, with data showing Black residents face disproportionate ER use and preventable hospitalizations.</p>
-<p class="more"><a href="https://www.theobserver.media/health/data-shows-gaps-in-sacramento-emergency-care-for-black-patients">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="http://www.jacksonvillefreepress.com//subscribe">Subscribe</a></aside>
+<p class="source"><a href="https://www.jacksonvillefreepress.com/"><strong>Jacksonville Free Press</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T20:36:16+00:00" data-pub="4:36 PM EDT">Thu, Aug 20 @ 4PM EDT</time><a class="lozenge place" href="/search?state=FL">Florida</a><a class="lozenge place" href="/search?place=Jacksonville&state=FL">Jacksonville</a></p>
+<h2><a href="https://jacksonvillefreepress.com/birthright-citizenship-the-14th-amendment-was-americas-answer-to-a-lie/">Birthright Citizenship: The 14th Amendment Was America’s Answer to a Lie</a></h2>
+<p class="byline">By Lynnfaye</p>
+<p>By BlackPressUSA Newswire | ORLANDO ADVOCATE—The 14th Amendment was enacted to counter a historical “legal lie” that allowed the United States to deny membership to individuals born on American soil based on race. <a class="lozenge more" href="https://jacksonvillefreepress.com/birthright-citizenship-the-14th-amendment-was-americas-answer-to-a-lie/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T06:40:11+00:00" data-pub="11:40 PM PDT">Wednesday, August 19, 2026 at 11:40 PM PDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>CA / Inland Empire / <a href="https://precinctreporter.com/">Precinct Reporter</a></small></p>
-<h2><a href="https://precinctreporter.com/2026/08/20/1-2m-to-expand-affordable-housing-in-fontana/">$1.2M to Expand Affordable Housing in Fontana</a></h2>
-<p class="byline"><small>By Precinct Reporter News</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://precinctreporter.com/subscribe/">Subscribe</a></span></p>
-<p>The funding will help address affordable housing shortages in the City of Fontana and give more low-income Fontana residents pathways to permanent housing Rep. Pete Aguilar announced that he secured $1.2 million in community project funding for the City of Fontana’s Aldea Apartments Acquisition Phase II project. This grant funding will help expand affordable housing and address homelessness in the</p>
-<p class="more"><a href="https://precinctreporter.com/2026/08/20/1-2m-to-expand-affordable-housing-in-fontana/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.illinoislottery.com/giving-back/education?utm_source=multicultural&amp;utm_medium=ndigo&amp;utm_campaign=awareness&amp;utm_term=education">Donate</a></aside>
+<p class="source"><a href="https://ndigo.com/"><strong>N&#x27;Digo</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T20:14:43+00:00" data-pub="3:14 PM CDT">Thu, Aug 20 @ 3PM CDT</time><a class="lozenge place" href="/search?state=IL">Illinois</a><a class="lozenge place" href="/search?place=Cook+County&state=IL">Cook County</a></p>
+<h2><a href="https://ndigo.com/2026/08/20/insidious-out-of-the-further-review/">Insidious Out Of The Further Review</a></h2>
+<p class="byline">By Reggie Ponder, The Reel Critic</p>
+<p>This is a solid film in the franchise but beyond keeping the demons out, there is not enough to keep me wanting to get <a class="lozenge more" href="https://ndigo.com/2026/08/20/insidious-out-of-the-further-review/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T06:32:29+00:00" data-pub="11:32 PM PDT">Wednesday, August 19, 2026 at 11:32 PM PDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>CA / Inland Empire / <a href="https://precinctreporter.com/">Precinct Reporter</a></small></p>
-<h2><a href="https://precinctreporter.com/2026/08/20/ca-black-caucus-elects-new-leaders/">CA Black Caucus Elects New Leaders</a></h2>
-<p class="byline"><small>By Precinct Reporter News</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://precinctreporter.com/subscribe/">Subscribe</a></span></p>
-<p>By Bo Tefu and Antonio Ray Harvey California Black Media The California Legislative Black Caucus (CLBC) has announced that Assemblymember Corey Jackson (D-Moreno Valley) was elected the chairperson for the 2027-2028 legislative session. Sen. Laura Richardson (D-Inglewood) will serve as the vice chair of the political organization. Jackson and Richardson will replace Sen. Akilah Weber Pierson (D-Sa</p>
-<p class="more"><a href="https://precinctreporter.com/2026/08/20/ca-black-caucus-elects-new-leaders/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://inlandvalleynews.com/paper-subscription/">Subscribe</a></aside>
+<p class="source"><a href="https://inlandvalleynews.com/"><strong>Inland Valley News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T19:46:01+00:00" data-pub="12:46 PM PDT">Thu, Aug 20 @ 12PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Upland&state=CA">Upland</a></p>
+<h2><a href="https://inlandvalleynews.com/fam-fest-returns-for-a-day-of-music-family-fun-and-community-connection/">Fam Fest Returns for a Day of Music, Family Fun and Community Connection</a></h2>
+<p class="byline">By admin</p>
+<a class="shot" href="https://inlandvalleynews.com/fam-fest-returns-for-a-day-of-music-family-fun-and-community-connection/" tabindex="-1" aria-hidden="true"><img src="../img/cc147c4deb5bc3d86521e4c4cc30f679438b6a3f.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Fam Fest Returns for a Day of Music, Family Fun and Community Connection Trending now admin Carson, CA—Stevenson Park is set to become one of Carson’s biggest gathering places this weekend as the City of Carson welcomes families for Fam Fest, a free community celebration bringing residents together for an afternoon of music, entertainment, food, resources and activities for all ages. Fam Fest wi <a class="lozenge more" href="https://inlandvalleynews.com/fam-fest-returns-for-a-day-of-music-family-fun-and-community-connection/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T06:26:30+00:00" data-pub="11:26 PM PDT">Wednesday, August 19, 2026 at 11:26 PM PDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>CA / Inland Empire / <a href="https://precinctreporter.com/">Precinct Reporter</a></small></p>
-<h2><a href="https://precinctreporter.com/2026/08/20/rising-health-costs-are-forcing-americans-to-forego-care/">Rising Health Costs Are Forcing Americans to Forego Care</a></h2>
-<p class="byline"><small>By Precinct Reporter News</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://precinctreporter.com/subscribe/">Subscribe</a></span></p>
-<a class="shot" href="https://precinctreporter.com/2026/08/20/rising-health-costs-are-forcing-americans-to-forego-care/" tabindex="-1" aria-hidden="true"><img src="../img/f0db502e6bc749ba2bb59b74b4e38f4c4ba6e241.jpg" alt="" width="480" height="305" loading="lazy" decoding="async"></a>
-<p>By Sunita Sohrabji Susan Alleman thought surviving breast cancer would mean putting the hardest chapter of her life behind her. But it was just the beginning of the next arc in her long journey to healing. “Just because someone says they’re a cancer survivor, that doesn’t mean that the journey is over,” said Alleman. “It’s the beginning of its own journey.” Alleman is among millions of Americans w</p>
-<p class="more"><a href="https://precinctreporter.com/2026/08/20/rising-health-costs-are-forcing-americans-to-forego-care/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://caro.news/">Support</a></aside>
+<p class="source"><a href="https://caro.news/"><strong>The Carolinian</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T19:42:00+00:00" data-pub="3:42 PM EDT">Thu, Aug 20 @ 3PM EDT</time><a class="lozenge place" href="/search?state=NC">North Carolina</a><a class="lozenge place" href="/search?place=Raleigh&state=NC">Raleigh</a></p>
+<h2><a href="https://caro.news/wakemed-atrium-deal-faces-renewed-scrutiny-as-community-raises-concerns/">WakeMed-Atrium Deal Faces Renewed Scrutiny as Community Raises Concerns</a></h2>
+<p class="byline">By Jordan Meadows</p>
+<a class="shot" href="https://caro.news/wakemed-atrium-deal-faces-renewed-scrutiny-as-community-raises-concerns/" tabindex="-1" aria-hidden="true"><img src="../img/9d15795f801e02a5d676653b4834f5fa8dc4e95b.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>By: Jordan Meadows Staff Writer The proposed combination of WakeMed and Atrium Health is facing renewed public scrutiny after two major community discussions in Raleigh. The proposal, announced in May, <a class="lozenge more" href="https://caro.news/wakemed-atrium-deal-faces-renewed-scrutiny-as-community-raises-concerns/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T06:17:41+00:00" data-pub="11:17 PM PDT">Wednesday, August 19, 2026 at 11:17 PM PDT</time></small></p>
-<p><small>WA / Seattle / <a href="https://www.thefactsnewspaper.com">The Facts</a></small></p>
-<h2><a href="https://www.thefactsnewspaper.com/post/in-loving-memory-of-alma-jean-chambliss">In Loving Memory of Alma Jean Chambliss</a></h2>
-<p class="byline"><small>By Marla Beaver</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.thefactsnewspaper.com/post/join-black-families-for-a-conversation-with-sps-superintendent-ben-schuldiner">Become a member</a></span></p>
-<p>Alma Jean Chambliss July 9, 1940 – August 5, 2026 Alma Jean Chambliss passed away peacefully on August 5, 2026, surrounded by family. A woman of faith with a loving spirit, Alma deeply loved her family, her church community, and her Seattle Seahawks. Her life and legacy will forever be cherished by her children, grandchildren, great-grandchildren, extended family, friends, and all who were blessed</p>
-<p class="more"><a href="https://www.thefactsnewspaper.com/post/in-loving-memory-of-alma-jean-chambliss">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://inlandvalleynews.com/paper-subscription/">Subscribe</a></aside>
+<p class="source"><a href="https://inlandvalleynews.com/"><strong>Inland Valley News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T19:33:14+00:00" data-pub="12:33 PM PDT">Thu, Aug 20 @ 12PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Upland&state=CA">Upland</a></p>
+<h2><a href="https://inlandvalleynews.com/foothill-family-shelter-holds-open-house-connecting-resources-to-families-in-need/">Foothill Family Shelter Holds Open House Connecting Resources to Families in Need</a></h2>
+<p class="byline">By admin</p>
+<a class="shot" href="https://inlandvalleynews.com/foothill-family-shelter-holds-open-house-connecting-resources-to-families-in-need/" tabindex="-1" aria-hidden="true"><img src="../img/1db85a5ce4bdd516582fe5664537b8c3b4799969.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Foothill Family Shelter Holds Open House Connecting Resources to Families in Need Trending now admin By: Ryan Martinez, Inland Valley News Upland, CA—Organizations and community members gathered on Aug. 11 at the headquarters of Foothill Family Shelter for an open house aimed at building awareness of the program’s services and strengthening connections with local organizations. This event brough <a class="lozenge more" href="https://inlandvalleynews.com/foothill-family-shelter-holds-open-house-connecting-resources-to-families-in-need/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T06:13:38+00:00" data-pub="11:13 PM PDT">Wednesday, August 19, 2026 at 11:13 PM PDT</time></small></p>
-<p><small>WA / Seattle / <a href="https://www.thefactsnewspaper.com">The Facts</a></small></p>
-<h2><a href="https://www.thefactsnewspaper.com/post/in-loving-memory-of-patricia-ann-taylor">In Loving Memory of Patricia Ann Taylor</a></h2>
-<p class="byline"><small>By Marla Beaver</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.thefactsnewspaper.com/post/join-black-families-for-a-conversation-with-sps-superintendent-ben-schuldiner">Become a member</a></span></p>
-<p class="more"><a href="https://www.thefactsnewspaper.com/post/in-loving-memory-of-patricia-ann-taylor">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://inlandvalleynews.com/paper-subscription/">Subscribe</a></aside>
+<p class="source"><a href="https://inlandvalleynews.com/"><strong>Inland Valley News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T19:29:44+00:00" data-pub="12:29 PM PDT">Thu, Aug 20 @ 12PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Upland&state=CA">Upland</a></p>
+<h2><a href="https://inlandvalleynews.com/dope-dating-advice-with-dr-kerry-neal-single-god-fearing-and-lonely/">Dope Dating Advice with Dr. Kerry Neal: Single, God-Fearing, and Lonely</a></h2>
+<p class="byline">By admin</p>
+<a class="shot" href="https://inlandvalleynews.com/dope-dating-advice-with-dr-kerry-neal-single-god-fearing-and-lonely/" tabindex="-1" aria-hidden="true"><img src="../img/dd7982792b6f1afe6a573118b628ca383dd3e749.jpg" alt="" width="480" height="588" loading="lazy" decoding="async"></a>
+<p>Dope Dating Advice with Dr. Kerry Neal: Single, God-Fearing, and Lonely Lifestyle admin Fontana, CA—This article is aimed at a very specific group within today’s dating community: single people of faith who genuinely desire marriage but increasingly find themselves asking, “Lord…how long is this going to take?” Over the years, I’ve spoken with countless unmarried believers—men and women—but I’ve <a class="lozenge more" href="https://inlandvalleynews.com/dope-dating-advice-with-dr-kerry-neal-single-god-fearing-and-lonely/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T06:12:42+00:00" data-pub="11:12 PM PDT">Wednesday, August 19, 2026 at 11:12 PM PDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>CA / Inland Empire / <a href="https://precinctreporter.com/">Precinct Reporter</a></small></p>
-<h2><a href="https://precinctreporter.com/2026/08/20/lbcc-to-break-ground-on-new-student-housing/">LBCC To Break Ground On New Student Housing</a></h2>
-<p class="byline"><small>By Precinct Reporter News</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://precinctreporter.com/subscribe/">Subscribe</a></span></p>
-<p>Long Beach City College (LBCC) will break ground on a new student housing facility at its Liberal Arts Campus (LAC), marking a major investment in supporting students and addressing housing needs that can affect their educational goals. Members of the community are invited to attend the October 8 groundbreaking ceremony and learn more about the student housing project. “For the first time in Long </p>
-<p class="more"><a href="https://precinctreporter.com/2026/08/20/lbcc-to-break-ground-on-new-student-housing/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://flintbeat.com/">Support</a></aside>
+<p class="source"><a href="https://flintbeat.com/"><strong>Flint Beat</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T19:00:00+00:00" data-pub="3:00 PM EDT">Thu, Aug 20 @ 3PM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=Flint&state=MI">Flint</a></p>
+<h2><a href="https://www.flintbeat.com/government/flint-youth-safe-spaces-funding-postponed-as-city-looks-to-expand-proposal-7f6363e1">Flint youth &#x27;safe spaces&#x27; funding postponed as city looks to expand proposal</a></h2>
+<p class="byline">By Mitchell Kukulka</p>
+<a class="shot" href="https://www.flintbeat.com/government/flint-youth-safe-spaces-funding-postponed-as-city-looks-to-expand-proposal-7f6363e1" tabindex="-1" aria-hidden="true"><img src="../img/cf92c43c86a1280676120d93a85988ef4f29bbc6.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Flint City Council delayed a $20,000 youth “safe spaces” proposal as city officials revise it to include fall and winter programming, not just summer activities. <a class="lozenge more" href="https://www.flintbeat.com/government/flint-youth-safe-spaces-funding-postponed-as-city-looks-to-expand-proposal-7f6363e1">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T06:10:12+00:00" data-pub="11:10 PM PDT">Wednesday, August 19, 2026 at 11:10 PM PDT</time></small></p>
-<p><small>WA / Seattle / <a href="https://www.thefactsnewspaper.com">The Facts</a></small></p>
-<h2><a href="https://www.thefactsnewspaper.com/post/in-loving-memory-of-mr-lucius-boone-jr">In Loving Memory of Mr. Lucius Boone Jr</a></h2>
-<p class="byline"><small>By Marla Beaver</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.thefactsnewspaper.com/post/join-black-families-for-a-conversation-with-sps-superintendent-ben-schuldiner">Become a member</a></span></p>
-<p>Lucius “LBJ” Boone Jr. received his wings on August 5, 2026, after an extended illness. Born October 10, 1945, in Washington, D.C., he was raised in Crawfordville, Florida, and later made Seattle his home. Lucius worked for Washington Natural Gas and King County Metro. He loved music, DJing at the Elks Club, playing bid whist, attending family reunions, and hosting his beloved annual birthday catf</p>
-<p class="more"><a href="https://www.thefactsnewspaper.com/post/in-loving-memory-of-mr-lucius-boone-jr">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="http://www.drtntscholarship.org">Donate</a></aside>
+<p class="source"><a href="https://communityjournal.net/"><strong>The Milwaukee Community Journal</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T18:56:35+00:00" data-pub="1:56 PM CDT">Thu, Aug 20 @ 1PM CDT</time><a class="lozenge place" href="/search?state=WI">Wisconsin</a><a class="lozenge place" href="/search?place=Milwaukee&state=WI">Milwaukee</a></p>
+<h2><a href="https://communityjournal.net/oakland-protesters-rally-to-defend-haitian-immigrants-and-tps/">Oakland Protesters Rally to Defend Haitian Immigrants and TPS</a></h2>
+<p class="byline">By MKE Community Journal</p>
+<a class="shot" href="https://communityjournal.net/oakland-protesters-rally-to-defend-haitian-immigrants-and-tps/" tabindex="-1" aria-hidden="true"><img src="../img/65fcf54c673c228e2f1293732258f0d153d1fab5.jpg" alt="" width="480" height="251" loading="lazy" decoding="async"></a>
+<p>The Haiti Action Committee traces its roots to the international movement that emerged following Haiti’s 1991 military coup, which overthrew the nation’s first democratically elected president, Jean-Bertrand Aristide. Political violence <a class="lozenge more" href="https://communityjournal.net/oakland-protesters-rally-to-defend-haitian-immigrants-and-tps/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T06:07:05+00:00" data-pub="11:07 PM PDT">Wednesday, August 19, 2026 at 11:07 PM PDT</time></small></p>
-<p><small>WA / Seattle / <a href="https://www.thefactsnewspaper.com">The Facts</a></small></p>
-<h2><a href="https://www.thefactsnewspaper.com/post/in-loving-memory-of-william-jerome-fields-jr">In Loving Memory of William Jerome Fields Jr.</a></h2>
-<p class="byline"><small>By Marla Beaver</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.thefactsnewspaper.com/post/join-black-families-for-a-conversation-with-sps-superintendent-ben-schuldiner">Become a member</a></span></p>
-<p>William Jerome Fields Jr. William Jerome Fields Jr., affectionately known as &quot;Jerome,&quot; passed away on August 4, 2026. Born on September 22, 1947, Jerome was a proud graduate of the Walter E. Harris High School &quot;Famous Class of 1965.&quot; Following his graduation, he honorably served in the military before relocating to Seattle in the early 1980s to be closer to his family. Jerome was a deeply dedicate</p>
-<p class="more"><a href="https://www.thefactsnewspaper.com/post/in-loving-memory-of-william-jerome-fields-jr">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://sacobserver.com/">Support</a></aside>
+<p class="source"><a href="https://sacobserver.com/"><strong>Sacramento Observer</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T18:51:50+00:00" data-pub="11:51 AM PDT">Thu, Aug 20 @ 11AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Sacramento&state=CA">Sacramento</a></p>
+<h2><a href="https://www.theobserver.media/community/representing-california-on-the-national-stage-aatclc-sol-project-at-the-117th-naacp-national-convention-606ce599">Representing California on the National Stage: AATCLC &amp; SOL Project at the 117th NAACP National Convention</a></h2>
+<p class="byline">By The Sol Project</p>
+<a class="shot" href="https://www.theobserver.media/community/representing-california-on-the-national-stage-aatclc-sol-project-at-the-117th-naacp-national-convention-606ce599" tabindex="-1" aria-hidden="true"><img src="../img/bbe2372112469f71f3e5a10fe227ac062f8c0420.jpg" alt="" width="480" height="480" loading="lazy" decoding="async"></a>
+<p>AATCLC and The SOL Project helped shape NAACP Resolution No. 16, adding stronger language on emerging commercial tobacco products and equity-focused public health strategies. <a class="lozenge more" href="https://www.theobserver.media/community/representing-california-on-the-national-stage-aatclc-sol-project-at-the-117th-naacp-national-convention-606ce599">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T06:03:56+00:00" data-pub="11:03 PM PDT">Wednesday, August 19, 2026 at 11:03 PM PDT</time></small></p>
-<p><small>WA / Seattle / <a href="https://www.thefactsnewspaper.com">The Facts</a></small></p>
-<h2><a href="https://www.thefactsnewspaper.com/post/in-loving-memory-of-3">In Loving Memory of</a></h2>
-<p class="byline"><small>By Marla Beaver</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.thefactsnewspaper.com/post/join-black-families-for-a-conversation-with-sps-superintendent-ben-schuldiner">Become a member</a></span></p>
-<p>Today we remember her iconic smile, contagious laugh, and fierce love for others. Tina Marie Smoots was promoted to the Afterlife July, 20th, 2026 Tina was born to William Lee Smoots and Margie Elaine Hobson December, 14th, 1964 in Denver Colorado. Relocating to Seattle in 1970; Tina would consider herself a Seattle Native. Attending Dearborn Park Elementary, Denny Middle School, and, Chief Sealth</p>
-<p class="more"><a href="https://www.thefactsnewspaper.com/post/in-loving-memory-of-3">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="http://www.drtntscholarship.org">Donate</a></aside>
+<p class="source"><a href="https://communityjournal.net/"><strong>The Milwaukee Community Journal</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T18:51:00+00:00" data-pub="1:51 PM CDT">Thu, Aug 20 @ 1PM CDT</time><a class="lozenge place" href="/search?state=WI">Wisconsin</a><a class="lozenge place" href="/search?place=Milwaukee&state=WI">Milwaukee</a></p>
+<h2><a href="https://communityjournal.net/opinion-57000-empty-apartments-and-not-a-word-of-apology-city-limits/">OPINION: 57,000 Empty Apartments and Not a Word of Apology – City Limits</a></h2>
+<p class="byline">By MKE Community Journal</p>
+<a class="shot" href="https://communityjournal.net/opinion-57000-empty-apartments-and-not-a-word-of-apology-city-limits/" tabindex="-1" aria-hidden="true"><img src="../img/a829535359cc9c738ed5d3c9d1543dd506abab28.jpg" alt="" width="480" height="251" loading="lazy" decoding="async"></a>
+<p>BLACKPRESSUSA—BLACKPRESSUSA NEWSWIRE—“Short-term rental income was, for many of these families, not a luxury. It was the margin between keeping the house and losing it. Local Law <a class="lozenge more" href="https://communityjournal.net/opinion-57000-empty-apartments-and-not-a-word-of-apology-city-limits/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://www.postnewsgroup.com/opinion-57000-empty-apartments-and-not-a-word-of-apology-city-limits/">Oakland Post</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T05:58:57+00:00" data-pub="10:58 PM PDT">Wednesday, August 19, 2026 at 10:58 PM PDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>CA / Inland Empire / <a href="https://precinctreporter.com/">Precinct Reporter</a></small></p>
-<h2><a href="https://precinctreporter.com/2026/08/20/ca-voting-rights-act-approved-by-assembly-appropriations/">CA Voting Rights Act Approved by Assembly Appropriations</a></h2>
-<p class="byline"><small>By Precinct Reporter News</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://precinctreporter.com/subscribe/">Subscribe</a></span></p>
-<p>The California Voting Rights Act of 2026 (CVRA 2026), comprised of Senate Bills 1164 and 1360 authored by Senator Sabrina Cervantes (D-Riverside), was approved by the Assembly Appropriations Committee. CVRA 2026 updates the California Voting Rights Act of 2001 to address vote dilution, expands language access assistance to limited English proficiency (LEP) voters, and reinforces safeguards against</p>
-<p class="more"><a href="https://precinctreporter.com/2026/08/20/ca-voting-rights-act-approved-by-assembly-appropriations/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="http://www.drtntscholarship.org">Donate</a></aside>
+<p class="source"><a href="https://communityjournal.net/"><strong>The Milwaukee Community Journal</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T18:45:02+00:00" data-pub="1:45 PM CDT">Thu, Aug 20 @ 1PM CDT</time><a class="lozenge place" href="/search?state=WI">Wisconsin</a><a class="lozenge place" href="/search?place=Milwaukee&state=WI">Milwaukee</a></p>
+<h2><a href="https://communityjournal.net/choppin-it-up-with-a-brotha-about-crowleys-win-and-why-black-folks-arent-down-with-the-democratic-socialists/">‘Choppin’ it up’ with a brotha about Crowley’s win, and why Black folks aren’t down with the Democratic Socialists!</a></h2>
+<p class="byline">By MKE Community Journal</p>
+<a class="shot" href="https://communityjournal.net/choppin-it-up-with-a-brotha-about-crowleys-win-and-why-black-folks-arent-down-with-the-democratic-socialists/" tabindex="-1" aria-hidden="true"><img src="../img/897135be254ebd85e7f5a43c407e33ebede713cc.jpg" alt="" width="480" height="266" loading="lazy" decoding="async"></a>
+<p>Kevin: OK, here’s your $20; I concede, Crowley won, fair and square. I gotta admit I was shocked; they (pollsters) had Hong up double digits… Me: Yeah (broad smile <a class="lozenge more" href="https://communityjournal.net/choppin-it-up-with-a-brotha-about-crowleys-win-and-why-black-folks-arent-down-with-the-democratic-socialists/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T05:31:11+00:00" data-pub="10:31 PM PDT">Wednesday, August 19, 2026 at 10:31 PM PDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>WA / Seattle / <a href="https://www.thefactsnewspaper.com">The Facts</a></small></p>
-<h2><a href="https://www.thefactsnewspaper.com/post/join-black-families-for-a-conversation-with-sps-superintendent-ben-schuldiner">Join Black Families for a conversation with SPS Superintendent Ben Schuldiner</a></h2>
-<p class="byline"><small>By Marla Beaver</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.thefactsnewspaper.com/post/join-black-families-for-a-conversation-with-sps-superintendent-ben-schuldiner">Become a member</a></span></p>
-<p class="more"><a href="https://www.thefactsnewspaper.com/post/join-black-families-for-a-conversation-with-sps-superintendent-ben-schuldiner">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://lasentinel.net/">Support</a></aside>
+<p class="source"><a href="https://lasentinel.net/"><strong>Los Angeles Sentinel</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T18:09:21+00:00" data-pub="11:09 AM PDT">Thu, Aug 20 @ 11AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://lasentinel.net/gina-prince-bythewood-and-bobbi-banks-headline-bhercs-sistas-short-film-showcase.html">Gina Prince-Bythewood and Bobbi Banks Headline BHERC’s ‘Sistas’ Short Film Showcase</a></h2>
+<p class="byline">By nathan</p>
+<p>The Black Hollywood Education and Resource Center will celebrate emerging Black women filmmakers at its 33rd Annual “Sistas Are Doin’ It For Themselves” Short Film Showcase on Aug. 22 at the Writers Guild Theater in Beverly Hills. <a class="lozenge more" href="https://lasentinel.net/gina-prince-bythewood-and-bobbi-banks-headline-bhercs-sistas-short-film-showcase.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T04:26:48+00:00" data-pub="9:26 PM PDT">Wednesday, August 19, 2026 at 9:26 PM PDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>CA / Oakland / <a href="https://www.postnewsgroup.com/">Oakland Post</a></small></p>
-<h2><a href="https://www.postnewsgroup.com/first-5-alameda-county-celebrates-first-year-of-measure-cs-implementation/">First 5 Alameda County Celebrates First Year of Measure C’s Implementation</a></h2>
-<p class="byline"><small>By bpusa-syndication</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.postnewsgroup.com/donate/">Donate</a></span></p>
-<a class="shot" href="https://www.postnewsgroup.com/first-5-alameda-county-celebrates-first-year-of-measure-cs-implementation/" tabindex="-1" aria-hidden="true"><img src="../img/13eec0f4ef25d9856d30c93cfea980166eb18b99.jpg" alt="" width="480" height="251" loading="lazy" decoding="async"></a>
-<p>Measure C, a community-led and voter-approved half-cent sales tax, was designed to generate approximately $150 million annually for early care and education. During its first year, the initiative reached more than 20,000 children and supported more than 6,400 early educators and caregivers throughout the county.</p>
-<p class="more"><a href="https://www.postnewsgroup.com/first-5-alameda-county-celebrates-first-year-of-measure-cs-implementation/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="http://www.drtntscholarship.org">Donate</a></aside>
+<p class="source"><a href="https://communityjournal.net/"><strong>The Milwaukee Community Journal</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T17:30:41+00:00" data-pub="12:30 PM CDT">Thu, Aug 20 @ 12PM CDT</time><a class="lozenge place" href="/search?state=WI">Wisconsin</a><a class="lozenge place" href="/search?place=Milwaukee&state=WI">Milwaukee</a></p>
+<h2><a href="https://communityjournal.net/identifying-opportunities-to-strengthen-wisconsins-emergency-response/">Identifying Opportunities to Strengthen Wisconsin’s Emergency Response</a></h2>
+<p class="byline">By MKE Community Journal</p>
+<a class="shot" href="https://communityjournal.net/identifying-opportunities-to-strengthen-wisconsins-emergency-response/" tabindex="-1" aria-hidden="true"><img src="../img/b1a13fa42da52b0a8e22700a710a49a7cd6af3d8.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Extreme weather is more frequent and federal aid less certain, underscoring value of preparedness Wisconsin is expected to face more frequent, more severe extreme weather events in coming years. Residents <a class="lozenge more" href="https://communityjournal.net/identifying-opportunities-to-strengthen-wisconsins-emergency-response/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T04:12:05+00:00" data-pub="9:12 PM PDT">Wednesday, August 19, 2026 at 9:12 PM PDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>CA / Oakland / <a href="https://www.postnewsgroup.com/">Oakland Post</a></small></p>
-<h2><a href="https://www.postnewsgroup.com/nabj-convention-brings-black-journalists-civic-leaders-together-in-atlanta/">NABJ Convention Brings Black Journalists, Civic Leaders Together in Atlanta</a></h2>
-<p class="byline"><small>By bpusa-syndication</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.postnewsgroup.com/donate/">Donate</a></span></p>
-<a class="shot" href="https://www.postnewsgroup.com/nabj-convention-brings-black-journalists-civic-leaders-together-in-atlanta/" tabindex="-1" aria-hidden="true"><img src="../img/71de8b4101437eb85a3d212c3e5d06064a60eff7.jpg" alt="" width="480" height="251" loading="lazy" decoding="async"></a>
-<p>Among the conference’s most closely watched sessions was Thursday’s Newsmaker Plenary, where House Democratic Leader Hakeem Jeffries discussed the national political climate with NABJ President Errin Haines. Journalist Joy-Ann Reid later led a fireside conversation with legal scholar Kimberlé Crenshaw, creator of the term “intersectionality,” and Pulitzer Prize-winning journalist Nikole Hannah-Jon</p>
-<p class="more"><a href="https://www.postnewsgroup.com/nabj-convention-brings-black-journalists-civic-leaders-together-in-atlanta/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://givebutter.com/VNZPG6">Donate</a></aside>
+<p class="source"><a href="https://www.ourweekly.com/"><strong>Our Weekly</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T17:00:00+00:00" data-pub="10:00 AM PDT">Thu, Aug 20 @ 10AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://www.ourweekly.com/2026/08/20/california-capitol-news-you-might-have-missed-23/">California Capitol news you might have missed</a></h2>
+<p class="byline">By Bo Tefu and Antonio Ray Harvey | California Black Media</p>
+<p>California Legislative Black Caucus Elects New Leaders On Aug. 14, the California Legislative Black Caucus (CLBC) announced that Assemblymember Corey Jackson (D-Moreno Valley) was elected the chairperson for the <a class="lozenge more" href="https://www.ourweekly.com/2026/08/20/california-capitol-news-you-might-have-missed-23/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T04:06:00+00:00" data-pub="9:06 PM PDT">Wednesday, August 19, 2026 at 9:06 PM PDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>CA / Los Angeles / <a href="https://www.ourweekly.com/">Our Weekly</a></small></p>
-<h2><a href="https://www.ourweekly.com/2026/08/19/community-tension-rises-against-city-councils-marqueece-harris-dawson/">Community tension rises against City Council’s Marqueece Harris-Dawson</a></h2>
-<p class="byline"><small>By Kaleef Starks</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://givebutter.com/VNZPG6">Donate</a></span></p>
-<a class="shot" href="https://www.ourweekly.com/2026/08/19/community-tension-rises-against-city-councils-marqueece-harris-dawson/" tabindex="-1" aria-hidden="true"><img src="../img/995f3af18d7d866628b302c4d5ae01bfd574b81d.jpg" alt="" width="480" height="310" loading="lazy" decoding="async"></a>
-<p>Los Angeles’ Historic Fire Station 54, in the Crenshaw neighborhood, is currently defunct but is on its way to becoming a major arts facility for locals in the community: the</p>
-<p class="more"><a href="https://www.ourweekly.com/2026/08/19/community-tension-rises-against-city-councils-marqueece-harris-dawson/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://haitiantimes.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://haitiantimes.com/florida-news/"><strong>The Haitian Times</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T16:56:51+00:00" data-pub="12:56 PM EDT">Thu, Aug 20 @ 12PM EDT</time><a class="lozenge place" href="/search?state=FL">Florida</a><a class="lozenge place" href="/search?place=Miami&state=FL">Miami</a></p>
+<h2><a href="https://haitiantimes.com/2026/08/20/hochul-letter-tps-termination-haitians-salvadorans/">Hochul urges DHS to reverse TPS termination</a></h2>
+<p class="byline">By The Haitian Times</p>
+<a class="shot" href="https://haitiantimes.com/2026/08/20/hochul-letter-tps-termination-haitians-salvadorans/" tabindex="-1" aria-hidden="true"><img src="../img/d0528e5d93b66cafe7fccb90b8d80053b5ec2131.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Gov. Kathy Hochul is calling on DHS to reverse the termination of TPS for Haitians and Salvadorans, warning New York will lose hundreds of essential workers within days. <a class="lozenge more" href="https://haitiantimes.com/2026/08/20/hochul-letter-tps-termination-haitians-salvadorans/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T04:00:00+00:00" data-pub="12:00 AM EDT">Thursday, August 20, 2026 at 12:00 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>DC / Washington / <a href="http://www.washingtoninformer.com/">The Washington Informer</a></small></p>
-<h2><a href="https://www.washingtoninformer.com/black-retirement-wealth-gap/">Black America’s Financially Fragile Retirees: Black Wealth Will Be 4 Times Lower Than Whites by 2050</a></h2>
-<p class="byline"><small>By Charlene Crowell, Special to The Informer</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.washingtoninformer.com/support-our-publication/">Donate</a></span></p>
-<a class="shot" href="https://www.washingtoninformer.com/black-retirement-wealth-gap/" tabindex="-1" aria-hidden="true"><img src="../img/908e02c2868fcc216e2d8ca16f58dd16dd4fc99f.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>A recent policy brief from the Joint Center for Political and Economic Studies highlights how systemic racial income disparities, limited access to retirement accounts, and low homeownership rates contribute to significant wealth inequality and financial fragility for Black retirees.</p>
-<p class="more"><a href="https://www.washingtoninformer.com/black-retirement-wealth-gap/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://milwaukeetimesnews.com//">Support</a></aside>
+<p class="source"><a href="https://milwaukeetimesnews.com//"><strong>Milwaukee Times Weekly</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T16:44:23+00:00" data-pub="11:44 AM CDT">Thu, Aug 20 @ 11AM CDT</time><a class="lozenge place" href="/search?state=WI">Wisconsin</a><a class="lozenge place" href="/search?place=Milwaukee&state=WI">Milwaukee</a></p>
+<h2><a href="https://milwaukeetimesnews.com/digital-editions/milwaukee-times-digital-edition-issue-august-20-2026">Milwaukee Times Digital Edition Issue August 20, 2026</a></h2>
+<p class="byline">By Milwaukee Times</p>
+<p>Hallowed Missionary Baptist Church&#x27;s Annual Community Outreach; Beckum-Stapleton Little League celebrates photojournalist Yvonne Kemp&#x27;s birthday; National Weather Service to assess damage after Tuesday&#x27;s severe storms in Southeast Wisconsin; Christy Knowings, former &#x27;All That&#x27; star, dies at 46; Buffalo Soldiers/Trooper M.C. host &#x27;Back-to-School Giveaway&#x27;; Five MPS schools are ranked among the nati <a class="lozenge more" href="https://milwaukeetimesnews.com/digital-editions/milwaukee-times-digital-edition-issue-august-20-2026">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T04:00:00+00:00" data-pub="9:00 PM PDT">Wednesday, August 19, 2026 at 9:00 PM PDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>CA / Los Angeles / <a href="https://www.ourweekly.com/">Our Weekly</a></small></p>
-<h2><a href="https://www.ourweekly.com/2026/08/19/on-your-november-ballot-prop-37/">On your November ballot: Prop 37</a></h2>
-<p class="byline"><small>By Austin Gage | California Black Media</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://givebutter.com/VNZPG6">Donate</a></span></p>
-<a class="shot" href="https://www.ourweekly.com/2026/08/19/on-your-november-ballot-prop-37/" tabindex="-1" aria-hidden="true"><img src="../img/dad049f52cc924ecd4b6995bfe07bc70e290fc64.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Allows middle-income earners to take out second mortgages to buy new homes</p>
-<p class="more"><a href="https://www.ourweekly.com/2026/08/19/on-your-november-ballot-prop-37/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://givebutter.com/VNZPG6">Donate</a></aside>
+<p class="source"><a href="https://www.ourweekly.com/"><strong>Our Weekly</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T16:40:00+00:00" data-pub="9:40 AM PDT">Thu, Aug 20 @ 9AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://www.ourweekly.com/2026/08/20/altadena-reservoir-damaged-in-eaton-fire-returns-to-full-service/">Altadena Reservoir damaged in Eaton Fire returns to full service</a></h2>
+<p class="byline">By City News Service</p>
+<a class="shot" href="https://www.ourweekly.com/2026/08/20/altadena-reservoir-damaged-in-eaton-fire-returns-to-full-service/" tabindex="-1" aria-hidden="true"><img src="../img/4cea799cb9c74300dea411ca8ec1b4d13ac085de.jpg" alt="" width="480" height="318" loading="lazy" decoding="async"></a>
+<p>A 4.1-million-gallon reservoir in Altadena that was damaged during the Eaton Fire has been repaired and returned to full service, Pasadena officials announced on Aug. 17. The Allen Reservoir, a <a class="lozenge more" href="https://www.ourweekly.com/2026/08/20/altadena-reservoir-damaged-in-eaton-fire-returns-to-full-service/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T04:00:00+00:00" data-pub="9:00 PM PDT">Wednesday, August 19, 2026 at 9:00 PM PDT</time></small></p>
-<p><small>CA / Los Angeles / <a href="https://www.ourweekly.com/">Our Weekly</a></small></p>
-<h2><a href="https://www.ourweekly.com/2026/08/19/professor-pushes-for-lawsuit-against-college/">Professor pushes for lawsuit against college</a></h2>
-<p class="byline"><small>By City News Service</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://givebutter.com/VNZPG6">Donate</a></span></p>
-<a class="shot" href="https://www.ourweekly.com/2026/08/19/professor-pushes-for-lawsuit-against-college/" tabindex="-1" aria-hidden="true"><img src="../img/2a9c346a99eb22a88810b179e2991043b5edecab.jpg" alt="" width="480" height="318" loading="lazy" decoding="async"></a>
-<p>Says she was retaliated against after discrimination claims</p>
-<p class="more"><a href="https://www.ourweekly.com/2026/08/19/professor-pushes-for-lawsuit-against-college/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://frontrunnernewjersey.com/support-frnj/">Donate</a></aside>
+<p class="source"><a href="https://frontrunnernewjersey.com"><strong>Front Runner</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T16:05:43+00:00" data-pub="12:05 PM EDT">Thu, Aug 20 @ 12PM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a><a class="lozenge place" href="/search?place=South+Jersey&state=NJ">South Jersey</a></p>
+<h2><a href="https://frontrunnernewjersey.com/2026/08/20/atlantic-city-schools-emerge-from-state-fiscal-monitoring/">Atlantic City Schools Emerge From State Fiscal Monitoring</a></h2>
+<p class="byline">By AC Joseph Media</p>
+<a class="shot" href="https://frontrunnernewjersey.com/2026/08/20/atlantic-city-schools-emerge-from-state-fiscal-monitoring/" tabindex="-1" aria-hidden="true"><img src="../img/8d13a4b3f250806d2a79b21a64365db52041df7e.jpg" alt="" width="300" height="250" loading="lazy" decoding="async"></a>
+<p>AC JosepH Media ATLANTIC CITY—Citing that the Atlantic City Public Schools District “has <a class="lozenge more" href="https://frontrunnernewjersey.com/2026/08/20/atlantic-city-schools-emerge-from-state-fiscal-monitoring/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T04:00:00+00:00" data-pub="12:00 AM EDT">Thursday, August 20, 2026 at 12:00 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>NY / New York City / <a href="https://amsterdamnews.com/">New York Amsterdam News</a></small></p>
-<h2><a href="https://amsterdamnews.com/news/2026/08/20/black-colombians-lead-calls-for-aid-after-earthquake/">Black Colombians call for aid after earthquake devastates large Afro-Colombian region of Chocó</a></h2>
-<p class="byline"><small>By Karen Juanita Carrillo</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://amsterdamnews.com/legacygiving/">Donate</a></span></p>
-<a class="shot" href="https://amsterdamnews.com/news/2026/08/20/black-colombians-lead-calls-for-aid-after-earthquake/" tabindex="-1" aria-hidden="true"><img src="../img/f67239744c0412730c3a79da4bba83713c8ae083.jpg" alt="" width="480" height="271" loading="lazy" decoding="async"></a>
-<p>More than a week after a 7.4 magnitude earthquake struck Colombia, Afro-Colombian aid groups are desperate for help.</p>
-<p class="more"><a href="https://amsterdamnews.com/news/2026/08/20/black-colombians-lead-calls-for-aid-after-earthquake/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://sdvoice.info/support-our-publication">Donate</a></aside>
+<p class="source"><a href="https://sdvoice.info/"><strong>The San Diego Voice &amp; Viewpoint Newspaper</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T16:00:00+00:00" data-pub="9:00 AM PDT">Thu, Aug 20 @ 9AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=San+Diego&state=CA">San Diego</a></p>
+<h2><a href="https://sdvoice.info/thursday-august-20-2026/">Thursday, August 20, 2026</a></h2>
+<p class="byline">By Voice and Viewpoint Staff</p>
+<a class="shot" href="https://sdvoice.info/thursday-august-20-2026/" tabindex="-1" aria-hidden="true"><img src="../img/5451c3bc8ae8284de265090f91f372e07d6ccef7.jpg" alt="" width="480" height="427" loading="lazy" decoding="async"></a>
+<p>This week’s newspaper is out now! Read this week’s headlines and catch up on news regarding you. Stop by your local newsstands today! <a class="lozenge more" href="https://sdvoice.info/thursday-august-20-2026/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T04:00:00+00:00" data-pub="12:00 AM EDT">Thursday, August 20, 2026 at 12:00 AM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>NY / New York City / <a href="https://amsterdamnews.com/">New York Amsterdam News</a></small></p>
-<h2><a href="https://amsterdamnews.com/news/2026/08/20/nyc-officials-show-growing-support-for-delivery-protection-act/">Workers encouraged as NYC elected officials show growing support for Delivery Protection Act</a></h2>
-<p class="byline"><small>By Karen Juanita Carrillo</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://amsterdamnews.com/legacygiving/">Donate</a></span></p>
-<a class="shot" href="https://amsterdamnews.com/news/2026/08/20/nyc-officials-show-growing-support-for-delivery-protection-act/" tabindex="-1" aria-hidden="true"><img src="../img/727e53e8c2414bbe894951cffdd6469c795ee13b.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Amazon workers, Teamsters, labor supporters and City Council members rallied outside City Hall last week to demand a vote.</p>
-<p class="more"><a href="https://amsterdamnews.com/news/2026/08/20/nyc-officials-show-growing-support-for-delivery-protection-act/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://theatlantavoice.com/category/news/">Support</a></aside>
+<p class="source"><a href="https://theatlantavoice.com/category/news/"><strong>The Atlanta Voice</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T16:00:00+00:00" data-pub="12:00 PM EDT">Thu, Aug 20 @ 12PM EDT</time><a class="lozenge place" href="/search?state=GA">Georgia</a><a class="lozenge place" href="/search?place=Atlanta&state=GA">Atlanta</a></p>
+<h2><a href="https://www.theatlantavoice.com/life/street-lines-2026-hyundai-ioniq-9-awd-performance-calligraphy-7b32121a">Street Lines: 2026 Hyundai IONIQ 9 AWD Performance Calligraphy</a></h2>
+<p class="byline">By Dennis Malcolm Byron aka Ale Sharpton</p>
+<a class="shot" href="https://www.theatlantavoice.com/life/street-lines-2026-hyundai-ioniq-9-awd-performance-calligraphy-7b32121a" tabindex="-1" aria-hidden="true"><img src="../img/45bd42b07689e8a67ec8b8a80d826ec7d842f54c.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Hyundai’s 2026 IONIQ 9 AWD Performance Calligraphy brings three-row space, 311 miles of EPA-estimated range and fast charging to the luxury EV SUV market. <a class="lozenge more" href="https://www.theatlantavoice.com/life/street-lines-2026-hyundai-ioniq-9-awd-performance-calligraphy-7b32121a">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T04:00:00+00:00" data-pub="12:00 AM EDT">Thursday, August 20, 2026 at 12:00 AM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>NY / New York City / <a href="https://amsterdamnews.com/">New York Amsterdam News</a></small></p>
-<h2><a href="https://amsterdamnews.com/news/2026/08/20/editorial-deciding-between-abolishing-a-harmful-system-or-reforming-it/">EDITORIAL: Deciding between abolishing a harmful system or reforming it</a></h2>
-<p class="byline"><small>By EDITORAL</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://amsterdamnews.com/legacygiving/">Donate</a></span></p>
-<a class="shot" href="https://amsterdamnews.com/news/2026/08/20/editorial-deciding-between-abolishing-a-harmful-system-or-reforming-it/" tabindex="-1" aria-hidden="true"><img src="../img/4df0deb17bc0510223f619f5242e04705215ca0a.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>If there is wiggle room between reform and abolishment, the Democratic National Committee (DNC) and House minority leader Hakeem Jeffries are not interested in seeking it. During an appearance on “Meet the Press” last Sunday, Jeffries made his opposition to Medicare for All emphatically clear, thereby negating the legislation proposed by the Democratic Socialists of</p>
-<p class="more"><a href="https://amsterdamnews.com/news/2026/08/20/editorial-deciding-between-abolishing-a-harmful-system-or-reforming-it/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://flintbeat.com/">Support</a></aside>
+<p class="source"><a href="https://flintbeat.com/"><strong>Flint Beat</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T16:00:00+00:00" data-pub="12:00 PM EDT">Thu, Aug 20 @ 12PM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=Flint&state=MI">Flint</a></p>
+<h2><a href="https://www.flintbeat.com/government/flint-city-council-to-consider-opioid-recovery-funding-postpones-decision-on-youth-safe-spaces-5a8ee50e">Flint City Council weighs $25K for opioid services, $400K for Salt</a></h2>
+<p class="byline">By Mitchell Kukulka</p>
+<a class="shot" href="https://www.flintbeat.com/government/flint-city-council-to-consider-opioid-recovery-funding-postpones-decision-on-youth-safe-spaces-5a8ee50e" tabindex="-1" aria-hidden="true"><img src="../img/ba5f0ce1e9ff26387d79ee26fbbbdaafdd2c48a6.jpg" alt="" width="480" height="252" loading="lazy" decoding="async"></a>
+<p>Flint City Council will weigh $25,000 for opioid recovery services and up to $400,000 for road salt Monday, alongside contracts and a state infrastructure grant. <a class="lozenge more" href="https://www.flintbeat.com/government/flint-city-council-to-consider-opioid-recovery-funding-postpones-decision-on-youth-safe-spaces-5a8ee50e">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T04:00:00+00:00" data-pub="12:00 AM EDT">Thursday, August 20, 2026 at 12:00 AM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>NY / New York City / <a href="https://amsterdamnews.com/">New York Amsterdam News</a></small></p>
-<h2><a href="https://amsterdamnews.com/news/2026/08/20/urban-agenda-victory-at-the-turnstile/">URBAN AGENDA: Victory at the Turnstile</a></h2>
-<p class="byline"><small>By David R. Jones, Esq., President and CEO of the Community Service Society of New York</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://amsterdamnews.com/legacygiving/">Donate</a></span></p>
-<a class="shot" href="https://amsterdamnews.com/news/2026/08/20/urban-agenda-victory-at-the-turnstile/" tabindex="-1" aria-hidden="true"><img src="../img/a78e42cc2ba09f4c47dd52bd8bcb684ebcfa3c95.jpg" alt="" width="318" height="477" loading="lazy" decoding="async"></a>
-<p>Since its launch in 2019, Fair Fares has served as an economic equalizer, offering a crucial 50 percent discount to transit riders.</p>
-<p class="more"><a href="https://amsterdamnews.com/news/2026/08/20/urban-agenda-victory-at-the-turnstile/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://sacobserver.com/">Support</a></aside>
+<p class="source"><a href="https://sacobserver.com/"><strong>Sacramento Observer</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T15:49:38+00:00" data-pub="8:49 AM PDT">Thu, Aug 20 @ 8AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Sacramento&state=CA">Sacramento</a></p>
+<h2><a href="https://www.theobserver.media/30-under-30/observer-30-under-30-awards-celebrates-rising-leaders">OBSERVER 30 Under 30 Awards Celebrates Rising Leaders</a></h2>
+<p class="byline">By Staff Report</p>
+<a class="shot" href="https://www.theobserver.media/30-under-30/observer-30-under-30-awards-celebrates-rising-leaders" tabindex="-1" aria-hidden="true"><img src="../img/44bf21819d51b6ca181040330a4cc1b1b91b7d96.jpg" alt="" width="480" height="192" loading="lazy" decoding="async"></a>
+<p>The OBSERVER honored 30 young Black leaders under 30 for their work in entrepreneurship, advocacy, education, public health and the arts across Sacramento. <a class="lozenge more" href="https://www.theobserver.media/30-under-30/observer-30-under-30-awards-celebrates-rising-leaders">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T03:57:02+00:00" data-pub="8:57 PM PDT">Wednesday, August 19, 2026 at 8:57 PM PDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>CA / Oakland / <a href="https://www.postnewsgroup.com/">Oakland Post</a></small></p>
-<h2><a href="https://www.postnewsgroup.com/at-sacramento-summit-becerra-discusses-policy-uses-family-metaphor-to-frame-case-for-national-political-unity/">At Sacramento Summit, Becerra Discusses Policy; Uses “Family” Metaphor to Frame Case for National Political Unity</a></h2>
-<p class="byline"><small>By bpusa-syndication</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.postnewsgroup.com/donate/">Donate</a></span></p>
-<a class="shot" href="https://www.postnewsgroup.com/at-sacramento-summit-becerra-discusses-policy-uses-family-metaphor-to-frame-case-for-national-political-unity/" tabindex="-1" aria-hidden="true"><img src="../img/fd17152632069cbf7dbfe953e77ce518e3d37a2a.jpg" alt="" width="480" height="251" loading="lazy" decoding="async"></a>
-<p>“We’re a state. We’re a family. We all work together,” Becerra said, arguing that California’s challenges require cooperation rather than partisan blame. He added that, as governor, he would have to work with lawmakers “whether they’ve got a D or an R behind their name.”</p>
-<p class="more"><a href="https://www.postnewsgroup.com/at-sacramento-summit-becerra-discusses-policy-uses-family-metaphor-to-frame-case-for-national-political-unity/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://thetimesweekly.com/support-our-publication/">Donate</a></aside>
+<p class="source"><a href="https://thetimesweekly.com/"><strong>The Times Weekly</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T15:45:00+00:00" data-pub="10:45 AM CDT">Thu, Aug 20 @ 10AM CDT</time><a class="lozenge place" href="/search?state=IL">Illinois</a><a class="lozenge place" href="/search?place=Joliet&state=IL">Joliet</a></p>
+<h2><a href="https://thetimesweekly.com/2026/08/there-are-different-ways-to-learn/">There Are Different Ways To Learn</a></h2>
+<p class="byline">By Dr. Glenn Mollette</p>
+<a class="shot" href="https://thetimesweekly.com/2026/08/there-are-different-ways-to-learn/" tabindex="-1" aria-hidden="true"><img src="../img/703017258086c81b633b9a7c2d5a502b3b3b60d0.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>There is more than one way to learn. The formal method is the classroom. Elementary, junior and senior high school. This is of course the minimum standard for our society today. Many of us spent years in other classroom studies. Today many people are studying online or via correspondence. There was a day when such a <a class="lozenge more" href="https://thetimesweekly.com/2026/08/there-are-different-ways-to-learn/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T03:18:31+00:00" data-pub="10:18 PM CDT">Wednesday, August 19, 2026 at 10:18 PM CDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>TX / Dallas / <a href="https://northdallasgazette.com/">North Dallas Gazette</a></small></p>
-<h2><a href="https://northdallasgazette.com/2026/08/19/keeping-up-is-hard-to-do-at-my-age/">Keeping Up Is Hard To Do At My Age</a></h2>
-<p class="byline"><small>By NDG Staff</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://northdallasgazette.com/subscription/">Subscribe</a></span></p>
-<a class="shot" href="https://northdallasgazette.com/2026/08/19/keeping-up-is-hard-to-do-at-my-age/" tabindex="-1" aria-hidden="true"><img src="../img/b286358b20fe61a6e62cf84e1c94394d3c107ade.jpg" alt="" width="480" height="269" loading="lazy" decoding="async"></a>
-<p>By Dr. James L. Snyder There was a time in my life when keeping up was part of my daily routine. I started each day with a specific objective, and by the end of the day, I had completed it. I took pride in completing my work on time. The secret was to plan carefully.</p>
-<p class="more"><a href="https://northdallasgazette.com/2026/08/19/keeping-up-is-hard-to-do-at-my-age/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://thewestsidegazette.com/friends-of-aarlcc-pillars-of-giving-campaign/">Donate</a></aside>
+<p class="source"><a href="http://www.thewestsidegazette.com/"><strong>Westside Gazette</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T15:32:28+00:00" data-pub="11:32 AM EDT">Thu, Aug 20 @ 11AM EDT</time><a class="lozenge place" href="/search?state=FL">Florida</a><a class="lozenge place" href="/search?place=Broward+County&state=FL">Broward County</a></p>
+<h2><a href="https://thewestsidegazette.com/when-nobody-wants-to-give-up-the-chair-who-is-listening-to-the-people/">When Nobody Wants to Give Up the Chair, Who Is Listening to the People?</a></h2>
+<p class="byline">By Carma Henry</p>
+<p>When Nobody Wants to Give Up the Chair, Who Is Listening to the People? <a class="lozenge more" href="https://thewestsidegazette.com/when-nobody-wants-to-give-up-the-chair-who-is-listening-to-the-people/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T03:15:05+00:00" data-pub="10:15 PM CDT">Wednesday, August 19, 2026 at 10:15 PM CDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>TX / Dallas / <a href="https://northdallasgazette.com/">North Dallas Gazette</a></small></p>
-<h2><a href="https://northdallasgazette.com/2026/08/19/rooted-futures-collective-joins-balch-springs-chamber-to-advance-conservation-community-resilience-and-sustainable-local-development/">Rooted Futures Collective Joins Balch Springs Chamber to Advance Conservation, Community Resilience and Sustainable Local Development</a></h2>
-<p class="byline"><small>By NDG Staff</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://northdallasgazette.com/subscription/">Subscribe</a></span></p>
-<a class="shot" href="https://northdallasgazette.com/2026/08/19/rooted-futures-collective-joins-balch-springs-chamber-to-advance-conservation-community-resilience-and-sustainable-local-development/" tabindex="-1" aria-hidden="true"><img src="../img/ea6c817cd8989e5fd800c772ae6bbb1d732f4637.jpg" alt="" width="480" height="480" loading="lazy" decoding="async"></a>
-<p>BALCH SPRINGS — Rooted Futures Collective (RFC), a Balch Springs-based nonprofit working at the intersection of ecological restoration, environmental education, community stewardship, and sustainable local development, has officially joined the Balch Springs Chamber of Commerce. The new membership marks an important step in RFC’s efforts to build stronger connections among conservation organizatio</p>
-<p class="more"><a href="https://northdallasgazette.com/2026/08/19/rooted-futures-collective-joins-balch-springs-chamber-to-advance-conservation-community-resilience-and-sustainable-local-development/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://dallasweekly.com/organ-donation-and-transplantation-research/">Donate</a></aside>
+<p class="source"><a href="https://dallasweekly.com/"><strong>The Dallas Weekly</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T15:28:07+00:00" data-pub="10:28 AM CDT">Thu, Aug 20 @ 10AM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=Dallas&state=TX">Dallas</a></p>
+<h2><a href="https://dallasweekly.com/2026/08/texas-summer-heart-safety/">Too Hot for Your Heart?</a></h2>
+<p class="byline">By editorial</p>
+<a class="shot" href="https://dallasweekly.com/2026/08/texas-summer-heart-safety/" tabindex="-1" aria-hidden="true"><img src="../img/90c4bbbbbcb076719f2abad4ab3c05e71ac90ab7.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Health experts provide guidance on protecting heart health during Texas summers to mitigate risks associated with rising temperatures and dehydration. <a class="lozenge more" href="https://dallasweekly.com/2026/08/texas-summer-heart-safety/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 </div>
 <p><a id="more" href="black-owned-17.html">More stories</a></p>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="../index.html">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -399,6 +455,47 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>

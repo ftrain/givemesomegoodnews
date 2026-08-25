@@ -13,12 +13,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(../fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -27,22 +40,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -50,19 +69,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -75,7 +126,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -93,7 +144,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="../index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="../masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -106,7 +157,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="../subjects/news.html">News</a></li><li><a href="../subjects/politics.html">Politics</a></li><li><a href="../subjects/opinion.html">Opinion</a></li><li><a href="../subjects/health.html">Health</a></li><li><a href="../subjects/environment.html">Environment</a></li><li><a href="../subjects/education.html">Education</a></li><li><a href="../subjects/business.html">Business</a></li><li><a href="../subjects/housing.html">Housing</a></li><li><a href="../subjects/sports.html">Sports</a></li><li><a href="../subjects/food.html">Food</a></li><li><a href="../subjects/arts.html">Arts</a></li></ul></nav>
@@ -121,274 +172,275 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <main id="main">
 <div id="feed-items">
 <article>
-<p class="stamp"><small><time datetime="2026-08-19T21:31:10+00:00" data-pub="4:31 PM CDT">Wednesday, August 19, 2026 at 4:31 PM CDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>IA / Statewide / <a href="https://iowacapitaldispatch.com/">Iowa Capital Dispatch</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://idahocapitalsun.com/">Support</a></aside>
+<p class="source"><a href="https://idahocapitalsun.com/"><strong>Idaho Capital Sun</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T10:00:03+00:00" data-pub="4:00 AM MDT">Thu, Aug 20 @ 4AM MDT</time><a class="lozenge place" href="/search?state=ID">Idaho</a></p>
+<h2><a href="https://idahocapitalsun.com/2026/08/20/with-idahos-history-everyone-should-pay-attention-to-evolving-language-of-institutionalization/">With Idaho’s history, everyone should pay attention to evolving language of institutionalization</a></h2>
+<p class="byline">By Tara Rowe</p>
+<a class="shot" href="https://idahocapitalsun.com/2026/08/20/with-idahos-history-everyone-should-pay-attention-to-evolving-language-of-institutionalization/" tabindex="-1" aria-hidden="true"><img src="../img/bb5451e1dbf56bf43113420e9cca317ebdf1d984.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>People with disabilities are hearing the words ‘institutionalization’ and ‘Olmstead’ daily. This shift in the way policymakers openly discuss the segregation of people with disabilities naturally follows nationwide budget cuts to home and community-based services. If people with disabilities cannot get the services and supports they need to live independently in their homes and communities, <a class="lozenge more" href="https://idahocapitalsun.com/2026/08/20/with-idahos-history-everyone-should-pay-attention-to-evolving-language-of-institutionalization/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://spotlightdelaware.org/support/">Donate</a></aside>
+<p class="source"><a href="https://spotlightdelaware.org/"><strong>Spotlight Delaware</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T10:00:00+00:00" data-pub="6:00 AM EDT">Thu, Aug 20 @ 6AM EDT</time><a class="lozenge place" href="/search?state=DE">Delaware</a><a class="lozenge place" href="/search?place=Wilmington&state=DE">Wilmington</a></p>
+<h2><a href="https://spotlightdelaware.org/2026/08/20/former-prison-healthcare-provider-denies-it-fraudulently-billed-the-state/">Former prison healthcare provider denies it fraudulently billed the state</a></h2>
+<p class="byline">By Nick Stonesifer</p>
+<a class="shot" href="https://spotlightdelaware.org/2026/08/20/former-prison-healthcare-provider-denies-it-fraudulently-billed-the-state/" tabindex="-1" aria-hidden="true"><img src="../img/352f7fc4cbc4f7ad6b495f2cf8539a848f454f9f.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Late last month, Delaware’s embattled former prison healthcare provider rebuked allegations that it engaged in fraud by requesting payment for medical services for inmates it did not provide. <a class="lozenge more" href="https://spotlightdelaware.org/2026/08/20/former-prison-healthcare-provider-denies-it-fraudulently-billed-the-state/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://kentuckylantern.com/">Support</a></aside>
+<p class="source"><a href="https://kentuckylantern.com/"><strong>Kentucky Lantern</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T09:30:33+00:00" data-pub="5:30 AM EDT">Thu, Aug 20 @ 5AM EDT</time><a class="lozenge place" href="/search?state=KY">Kentucky</a></p>
+<h2><a href="https://kentuckylantern.com/2026/08/20/kentucky-hospitals-are-helping-turn-the-tide-on-the-opioid-crisis/">Kentucky hospitals are helping turn the tide on the opioid crisis</a></h2>
+<p class="byline">By Melanie Landrum</p>
+<a class="shot" href="https://kentuckylantern.com/2026/08/20/kentucky-hospitals-are-helping-turn-the-tide-on-the-opioid-crisis/" tabindex="-1" aria-hidden="true"><img src="../img/408a8a1ff8a33012d8ebaa00ab15ee3d635b71bc.jpg" alt="" width="480" height="351" loading="lazy" decoding="async"></a>
+<p>When a Kentucky woman called an emergency department earlier this year, she wasn’t asking whether treatment was available. Through tears, she was asking whether anyone would judge her for needing it. She had been referred to the hospital for help managing opioid withdrawal but was afraid to walk through the doors. A peer support specialist <a class="lozenge more" href="https://kentuckylantern.com/2026/08/20/kentucky-hospitals-are-helping-turn-the-tide-on-the-opioid-crisis/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://indianacapitalchronicle.com/">Support</a></aside>
+<p class="source"><a href="https://indianacapitalchronicle.com/"><strong>Indiana Capital Chronicle</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T09:00:53+00:00" data-pub="5:00 AM EDT">Thu, Aug 20 @ 5AM EDT</time><a class="lozenge place" href="/search?state=IN">Indiana</a></p>
+<h2><a href="https://indianacapitalchronicle.com/2026/08/20/indianas-competency-restoration-crisis-demands-a-community-based-answer/">Indiana’s competency restoration crisis demands a community-based answer</a></h2>
+<p class="byline">By Beth Keeney</p>
+<a class="shot" href="https://indianacapitalchronicle.com/2026/08/20/indianas-competency-restoration-crisis-demands-a-community-based-answer/" tabindex="-1" aria-hidden="true"><img src="../img/daaaf59ec85cc1f8009d6bdcf0479adad3636ad9.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Recent reporting by WYFI highlighted the dramatic increases in individuals incompetent to stand trial for criminal offenses and their referral to the state hospital system for competency restoration. The result is a system under tremendous strain and one that is increasingly displacing people who need the highest level of psychiatric care for reasons unrelated to criminal activity. <a class="lozenge more" href="https://indianacapitalchronicle.com/2026/08/20/indianas-competency-restoration-crisis-demands-a-community-based-answer/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://georgiarecorder.com/">Support</a></aside>
+<p class="source"><a href="https://georgiarecorder.com/"><strong>Georgia Recorder</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T08:00:27+00:00" data-pub="4:00 AM EDT">Thu, Aug 20 @ 4AM EDT</time><a class="lozenge place" href="/search?state=GA">Georgia</a></p>
+<h2><a href="https://georgiarecorder.com/2026/08/20/would-gov-brian-kemp-really-shut-down-his-pathways-medicaid-program/">Would Gov. Brian Kemp really shut down his Pathways Medicaid program?</a></h2>
+<p class="byline">By Ariel Hart</p>
+<a class="shot" href="https://georgiarecorder.com/2026/08/20/would-gov-brian-kemp-really-shut-down-his-pathways-medicaid-program/" tabindex="-1" aria-hidden="true"><img src="../img/aae033e1628eb44da1d675c657950e655e112f3c.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Patient advocates reacted with alarm this week at the suggestion by the administration of Gov. Brian Kemp that it could end Georgia Pathways to Coverage, his signature Medicaid program that gives health coverage to about 18,500 poor Georgians. Precious Andrews, an advocate who works for mothers’ and children’s health, said she was in shock when <a class="lozenge more" href="https://georgiarecorder.com/2026/08/20/would-gov-brian-kemp-really-shut-down-his-pathways-medicaid-program/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://sacobserver.com/">Support</a></aside>
+<p class="source"><a href="https://sacobserver.com/"><strong>Sacramento Observer</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T07:00:00+00:00" data-pub="12:00 AM PDT">Thu, Aug 20 @ 12AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Sacramento&state=CA">Sacramento</a></p>
+<h2><a href="https://www.theobserver.media/national/karmelo-anthonys-attorney-asks-judge-for-new-trial-in-texas-track-meet-killing-f054f996">Karmelo Anthony’s Attorney Asks Judge for New Trial in Texas Track Meet Killing</a></h2>
+<a class="shot" href="https://www.theobserver.media/national/karmelo-anthonys-attorney-asks-judge-for-new-trial-in-texas-track-meet-killing-f054f996" tabindex="-1" aria-hidden="true"><img src="../img/4340e61567b712bd5313c59b9014e33ddac7a517.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Karmelo Anthony’s attorney seeks a new trial in the Texas track meet stabbing case, alleging off-the-record proceedings and an unfulfilled agreement with prosecutors. <a class="lozenge more" href="https://www.theobserver.media/national/karmelo-anthonys-attorney-asks-judge-for-new-trial-in-texas-track-meet-killing-f054f996">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://sacobserver.com/">Support</a></aside>
+<p class="source"><a href="https://sacobserver.com/"><strong>Sacramento Observer</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T06:57:48+00:00" data-pub="11:57 PM PDT">Wed, Aug 19 @ 11PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Sacramento&state=CA">Sacramento</a></p>
+<h2><a href="https://www.theobserver.media/health/nichelle-nichols-death-highlights-gaps-in-emergency-care">Nichelle Nichols’ Death Highlights Gaps in Emergency Care</a></h2>
+<p class="byline">By Genoa Barrow</p>
+<a class="shot" href="https://www.theobserver.media/health/nichelle-nichols-death-highlights-gaps-in-emergency-care" tabindex="-1" aria-hidden="true"><img src="../img/c91048cf393c5975dfe014b089f50276f1bf4207.jpg" alt="" width="480" height="712" loading="lazy" decoding="async"></a>
+<p>Nichelle Nichols’ estate won a $13 million wrongful-death verdict over claims that failures at a New Mexico emergency room led to the “Star Trek” icon’s death. <a class="lozenge more" href="https://www.theobserver.media/health/nichelle-nichols-death-highlights-gaps-in-emergency-care">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://sacobserver.com/">Support</a></aside>
+<p class="source"><a href="https://sacobserver.com/"><strong>Sacramento Observer</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T06:49:38+00:00" data-pub="11:49 PM PDT">Wed, Aug 19 @ 11PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Sacramento&state=CA">Sacramento</a></p>
+<h2><a href="https://www.theobserver.media/health/data-shows-gaps-in-sacramento-emergency-care-for-black-patients">Data Shows Gaps in Sacramento Emergency Care for Black Patients</a></h2>
+<p class="byline">By Genoa Barrow</p>
+<a class="shot" href="https://www.theobserver.media/health/data-shows-gaps-in-sacramento-emergency-care-for-black-patients" tabindex="-1" aria-hidden="true"><img src="../img/5d7d2dae8cda79be3b8d593e3cdb8986f0dd8033.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Sacramento’s emergency care delays and outdated EMS policies are straining hospitals, with data showing Black residents face disproportionate ER use and preventable hospitalizations. <a class="lozenge more" href="https://www.theobserver.media/health/data-shows-gaps-in-sacramento-emergency-care-for-black-patients">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://precinctreporter.com/subscribe/">Subscribe</a></aside>
+<p class="source"><a href="https://precinctreporter.com/"><strong>Precinct Reporter</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T06:26:30+00:00" data-pub="11:26 PM PDT">Wed, Aug 19 @ 11PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Inland+Empire&state=CA">Inland Empire</a></p>
+<h2><a href="https://precinctreporter.com/2026/08/20/rising-health-costs-are-forcing-americans-to-forego-care/">Rising Health Costs Are Forcing Americans to Forego Care</a></h2>
+<p class="byline">By Precinct Reporter News</p>
+<a class="shot" href="https://precinctreporter.com/2026/08/20/rising-health-costs-are-forcing-americans-to-forego-care/" tabindex="-1" aria-hidden="true"><img src="../img/f0db502e6bc749ba2bb59b74b4e38f4c4ba6e241.jpg" alt="" width="480" height="305" loading="lazy" decoding="async"></a>
+<p>By Sunita Sohrabji Susan Alleman thought surviving breast cancer would mean putting the hardest chapter of her life behind her. But it was just the beginning of the next arc in her long journey to healing. “Just because someone says they’re a cancer survivor, that doesn’t mean that the journey is over,” said Alleman. “It’s the beginning of its own journey.” Alleman is among millions of Americans w <a class="lozenge more" href="https://precinctreporter.com/2026/08/20/rising-health-costs-are-forcing-americans-to-forego-care/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://northdallasgazette.com/subscription/">Subscribe</a></aside>
+<p class="source"><a href="https://northdallasgazette.com/"><strong>North Dallas Gazette</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T02:53:38+00:00" data-pub="9:53 PM CDT">Wed, Aug 19 @ 9PM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=Dallas&state=TX">Dallas</a></p>
+<h2><a href="https://northdallasgazette.com/2026/08/19/avoiding-three-specific-risk-factors-is-associated-with-living-13-more-years-without-dementia/">Avoiding Three Specific Risk Factors is Associated with Living 13 More Years Without Dementia</a></h2>
+<p class="byline">By NDG Staff</p>
+<a class="shot" href="https://northdallasgazette.com/2026/08/19/avoiding-three-specific-risk-factors-is-associated-with-living-13-more-years-without-dementia/" tabindex="-1" aria-hidden="true"><img src="../img/91d806037c1af6869138806fb39263c5a67b2444.jpg" alt="" width="480" height="269" loading="lazy" decoding="async"></a>
+<p>(Newswise)—MINNEAPOLIS—Having normal blood pressure, no diabetes and not smoking was associated with living nearly 13 years longer without dementia, according to a study published August 5, 2026, in Neurology® Open Access, an official journal of the American Academy of Neurology. The study does not prove that avoiding these vascular risk factors <a class="lozenge more" href="https://northdallasgazette.com/2026/08/19/avoiding-three-specific-risk-factors-is-associated-with-living-13-more-years-without-dementia/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://lasentinel.net/">Support</a></aside>
+<p class="source"><a href="https://lasentinel.net/"><strong>Los Angeles Sentinel</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T02:11:51+00:00" data-pub="7:11 PM PDT">Wed, Aug 19 @ 7PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://lasentinel.net/dream-out-loud-to-unite-soul-sound-and-community-in-support-of-mlk-community-healthcare.html">Dream Out Loud to Unite Soul, Sound and Community in Support of MLK Community Healthcare</a></h2>
+<p class="byline">By nathan</p>
+<p>Dream Out Loud: A Celebration of Soul and Sound will bring music, art and community together in Leimert Park Village on Aug. 22 to support MLK Community Healthcare. Hosted by the MLKCH Dream Council, the event will feature local artists, live performances and spoken word while raising funds to support quality health care for South Los Angeles. <a class="lozenge more" href="https://lasentinel.net/dream-out-loud-to-unite-soul-sound-and-community-in-support-of-mlk-community-healthcare.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/college.html">College</a><a class="lozenge give" href="http://ustudentmedia.com/chronicle/join">Become a member</a></aside>
+<p class="source"><a href="https://dailyutahchronicle.com/"><strong>The Daily Utah Chronicle</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T02:05:23+00:00" data-pub="8:05 PM MDT">Wed, Aug 19 @ 8PM MDT</time><a class="lozenge place" href="/search?state=UT">Utah</a><a class="lozenge place" href="/search?place=Salt+Lake+City&state=UT">Salt Lake City</a></p>
+<h2><a href="https://dailyutahchronicle.com/2026/08/19/the-u-opens-the-spencer-fox-eccles-school-of-medicine/">The U opens the Spencer Fox Eccles School of Medicine</a></h2>
+<p class="byline">By By Elle Howell and Jonathon Downard</p>
+<a class="shot" href="https://dailyutahchronicle.com/2026/08/19/the-u-opens-the-spencer-fox-eccles-school-of-medicine/" tabindex="-1" aria-hidden="true"><img src="../img/5f31506e7e6ecea4b3965131ab5b1dcc57458012.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>After four years of construction, the new Spencer Fox Eccles School of Medicine, dubbed the “crown jewel of the health science campus” in a speech by Lisa Eccles, is open for the fall semester. Faculty, donors and Gov. Spencer Cox gathered Wednesday morning to cut the ribbon and celebrate the completion of the building. <a class="lozenge more" href="https://dailyutahchronicle.com/2026/08/19/the-u-opens-the-spencer-fox-eccles-school-of-medicine/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.paypal.com/donate/?hosted_button_id=MTHSLBFD54LSS">Donate</a></aside>
+<p class="source"><a href="https://themississippilink.com"><strong>Mississippi Link</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T01:10:00+00:00" data-pub="8:10 PM CDT">Wed, Aug 19 @ 8PM CDT</time><a class="lozenge place" href="/search?state=MS">Mississippi</a><a class="lozenge place" href="/search?place=Charlotte&state=MS">Charlotte</a></p>
+<h2><a href="https://themississippilink.com/news/jackson-hinds-comprehensive-health-centers-ceo-earns-one-of-community-healths-highest-national-honors/">Jackson-Hinds Comprehensive Health Center’s CEO earns one of Community Health’s highest national honors</a></h2>
+<p class="byline">By Editor</p>
+<p>The Mississippi Link Newswire, The Jackson-Hinds Comprehensive Health Center (JHCHC) is proud to announce that it’s Chief Executive Officer Dr. Jasmin O. Chapman has received the prestigious National Association of Community Health Centers (NACHC) Lifetime <a class="lozenge more" href="https://themississippilink.com/news/jackson-hinds-comprehensive-health-centers-ceo-earns-one-of-community-healths-highest-national-honors/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/college.html">College</a><a class="lozenge give" href="http://ustudentmedia.com/chronicle/join">Become a member</a></aside>
+<p class="source"><a href="https://dailyutahchronicle.com/"><strong>The Daily Utah Chronicle</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T00:55:25+00:00" data-pub="6:55 PM MDT">Wed, Aug 19 @ 6PM MDT</time><a class="lozenge place" href="/search?state=UT">Utah</a><a class="lozenge place" href="/search?place=Salt+Lake+City&state=UT">Salt Lake City</a></p>
+<h2><a href="https://dailyutahchronicle.com/2026/08/19/utah-cyclosporiasis-cases-not-linked-to-u-s-outbreaks/">Utah cyclosporiasis cases not linked to U.S. outbreaks</a></h2>
+<p class="byline">By By Simone Arai Wiatrak</p>
+<p>The U.S. Centers for Disease Control and Prevention (CDC) reports that Utah has had upwards of 49 cases of cyclosporiasis since May 1, 2026. There have been 13,895 confirmed cases in the U.S. with an additional minimum of 10,455 cases that haven’t been confirmed with lab testing. Cyclospora is the microscopic parasite that causes the <a class="lozenge more" href="https://dailyutahchronicle.com/2026/08/19/utah-cyclosporiasis-cases-not-linked-to-u-s-outbreaks/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://cal.streetsblog.org/make-a-donation-to-streetsblog-california">Donate</a></aside>
+<p class="source"><a href="https://cal.streetsblog.org/"><strong>Streetsblog - CAL</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T00:27:58+00:00" data-pub="5:27 PM PDT">Wed, Aug 19 @ 5PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a></p>
+<h2><a href="https://la.streetsblog.org/2026/08/19/viral-pothole-video-madness-shows-how-l-a-is-failing-its-streets">Viral Pothole Video Madness Shows How L.A. is Failing its Streets</a></h2>
+<p class="byline">By Joe Linton</p>
+<a class="shot" href="https://la.streetsblog.org/2026/08/19/viral-pothole-video-madness-shows-how-l-a-is-failing-its-streets" tabindex="-1" aria-hidden="true"><img src="../img/dd7798ec99da62b8a5b86f23b07c7c09f8e68523.jpg" alt="" width="480" height="516" loading="lazy" decoding="async"></a>
+<p>How not to maintain streets - a parable told in eight short videos <a class="lozenge more" href="https://la.streetsblog.org/2026/08/19/viral-pothole-video-madness-shows-how-l-a-is-failing-its-streets">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://alaskabeacon.com/">Support</a></aside>
+<p class="source"><a href="https://alaskabeacon.com/"><strong>Alaska Beacon</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-19T22:35:16+00:00" data-pub="2:35 PM AKDT">Wed, Aug 19 @ 2PM AKDT</time><a class="lozenge place" href="/search?state=AK">Alaska</a></p>
+<h2><a href="https://alaskabeacon.com/2026/08/19/to-build-healthcare-affordability-in-alaska-we-need-to-look-at-care-costs/">To build healthcare affordability in Alaska, we need to look at care costs</a></h2>
+<p class="byline">By Jim Grazko</p>
+<a class="shot" href="https://alaskabeacon.com/2026/08/19/to-build-healthcare-affordability-in-alaska-we-need-to-look-at-care-costs/" tabindex="-1" aria-hidden="true"><img src="../img/2bdfe730950a558794c4f3782707ee4ac26e8257.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Imagine tearing a ligament on a weekend hike and calling around for a price on the surgery, only to find that the same procedure costs twice as much at one hospital as it does at another less than a hundred miles away. No difference in the treatment, no difference in the outcome. Just a difference <a class="lozenge more" href="https://alaskabeacon.com/2026/08/19/to-build-healthcare-affordability-in-alaska-we-need-to-look-at-care-costs/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.paypal.com/donate/?hosted_button_id=JDWECP9YF7NAN">Donate</a></aside>
+<p class="source"><a href="https://marylandreporter.com"><strong>Maryland Reporter</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-19T22:18:33+00:00" data-pub="6:18 PM EDT">Wed, Aug 19 @ 6PM EDT</time><a class="lozenge place" href="/search?state=MD">Maryland</a><a class="lozenge place" href="/search?place=Columbia&state=MD">Columbia</a></p>
+<h2><a href="https://marylandreporter.com/2026/08/19/the-best-way-to-decide-between-assisted-living-and-skilled-nursing/">The Best Way To Decide Between Assisted Living And Skilled Nursing</a></h2>
+<p class="byline">By Maori Hood</p>
+<p>The right choice depends on an older adult’s daily needs, health condition, and level of independence. Assisted living is generally suited for seniors who need help with everyday tasks but do not require intensive medical care. Skilled nursing is better suited for individuals who need ongoing clinical care, rehabilitation, or more extensive assistance. Both settings <a class="lozenge more" href="https://marylandreporter.com/2026/08/19/the-best-way-to-decide-between-assisted-living-and-skilled-nursing/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.penncapital-star.com/">Support</a></aside>
+<p class="source"><a href="https://www.penncapital-star.com/"><strong>Pennsylvania Capital-Star</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-19T21:45:00+00:00" data-pub="5:45 PM EDT">Wed, Aug 19 @ 5PM EDT</time><a class="lozenge place" href="/search?state=PA">Pennsylvania</a></p>
+<h2><a href="https://penncapital-star.com/health-care/exploring-whether-foreign-trained-doctors-can-alleviate-pennsylvanias-physician-shortage/">Exploring whether foreign-trained doctors can alleviate Pennsylvania’s physician shortage</a></h2>
+<p class="byline">By Whitney Downard</p>
+<a class="shot" href="https://penncapital-star.com/health-care/exploring-whether-foreign-trained-doctors-can-alleviate-pennsylvanias-physician-shortage/" tabindex="-1" aria-hidden="true"><img src="../img/53db8cf12ca7f60811b75dc32475d9779e9c5ac7.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>A Democratic proposal to add foreign-trained physicians have the support of conservative think tanks, but will GOP lawmakers agree? <a class="lozenge more" href="https://penncapital-star.com/health-care/exploring-whether-foreign-trained-doctors-can-alleviate-pennsylvanias-physician-shortage/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://iowacapitaldispatch.com/">Support</a></aside>
+<p class="source"><a href="https://iowacapitaldispatch.com/"><strong>Iowa Capital Dispatch</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-19T21:31:10+00:00" data-pub="4:31 PM CDT">Wed, Aug 19 @ 4PM CDT</time><a class="lozenge place" href="/search?state=IA">Iowa</a></p>
 <h2><a href="https://iowacapitaldispatch.com/2026/08/19/iowa-attorney-faces-sanctions-for-medicaid-scheme-involving-his-rolls-royce/">Iowa attorney faces sanctions for Medicaid scheme involving his Rolls Royce</a></h2>
-<p class="byline"><small>By Clark Kauffman</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://iowacapitaldispatch.com/">Support</a></span></p>
+<p class="byline">By Clark Kauffman</p>
 <a class="shot" href="https://iowacapitaldispatch.com/2026/08/19/iowa-attorney-faces-sanctions-for-medicaid-scheme-involving-his-rolls-royce/" tabindex="-1" aria-hidden="true"><img src="../img/47d892bc658d413093d7efe9310e8298ffe12f76.jpg" alt="" width="480" height="304" loading="lazy" decoding="async"></a>
-<p>A north-central Iowa attorney accused of health care fraud in attempting to assist a client in qualifying for Medicaid is now facing sanctions from state licensing officials. On Oct. 30, 2025, attorney Timothy Mark Anderson from Garner was convicted of one count of false statements relating to a health care matter. At his plea hearing,</p>
-<p class="more"><a href="https://iowacapitaldispatch.com/2026/08/19/iowa-attorney-faces-sanctions-for-medicaid-scheme-involving-his-rolls-royce/">Read more <span aria-hidden="true">→</span></a></p>
+<p>A north-central Iowa attorney accused of health care fraud in attempting to assist a client in qualifying for Medicaid is now facing sanctions from state licensing officials. On Oct. 30, 2025, attorney Timothy Mark Anderson from Garner was convicted of one count of false statements relating to a health care matter. At his plea hearing, <a class="lozenge more" href="https://iowacapitaldispatch.com/2026/08/19/iowa-attorney-faces-sanctions-for-medicaid-scheme-involving-his-rolls-royce/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-19T21:14:38+00:00" data-pub="2:14 PM MST">Wednesday, August 19, 2026 at 2:14 PM MST</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>AZ / Statewide / <a href="https://azmirror.com/">Arizona Mirror</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://azmirror.com/">Support</a></aside>
+<p class="source"><a href="https://azmirror.com/"><strong>Arizona Mirror</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-19T21:14:38+00:00" data-pub="2:14 PM MST">Wed, Aug 19 @ 2PM MST</time><a class="lozenge place" href="/search?state=AZ">Arizona</a></p>
 <h2><a href="https://azmirror.com/2026/08/19/repub/federal-judge-blocks-trump-admin-from-changing-teen-pregnancy-prevention-program/">Federal judge blocks Trump admin from changing teen pregnancy prevention program</a></h2>
-<p class="byline"><small>By Kelcie Moseley-Morris</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://azmirror.com/">Support</a></span></p>
+<p class="byline">By Kelcie Moseley-Morris</p>
 <a class="shot" href="https://azmirror.com/2026/08/19/repub/federal-judge-blocks-trump-admin-from-changing-teen-pregnancy-prevention-program/" tabindex="-1" aria-hidden="true"><img src="../img/578b1b931a273f7ba4abd19d5fbddad2c6d90125.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>A federal judge in the District of Columbia issued an order Wednesday blocking U.S. Health and Human Services from implementing sweeping changes to grants under the Teen Pregnancy Prevention Program while a lawsuit proceeds, but dozens of existing grants that were canceled this summer will remain so for now, unless the administration chooses to reinstate</p>
-<p class="more"><a href="https://azmirror.com/2026/08/19/repub/federal-judge-blocks-trump-admin-from-changing-teen-pregnancy-prevention-program/">Read more <span aria-hidden="true">→</span></a></p>
+<p>A federal judge in the District of Columbia issued an order Wednesday blocking U.S. Health and Human Services from implementing sweeping changes to grants under the Teen Pregnancy Prevention Program while a lawsuit proceeds, but dozens of existing grants that were canceled this summer will remain so for now, unless the administration chooses to reinstate <a class="lozenge more" href="https://azmirror.com/2026/08/19/repub/federal-judge-blocks-trump-admin-from-changing-teen-pregnancy-prevention-program/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-19T20:59:59+00:00" data-pub="3:59 PM CDT">Wednesday, August 19, 2026 at 3:59 PM CDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>LA / New Orleans / <a href="http://www.louisianaweekly.com/">Louisiana Weekly</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="http://www.louisianaweekly.com/">Support</a></aside>
+<p class="source"><a href="http://www.louisianaweekly.com/"><strong>Louisiana Weekly</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-19T20:59:59+00:00" data-pub="3:59 PM CDT">Wed, Aug 19 @ 3PM CDT</time><a class="lozenge place" href="/search?state=LA">Louisiana</a><a class="lozenge place" href="/search?place=New+Orleans&state=LA">New Orleans</a></p>
 <h2><a href="http://www.louisianaweekly.com/with-medicaid-cuts-ahead-la-s-rural-health-providers-battle-over-payments/">With Medicaid cuts ahead, La.’s rural health providers battle over payments</a></h2>
-<p class="byline"><small>By admin</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="http://www.louisianaweekly.com/">Support</a></span></p>
+<p class="byline">By admin</p>
 <a class="shot" href="http://www.louisianaweekly.com/with-medicaid-cuts-ahead-la-s-rural-health-providers-battle-over-payments/" tabindex="-1" aria-hidden="true"><img src="../img/f45354dc9fbd22064405e0a3f87ed2e99845ffb3.jpg" alt="" width="480" height="505" loading="lazy" decoding="async"></a>
-<p>By Julie O’Donoghue Contributing Writer (lailluminator.com) – When Herndon “Buzz” Jeansonne bought two rural health clinics in Avoyelles Parish from a retiring physician in 2006,</p>
-<p class="more"><a href="http://www.louisianaweekly.com/with-medicaid-cuts-ahead-la-s-rural-health-providers-battle-over-payments/">Read more <span aria-hidden="true">→</span></a></p>
+<p>By Julie O’Donoghue Contributing Writer (lailluminator.com) – When Herndon “Buzz” Jeansonne bought two rural health clinics in Avoyelles Parish from a retiring physician in 2006, <a class="lozenge more" href="http://www.louisianaweekly.com/with-medicaid-cuts-ahead-la-s-rural-health-providers-battle-over-payments/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-19T20:29:12+00:00" data-pub="4:29 PM EDT">Wednesday, August 19, 2026 at 4:29 PM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>FL / Statewide / <a href="https://floridaphoenix.com/">Florida Phoenix</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://floridaphoenix.com/">Support</a></aside>
+<p class="source"><a href="https://floridaphoenix.com/"><strong>Florida Phoenix</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-19T20:29:12+00:00" data-pub="4:29 PM EDT">Wed, Aug 19 @ 4PM EDT</time><a class="lozenge place" href="/search?state=FL">Florida</a></p>
 <h2><a href="https://floridaphoenix.com/2026/08/19/repub/more-gop-party-platforms-include-anti-ivf-language-is-surrogacy-next/">More GOP party platforms include anti-IVF language. Is surrogacy next?</a></h2>
-<p class="byline"><small>By Kelcie Moseley-Morris</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://floridaphoenix.com/">Support</a></span></p>
+<p class="byline">By Kelcie Moseley-Morris</p>
 <a class="shot" href="https://floridaphoenix.com/2026/08/19/repub/more-gop-party-platforms-include-anti-ivf-language-is-surrogacy-next/" tabindex="-1" aria-hidden="true"><img src="../img/69cc2a44f1e7e22b313e55c11ec5af91c2c18a1a.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Brooke Green thought she needed a mammogram. Green, a Democratic state representative in Idaho, knew that breast cancer ran in her family and she “just had an inkling” that she should be tested. She was two weeks shy of the day her last remaining embryo would be implanted through in vitro fertilization. It was the</p>
-<p class="more"><a href="https://floridaphoenix.com/2026/08/19/repub/more-gop-party-platforms-include-anti-ivf-language-is-surrogacy-next/">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Also in <a href="https://westvirginiawatch.com/2026/08/17/repub/more-gop-party-platforms-include-anti-ivf-language-is-surrogacy-next/">West Virginia Watch</a> · <a href="https://stateline.org/2026/08/13/more-gop-party-platforms-include-anti-ivf-language-is-surrogacy-next/">Stateline</a></small></p>
+<p>Brooke Green thought she needed a mammogram. Green, a Democratic state representative in Idaho, knew that breast cancer ran in her family and she “just had an inkling” that she should be tested. She was two weeks shy of the day her last remaining embryo would be implanted through in vitro fertilization. It was the <a class="lozenge more" href="https://floridaphoenix.com/2026/08/19/repub/more-gop-party-platforms-include-anti-ivf-language-is-surrogacy-next/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://westvirginiawatch.com/2026/08/17/repub/more-gop-party-platforms-include-anti-ivf-language-is-surrogacy-next/">West Virginia Watch</a> &middot; <a href="https://stateline.org/2026/08/13/more-gop-party-platforms-include-anti-ivf-language-is-surrogacy-next/">Stateline</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-19T20:26:00+00:00" data-pub="4:26 PM EDT">Wednesday, August 19, 2026 at 4:26 PM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>FL / Lakeland / <a href="https://www.lkldnow.com/">LkldNow</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.lkldnow.com/support/">Donate</a></aside>
+<p class="source"><a href="https://www.lkldnow.com/"><strong>LkldNow</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-19T20:26:00+00:00" data-pub="4:26 PM EDT">Wed, Aug 19 @ 4PM EDT</time><a class="lozenge place" href="/search?state=FL">Florida</a><a class="lozenge place" href="/search?place=Lakeland&state=FL">Lakeland</a></p>
 <h2><a href="https://www.lkldnow.com/lakeland-highlands-hospital-to-host-hiring-event-saturday-aug-22/">Lakeland Highlands Hospital to Host Hiring Event Saturday, Aug. 22</a></h2>
-<p class="byline"><small>By LkldNow</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.lkldnow.com/support/">Donate</a></span></p>
-<p>Orlando Health Watson Clinic Lakeland Highlands Hospital is hosting a job fair on Saturday, Aug. 22, seeking allied health professionals, registered nurses, and nursing support professionals.</p>
-<p class="more"><a href="https://www.lkldnow.com/lakeland-highlands-hospital-to-host-hiring-event-saturday-aug-22/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By LkldNow</p>
+<p>Orlando Health Watson Clinic Lakeland Highlands Hospital is hosting a job fair on Saturday, Aug. 22, seeking allied health professionals, registered nurses, and nursing support professionals. <a class="lozenge more" href="https://www.lkldnow.com/lakeland-highlands-hospital-to-host-hiring-event-saturday-aug-22/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-19T20:12:03+00:00" data-pub="4:12 PM EDT">Wednesday, August 19, 2026 at 4:12 PM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>ME / Statewide / <a href="https://mainemorningstar.com/">Maine Morning Star</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://mainemorningstar.com/">Support</a></aside>
+<p class="source"><a href="https://mainemorningstar.com/"><strong>Maine Morning Star</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-19T20:12:03+00:00" data-pub="4:12 PM EDT">Wed, Aug 19 @ 4PM EDT</time><a class="lozenge place" href="/search?state=ME">Maine</a></p>
 <h2><a href="https://mainemorningstar.com/2026/08/19/direct-cash-assistance-program-for-single-moms-to-expand-with-1-4m-funding-boost/">Direct cash assistance program for single moms to expand with $1.4M funding boost</a></h2>
-<p class="byline"><small>By Eesha Pendharkar</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://mainemorningstar.com/">Support</a></span></p>
+<p class="byline">By Eesha Pendharkar</p>
 <a class="shot" href="https://mainemorningstar.com/2026/08/19/direct-cash-assistance-program-for-single-moms-to-expand-with-1-4m-funding-boost/" tabindex="-1" aria-hidden="true"><img src="../img/4561df91925e3530e817f64a46db186a1be17f3e.jpg" alt="" width="480" height="377" loading="lazy" decoding="async"></a>
-<p>A direct cash assistance program for low-income single mothers is expanding to include dozens more families after receiving an anonymous $1.47 million donation. Project Home Trust, started in 2024 by Portland-based nonprofit Project Home, is currently helping its third cohort of families, with 50 mothers and their children in three counties receiving monthly direct cash</p>
-<p class="more"><a href="https://mainemorningstar.com/2026/08/19/direct-cash-assistance-program-for-single-moms-to-expand-with-1-4m-funding-boost/">Read more <span aria-hidden="true">→</span></a></p>
+<p>A direct cash assistance program for low-income single mothers is expanding to include dozens more families after receiving an anonymous $1.47 million donation. Project Home Trust, started in 2024 by Portland-based nonprofit Project Home, is currently helping its third cohort of families, with 50 mothers and their children in three counties receiving monthly direct cash <a class="lozenge more" href="https://mainemorningstar.com/2026/08/19/direct-cash-assistance-program-for-single-moms-to-expand-with-1-4m-funding-boost/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-19T20:09:39+00:00" data-pub="4:09 PM EDT">Wednesday, August 19, 2026 at 4:09 PM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>MI / - / <a href="https://www.secondwavemedia.com/">Second Wave</a></small></p>
-<h2><a href="https://secondwavemedia.com/mental-health-millage-means-help-for-more-people-and-a-healthier-community/">Mental Health millage means help for more people — and a healthier community</a></h2>
-<p class="byline"><small>By Lee Van Roth</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://secondwavemedia.com/support-us/">Donate</a></span></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://secondwavemedia.com/support-us/">Donate</a></aside>
+<p class="source"><a href="https://www.secondwavemedia.com/"><strong>Second Wave</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-19T20:09:39+00:00" data-pub="4:09 PM EDT">Wed, Aug 19 @ 4PM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=-&state=MI">-</a></p>
+<h2><a href="https://secondwavemedia.com/mental-health-millage-means-help-for-more-people-and-a-healthier-community/">Mental Health millage means help for more people—and a healthier community</a></h2>
+<p class="byline">By Lee Van Roth</p>
 <a class="shot" href="https://secondwavemedia.com/mental-health-millage-means-help-for-more-people-and-a-healthier-community/" tabindex="-1" aria-hidden="true"><img src="../img/17d868292859af49644614ef89e5685a8619a1f5.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>In Washtenaw County, adults served by community mental health increased 147%, and youths served 104%.</p>
-<p class="more"><a href="https://secondwavemedia.com/mental-health-millage-means-help-for-more-people-and-a-healthier-community/">Read more <span aria-hidden="true">→</span></a></p>
+<p>In Washtenaw County, adults served by community mental health increased 147%, and youths served 104%. <a class="lozenge more" href="https://secondwavemedia.com/mental-health-millage-means-help-for-more-people-and-a-healthier-community/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-19T20:01:35+00:00" data-pub="3:01 PM CDT">Wednesday, August 19, 2026 at 3:01 PM CDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>AL / Statewide / <a href="https://alabamareflector.com/">Alabama Reflector</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://alabamareflector.com/">Support</a></aside>
+<p class="source"><a href="https://alabamareflector.com/"><strong>Alabama Reflector</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-19T20:01:35+00:00" data-pub="3:01 PM CDT">Wed, Aug 19 @ 3PM CDT</time><a class="lozenge place" href="/search?state=AL">Alabama</a></p>
 <h2><a href="https://alabamareflector.com/2026/08/19/repub/testing-of-covid-19-treatment-funded-by-south-carolina-approved-to-start-clinical-trial/">Testing of COVID-19 treatment funded by South Carolina approved to start clinical trial</a></h2>
-<p class="byline"><small>By Jessica Holdman</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://alabamareflector.com/">Support</a></span></p>
+<p class="byline">By Jessica Holdman</p>
 <a class="shot" href="https://alabamareflector.com/2026/08/19/repub/testing-of-covid-19-treatment-funded-by-south-carolina-approved-to-start-clinical-trial/" tabindex="-1" aria-hidden="true"><img src="../img/0897728a89b40ac8d7761b90d3308341b6b96c86.jpg" alt="" width="480" height="325" loading="lazy" decoding="async"></a>
-<p>COLUMBIA – For one in 10 people who catch the flu, COVID-19 or other respiratory viruses, the symptoms can turn life-threatening. The Medical University of South Carolina wants to help treat those symptoms before they lead to hospitalization. And it’s ready to take the next step in a clinical trial for a new drug that</p>
-<p class="more"><a href="https://alabamareflector.com/2026/08/19/repub/testing-of-covid-19-treatment-funded-by-south-carolina-approved-to-start-clinical-trial/">Read more <span aria-hidden="true">→</span></a></p>
+<p>COLUMBIA – For one in 10 people who catch the flu, COVID-19 or other respiratory viruses, the symptoms can turn life-threatening. The Medical University of South Carolina wants to help treat those symptoms before they lead to hospitalization. And it’s ready to take the next step in a clinical trial for a new drug that <a class="lozenge more" href="https://alabamareflector.com/2026/08/19/repub/testing-of-covid-19-treatment-funded-by-south-carolina-approved-to-start-clinical-trial/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-19T20:00:00+00:00" data-pub="1:00 PM PDT">Wednesday, August 19, 2026 at 1:00 PM PDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>CA / Oakland / <a href="https://oaklandside.org/">The Oaklandside</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://checkout.fundjournalism.org/memberform?org_id=oakland&amp;campaign=7010b0000014AXMAA2">Donate</a></aside>
+<p class="source"><a href="https://oaklandside.org/"><strong>The Oaklandside</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-19T20:00:00+00:00" data-pub="1:00 PM PDT">Wed, Aug 19 @ 1PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Oakland&state=CA">Oakland</a></p>
 <h2><a href="https://oaklandside.org/2026/08/19/how-to-compost-oakland-green-bags-waste-management/">Green bags don’t cut it. Here’s how to compost in Oakland instead</a></h2>
-<p class="byline"><small>By Natalie Orenstein</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://checkout.fundjournalism.org/memberform?org_id=oakland&amp;campaign=7010b0000014AXMAA2">Donate</a></span></p>
+<p class="byline">By Natalie Orenstein</p>
 <a class="shot" href="https://oaklandside.org/2026/08/19/how-to-compost-oakland-green-bags-waste-management/" tabindex="-1" aria-hidden="true"><img src="../img/aff9ae17bc74ff0fb5b5693c984e05869d2b63d1.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Green bags don’t cut it. Here’s how to compost in Oakland instead After we reported on the bioplastics ban, we asked for your tips and tricks on keeping compost clean.</p>
-<p class="more"><a href="https://oaklandside.org/2026/08/19/how-to-compost-oakland-green-bags-waste-management/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Green bags don’t cut it. Here’s how to compost in Oakland instead After we reported on the bioplastics ban, we asked for your tips and tricks on keeping compost clean. <a class="lozenge more" href="https://oaklandside.org/2026/08/19/how-to-compost-oakland-green-bags-waste-management/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-19T19:51:35+00:00" data-pub="1:51 PM MDT">Wednesday, August 19, 2026 at 1:51 PM MDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>UT / Statewide / <a href="https://utahnewsdispatch.com/">Utah News Dispatch</a></small></p>
-<h2><a href="https://utahnewsdispatch.com/2026/08/19/drive-for-nuclear-power-boosts-uranium-industry-and-tribal-health-concerns-in-southwest/">Drive for nuclear power boosts uranium industry — and tribal health concerns in southwest</a></h2>
-<p class="byline"><small>By Melissa Bailey, KFF Health News</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://utahnewsdispatch.com/">Support</a></span></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://utahnewsdispatch.com/">Support</a></aside>
+<p class="source"><a href="https://utahnewsdispatch.com/"><strong>Utah News Dispatch</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-19T19:51:35+00:00" data-pub="1:51 PM MDT">Wed, Aug 19 @ 1PM MDT</time><a class="lozenge place" href="/search?state=UT">Utah</a></p>
+<h2><a href="https://utahnewsdispatch.com/2026/08/19/drive-for-nuclear-power-boosts-uranium-industry-and-tribal-health-concerns-in-southwest/">Drive for nuclear power boosts uranium industry—and tribal health concerns in southwest</a></h2>
+<p class="byline">By Melissa Bailey, KFF Health News</p>
 <a class="shot" href="https://utahnewsdispatch.com/2026/08/19/drive-for-nuclear-power-boosts-uranium-industry-and-tribal-health-concerns-in-southwest/" tabindex="-1" aria-hidden="true"><img src="../img/e8e406a4f9ff675b8c7f3e0c58f81a714991e483.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>WHITE MESA, Utah — On a hot April day, Malcolm Lehi maneuvered his Jeep Wrangler over a rough dirt road past junipers and sagebrush in search of Entrance Spring on land long connected to his tribe, the Ute Mountain Ute. The cool, mossy spring lies just across the highway from White Mesa Mill, the nation’s</p>
-<p class="more"><a href="https://utahnewsdispatch.com/2026/08/19/drive-for-nuclear-power-boosts-uranium-industry-and-tribal-health-concerns-in-southwest/">Read more <span aria-hidden="true">→</span></a></p>
+<p>WHITE MESA, Utah—On a hot April day, Malcolm Lehi maneuvered his Jeep Wrangler over a rough dirt road past junipers and sagebrush in search of Entrance Spring on land long connected to his tribe, the Ute Mountain Ute. The cool, mossy spring lies just across the highway from White Mesa Mill, the nation’s <a class="lozenge more" href="https://utahnewsdispatch.com/2026/08/19/drive-for-nuclear-power-boosts-uranium-industry-and-tribal-health-concerns-in-southwest/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-19T19:30:05+00:00" data-pub="3:30 PM EDT">Wednesday, August 19, 2026 at 3:30 PM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>NC / Statewide / <a href="https://ncnewsline.com">NC Newsline</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://ncnewsline.com">Support</a></aside>
+<p class="source"><a href="https://ncnewsline.com"><strong>NC Newsline</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-19T19:30:05+00:00" data-pub="3:30 PM EDT">Wed, Aug 19 @ 3PM EDT</time><a class="lozenge place" href="/search?state=NC">North Carolina</a></p>
 <h2><a href="https://ncnewsline.com/2026/08/19/as-meta-faces-trial-for-hooking-kids-on-social-media-ncs-attorney-general-offers-parents-advice/">As Meta faces trial for hooking kids on social media, NC’s attorney general offers parents advice</a></h2>
-<p class="byline"><small>By Clayton Henkel</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://ncnewsline.com">Support</a></span></p>
+<p class="byline">By Clayton Henkel</p>
 <a class="shot" href="https://ncnewsline.com/2026/08/19/as-meta-faces-trial-for-hooking-kids-on-social-media-ncs-attorney-general-offers-parents-advice/" tabindex="-1" aria-hidden="true"><img src="../img/204835da9d3eeff3059f8b2ba66fcd6a48076e7c.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>“This is the big one.” That’s how North Carolina Attorney General Jeff Jackson described the landmark federal trial that got underway Tuesday, in which Meta is accused of designing its platforms to be addictive to children. Jackson and a bipartisan group of 28 other attorneys general allege the tech giant deceived the public about the</p>
-<p class="more"><a href="https://ncnewsline.com/2026/08/19/as-meta-faces-trial-for-hooking-kids-on-social-media-ncs-attorney-general-offers-parents-advice/">Read more <span aria-hidden="true">→</span></a></p>
+<p>“This is the big one.” That’s how North Carolina Attorney General Jeff Jackson described the landmark federal trial that got underway Tuesday, in which Meta is accused of designing its platforms to be addictive to children. Jackson and a bipartisan group of 28 other attorneys general allege the tech giant deceived the public about the <a class="lozenge more" href="https://ncnewsline.com/2026/08/19/as-meta-faces-trial-for-hooking-kids-on-social-media-ncs-attorney-general-offers-parents-advice/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-19T18:53:59+00:00" data-pub="2:53 PM EDT">Wednesday, August 19, 2026 at 2:53 PM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>DC / Washington / <a href="https://dcwitness.org/">D.C. Witness</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://dcwitness.org/">Support</a></aside>
+<p class="source"><a href="https://dcwitness.org/"><strong>D.C. Witness</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-19T18:53:59+00:00" data-pub="2:53 PM EDT">Wed, Aug 19 @ 2PM EDT</time><a class="lozenge place" href="/search?state=DC">Washington, D.C.</a><a class="lozenge place" href="/search?place=Washington&state=DC">Washington</a></p>
 <h2><a href="https://dcwitness.org/stabbing-defendant-plans-to-review-plea-deal-with-mental-health-specialist/">Stabbing Defendant Plans to Review Plea Deal With Mental Health Specialist</a></h2>
-<p class="byline"><small>By Sophia Cooper</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://dcwitness.org/">Support</a></span></p>
-<p>DC Superior Court Judge Neal Kravitz and the prosecutor allowed a stabbing defendant more time to consider a plea deal with the assistance of a mental health specialist at a hearing on Aug. 17. Corey Bridges, 32, is charged with assault with intent to kill while armed, aggravated assault knowingly while armed, assault with significant</p>
-<p class="more"><a href="https://dcwitness.org/stabbing-defendant-plans-to-review-plea-deal-with-mental-health-specialist/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-19T17:26:05+00:00" data-pub="1:26 PM EDT">Wednesday, August 19, 2026 at 1:26 PM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>CT / Hartford / <a href="https://ctmirror.org/">The Connecticut Mirror</a></small></p>
-<h2><a href="https://ctmirror.org/2026/08/19/ct-health-providers-husky-losses-hr1/">CT health providers work to curb HUSKY losses from ‘Big Beautiful’ bill</a></h2>
-<p class="byline"><small>By Katy Golvala</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://ctmirror.donorsupport.co/page/FUNDVURKCRQ">Donate</a></span></p>
-<a class="shot" href="https://ctmirror.org/2026/08/19/ct-health-providers-husky-losses-hr1/" tabindex="-1" aria-hidden="true"><img src="../img/d6ba94e6a5da3ef395e772de814b8e487c3bcb89.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>Federal changes to Medicaid eligibility take effect in January, and 110K CT residents could lose HUSKY. Hospitals and clinics are preparing.</p>
-<p class="more"><a href="https://ctmirror.org/2026/08/19/ct-health-providers-husky-losses-hr1/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-19T17:06:14+00:00" data-pub="12:06 PM CDT">Wednesday, August 19, 2026 at 12:06 PM CDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>LA / Statewide / <a href="https://lailluminator.com/">Lousiana Illuminator</a></small></p>
-<h2><a href="https://lailluminator.com/2026/08/19/ruston-amoeba/">Ruston child hospitalized with brain-eating amoeba</a></h2>
-<p class="byline"><small>By Wesley Muller</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://lailluminator.com/">Support</a></span></p>
-<a class="shot" href="https://lailluminator.com/2026/08/19/ruston-amoeba/" tabindex="-1" aria-hidden="true"><img src="../img/01fc3d9dbfb59ec4cda6fe99affe1bf41e964739.jpg" alt="" width="480" height="382" loading="lazy" decoding="async"></a>
-<p>A Ruston child has been hospitalized with a brain-eating amoeba that she might have contracted while swimming in a North Louisiana lake, state and local health officials reported Wednesday. In a news release Wednesday morning, the Louisiana Department of Health confirmed a resident was infected with Naegleria fowleri, a pathogen that feeds on brain tissue.</p>
-<p class="more"><a href="https://lailluminator.com/2026/08/19/ruston-amoeba/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-19T17:06:14+00:00" data-pub="12:06 PM CDT">Wednesday, August 19, 2026 at 12:06 PM CDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>IL / Agriculture / <a href="https://investigatemidwest.org/">Investigate Midwest</a></small></p>
-<h2><a href="https://investigatemidwest.org/2026/08/19/report-big-food-companies-regularly-sue-to-stop-or-slow-down-public-health-policies/">Report: Big Food companies regularly sue to stop or slow down public health policies</a></h2>
-<p class="byline"><small>By Sky Chadde, Investigate Midwest</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://investigatemidwest.org/donate-3/">Donate</a></span></p>
-<a class="shot" href="https://investigatemidwest.org/2026/08/19/report-big-food-companies-regularly-sue-to-stop-or-slow-down-public-health-policies/" tabindex="-1" aria-hidden="true"><img src="../img/ed83c1f6cbc1e44fa0a5fe006d859ecaf346b735.jpg" alt="" width="480" height="402" loading="lazy" decoding="async"></a>
-<p>Companies such as Coca-Cola, PepsiCo and Mars have regularly sued governments around the world in an effort to prevent public health proposals from being implemented, according to new reporting by Lighthouse Reports and a slew of media partners. Diets full of ultraprocessed foods — such as fast food, cereals, soft drinks and protein bars —</p>
-<p class="more"><a href="https://investigatemidwest.org/2026/08/19/report-big-food-companies-regularly-sue-to-stop-or-slow-down-public-health-policies/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-19T17:03:56+00:00" data-pub="12:03 PM CDT">Wednesday, August 19, 2026 at 12:03 PM CDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>KS / Statewide / <a href="https://klcjournal.com/">The Journal (Kansas Leadership Center)</a></small></p>
-<h2><a href="https://klcjournal.com/are-there-maternity-care-deserts-in-kansas/">Are there maternity care deserts in Kansas?</a></h2>
-<p class="byline"><small>By Jessica Pearce</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://klcjournal.com/support-our-publication/">Donate</a></span></p>
-<a class="shot" href="https://klcjournal.com/are-there-maternity-care-deserts-in-kansas/" tabindex="-1" aria-hidden="true"><img src="../img/04a02969131131c07c0f1b3386489fb20d60317c.jpg" alt="" width="480" height="330" loading="lazy" decoding="async"></a>
-<p>Jessica Pearce is a Report for America corps member and covers civics in Kansas for The Journal.</p>
-<p class="more"><a href="https://klcjournal.com/are-there-maternity-care-deserts-in-kansas/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-19T16:40:17+00:00" data-pub="12:40 PM EDT">Wednesday, August 19, 2026 at 12:40 PM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>NY / Rochester / <a href="https://www.minorityreporter.net/">Minority Reporter</a></small></p>
-<h2><a href="https://www.minorityreporter.net/post/hudson-avenue-gun-arrests">Hudson Avenue Gun Arrests</a></h2>
-<p class="byline"><small>By Crime Reports</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.minorityreporter.net/post/subscribe-to-minority-reporter">Subscribe</a></span></p>
-<p>Rochester, NY - Around 5:15pm, last night, Officers responded to the 800 block of Joseph Avenue for a ShotSpotter activation. During the subsequent investigation, Officers stepped out with a group of males gathered around a 2022 Honda in the 1000 block of Hudson Avenue. At the time, 20-year old Mekhi Ragland was occupying the driver seat. While speaking with the group, Officers observed that the f</p>
-<p class="more"><a href="https://www.minorityreporter.net/post/hudson-avenue-gun-arrests">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-19T16:38:50+00:00" data-pub="12:38 PM EDT">Wednesday, August 19, 2026 at 12:38 PM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>VT / Winooski / <a href="https://thewinooskinews.com/">Winooski News</a></small></p>
-<h2><a href="https://vtcommunitynews.org/2026/08/19/meet-three-vermonters-whose-histories-are-lesser-known/">Meet three Vermonters whose histories are lesser known</a></h2>
-<p class="byline"><small>By Kyle Neece</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://thewinooskinews.com/">Support</a></span></p>
-<a class="shot" href="https://vtcommunitynews.org/2026/08/19/meet-three-vermonters-whose-histories-are-lesser-known/" tabindex="-1" aria-hidden="true"><img src="../img/d31f4bad2bf9ac4831dd84fd40753dd29eb76d03.jpg" alt="" width="480" height="279" loading="lazy" decoding="async"></a>
-<p>“The majority of people throughout history have been common people whose stories have not been highlighted,” researcher Angie Grove said.</p>
-<p class="more"><a href="https://vtcommunitynews.org/2026/08/19/meet-three-vermonters-whose-histories-are-lesser-known/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-19T16:14:03+00:00" data-pub="12:14 PM EDT">Wednesday, August 19, 2026 at 12:14 PM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>SC / Statewide / <a href="https://scdailygazette.com/">South Carolina Daily Gazette</a></small></p>
-<h2><a href="https://scdailygazette.com/2026/08/19/state-funded-testing-of-covid-19-treatment-approved-to-start-3000-person-clinical-trial/">State-funded testing of COVID-19 treatment approved to start 3,000-person clinical trial</a></h2>
-<p class="byline"><small>By Jessica Holdman</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://scdailygazette.com/">Support</a></span></p>
-<a class="shot" href="https://scdailygazette.com/2026/08/19/state-funded-testing-of-covid-19-treatment-approved-to-start-3000-person-clinical-trial/" tabindex="-1" aria-hidden="true"><img src="../img/afc073deec58b282ba5339cca817dd82e49e44f3.jpg" alt="" width="480" height="325" loading="lazy" decoding="async"></a>
-<p>The Medical University of South Carolina is taking the next step in a clinical trial to help treat COVID-19 symptoms before they lead to hospitalization.</p>
-<p class="more"><a href="https://scdailygazette.com/2026/08/19/state-funded-testing-of-covid-19-treatment-approved-to-start-3000-person-clinical-trial/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-19T16:00:17+00:00" data-pub="11:00 AM CDT">Wednesday, August 19, 2026 at 11:00 AM CDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>TN / Statewide / <a href="https://tennesseelookout.com/">Tennessee Lookout</a></small></p>
-<h2><a href="https://tennesseelookout.com/2026/08/19/john-coles-tennessee-life-support/">John Cole’s Tennessee: Life support</a></h2>
-<p class="byline"><small>By John Cole</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://tennesseelookout.com/">Support</a></span></p>
-<p class="more"><a href="https://tennesseelookout.com/2026/08/19/john-coles-tennessee-life-support/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-19T15:55:34+00:00" data-pub="10:55 AM CDT">Wednesday, August 19, 2026 at 10:55 AM CDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>IL / Harvey / <a href="https://harveyworld.org/">Harvey World Herald</a></small></p>
-<h2><a href="https://harveyworld.org/articles/health-the-environment/pritzker-signs-disaster-declaration-days-after-surveying-lansing-storm-damage/">Pritzker signs disaster declaration days after surveying Lansing storm damage</a></h2>
-<p class="byline"><small>By Amethyst J. Davis</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://harveyworld.org/support-us">Donate</a></span></p>
-<a class="shot" href="https://harveyworld.org/articles/health-the-environment/pritzker-signs-disaster-declaration-days-after-surveying-lansing-storm-damage/" tabindex="-1" aria-hidden="true"><img src="../img/76d354fa000df3f7601730607836ce5b02fafa61.jpg" alt="" width="480" height="239" loading="lazy" decoding="async"></a>
-<p>Local governments can now seek up to $250,000 in Community Development Block Grant dollars through the state to aid recovery efforts.</p>
-<p class="more"><a href="https://harveyworld.org/articles/health-the-environment/pritzker-signs-disaster-declaration-days-after-surveying-lansing-storm-damage/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-19T14:55:41+00:00" data-pub="8:55 AM MDT">Wednesday, August 19, 2026 at 8:55 AM MDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>NM / Cloudcroft / <a href="https://www.cloudcroftreader.com/">Cloudcroft Reader</a></small></p>
-<h2><a href="https://www.cloudcroftreader.com/p/lisa-adams-retires-after-25-years">Lisa Adams Retires after 25 Years at Cloudcroft’s Allsup’s</a></h2>
-<p class="byline"><small>By Jonny Coker</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://www.cloudcroftreader.com/">Support</a></span></p>
-<a class="shot" href="https://www.cloudcroftreader.com/p/lisa-adams-retires-after-25-years" tabindex="-1" aria-hidden="true"><img src="../img/d77134e30106b527bb369f7f3204d573d11e8287.jpg" alt="" width="480" height="283" loading="lazy" decoding="async"></a>
-<p>After decades behind the counter at the village’s station, Lisa Adams retires having turned a gas station job into a community anchor</p>
-<p class="more"><a href="https://www.cloudcroftreader.com/p/lisa-adams-retires-after-25-years">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-19T14:10:18+00:00" data-pub="10:10 AM EDT">Wednesday, August 19, 2026 at 10:10 AM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>VA / Charlottesville / <a href="https://communityengagement.substack.com/">Charlottesville Community Engagement</a></small></p>
-<h2><a href="https://communityengagement.substack.com/p/wednesday-august-19-2026-salvation">Wednesday, August 19, 2026: Salvation Army gets a $3 million pass-through for Center for Hope</a></h2>
-<p class="byline"><small>By Sean Tubbs</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://communityengagement.substack.com/">Support</a></span></p>
-<a class="shot" href="https://communityengagement.substack.com/p/wednesday-august-19-2026-salvation" tabindex="-1" aria-hidden="true"><img src="../img/9ebf92f5136056c3079e87cbccb1a9ca36d8f47f.jpg" alt="" width="480" height="226" loading="lazy" decoding="async"></a>
-<p>Plus: Albemarle County Public Schools taking applications for vacant seat through Friday</p>
-<p class="more"><a href="https://communityengagement.substack.com/p/wednesday-august-19-2026-salvation">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-19T13:29:33+00:00" data-pub="6:29 AM PDT">Wednesday, August 19, 2026 at 6:29 AM PDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>CA / Oakland / <a href="https://www.postnewsgroup.com/">Oakland Post</a></small></p>
-<h2><a href="https://www.postnewsgroup.com/episode-4-grow-stronger-after-50-2/">Episode 4: Grow Stronger After 50</a></h2>
-<p class="byline"><small>By bpusa-syndication</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.postnewsgroup.com/donate/">Donate</a></span></p>
-<p>INDIANAPOLIS RECORDER — Episode 4 of the Second Half of Life Podcast features hosts Thomas Griffin and Andrea McGordon in conversation with Joel Hungate, Assistant Vice President of Strategy &amp; Integrated Wellbeing at Hancock Health. Hungate, a biomedical engineer, health adventurer, and Netflix-featured survivalist, discusses reinvention, personal reflection, confidence, and building lasting healt</p>
-<p class="more"><a href="https://www.postnewsgroup.com/episode-4-grow-stronger-after-50-2/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-19T13:29:33+00:00" data-pub="6:29 AM PDT">Wednesday, August 19, 2026 at 6:29 AM PDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>CA / Oakland / <a href="https://www.postnewsgroup.com/">Oakland Post</a></small></p>
-<h2><a href="https://www.postnewsgroup.com/episode-4-grow-stronger-after-50/">Episode 4: Grow Stronger After 50</a></h2>
-<p class="byline"><small>By bpusa-syndication</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.postnewsgroup.com/donate/">Donate</a></span></p>
-<p>INDIANAPOLIS RECORDER — Episode 4 of the Second Half of Life Podcast features hosts Thomas Griffin and Andrea McGordon in conversation with Joel Hungate, Assistant Vice President of Strategy &amp; Integrated Wellbeing at Hancock Health. Hungate, a biomedical engineer, health adventurer, and Netflix-featured survivalist, discusses reinvention, personal reflection, confidence, and building lasting healt</p>
-<p class="more"><a href="https://www.postnewsgroup.com/episode-4-grow-stronger-after-50/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-19T12:00:00+00:00" data-pub="8:00 AM EDT">Wednesday, August 19, 2026 at 8:00 AM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>GA / Atlanta / <a href="https://www.healthbeat.org/atlanta/">Healthbeat - Atlanta</a></small></p>
-<h2><a href="https://www.healthbeat.org/newyork/2026/08/19/medicaid-work-requirements-to-hit-bronx-and-other-nyc-areas-hard/">New Medicaid work rules put NYC enrollees and hospitals at risk. Here’s who will be hit the hardest</a></h2>
-<p class="byline"><small>By Trenton Daniel</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://healthbeat.fundjournalism.org/donate/?campaign=701Pc00000M3S9eIAF">Donate</a></span></p>
-<a class="shot" href="https://www.healthbeat.org/newyork/2026/08/19/medicaid-work-requirements-to-hit-bronx-and-other-nyc-areas-hard/" tabindex="-1" aria-hidden="true"><img src="../img/11eac59ec357a25660acde0fcdfcc5097353a6e8.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>The Bronx leads the United States with the highest number of Medicaid enrollees, with 510,000 in Congressional District 15, and health advocates say the borough&#x27;s hospitals will bear the brunt.</p>
-<p class="more"><a href="https://www.healthbeat.org/newyork/2026/08/19/medicaid-work-requirements-to-hit-bronx-and-other-nyc-areas-hard/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-19T10:00:00+00:00" data-pub="5:00 AM CDT">Wednesday, August 19, 2026 at 5:00 AM CDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>AL / Statewide / <a href="https://www.propublica.org/south">Pro Publica - South</a></small></p>
-<h2><a href="https://www.propublica.org/article/senators-letter-health-data-africa-humanitarian-aid">Senators Criticize Trump Administration’s Demands to Access Health Data as a Condition for Lifesaving Aid</a></h2>
-<p class="byline"><small>By Anna Maria Barry-Jester</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.propublica.org/support/other-ways-to-give">Donate</a></span></p>
-<a class="shot" href="https://www.propublica.org/article/senators-letter-health-data-africa-humanitarian-aid" tabindex="-1" aria-hidden="true"><img src="../img/fc1cb707d006f76ce60d7993d90d34e754fadd40.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p class="more"><a href="https://www.propublica.org/article/senators-letter-health-data-africa-humanitarian-aid">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-19T10:00:00+00:00" data-pub="6:00 AM EDT">Wednesday, August 19, 2026 at 6:00 AM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>National / Criminal justice / <a href="https://www.themarshallproject.org/">The Marshall Project</a></small></p>
-<h2><a href="https://www.themarshallproject.org/2026/08/19/news-inside-issue-23">Bodies of Evidence</a></h2>
-<p class="byline"><small>By Lawrence Bartley</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.themarshallproject.org/2026/08/18/parents-immigrant-camps-children-deportation-flores">Donate</a></span></p>
-<a class="shot" href="https://www.themarshallproject.org/2026/08/19/news-inside-issue-23" tabindex="-1" aria-hidden="true"><img src="../img/ccda5f3fcd69988c055d26b6d719dc0f5fed6f08.jpg" alt="" width="480" height="322" loading="lazy" decoding="async"></a>
-<p>Lyrics, medical records and menopause — News Inside Issue 23 looks at what gets used against us, and what gets ignored.</p>
-<p class="more"><a href="https://www.themarshallproject.org/2026/08/19/news-inside-issue-23">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-19T09:59:50+00:00" data-pub="4:59 AM CDT">Wednesday, August 19, 2026 at 4:59 AM CDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>AL / Statewide / <a href="https://alabamareflector.com/">Alabama Reflector</a></small></p>
-<h2><a href="https://alabamareflector.com/2026/08/19/report-children-in-the-black-belt-see-worse-health-education-outcomes/">Report: Children in the Black Belt see worse health, education outcomes</a></h2>
-<p class="byline"><small>By Ralph Chapoco</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://alabamareflector.com/">Support</a></span></p>
-<a class="shot" href="https://alabamareflector.com/2026/08/19/report-children-in-the-black-belt-see-worse-health-education-outcomes/" tabindex="-1" aria-hidden="true"><img src="../img/beaf0e45994e50eec6684ef8d2b0eb523eec96d2.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Children raised in the Black Belt continue to see worse health and education outcomes than the state as a whole, University of Alabama researchers said at a press briefing on Monday. In the 24 counties that stretch across the southern part of Alabama, children are likely to have higher rates of mortality, live in single-parent</p>
-<p class="more"><a href="https://alabamareflector.com/2026/08/19/report-children-in-the-black-belt-see-worse-health-education-outcomes/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-19T09:30:00+00:00" data-pub="5:30 AM EDT">Wednesday, August 19, 2026 at 5:30 AM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>PA / Pittsburgh / <a href="https://www.publicsource.org/about/">Pittsburgh&#x27;s Public Source</a></small></p>
-<h2><a href="https://www.publicsource.org/pittsburgh-mental-health-ai-chatbots/">As patients turn to AI, Pittsburgh’s mental health providers adapt</a></h2>
-<p class="byline"><small>By Oliver Morrison</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://checkout.fundjournalism.org/memberform?org_id=publicsource&amp;campaign=7015x000000SBixAAG">Donate</a></span></p>
-<a class="shot" href="https://www.publicsource.org/pittsburgh-mental-health-ai-chatbots/" tabindex="-1" aria-hidden="true"><img src="../img/c218ed3445eae543c1fcd5181b18f37ff14edbfc.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>The use of AI chatbots for mental health support is growing faster than research and professional guidance. Some local providers are embracing the technology alongside patients, while others remain cautious.</p>
-<p class="more"><a href="https://www.publicsource.org/pittsburgh-mental-health-ai-chatbots/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Sophia Cooper</p>
+<p>DC Superior Court Judge Neal Kravitz and the prosecutor allowed a stabbing defendant more time to consider a plea deal with the assistance of a mental health specialist at a hearing on Aug. 17. Corey Bridges, 32, is charged with assault with intent to kill while armed, aggravated assault knowingly while armed, assault with significant <a class="lozenge more" href="https://dcwitness.org/stabbing-defendant-plans-to-review-plea-deal-with-mental-health-specialist/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 </div>
 <p><a id="more" href="health-10.html">More stories</a></p>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="../index.html">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -404,6 +456,47 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>

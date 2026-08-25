@@ -13,12 +13,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(../fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -27,22 +40,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -50,19 +69,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -75,7 +126,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -93,7 +144,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="../index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="../masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -106,7 +157,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="../subjects/news.html">News</a></li><li><a href="../subjects/politics.html">Politics</a></li><li><a href="../subjects/opinion.html">Opinion</a></li><li><a href="../subjects/health.html">Health</a></li><li><a href="../subjects/environment.html">Environment</a></li><li><a href="../subjects/education.html">Education</a></li><li><a href="../subjects/business.html">Business</a></li><li><a href="../subjects/housing.html">Housing</a></li><li><a href="../subjects/sports.html">Sports</a></li><li><a href="../subjects/food.html">Food</a></li><li><a href="../subjects/arts.html">Arts</a></li></ul></nav>
@@ -120,278 +171,282 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 </header>
 <main id="main">
 <h1>News</h1>
-<p><a href="../index.html">All</a> · <a href="../subjects/arts.html">Arts</a> (874) · <a href="../subjects/business.html">Business</a> (483) · <a href="../subjects/education.html">Education</a> (902) · <a href="../subjects/environment.html">Environment</a> (612) · <a href="../subjects/food.html">Food</a> (217) · <a href="../subjects/health.html">Health</a> (611) · <a href="../subjects/housing.html">Housing</a> (295) · News (1167) · <a href="../subjects/opinion.html">Opinion</a> (569) · <a href="../subjects/politics.html">Politics</a> (2570) · <a href="../subjects/sports.html">Sports</a> (495)</p>
+<p><a href="/">All</a> · <a href="../subjects/arts.html">Arts</a> (930) · <a href="../subjects/business.html">Business</a> (526) · <a href="../subjects/education.html">Education</a> (952) · <a href="../subjects/environment.html">Environment</a> (645) · <a href="../subjects/food.html">Food</a> (251) · <a href="../subjects/health.html">Health</a> (643) · <a href="../subjects/housing.html">Housing</a> (305) · News (1283) · <a href="../subjects/opinion.html">Opinion</a> (641) · <a href="../subjects/politics.html">Politics</a> (2644) · <a href="../subjects/sports.html">Sports</a> (550)</p>
 <div id="feed-items">
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T15:35:25+00:00" data-pub="11:35 AM EDT">Tuesday, August 25, 2026 at 11:35 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>GA / Atlanta / <a href="https://www.gpb.org/news">Georgia News Lab</a></small></p>
-<h2><a href="https://www.gpb.org/news/2026/08/25/who-kinley-rasmus-meet-the-phenix-city-girl-starring-at-little-league-world-series">Who is Kinley Rasmus? Meet the Phenix City girl starring at Little League World Series</a></h2>
-<p class="byline"><small>By The Ledger Enquirer</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.gpb.org/support/planned">Donate</a></span></p>
-<a class="shot" href="https://www.gpb.org/news/2026/08/25/who-kinley-rasmus-meet-the-phenix-city-girl-starring-at-little-league-world-series" tabindex="-1" aria-hidden="true"><img src="../img/6e7f1122ea36cc87156613546606c8e6a2684a97.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Girl, meet world. World, meet girl. Viewers across the world cannot get enough of Phenix City Little League sensation Kinley Rasmus. The 12-year-old has been dominant this summer en route to helping her team clinch a Southeast Regional title and a top-six finish, at minimum, in the United States at the Little League World Series.</p>
-<p class="more"><a href="https://www.gpb.org/news/2026/08/25/who-kinley-rasmus-meet-the-phenix-city-girl-starring-at-little-league-world-series">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://mosaic.nj.com/">Support</a></aside>
+<p class="source"><a href="https://mosaic.nj.com/"><strong>Mosaic</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T17:20:01+00:00" data-pub="1:20 PM EDT">Tue, Aug 25 @ 1PM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a></p>
+<h2><a href="https://www.nj.com/news/2026/08/this-jersey-shore-beach-was-free-for-more-than-100-years-thats-about-to-change.html">This Jersey Shore beach was free for over 100 years—that&#x27;s finally changing</a></h2>
+<p class="byline">By Paige Britt</p>
+<a class="shot" href="https://www.nj.com/news/2026/08/this-jersey-shore-beach-was-free-for-more-than-100-years-thats-about-to-change.html" tabindex="-1" aria-hidden="true"><img src="../img/ffd3325fdea9ebc7f827ba1e99fd3637e265ba24.webp" alt="" width="480" height="317" loading="lazy" decoding="async"></a>
+<p>Upper Township approved beach tags for Strathmere, ending free access to help offset municipal costs. <a class="lozenge more" href="https://www.nj.com/news/2026/08/this-jersey-shore-beach-was-free-for-more-than-100-years-thats-about-to-change.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T15:35:00+00:00" data-pub="11:35 AM EDT">Tuesday, August 25, 2026 at 11:35 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>FL / Miami / <a href="https://www.miamitimesonline.com/">The Miami Times</a></small></p>
-<h2><a href="https://www.miamitimesonline.com/news/world_national/secret-service-confirms-awareness-of-iranian-state-media-video-threatening-barron-trump-s-life/article_36f0e3e9-286f-456c-a38b-e444e565c022.html">Secret Service confirms awareness of Iranian state media video threatening Barron Trump’s life</a></h2>
-<p class="byline"><small>By The Associated Press</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://miamitimes.typeform.com/to/mQvUpc">Subscribe</a></span></p>
-<a class="shot" href="https://www.miamitimesonline.com/news/world_national/secret-service-confirms-awareness-of-iranian-state-media-video-threatening-barron-trump-s-life/article_36f0e3e9-286f-456c-a38b-e444e565c022.html" tabindex="-1" aria-hidden="true"><img src="../img/b6a431e06dac18ea6775c27d1fcf7b706e596572.webp" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
-<p>The U.S. Secret Service has confirmed it is aware that Iranian state media has aired a video that appears to threaten the life of Barron Trump, President Donald Trump’s youngest son.</p>
-<p class="more"><a href="https://www.miamitimesonline.com/news/world_national/secret-service-confirms-awareness-of-iranian-state-media-video-threatening-barron-trump-s-life/article_36f0e3e9-286f-456c-a38b-e444e565c022.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://mosaic.nj.com/">Support</a></aside>
+<p class="source"><a href="https://mosaic.nj.com/"><strong>Mosaic</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T17:17:36+00:00" data-pub="1:17 PM EDT">Tue, Aug 25 @ 1PM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a></p>
+<h2><a href="https://www.nj.com/news/2026/08/a-growing-trend-among-retirees-is-sparking-neighborhood-disputes.html">Seniors embrace cannabis as complaints rise</a></h2>
+<p class="byline">By Chris Pugh, Advance Local Express Desk</p>
+<a class="shot" href="https://www.nj.com/news/2026/08/a-growing-trend-among-retirees-is-sparking-neighborhood-disputes.html" tabindex="-1" aria-hidden="true"><img src="../img/63266d12c476e9d0166bc7363dc97d064ca4a5c5.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Marijuana use among baby boomers is rising as more seniors use cannabis for pain relief and sleep, but growing complaints over smoke and odors are fueling disputes with neighbors. <a class="lozenge more" href="https://www.nj.com/news/2026/08/a-growing-trend-among-retirees-is-sparking-neighborhood-disputes.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T15:21:00+00:00" data-pub="11:21 AM EDT">Tuesday, August 25, 2026 at 11:21 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>FL / Miami / <a href="https://www.miamitimesonline.com/">The Miami Times</a></small></p>
-<h2><a href="https://www.miamitimesonline.com/news/world_national/trump-s-trade-war-with-canada-could-rattle-economies-in-states-with-key-senate-races/article_05e443e0-81ca-4b59-90b2-040f27b2fcb2.html">Trump’s trade war with Canada could rattle economies in states with key Senate races</a></h2>
-<p class="byline"><small>By Bill Barrow and Patrick Whittle, The Associated Press</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://miamitimes.typeform.com/to/mQvUpc">Subscribe</a></span></p>
-<a class="shot" href="https://www.miamitimesonline.com/news/world_national/trump-s-trade-war-with-canada-could-rattle-economies-in-states-with-key-senate-races/article_05e443e0-81ca-4b59-90b2-040f27b2fcb2.html" tabindex="-1" aria-hidden="true"><img src="../img/621369f9ffc41ca990875a8d735a2cdcc83a2d7a.webp" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
-<p>President Donald Trump’s trade war with Canada is escalating as the midterm elections approach, threatening Republican efforts to address voters’ economic concerns in a year when control of the U.S. Senate hinges on states along the border between the United</p>
-<p class="more"><a href="https://www.miamitimesonline.com/news/world_national/trump-s-trade-war-with-canada-could-rattle-economies-in-states-with-key-senate-races/article_05e443e0-81ca-4b59-90b2-040f27b2fcb2.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.columbiamissourian.com/news/local/church-donation-boosts-vac-opportunity-campus/article_ec8b756a-0baa-4a85-bb92-07a66ff5b1a4.html">Donate</a></aside>
+<p class="source"><a href="https://www.columbiamissourian.com/"><strong>Columbia Missourian</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T17:15:00+00:00" data-pub="12:15 PM CDT">Tue, Aug 25 @ 12PM CDT</time><a class="lozenge place" href="/search?state=MO">Missouri</a><a class="lozenge place" href="/search?place=Columbia&state=MO">Columbia</a></p>
+<h2><a href="https://www.columbiamissourian.com/news/local/columbia-short-term-rental-complaint-line-has-yet-to-receive-complaints/article_dd5c85da-80ea-59a4-9561-03685f0ceb79.html">Columbia short-term rental complaint line has yet to receive complaints</a></h2>
+<p class="byline">By Matthew Dudley, KOMU 8</p>
+<p>Columbia’s 24/7 short-term rental hotline has yet to receive a complaint, but football season might bring more. <a class="lozenge more" href="https://www.columbiamissourian.com/news/local/columbia-short-term-rental-complaint-line-has-yet-to-receive-complaints/article_dd5c85da-80ea-59a4-9561-03685f0ceb79.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T15:20:18+00:00" data-pub="11:20 AM EDT">Tuesday, August 25, 2026 at 11:20 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>GA / Atlanta / <a href="https://www.gpb.org/news">Georgia News Lab</a></small></p>
-<h2><a href="https://www.gpb.org/news/2026/08/25/canada-announces-retaliatory-tariffs-on-the-us-the-countries-trade-fight-deepens">Canada announces retaliatory tariffs on the U.S. as the countries&#x27; trade fight deepens</a></h2>
-<p class="byline"><small>By Alex Leff</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.gpb.org/support/planned">Donate</a></span></p>
-<a class="shot" href="https://www.gpb.org/news/2026/08/25/canada-announces-retaliatory-tariffs-on-the-us-the-countries-trade-fight-deepens" tabindex="-1" aria-hidden="true"><img src="../img/c19abbb1a7835396192c4759dcdb8534b6f173c1.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>The measures come after President Trump imposed 50% tariffs on many Canadian goods and threatened more after trade talks broke down on Friday.</p>
-<p class="more"><a href="https://www.gpb.org/news/2026/08/25/canada-announces-retaliatory-tariffs-on-the-us-the-countries-trade-fight-deepens">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://mosaic.nj.com/">Support</a></aside>
+<p class="source"><a href="https://mosaic.nj.com/"><strong>Mosaic</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T17:14:05+00:00" data-pub="1:14 PM EDT">Tue, Aug 25 @ 1PM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a></p>
+<h2><a href="https://www.nj.com/news/2026/08/two-dead-of-measles-in-pennsylvania-heres-what-you-need-to-know.html">Two dead of measles in Pennsylvania; Here’s the latest</a></h2>
+<p class="byline">By Mark Heim</p>
+<a class="shot" href="https://www.nj.com/news/2026/08/two-dead-of-measles-in-pennsylvania-heres-what-you-need-to-know.html" tabindex="-1" aria-hidden="true"><img src="../img/b046ae65984ce83d5b9dd636d59cf29351cece3b.webp" alt="" width="480" height="269" loading="lazy" decoding="async"></a>
+<p>These are the first US deaths from measles reported in 2026. <a class="lozenge more" href="https://www.nj.com/news/2026/08/two-dead-of-measles-in-pennsylvania-heres-what-you-need-to-know.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T15:12:28+00:00" data-pub="11:12 AM EDT">Tuesday, August 25, 2026 at 11:12 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>NY / New York / <a href="https://gothamist.com/">Gothamist</a></small></p>
-<h2><a href="https://gothamist.com/news/tornadoes-whip-up-more-frequently-in-nj-than-ever-before">Tornadoes whip up more frequently in NJ than ever before</a></h2>
-<p class="byline"><small>By Giulia Heyward</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/public-media.html">Public media</a><a class="lozenge give" href="https://pledge.wnyc.org/support/gothamist/?utm_medium=partnersite&amp;utm_source=gothamist&amp;utm_campaign=homepage-header">Donate</a></span></p>
-<p>Steven DiMartino, a meteorologist and longtime resident of Monmouth County, says his area has had more confirmed tornadoes this summer than at any other time in his lifetime. [ more › ]</p>
-<p class="more"><a href="https://gothamist.com/news/tornadoes-whip-up-more-frequently-in-nj-than-ever-before">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://indianacitizen.org/donation/">Donate</a></aside>
+<p class="source"><a href="https://indianacitizen.org/"><strong>Indiana Citizen</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T17:08:29+00:00" data-pub="1:08 PM EDT">Tue, Aug 25 @ 1PM EDT</time><a class="lozenge place" href="/search?state=IN">Indiana</a></p>
+<h2><a href="https://indianacitizen.org/video-can-i-trust-the-bible-rev-chris-henry-second-presbyterian-church/">Video: “Can I trust the Bible?” – Rev. Chris Henry, Second Presbyterian Church</a></h2>
+<p class="byline">By Zachary Baiel</p>
+<p>A note from the Publisher Reverend Christopher Henry has been Senior Pastor of Second Presbyterian Church in Indianapolis since 2018. He is a graduate of Duke University (BA, Religion) and Columbia Theological Seminary (MDiv). In this 9-minute excerpt from his August 16, 2026, sermon, Rev. Henry confronts the misuse of Scripture to justify hatred, violence, superiority, and contempt for others. Ad <a class="lozenge more" href="https://indianacitizen.org/video-can-i-trust-the-bible-rev-chris-henry-second-presbyterian-church/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T15:08:00+00:00" data-pub="11:08 AM EDT">Tuesday, August 25, 2026 at 11:08 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>FL / Miami / <a href="https://www.miamitimesonline.com/">The Miami Times</a></small></p>
-<h2><a href="https://www.miamitimesonline.com/news/world_national/trump-floats-renaming-lake-ontario-as-lake-america-as-trade-war-with-canada-escalates/article_3003ff1d-5815-45a4-a464-9f8547c7685c.html">Trump floats renaming Lake Ontario as ‘Lake America’ as trade war with Canada escalates</a></h2>
-<p class="byline"><small>By Darlene Superville and Rob Gillies, The Associated Press</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://miamitimes.typeform.com/to/mQvUpc">Subscribe</a></span></p>
-<p>President Donald Trump said Tuesday that he is considering changing the name of Lake Ontario to “Lake America” as the trade war between the United States and Canada intensifies.</p>
-<p class="more"><a href="https://www.miamitimesonline.com/news/world_national/trump-floats-renaming-lake-ontario-as-lake-america-as-trade-war-with-canada-escalates/article_3003ff1d-5815-45a4-a464-9f8547c7685c.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.idahoednews.org/features/spelling-it-out/spelling-it-out-fund-balances/">Donate</a></aside>
+<p class="source"><a href="https://www.idahoednews.org/"><strong>Idaho Education News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T17:05:12+00:00" data-pub="11:05 AM MDT">Tue, Aug 25 @ 11AM MDT</time><a class="lozenge place" href="/search?state=ID">Idaho</a></p>
+<h2><a href="https://www.idahoednews.org/kevins-blog/micron-opens-new-training-center-in-partnership-with-cwi/">Micron opens new training center in partnership with CWI</a></h2>
+<p class="byline">By Kevin Richert</p>
+<a class="shot" href="https://www.idahoednews.org/kevins-blog/micron-opens-new-training-center-in-partnership-with-cwi/" tabindex="-1" aria-hidden="true"><img src="../img/1b4164019e7756c42432fd82e36a882ffce5cec8.webp" alt="" width="480" height="234" loading="lazy" decoding="async"></a>
+<p>The College of Western Idaho has received $3 million from Micron and the U.S. Department of Commerce to staff and equip the new 60,000-square-foot training site. <a class="lozenge more" href="https://www.idahoednews.org/kevins-blog/micron-opens-new-training-center-in-partnership-with-cwi/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T15:00:00+00:00" data-pub="8:00 AM PDT">Tuesday, August 25, 2026 at 8:00 AM PDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>CA / Stockton / <a href="https://stocktonia.org/">Stocktonia</a></small></p>
-<h2><a href="https://stocktonia.org/news/weather/2026/08/25/stockton-shares-its-heat-wave-with-other-california-cities-this-week-from-north-to-south/">Stockton faces a heat wave this week — and so does the rest of California</a></h2>
-<p class="byline"><small>By Chris Woodyard • Stocktonia</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://stocktonia.fundjournalism.org/donate/?campaign=6Mw4frEeMIYnrxMsnt">Donate</a></span></p>
-<a class="shot" href="https://stocktonia.org/news/weather/2026/08/25/stockton-shares-its-heat-wave-with-other-california-cities-this-week-from-north-to-south/" tabindex="-1" aria-hidden="true"><img src="../img/d0499abce5170f5759ca4e97cb9d5fb33fcdf2ce.webp" alt="Silhouette of a utility pole and wires against a fiery orange sunset." width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Whether it&#x27;s Redding or Los Angeles, there are few places to the escape the heat in California this week. But an hour&#x27;s drive from Stockton is sublime. Stockton faces a heat wave this week — and so does the rest of California is a story from Stocktonia News, a rigorous and factual newsroom covering Greater Stockton, California. Please consider making a charitable contribution to support our journa</p>
-<p class="more"><a href="https://stocktonia.org/news/weather/2026/08/25/stockton-shares-its-heat-wave-with-other-california-cities-this-week-from-north-to-south/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://mosaic.nj.com/">Support</a></aside>
+<p class="source"><a href="https://mosaic.nj.com/"><strong>Mosaic</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T17:00:38+00:00" data-pub="1:00 PM EDT">Tue, Aug 25 @ 1PM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a></p>
+<h2><a href="https://www.nj.com/news/2026/08/multiple-dead-including-children-in-montana-shooting-and-house-fire-thoughts-are-with-the-families.html">Multiple dead, including children, in Montana shooting</a></h2>
+<p class="byline">By Mark Heim</p>
+<a class="shot" href="https://www.nj.com/news/2026/08/multiple-dead-including-children-in-montana-shooting-and-house-fire-thoughts-are-with-the-families.html" tabindex="-1" aria-hidden="true"><img src="../img/5f4a17d6cd5a3d541e844118a0ef02de54e86391.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>The gunman died of a self-inflicted gunshot. <a class="lozenge more" href="https://www.nj.com/news/2026/08/multiple-dead-including-children-in-montana-shooting-and-house-fire-thoughts-are-with-the-families.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:59:12+00:00" data-pub="10:59 AM EDT">Tuesday, August 25, 2026 at 10:59 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>GA / Atlanta / <a href="https://www.gpb.org/news">Georgia News Lab</a></small></p>
-<h2><a href="https://www.gpb.org/news/2026/08/25/forget-about-going-back-9-years-on-rohingya-crisis-enters-dangerous-phase">&#x27;Forget about going back&#x27;: 9 years on, Rohingya crisis enters dangerous phase</a></h2>
-<p class="byline"><small>By Lorcan Lovett</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.gpb.org/support/planned">Donate</a></span></p>
-<a class="shot" href="https://www.gpb.org/news/2026/08/25/forget-about-going-back-9-years-on-rohingya-crisis-enters-dangerous-phase" tabindex="-1" aria-hidden="true"><img src="../img/01ab857f19fb3421f525350c35d79fca90438ca7.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>The world largely moved on from the Rohingya crisis. But the exodus has not stopped, aid is shrinking and a generation of refugees is growing up with little prospect of going home.</p>
-<p class="more"><a href="https://www.gpb.org/news/2026/08/25/forget-about-going-back-9-years-on-rohingya-crisis-enters-dangerous-phase">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.paypal.com/donate/?hosted_button_id=34PC2DCRE8UF8">Donate</a></aside>
+<p class="source"><a href="https://nepyork.com"><strong>NepYork</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:51:38+00:00" data-pub="12:51 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=New+York+City&state=NY">New York City</a></p>
+<h2><a href="https://nepyork.com/2026/08/25/mayor-mamdani-announces-fast-track-for-urgent-nyc-housing-court-cases/">Mayor Mamdani Announces Fast Track for Urgent NYC Housing Court Cases</a></h2>
+<p class="byline">By Kishor Panthi</p>
+<a class="shot" href="https://nepyork.com/2026/08/25/mayor-mamdani-announces-fast-track-for-urgent-nyc-housing-court-cases/" tabindex="-1" aria-hidden="true"><img src="../img/7806a8e8adaf921835de2cf13051c859e590a79c.webp" alt="" width="300" height="260" loading="lazy" decoding="async"></a>
+<p>New York City Housing Court will fast-track cases involving major building emergencies, including vacate orders, widespread loss of essential services and complete elevator outages, under <a class="lozenge more" href="https://nepyork.com/2026/08/25/mayor-mamdani-announces-fast-track-for-urgent-nyc-housing-court-cases/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:56:13+00:00" data-pub="10:56 AM EDT">Tuesday, August 25, 2026 at 10:56 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>KY / Louisville / <a href="https://www.lpm.org/">Louisville Public Media</a></small></p>
-<h2><a href="https://www.lpm.org/news/2026-08-25/beshear-administration-wont-reveal-communications-ahead-of-lee-specialty-clinic-cuts">Beshear administration won’t reveal communications ahead of Lee Specialty Clinic cuts</a></h2>
-<p class="byline"><small>By Joe Sonka</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.lpm.org/tech">Donate</a></span></p>
-<a class="shot" href="https://www.lpm.org/news/2026-08-25/beshear-administration-wont-reveal-communications-ahead-of-lee-specialty-clinic-cuts" tabindex="-1" aria-hidden="true"><img src="../img/d4dc53159d305d42a5bbb36649ba6f6d23daa467.webp" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>The Beshear administration is withholding 127 emails related to the Lee Specialty Clinic in advance of controversial cuts announced in June, including who sent them and when.</p>
-<p class="more"><a href="https://www.lpm.org/news/2026-08-25/beshear-administration-wont-reveal-communications-ahead-of-lee-specialty-clinic-cuts">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.pressherald.com/subscription-plans/">Subscribe</a></aside>
+<p class="source"><a href="https://www.pressherald.com/"><strong>Portland Press Herald</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:48:36+00:00" data-pub="12:48 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=ME">Maine</a><a class="lozenge place" href="/search?place=Portland&state=ME">Portland</a></p>
+<h2><a href="https://www.pressherald.com/2026/08/25/lewistons-singing-soldier-to-perform-live-sept-1-on-americas-got-talent/">Lewiston’s ‘Singing Soldier’ to perform live Sept. 1 on ‘America’s Got Talent’</a></h2>
+<p class="byline">By Matthew Jaroncyk</p>
+<a class="shot" href="https://www.pressherald.com/2026/08/25/lewistons-singing-soldier-to-perform-live-sept-1-on-americas-got-talent/" tabindex="-1" aria-hidden="true"><img src="../img/d56e723e7259303905d667debe884f0c865093f6.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Isaac Atkins said he is a little intimidated to take the stage live: &#x27;There&#x27;s no room for error.&#x27; <a class="lozenge more" href="https://www.pressherald.com/2026/08/25/lewistons-singing-soldier-to-perform-live-sept-1-on-americas-got-talent/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://www.sunjournal.com/2026/08/25/lewistons-singing-soldier-to-perform-live-sept-1-on-americas-got-talent/">Sun Journal</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:50:15+00:00" data-pub="10:50 AM EDT">Tuesday, August 25, 2026 at 10:50 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>GA / Atlanta / <a href="https://www.gpb.org/news">Georgia News Lab</a></small></p>
-<h2><a href="https://www.gpb.org/news/2026/08/25/several-states-will-decide-voter-id-ballot-measures-year">Several states will decide voter ID ballot measures this year</a></h2>
-<p class="byline"><small>By Benjamin Swasey</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.gpb.org/support/planned">Donate</a></span></p>
-<a class="shot" href="https://www.gpb.org/news/2026/08/25/several-states-will-decide-voter-id-ballot-measures-year" tabindex="-1" aria-hidden="true"><img src="../img/59957b1626ab395d5a3ba359a902a2089a97ed15.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Voters in at least six states will soon decide ballot measures related to voter ID — the largest number of voter ID measures in a single year. The tally includes three prominent swing states.</p>
-<p class="more"><a href="https://www.gpb.org/news/2026/08/25/several-states-will-decide-voter-id-ballot-measures-year">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge" href="../tags/latino.html">Latino</a><a class="lozenge give" href="https://mundonow.com/">Support</a></aside>
+<p class="source"><a href="https://mundonow.com/"><strong>Mundo Now</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:48:20+00:00" data-pub="12:48 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=GA">Georgia</a><a class="lozenge place" href="/search?place=Atlanta&state=GA">Atlanta</a></p>
+<h2><a href="https://www.mundonow.com/vance-domina-rumbo-a-2028-pero-rubio-crece-entre-los-votantes-hispanos-por-quien-votarias">Vance domina rumbo a 2028, pero Rubio crece entre los votantes hispanos ¿Por quién votarías?</a></h2>
+<p class="byline">By Kristel Escobar</p>
+<a class="shot" href="https://www.mundonow.com/vance-domina-rumbo-a-2028-pero-rubio-crece-entre-los-votantes-hispanos-por-quien-votarias" tabindex="-1" aria-hidden="true"><img src="../img/96edaea5b00cabca422d42942f14be8d4f728fdc.webp" alt="" width="480" height="252" loading="lazy" decoding="async"></a>
+<p>JD Vance alcanza su mayor respaldo hasta ahora en una primaria republicana hipotética, mientras Marco Rubio acorta considerablemente la distancia entre los votantes latinos. El vicepresidente JD Vance lidera con 41% una posible primaria presidencial republicana de 2028, frente al 18% del secretario de Estado Marco Rubio, según The Center Square Voters’ Voice Poll. Por <a class="lozenge more" href="https://www.mundonow.com/vance-domina-rumbo-a-2028-pero-rubio-crece-entre-los-votantes-hispanos-por-quien-votarias">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:45:54+00:00" data-pub="8:45 AM MDT">Tuesday, August 25, 2026 at 8:45 AM MDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>CO / Centennial / <a href="https://www.cpr.org/news/">CPRNews</a></small></p>
-<h2><a href="https://www.cpr.org/2026/08/25/colorado-state-patrol-troopers-shot-traffic-stop/">Colorado State Patrol troopers shot, injured in traffic stop</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.cpr.org/news/">Support</a></span></p>
-<p>The shooting took place on Highway 24 in Teller County.</p>
-<p class="more"><a href="https://www.cpr.org/2026/08/25/colorado-state-patrol-troopers-shot-traffic-stop/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.albanyherald.com/">Support</a></aside>
+<p class="source"><a href="https://www.albanyherald.com/"><strong>Albany Herald</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:47:28+00:00" data-pub="12:47 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=GA">Georgia</a><a class="lozenge place" href="/search?place=Albany&state=GA">Albany</a></p>
+<h2><a href="https://albanyherald.com/news/albany-commission-will-revisit-downtown-park-project-at-october-retreat/">Albany Commission will revisit downtown park project at October retreat</a></h2>
+<p class="byline">By Alan Mauldin</p>
+<a class="shot" href="https://albanyherald.com/news/albany-commission-will-revisit-downtown-park-project-at-october-retreat/" tabindex="-1" aria-hidden="true"><img src="../img/2e334bec68bc0d548c157cd1bcac27a176603777.webp" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>“Right now it’s a sea of asphalt there. It doesn’t encourage gathering. Parks and green spaces encourage gathering.&quot; <a class="lozenge more" href="https://albanyherald.com/news/albany-commission-will-revisit-downtown-park-project-at-october-retreat/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:44:15+00:00" data-pub="10:44 AM EDT">Tuesday, August 25, 2026 at 10:44 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>GA / Atlanta / <a href="https://atlantablackstar.com/">Atlanta Black Star</a></small></p>
-<h2><a href="https://atlantablackstar.com/2026/08/25/keith-lee-brings-relief-to-gary-indiana-residents/">‘All Hands on Deck’: Keith Lee Brings Much-Needed Relief to Gary, Indiana Residents Still in the Dark as Frustration with Power Company Boils Over</a></h2>
-<p class="byline"><small>By Mary Ginther</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://atlantablackstar.com/">Support</a></span></p>
-<a class="shot" href="https://atlantablackstar.com/2026/08/25/keith-lee-brings-relief-to-gary-indiana-residents/" tabindex="-1" aria-hidden="true"><img src="../img/1d710bde7c55c4aeb6339af1e2c7656222bc6456.webp" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>The power is expected to be fully restored to most customers in Gary, Indiana, this week after one of the longest and most widespread blackouts […] ‘All Hands on Deck’: Keith Lee Brings Much-Needed Relief to Gary, Indiana Residents Still in the Dark as Frustration with Power Company Boils Over</p>
-<p class="more"><a href="https://atlantablackstar.com/2026/08/25/keith-lee-brings-relief-to-gary-indiana-residents/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://queenslatino.com/">Support</a></aside>
+<p class="source"><a href="https://queenslatino.com/"><strong>Queens Latino</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:43:54+00:00" data-pub="12:43 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Queens&state=NY">Queens</a></p>
+<h2><a href="https://queenslatino.com/alcalde-mamdani-usta-mil-entradas-descuento-us-open-parque-flushing/">Mil entradas con descuento al US Open del Parque Flushing</a></h2>
+<p class="byline">By Javier Castaño</p>
+<p>El alcalde Zohran Kwame Mamdani y la Asociación de Tenis de Estados Unidos (USTA) anunciaron hoy 1,000 entradas con descuento para el US Open, brindando a más neoyorquinos la oportunidad de disfrutar del tenis de clase mundial en su propia ciudad y haciendo que el cuadro principal del US Open sea más accesible para los <a class="lozenge more" href="https://queenslatino.com/alcalde-mamdani-usta-mil-entradas-descuento-us-open-parque-flushing/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:34:00+00:00" data-pub="10:34 AM EDT">Tuesday, August 25, 2026 at 10:34 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>NY / New York / <a href="https://gothamist.com/">Gothamist</a></small></p>
-<h2><a href="https://gothamist.com/news/ny-subsidies-for-rockland-county-data-centers-top-320m-report-says">NY subsidies for Rockland County data centers top $320M, report says</a></h2>
-<p class="byline"><small>By Ramsey Khalifeh</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/public-media.html">Public media</a><a class="lozenge give" href="https://pledge.wnyc.org/support/gothamist/?utm_medium=partnersite&amp;utm_source=gothamist&amp;utm_campaign=homepage-header">Donate</a></span></p>
-<p>The CoreSite NY2 data center facility in Secaucus, New Jersey. The findings come as Gov. Kathy Hochul’s pause on new data centers is in effect. [ more › ]</p>
-<p class="more"><a href="https://gothamist.com/news/ny-subsidies-for-rockland-county-data-centers-top-320m-report-says">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.pressherald.com/subscription-plans/">Subscribe</a></aside>
+<p class="source"><a href="https://www.pressherald.com/"><strong>Portland Press Herald</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:43:50+00:00" data-pub="12:43 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=ME">Maine</a><a class="lozenge place" href="/search?place=Portland&state=ME">Portland</a></p>
+<h2><a href="https://www.pressherald.com/2026/08/25/maine-state-workers-reach-labor-deal-with-janet-mills-after-months-of-wrangling/">Maine state workers reach labor deal with Janet Mills after months of wrangling</a></h2>
+<p class="byline">By Randy Billings</p>
+<a class="shot" href="https://www.pressherald.com/2026/08/25/maine-state-workers-reach-labor-deal-with-janet-mills-after-months-of-wrangling/" tabindex="-1" aria-hidden="true"><img src="../img/12ac78d697207cfe270eedf61c2b16bf261bec9b.webp" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>The tentative two-year agreement would provide roughly 9,000 state workers with a 4.5% annual pay raise and a $2,000 signing bonus. <a class="lozenge more" href="https://www.pressherald.com/2026/08/25/maine-state-workers-reach-labor-deal-with-janet-mills-after-months-of-wrangling/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://www.sunjournal.com/2026/08/25/maine-state-workers-reach-labor-deal-with-janet-mills-after-months-of-wrangling/">Sun Journal</a> &middot; <a href="https://www.centralmaine.com/2026/08/25/maine-state-workers-reach-labor-deal-with-janet-mills-after-months-of-wrangling/">Times Record</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:29:00+00:00" data-pub="10:29 AM EDT">Tuesday, August 25, 2026 at 10:29 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>FL / Miami / <a href="https://www.miamitimesonline.com/">The Miami Times</a></small></p>
-<h2><a href="https://www.miamitimesonline.com/news/world_national/washington-post-ordered-to-reinstate-black-opinion-writer-fired-after-charlie-kirk-posts/article_e37208ad-baf2-4cb0-a7df-53f6a99b86de.html">Washington Post ordered to reinstate Black opinion writer fired after Charlie Kirk posts</a></h2>
-<p class="byline"><small>By Corey Williams, The Associated Press</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://miamitimes.typeform.com/to/mQvUpc">Subscribe</a></span></p>
-<p>An arbitrator has ordered The Washington Post to reinstate a Black opinion writer fired over social media posts about violent white men following last year’s killing of Charlie Kirk.</p>
-<p class="more"><a href="https://www.miamitimesonline.com/news/world_national/washington-post-ordered-to-reinstate-black-opinion-writer-fired-after-charlie-kirk-posts/article_e37208ad-baf2-4cb0-a7df-53f6a99b86de.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://capitolnewsillinois.com/support-us/">Donate</a></aside>
+<p class="source"><a href="https://capitolnewsillinois.com/"><strong>Capitol News Illinois</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:43:44+00:00" data-pub="11:43 AM CDT">Tue, Aug 25 @ 11AM CDT</time><a class="lozenge place" href="/search?state=IL">Illinois</a></p>
+<h2><a href="https://capitolnewsillinois.com/news/ohare-flyer-would-whisk-travelers-between-airport-chicago-loop-in-15-minutes/">‘O’Hare Flyer’ would whisk travelers between airport, Chicago Loop in 15 minutes</a></h2>
+<p class="byline">By Brenden Moore</p>
+<a class="shot" href="https://capitolnewsillinois.com/news/ohare-flyer-would-whisk-travelers-between-airport-chicago-loop-in-15-minutes/" tabindex="-1" aria-hidden="true"><img src="../img/062ddd4b11be8e63cc422111f81fde0737964728.webp" alt="" width="480" height="280" loading="lazy" decoding="async"></a>
+<p>The O&#x27;Hare Flyer would cut travel time between Downtown Chicago and O’Hare International Airport by nearly two-thirds. <a class="lozenge more" href="https://capitolnewsillinois.com/news/ohare-flyer-would-whisk-travelers-between-airport-chicago-loop-in-15-minutes/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:23:32+00:00" data-pub="10:23 AM EDT">Tuesday, August 25, 2026 at 10:23 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>FL / Lake Wales / <a href="https://www.hummelreport.org/">Lake Wales News</a></small></p>
-<h2><a href="https://www.hummelreport.org/post/lively-8-21-2026">Lively 8/21/2026</a></h2>
-<p class="byline"><small>By News Feed</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.paypal.com/donate/?token=ExkxQJKIQjbj7KzXa2aUH4-YDFNLoktpLzjLiqy0y-DW7sWiimVufIXabD2Zi6v1dDoVv0&amp;country.x=US&amp;locale.x=US">Donate</a></span></p>
-<p>What does a candidate need to do to win a race in 2026? Some Rhode Island candidates are increasingly turning to social media to reach voters and build momentum. Many campaigns still target voters with a barrage of TV ads. This week on Lively, moderator Jim Hummel discusses the evolving campaign playbook with former Providence mayor Angel Taveras and Rhode Island filmmaker Dante Bellini Jr. Watch </p>
-<p class="more"><a href="https://www.hummelreport.org/post/lively-8-21-2026">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://mosaic.nj.com/">Support</a></aside>
+<p class="source"><a href="https://mosaic.nj.com/"><strong>Mosaic</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:43:35+00:00" data-pub="12:43 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a></p>
+<h2><a href="https://www.nj.com/news/2026/08/look-who-just-landed-a-131-billion-aircraft-contract.html">Look who just landed a $131 billion aircraft contract</a></h2>
+<p class="byline">By Kayode  Crown</p>
+<a class="shot" href="https://www.nj.com/news/2026/08/look-who-just-landed-a-131-billion-aircraft-contract.html" tabindex="-1" aria-hidden="true"><img src="../img/71400cf0349874d68d0be3ed93d7a09c9140160c.webp" alt="" width="480" height="293" loading="lazy" decoding="async"></a>
+<p>The contract covers production, upgrades and maintenance for U.S. and international customers through 2037. <a class="lozenge more" href="https://www.nj.com/news/2026/08/look-who-just-landed-a-131-billion-aircraft-contract.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:05:00+00:00" data-pub="6:05 AM AKDT">Tuesday, August 25, 2026 at 6:05 AM AKDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>AK / Statewide / <a href="https://www.newsminer.com/">Fairbanks Daily News-Miner</a></small></p>
-<h2><a href="https://www.newsminer.com/news/local_news/assembly-sets-election-language-for-hand-count-proposition/article_123aa473-6b9d-4331-9cc7-80a97be93438.html">Assembly sets election language for hand-count proposition</a></h2>
-<p class="byline"><small>By Jack Barnwell</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.newsminer.com/">Support</a></span></p>
-<a class="shot" href="https://www.newsminer.com/news/local_news/assembly-sets-election-language-for-hand-count-proposition/article_123aa473-6b9d-4331-9cc7-80a97be93438.html" tabindex="-1" aria-hidden="true"><img src="../img/7fce86e53637d50c1e693e56d2bdb92af2fb3145.webp" alt="" width="300" height="208" loading="lazy" decoding="async"></a>
-<p>Supporters sought to remove information about delayed results and uncertain costs from the borough’s explanation of Prop. 3.</p>
-<p class="more"><a href="https://www.newsminer.com/news/local_news/assembly-sets-election-language-for-hand-count-proposition/article_123aa473-6b9d-4331-9cc7-80a97be93438.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://mosaic.nj.com/">Support</a></aside>
+<p class="source"><a href="https://mosaic.nj.com/"><strong>Mosaic</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:39:05+00:00" data-pub="12:39 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a></p>
+<h2><a href="https://www.nj.com/news/2026/08/21k-recreational-vehicles-sold-nationwide-recalled-for-injury-death-risks.html">21K+ recreational vehicles sold nationwide recalled for injury, death risks</a></h2>
+<p class="byline">By Dallas Gagnon, Advance Local Express Desk</p>
+<a class="shot" href="https://www.nj.com/news/2026/08/21k-recreational-vehicles-sold-nationwide-recalled-for-injury-death-risks.html" tabindex="-1" aria-hidden="true"><img src="../img/29f5d9b567b8546a59762fd04ee34dcd927f3069.webp" alt="" width="480" height="272" loading="lazy" decoding="async"></a>
+<p>More than 21,000 recreational vehicles are being recalled nationwide because of a dangerous brake failure risk. Here&#x27;s how to check for to see if your machine is impacted. <a class="lozenge more" href="https://www.nj.com/news/2026/08/21k-recreational-vehicles-sold-nationwide-recalled-for-injury-death-risks.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:00:44+00:00" data-pub="7:00 AM PDT">Tuesday, August 25, 2026 at 7:00 AM PDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>CA / Statewide / <a href="https://capitolweekly.net/">Capitol Weekly</a></small></p>
-<h2><a href="https://capitolweekly.net/insurance-crisis-has-private-foster-agencies-struggling-to-stay-afloat/">Insurance crisis has private foster agencies struggling to stay afloat</a></h2>
-<p class="byline"><small>By Rich Ehisen</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://capitolweekly.net/donations/">Donate</a></span></p>
-<p>Left in limbo by the Legislature and Gov. Gavin Newsom, California’s private foster agencies say they’re struggling to stay afloat until the new year, when they hope a new governor will help them navigate an ongoing insurance crisis that threatens their existence. Continue reading the full article:Capitol Weekly Original article: https://capitolweekly.net/insurance-crisis-has-private-foster-agenci</p>
-<p class="more"><a href="https://capitolweekly.net/insurance-crisis-has-private-foster-agencies-struggling-to-stay-afloat/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/public-media.html">Public media</a><a class="lozenge give" href="https://laist.com/support-us/car-donation">Donate</a></aside>
+<p class="source"><a href="https://laist.com/"><strong>LAist</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:38:51+00:00" data-pub="9:38 AM PDT">Tue, Aug 25 @ 9AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://laist.com/news/canada-announces-retaliatory-tariffs-on-the-us-as-the-countries-trade-fight-deepens">Canada announces retaliatory tariffs on the US as the countries&#x27; trade fight deepens</a></h2>
+<a class="shot" href="https://laist.com/news/canada-announces-retaliatory-tariffs-on-the-us-as-the-countries-trade-fight-deepens" tabindex="-1" aria-hidden="true"><img src="../img/c929e85324e877bb8bf3396186439965ba073ffd.webp" alt="A man wearing a dark suit speaks into a microphone placed on a brown podium. He is standing outdoors, behind him a Canadian red and white flag with a red maple leaf in the middle, blows in the wind against a cloudless, blue sky." width="480" height="320" loading="lazy" decoding="async"></a>
+<p>The measures come after President Trump imposed 50% tariffs on many Canadian goods and threatened more after trade talks broke down on Friday. <a class="lozenge more" href="https://laist.com/news/canada-announces-retaliatory-tariffs-on-the-us-as-the-countries-trade-fight-deepens">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://www.gpb.org/news/2026/08/25/canada-announces-retaliatory-tariffs-on-the-us-the-countries-trade-fight-deepens">Georgia News Lab</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T14:00:00+00:00" data-pub="6:00 AM AKDT">Tuesday, August 25, 2026 at 6:00 AM AKDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>AK / Statewide / <a href="https://ictnews.org/category/news/">Indian Country Today</a></small></p>
-<h2><a href="https://ictnews.org/news/living-with-drought-has-taught-pastoralists-lessons-the-world-needs/">Living with drought has taught pastoralists lessons the world needs</a></h2>
-<p class="byline"><small>By Grist</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://ictnews.fundjournalism.org/donate/?campaign=701Uq00000pRjgPIAS&amp;utm_source=ictnews&amp;utm_medium=nav_button&amp;utm_campaign=support_page_2026_placements&amp;utm_content=header_donate_button">Donate</a></span></p>
-<a class="shot" href="https://ictnews.org/news/living-with-drought-has-taught-pastoralists-lessons-the-world-needs/" tabindex="-1" aria-hidden="true"><img src="../img/2b4ba6ae57be5a1d1a098bf5b7eb58aa7adb062f.webp" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Half a billion pastoralists draw on generations of knowledge to thrive on rangelands. They say protecting their way of life would help others prepare for a hotter, drier world.</p>
-<p class="more"><a href="https://ictnews.org/news/living-with-drought-has-taught-pastoralists-lessons-the-world-needs/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://mosaic.nj.com/">Support</a></aside>
+<p class="source"><a href="https://mosaic.nj.com/"><strong>Mosaic</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:37:05+00:00" data-pub="12:37 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a></p>
+<h2><a href="https://www.nj.com/news/2026/08/walmart-sams-club-changes-how-customers-can-pay.html">Walmart, Sam’s Club customers have a brand new payment option</a></h2>
+<p class="byline">By Claudia Dimuro</p>
+<a class="shot" href="https://www.nj.com/news/2026/08/walmart-sams-club-changes-how-customers-can-pay.html" tabindex="-1" aria-hidden="true"><img src="../img/6990bcf2913d29d7ce13d61f3b9003422173195c.webp" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Walmart plans on rolling this out at alls tore locations by the end of this year. <a class="lozenge more" href="https://www.nj.com/news/2026/08/walmart-sams-club-changes-how-customers-can-pay.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T13:53:26+00:00" data-pub="9:53 AM EDT">Tuesday, August 25, 2026 at 9:53 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>GA / Atlanta / <a href="https://www.gpb.org/news">Georgia News Lab</a></small></p>
-<h2><a href="https://www.gpb.org/news/2026/08/25/churches-libraries-and-breweries-inside-dhs-covert-surveillance-operation">Churches, libraries and breweries: Inside DHS&#x27; covert surveillance operation</a></h2>
-<p class="byline"><small>By Meg Anderson</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.gpb.org/support/planned">Donate</a></span></p>
-<a class="shot" href="https://www.gpb.org/news/2026/08/25/churches-libraries-and-breweries-inside-dhs-covert-surveillance-operation" tabindex="-1" aria-hidden="true"><img src="../img/1b3603575d85fd59a913e1e118cd2464db4b5da5.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>DHS allegedly went undercover at community meetings, subpoenaed the financial records of labor unions, and created dossiers on people at a church gathering, according to court filings.</p>
-<p class="more"><a href="https://www.gpb.org/news/2026/08/25/churches-libraries-and-breweries-inside-dhs-covert-surveillance-operation">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Also in <a href="https://www.gpb.org/news/2026/08/25/churches-libraries-and-breweries-inside-dhss-covert-surveillance-operation">Georgia News Lab</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/journalist-owned.html">Journalist-owned</a><a class="lozenge give" href="https://www.404media.co/signup/">Subscribe</a></aside>
+<p class="source"><a href="https://www.404media.co/"><strong>404 Media</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:33:48+00:00" data-pub="12:33 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Technology">Technology</a></p>
+<h2><a href="https://www.404media.co/charges-dropped-against-person-who-clapped-at-a-city-data-center-meeting/">Charges Dropped Against Person Who Clapped at a City Data Center Meeting</a></h2>
+<p class="byline">By Matthew Gault</p>
+<a class="shot" href="https://www.404media.co/charges-dropped-against-person-who-clapped-at-a-city-data-center-meeting/" tabindex="-1" aria-hidden="true"><img src="../img/ff988eae77759a6e1c3ed314c4ec26cb77bfceda.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Lux Claridge was dragged from a city meeting about data centers and charged with interfering with the police after they clapped during a presentation. <a class="lozenge more" href="https://www.404media.co/charges-dropped-against-person-who-clapped-at-a-city-data-center-meeting/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T13:42:35+00:00" data-pub="6:42 AM PDT">Tuesday, August 25, 2026 at 6:42 AM PDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>CA / Los Angeles / <a href="https://laopinion.com">La Opinión</a></small></p>
-<h2><a href="https://laopinion.com/2026/08/25/exfuncionario-de-sinaloa-fue-detenido-en-ee-uu-con-fentanilo-capaz-de-producir-mas-de-100000-pastillas/">Exfuncionario de Sinaloa fue detenido en EE.UU con fentanilo capaz de producir más de 100,000 pastillas</a></h2>
-<p class="byline"><small>By Roberto Bustamante</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://laopinion.com">Support</a></span></p>
-<a class="shot" href="https://laopinion.com/2026/08/25/exfuncionario-de-sinaloa-fue-detenido-en-ee-uu-con-fentanilo-capaz-de-producir-mas-de-100000-pastillas/" tabindex="-1" aria-hidden="true"><img src="../img/fc7d71c600a21df4e5e341da1028c85ad7709553.webp" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Ricardo Verduzco Bernal fue detenido en la habitación de un hotel en el condado de Salt Lake, donde también fue hallada la droga</p>
-<p class="more"><a href="https://laopinion.com/2026/08/25/exfuncionario-de-sinaloa-fue-detenido-en-ee-uu-con-fentanilo-capaz-de-producir-mas-de-100000-pastillas/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://mosaic.nj.com/">Support</a></aside>
+<p class="source"><a href="https://mosaic.nj.com/"><strong>Mosaic</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:30:10+00:00" data-pub="12:30 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a></p>
+<h2><a href="https://www.nj.com/news/2026/08/ceo-admits-struggling-burger-chain-sacrificed-food-quality-for-cost-savings.html">CEO admits struggling burger chain sacrificed food quality for cost savings</a></h2>
+<p class="byline">By Brandon Champion</p>
+<a class="shot" href="https://www.nj.com/news/2026/08/ceo-admits-struggling-burger-chain-sacrificed-food-quality-for-cost-savings.html" tabindex="-1" aria-hidden="true"><img src="../img/0b69d3681a235f6919c272a3e0e6d3c4dfb27e1b.webp" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Wendy&#x27;s recently fell to to No. 3 fast-food burger chain in the US. <a class="lozenge more" href="https://www.nj.com/news/2026/08/ceo-admits-struggling-burger-chain-sacrificed-food-quality-for-cost-savings.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T13:40:27+00:00" data-pub="9:40 AM EDT">Tuesday, August 25, 2026 at 9:40 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>NY / New York / <a href="https://gothamist.com/">Gothamist</a></small></p>
-<h2><a href="https://gothamist.com/news/early-addition-wet-hot-new-york-summer">Early Addition: Wet Hot New York Summer</a></h2>
-<p class="byline"><small>By Dana Binfet</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/public-media.html">Public media</a><a class="lozenge give" href="https://pledge.wnyc.org/support/gothamist/?utm_medium=partnersite&amp;utm_source=gothamist&amp;utm_campaign=homepage-header">Donate</a></span></p>
-<a class="shot" href="https://gothamist.com/news/early-addition-wet-hot-new-york-summer" tabindex="-1" aria-hidden="true"><img src="../img/8626e0e888bc63a28d516a6182179e9ec119721f.webp" alt="Rainy Dumbo" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>A man takes a picture of the Manhattan skyline while in the rain in the Dumbo neighborhood in Brooklyn as severe storms move through the New York area on July 21, 2026 in New York City. It’s NYC’s wettest August in half a decade according to preliminary data from the National Weather Service. Here are your early links: Beloved Manhattan AMC is closing at the end of the year, Mamdani took a vacatio</p>
-<p class="more"><a href="https://gothamist.com/news/early-addition-wet-hot-new-york-summer">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.inquirer.com/">Support</a></aside>
+<p class="source"><a href="https://www.inquirer.com/"><strong>Philadelphia Inquirer</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:24:00+00:00" data-pub="12:24 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=PA">Pennsylvania</a><a class="lozenge place" href="/search?place=Philadelphia&state=PA">Philadelphia</a></p>
+<h2><a href="https://www.inquirer.com/news/nation-world/mlbpa-congress-fanduel-vip-program-sports-betting-harper-20260825.html">MLBPA supports banning players from promoting sportsbook VIP programs</a></h2>
+<p class="byline">By David Gambacorta</p>
+<a class="shot" href="https://www.inquirer.com/news/nation-world/mlbpa-congress-fanduel-vip-program-sports-betting-harper-20260825.html" tabindex="-1" aria-hidden="true"><img src="../img/7d214365a6ff25fb8f57a584028e637acd5a4625.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>The players&#x27; union said it supports new restrictions on athletes&#x27; interactions with sports gambling companies amid congressional scrutiny of a video of Bryce Harper. <a class="lozenge more" href="https://www.inquirer.com/news/nation-world/mlbpa-congress-fanduel-vip-program-sports-betting-harper-20260825.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T13:28:00+00:00" data-pub="9:28 AM EDT">Tuesday, August 25, 2026 at 9:28 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>NY / New York / <a href="https://gothamist.com/">Gothamist</a></small></p>
-<h2><a href="https://gothamist.com/news/tenants-in-nycs-worst-buildings-to-be-put-on-housing-court-fast-track">Tenants in NYC&#x27;s worst buildings to be put on housing court fast track</a></h2>
-<p class="byline"><small>By David Brand</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/public-media.html">Public media</a><a class="lozenge give" href="https://pledge.wnyc.org/support/gothamist/?utm_medium=partnersite&amp;utm_source=gothamist&amp;utm_campaign=homepage-header">Donate</a></span></p>
-<a class="shot" href="https://gothamist.com/news/tenants-in-nycs-worst-buildings-to-be-put-on-housing-court-fast-track" tabindex="-1" aria-hidden="true"><img src="../img/7bbfda9ec170420c6958de9061de280d64df8ac1.webp" alt="Mamdani in a dreary apartment." width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Mayor Mamdani and court officials are rolling out a fast track for tenants in buildings with the worst conditions. The speedier court process will apply to cases filed against the owners of buildings with vacate orders, elevator outages or other major problems, like heat and hot water failures. [ more › ]</p>
-<p class="more"><a href="https://gothamist.com/news/tenants-in-nycs-worst-buildings-to-be-put-on-housing-court-fast-track">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://mosaic.nj.com/">Support</a></aside>
+<p class="source"><a href="https://mosaic.nj.com/"><strong>Mosaic</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:23:04+00:00" data-pub="12:23 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a></p>
+<h2><a href="https://www.nj.com/news/2026/08/this-group-of-social-security-recipients-face-losing-16900-a-year-in-benefits.html">This group of Social Security recipients face losing $16,900 a year in benefits</a></h2>
+<p class="byline">By Leada Gore</p>
+<a class="shot" href="https://www.nj.com/news/2026/08/this-group-of-social-security-recipients-face-losing-16900-a-year-in-benefits.html" tabindex="-1" aria-hidden="true"><img src="../img/a4c19a2121c66b6a74e732ad4d564b830ed1e9a4.webp" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>The cuts would be particularly brutal for a specific group. <a class="lozenge more" href="https://www.nj.com/news/2026/08/this-group-of-social-security-recipients-face-losing-16900-a-year-in-benefits.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T13:20:11+00:00" data-pub="9:20 AM EDT">Tuesday, August 25, 2026 at 9:20 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>GA / Atlanta / <a href="https://www.gpb.org/news">Georgia News Lab</a></small></p>
-<h2><a href="https://www.gpb.org/news/2026/08/25/gpb-morning-headlines-for-august-25-2026">GPB morning headlines for August 25, 2026</a></h2>
-<p class="byline"><small>By GPB News Radio</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.gpb.org/support/planned">Donate</a></span></p>
-<a class="shot" href="https://www.gpb.org/news/2026/08/25/gpb-morning-headlines-for-august-25-2026" tabindex="-1" aria-hidden="true"><img src="../img/7770bb45fd55fc94fe272786d0633f538e527f58.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Voters in Georgia’s 13th Congressional District are choosing who will fill the late congressman David Scott’s seat until January; Republican Senate candidate Mike Collins campaigned to veterans in Acworth Monday.</p>
-<p class="more"><a href="https://www.gpb.org/news/2026/08/25/gpb-morning-headlines-for-august-25-2026">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://watermarkoutnews.com/support">Donate</a></aside>
+<p class="source"><a href="https://watermarkoutnews.com/"><strong>Watermark Out News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:21:59+00:00" data-pub="12:21 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=FL">Florida</a><a class="lozenge place" href="/search?place=Tampa+Bay&state=FL">Tampa Bay</a></p>
+<h2><a href="https://watermarkoutnews.com/2026/08/25/monument-to-lgbtq-canadians-officially-unveiled/">Monument to LGBTQ+ Canadians officially unveiled</a></h2>
+<p class="byline">By Michael K. Lavers of The Washington Blade, Courtesy of The National LGBT Media Association</p>
+<p>Thunderhead, a monument that acknowledges LGBTQ Canadians and the historic discrimination they faced, was officially unveiled in Ottawa, Ontario, on Aug. 21, 2026. (Photo by Madeleine Roberts) A monument that pays tribute to LGBTQ+ Canadians who suffered government-sanctioned persecution and discrimination officially opened in Ottawa on Aug. 21. Former Prime Minister Justin Trudeau, Governor Gener <a class="lozenge more" href="https://watermarkoutnews.com/2026/08/25/monument-to-lgbtq-canadians-officially-unveiled/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T13:11:13+00:00" data-pub="9:11 AM EDT">Tuesday, August 25, 2026 at 9:11 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>KY / Louisville / <a href="https://www.lpm.org/">Louisville Public Media</a></small></p>
-<h2><a href="https://www.lpm.org/news/2026-08-25/at-lexington-cannabis-cultivator-opening-beshear-says-medical-program-rollout-has-been-slow">At Lexington cannabis cultivator opening, Beshear says medical program rollout has been slow</a></h2>
-<p class="byline"><small>By Lily Burris</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.lpm.org/tech">Donate</a></span></p>
-<a class="shot" href="https://www.lpm.org/news/2026-08-25/at-lexington-cannabis-cultivator-opening-beshear-says-medical-program-rollout-has-been-slow" tabindex="-1" aria-hidden="true"><img src="../img/f5eb3de6f4438ba377efaa9663228b2df5f20364.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Holler Cannabis Company, a medical cannabis cultivator, opened Friday in Lexington.</p>
-<p class="more"><a href="https://www.lpm.org/news/2026-08-25/at-lexington-cannabis-cultivator-opening-beshear-says-medical-program-rollout-has-been-slow">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.inquirer.com/">Support</a></aside>
+<p class="source"><a href="https://www.inquirer.com/"><strong>Philadelphia Inquirer</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:20:51+00:00" data-pub="12:20 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=PA">Pennsylvania</a><a class="lozenge place" href="/search?place=Philadelphia&state=PA">Philadelphia</a></p>
+<h2><a href="https://www.inquirer.com/phillies/bullpen-jhoan-duran-playoffs-brooks-raley-alex-mcfarlane-20260825.html">Who do the Phillies trust in the bullpen? The bridge to Jhoan Duran is taking shape.</a></h2>
+<p class="byline">By Scott Lauber</p>
+<a class="shot" href="https://www.inquirer.com/phillies/bullpen-jhoan-duran-playoffs-brooks-raley-alex-mcfarlane-20260825.html" tabindex="-1" aria-hidden="true"><img src="../img/f5295de7f9d5e0144b2b8327e60e8e5a839a3c12.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>As the Phillies attempt to lock in a playoff berth, the bullpen is coming into focus with relievers jockeying for position in Don Mattingly’s circle of trust. Here’s what we know. <a class="lozenge more" href="https://www.inquirer.com/phillies/bullpen-jhoan-duran-playoffs-brooks-raley-alex-mcfarlane-20260825.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T13:00:39+00:00" data-pub="7:00 AM MDT">Tuesday, August 25, 2026 at 7:00 AM MDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>ID / Statewide / <a href="https://www.idahoednews.org/">Idaho Education News</a></small></p>
-<h2><a href="https://www.idahoednews.org/features/spelling-it-out/the-idaho-public-charter-school-commission/">Spelling it Out: The Idaho Public Charter School Commission</a></h2>
-<p class="byline"><small>By Emma Epperly</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.idahoednews.org/features/spelling-it-out/spelling-it-out-fund-balances/">Donate</a></span></p>
-<a class="shot" href="https://www.idahoednews.org/features/spelling-it-out/the-idaho-public-charter-school-commission/" tabindex="-1" aria-hidden="true"><img src="../img/07b01f27402b52536673ead7a5347a3918d96670.webp" alt="" width="480" height="174" loading="lazy" decoding="async"></a>
-<p>Here&#x27;s a closer look the organization that oversees most Idaho charter schools.</p>
-<p class="more"><a href="https://www.idahoednews.org/features/spelling-it-out/the-idaho-public-charter-school-commission/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://mosaic.nj.com/">Support</a></aside>
+<p class="source"><a href="https://mosaic.nj.com/"><strong>Mosaic</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:08:12+00:00" data-pub="12:08 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a></p>
+<h2><a href="https://www.nj.com/news/2026/08/titanic-auction-of-more-than-100-shipwreck-items-is-blocked-by-judge.html">Titanic auction of more than 100 shipwreck items is blocked by judge</a></h2>
+<p class="byline">By Geoff Herbert</p>
+<a class="shot" href="https://www.nj.com/news/2026/08/titanic-auction-of-more-than-100-shipwreck-items-is-blocked-by-judge.html" tabindex="-1" aria-hidden="true"><img src="../img/8368deb5ad7403f22b9712945afac885590171df.webp" alt="" width="480" height="355" loading="lazy" decoding="async"></a>
+<p>Some past items from the 1912 wreckage have sold for huge amounts. <a class="lozenge more" href="https://www.nj.com/news/2026/08/titanic-auction-of-more-than-100-shipwreck-items-is-blocked-by-judge.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T13:00:15+00:00" data-pub="6:00 AM PDT">Tuesday, August 25, 2026 at 6:00 AM PDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>CA / Los Angeles / <a href="https://csulauniversitytimes.com/category/community-news/">[Cal State LA] University Times</a></small></p>
-<h2><a href="https://csulauniversitytimes.com/unions-at-cal-state-la-highlight-ongoing-systemwide-contract-disputes-at-convocation-ceremony/">Unions at Cal State LA highlight ongoing systemwide contract disputes at Convocation ceremony</a></h2>
-<p class="byline"><small>By Seamus Bozeman, Managing Editor</small><span class="aside"><a class="lozenge" href="../tags/college.html">College</a><a class="lozenge give" href="https://csulauniversitytimes.com/category/community-news/">Support</a></span></p>
-<p>In the lead-up to the fall semester across the California State University system, thousands of union members are protesting stagnating wages, even as administrator pay continues to rise. One of those gatherings was held outside the Luckman Theater at Cal State LA, where several union members tabled and gathered outside the annual convocation, echoing the</p>
-<p class="more"><a href="https://csulauniversitytimes.com/unions-at-cal-state-la-highlight-ongoing-systemwide-contract-disputes-at-convocation-ceremony/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://mosaic.nj.com/">Support</a></aside>
+<p class="source"><a href="https://mosaic.nj.com/"><strong>Mosaic</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:03:37+00:00" data-pub="12:03 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a></p>
+<h2><a href="https://www.nj.com/news/2026/08/man-calls-police-after-getting-alcohol-free-drink-but-complaint-doesnt-exactly-go-well.html">Man in England calls police after getting alcohol-free drink, but complaint doesn’t exactly go well</a></h2>
+<p class="byline">By Chris Franklin</p>
+<a class="shot" href="https://www.nj.com/news/2026/08/man-calls-police-after-getting-alcohol-free-drink-but-complaint-doesnt-exactly-go-well.html" tabindex="-1" aria-hidden="true"><img src="../img/26b9e660460cbcfc163053612b1bd13d264c6cd3.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>A UK man called a police emergency line to complain about accidentally buying an alcohol-free drink. <a class="lozenge more" href="https://www.nj.com/news/2026/08/man-calls-police-after-getting-alcohol-free-drink-but-complaint-doesnt-exactly-go-well.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T12:34:00+00:00" data-pub="8:34 AM EDT">Tuesday, August 25, 2026 at 8:34 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>GA / Atlanta / <a href="https://www.gpb.org/news">Georgia News Lab</a></small></p>
-<h2><a href="https://www.gpb.org/news/2026/08/25/senate-candidate-mike-collins-pitches-veterans-in-acworth">Senate candidate Mike Collins pitches to veterans in Acworth</a></h2>
-<p class="byline"><small>By Sarah Kallis</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.gpb.org/support/planned">Donate</a></span></p>
-<a class="shot" href="https://www.gpb.org/news/2026/08/25/senate-candidate-mike-collins-pitches-veterans-in-acworth" tabindex="-1" aria-hidden="true"><img src="../img/ea3fbd02c3dd24f97d6442b5e5bbdd0e0a28785c.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Republican Senate candidate Mike Collins campaigned to veterans in Acworth on Monday.</p>
-<p class="more"><a href="https://www.gpb.org/news/2026/08/25/senate-candidate-mike-collins-pitches-veterans-in-acworth">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.pressherald.com/subscription-plans/">Subscribe</a></aside>
+<p class="source"><a href="https://www.pressherald.com/"><strong>Portland Press Herald</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:01:03+00:00" data-pub="12:01 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=ME">Maine</a><a class="lozenge place" href="/search?place=Portland&state=ME">Portland</a></p>
+<h2><a href="https://www.pressherald.com/2026/08/25/canada-strikes-back-at-us-with-retaliatory-tariffs-as-trade-war-escalates/">Canada strikes back at US with retaliatory tariffs as trade war escalates</a></h2>
+<p class="byline">By Rob Gillies - Associated Press</p>
+<a class="shot" href="https://www.pressherald.com/2026/08/25/canada-strikes-back-at-us-with-retaliatory-tariffs-as-trade-war-escalates/" tabindex="-1" aria-hidden="true"><img src="../img/d6c5e4b95b11e852f1294213167dfa8f52e7c8d4.webp" alt="Canada Economy" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>The new fees hit steel, dairy products, appliances and farm equipment. <a class="lozenge more" href="https://www.pressherald.com/2026/08/25/canada-strikes-back-at-us-with-retaliatory-tariffs-as-trade-war-escalates/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://www.sunjournal.com/2026/08/25/canada-strikes-back-at-us-with-retaliatory-tariffs-as-trade-war-escalates/">Sun Journal</a> &middot; <a href="https://www.centralmaine.com/2026/08/25/canada-strikes-back-at-us-with-retaliatory-tariffs-as-trade-war-escalates/">Times Record</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T12:25:26+00:00" data-pub="8:25 AM EDT">Tuesday, August 25, 2026 at 8:25 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>GA / Atlanta / <a href="https://www.gpb.org/news">Georgia News Lab</a></small></p>
-<h2><a href="https://www.gpb.org/news/2026/08/25/when-suspending-students-discrimination-education-department-renews-old-fight">When is suspending students discrimination? Education Department renews an old fight</a></h2>
-<p class="byline"><small>By Cory Turner</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.gpb.org/support/planned">Donate</a></span></p>
-<a class="shot" href="https://www.gpb.org/news/2026/08/25/when-suspending-students-discrimination-education-department-renews-old-fight" tabindex="-1" aria-hidden="true"><img src="../img/47f6f92e342cf5df57635ea2cb48d52566c69f91.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>President Trump&#x27;s Education Department is telling schools to stop considering race when it comes to school discipline.</p>
-<p class="more"><a href="https://www.gpb.org/news/2026/08/25/when-suspending-students-discrimination-education-department-renews-old-fight">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Also in <a href="https://www.gpb.org/news/2026/08/25/when-suspending-students-discrimination-education-dept-renews-old-fight">Georgia News Lab</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.inquirer.com/">Support</a></aside>
+<p class="source"><a href="https://www.inquirer.com/"><strong>Philadelphia Inquirer</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:00:38+00:00" data-pub="12:00 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=PA">Pennsylvania</a><a class="lozenge place" href="/search?place=Philadelphia&state=PA">Philadelphia</a></p>
+<h2><a href="https://www.inquirer.com/news/jenkintown-library-expansion-consultant-20260825.html">Jenkintown might expand its historic, 187-year-old library</a></h2>
+<p class="byline">By Jess Rohan</p>
+<a class="shot" href="https://www.inquirer.com/news/jenkintown-library-expansion-consultant-20260825.html" tabindex="-1" aria-hidden="true"><img src="../img/e1b2507cbf73c46ddd215ae24ab62d83f54ec8fe.webp" alt="" width="480" height="195" loading="lazy" decoding="async"></a>
+<p>Jenkintown is deciding whether to expand or reorganize its pre-Civil War library building. <a class="lozenge more" href="https://www.inquirer.com/news/jenkintown-library-expansion-consultant-20260825.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T12:09:29+00:00" data-pub="8:09 AM EDT">Tuesday, August 25, 2026 at 8:09 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>GA / Albany / <a href="https://www.albanyherald.com/">Albany Herald</a></small></p>
-<h2><a href="https://albanyherald.com/news/dawson-fy2027-budget-300000-gap-city-finances/">Dawson’s $6.18 million budget draft balances to the penny — but the money doesn’t add up</a></h2>
-<p class="byline"><small>By Kathryn Crockett</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.albanyherald.com/">Support</a></span></p>
-<a class="shot" href="https://albanyherald.com/news/dawson-fy2027-budget-300000-gap-city-finances/" tabindex="-1" aria-hidden="true"><img src="../img/10c6a07ff947b8e6d47a207ecf15ae43635a04d9.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>A draft of Dawson&#x27;s proposed FY2027 budget included in a Finance Department report presented to the City Council on Aug. 13 shows revenues and spending in perfect balance — $6,180,350 on each side, to the penny. An Albany Herald review of the numbers found the draft does not actually balance.</p>
-<p class="more"><a href="https://albanyherald.com/news/dawson-fy2027-budget-300000-gap-city-finances/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://mosaic.nj.com/">Support</a></aside>
+<p class="source"><a href="https://mosaic.nj.com/"><strong>Mosaic</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:00:25+00:00" data-pub="12:00 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a></p>
+<h2><a href="https://www.nj.com/news/2026/08/college-was-supposed-to-be-the-easiest-place-to-make-friends-what-changed.html">Why college students are feeling more alone</a></h2>
+<p class="byline">By Chris Pugh, Advance Local Express Desk</p>
+<a class="shot" href="https://www.nj.com/news/2026/08/college-was-supposed-to-be-the-easiest-place-to-make-friends-what-changed.html" tabindex="-1" aria-hidden="true"><img src="../img/b8ab35e017fad9332aa5a20f7ed238855e078847.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>College students are spending less time socializing and reporting higher rates of loneliness, prompting universities to seek solutions. <a class="lozenge more" href="https://www.nj.com/news/2026/08/college-was-supposed-to-be-the-easiest-place-to-make-friends-what-changed.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T12:00:00+00:00" data-pub="8:00 AM EDT">Tuesday, August 25, 2026 at 8:00 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>GA / Atlanta / <a href="https://atlantablackstar.com/">Atlanta Black Star</a></small></p>
-<h2><a href="https://atlantablackstar.com/2026/08/25/white-man-charged-in-fatal-stabbing-on-atlanta-beltline/">‘Immediate Danger’: White Man With 30 Prior Arrests Charged in Fatal Stabbing of Black Man on Atlanta BeltLine as Mayor Questions How He Was Out</a></h2>
-<p class="byline"><small>By Carlos Miller</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://atlantablackstar.com/">Support</a></span></p>
-<a class="shot" href="https://atlantablackstar.com/2026/08/25/white-man-charged-in-fatal-stabbing-on-atlanta-beltline/" tabindex="-1" aria-hidden="true"><img src="../img/f1b7cb76ce2c2ed8f7bb10b13b4433e3fe242a3a.webp" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>A horrifying video showing a white man fatally stabbing a Black man after an argument on the Atlanta BeltLine over the weekend has prompted Atlanta’s […] ‘Immediate Danger’: White Man With 30 Prior Arrests Charged in Fatal Stabbing of Black Man on Atlanta BeltLine as Mayor Questions How He Was Out</p>
-<p class="more"><a href="https://atlantablackstar.com/2026/08/25/white-man-charged-in-fatal-stabbing-on-atlanta-beltline/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.columbiamissourian.com/news/local/church-donation-boosts-vac-opportunity-campus/article_ec8b756a-0baa-4a85-bb92-07a66ff5b1a4.html">Donate</a></aside>
+<p class="source"><a href="https://www.columbiamissourian.com/"><strong>Columbia Missourian</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:00:00+00:00" data-pub="11:00 AM CDT">Tue, Aug 25 @ 11AM CDT</time><a class="lozenge place" href="/search?state=MO">Missouri</a><a class="lozenge place" href="/search?place=Columbia&state=MO">Columbia</a></p>
+<h2><a href="https://www.columbiamissourian.com/news/local/moberly-woman-dead-after-sunday-night-shooting-police-say/article_5f50e418-84d9-5e7d-a427-69d4db015eae.html">Moberly woman dead after Sunday night shooting, police say</a></h2>
+<p class="byline">By Cecelia Koparanyan, KOMU 8</p>
+<p>Police said Sunday night this was an isolated incident and there is no danger to the community. <a class="lozenge more" href="https://www.columbiamissourian.com/news/local/moberly-woman-dead-after-sunday-night-shooting-police-say/article_5f50e418-84d9-5e7d-a427-69d4db015eae.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 </div>
 <p><a id="more" href="news-2.html">More stories</a></p>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="../index.html">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -407,6 +462,47 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>

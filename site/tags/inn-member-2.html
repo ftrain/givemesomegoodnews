@@ -13,12 +13,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(../fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -27,22 +40,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -50,19 +69,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -75,7 +126,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -93,7 +144,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="../index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="../masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -106,7 +157,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="../subjects/news.html">News</a></li><li><a href="../subjects/politics.html">Politics</a></li><li><a href="../subjects/opinion.html">Opinion</a></li><li><a href="../subjects/health.html">Health</a></li><li><a href="../subjects/environment.html">Environment</a></li><li><a href="../subjects/education.html">Education</a></li><li><a href="../subjects/business.html">Business</a></li><li><a href="../subjects/housing.html">Housing</a></li><li><a href="../subjects/sports.html">Sports</a></li><li><a href="../subjects/food.html">Food</a></li><li><a href="../subjects/arts.html">Arts</a></li></ul></nav>
@@ -121,270 +172,267 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <main id="main">
 <div id="feed-items">
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T11:00:00+00:00" data-pub="6:00 AM CDT">Tuesday, August 25, 2026 at 6:00 AM CDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>MO / Columbia / <a href="https://www.columbiamissourian.com/">Columbia Missourian</a></small></p>
-<h2><a href="https://www.columbiamissourian.com/news/mizzou-students-walk-through-kuhlman-court-on-their-first-day-of-classes/image_6e90b214-3908-4010-bd6e-c6b70ced445b.html">Mizzou students walk through Kuhlman Court on their first day of classes</a></h2>
-<p class="byline"><small>By Noah Grabianski/Missourian</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.columbiamissourian.com/news/local/church-donation-boosts-vac-opportunity-campus/article_ec8b756a-0baa-4a85-bb92-07a66ff5b1a4.html">Donate</a></span></p>
-<a class="shot" href="https://www.columbiamissourian.com/news/mizzou-students-walk-through-kuhlman-court-on-their-first-day-of-classes/image_6e90b214-3908-4010-bd6e-c6b70ced445b.html" tabindex="-1" aria-hidden="true"><img src="../img/46d2393e0b038b6934ea78dbb9a1e4cd40a0bf40.jpg" alt="" width="300" height="214" loading="lazy" decoding="async"></a>
-<p>Mizzou students walk through Kuhlman Court on their first day of classes on Monday at the University of Missouri. Volunteers passed out cups of cold brew to students.</p>
-<p class="more"><a href="https://www.columbiamissourian.com/news/mizzou-students-walk-through-kuhlman-court-on-their-first-day-of-classes/image_6e90b214-3908-4010-bd6e-c6b70ced445b.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.columbiamissourian.com/news/local/church-donation-boosts-vac-opportunity-campus/article_ec8b756a-0baa-4a85-bb92-07a66ff5b1a4.html">Donate</a></aside>
+<p class="source"><a href="https://www.columbiamissourian.com/"><strong>Columbia Missourian</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:18:00+00:00" data-pub="10:18 AM CDT">Tue, Aug 25 @ 10AM CDT</time><a class="lozenge place" href="/search?state=MO">Missouri</a><a class="lozenge place" href="/search?place=Columbia&state=MO">Columbia</a></p>
+<h2><a href="https://www.columbiamissourian.com/kent-murray-ford/image_84712114-4d44-4b94-8047-96e421369ab4.html">Kent Murray Ford</a></h2>
+<a class="shot" href="https://www.columbiamissourian.com/kent-murray-ford/image_84712114-4d44-4b94-8047-96e421369ab4.html" tabindex="-1" aria-hidden="true"><img src="../img/f40ab0d79caa9f5d28acc7bfa7215ef501ae7363.webp" alt="" width="300" height="450" loading="lazy" decoding="async"></a>
+<p>Kent Murray Ford <a class="lozenge more" href="https://www.columbiamissourian.com/kent-murray-ford/image_84712114-4d44-4b94-8047-96e421369ab4.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T11:00:00+00:00" data-pub="6:00 AM CDT">Tuesday, August 25, 2026 at 6:00 AM CDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>MO / Columbia / <a href="https://www.columbiamissourian.com/">Columbia Missourian</a></small></p>
-<h2><a href="https://www.columbiamissourian.com/opinion/renaming-an-aircraft-carrier/article_7c14794a-6532-491b-b405-0ddf10bb84e5.html">Renaming an aircraft carrier</a></h2>
-<p class="byline"><small>By John Darkow</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.columbiamissourian.com/news/local/church-donation-boosts-vac-opportunity-campus/article_ec8b756a-0baa-4a85-bb92-07a66ff5b1a4.html">Donate</a></span></p>
-<a class="shot" href="https://www.columbiamissourian.com/opinion/renaming-an-aircraft-carrier/article_7c14794a-6532-491b-b405-0ddf10bb84e5.html" tabindex="-1" aria-hidden="true"><img src="../img/61ee477ef218213d61351e5bae87fa831067c7c4.jpg" alt="" width="300" height="169" loading="lazy" decoding="async"></a>
-<p>Editorial cartoon by John Darkow.</p>
-<p class="more"><a href="https://www.columbiamissourian.com/opinion/renaming-an-aircraft-carrier/article_7c14794a-6532-491b-b405-0ddf10bb84e5.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://eplocalnews.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://www.eplocalnews.org/"><strong>Eden Prairie Local</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:13:23+00:00" data-pub="10:13 AM CDT">Tue, Aug 25 @ 10AM CDT</time><a class="lozenge place" href="/search?state=MN">Minnesota</a><a class="lozenge place" href="/search?place=Eden+Prairie&state=MN">Eden Prairie</a></p>
+<h2><a href="https://eplocalnews.org/2026/08/25/hennepin-notches-a-legal-victory-against-federal-abstinence-only-effort/">Hennepin notches a legal victory against federal ‘abstinence only’ effort</a></h2>
+<p class="byline">By MinnPost</p>
+<p>A federal judge blocked new HHS abstinence-only requirements, giving Hennepin County a partial victory in a dispute over teen pregnancy prevention funding. <a class="lozenge more" href="https://eplocalnews.org/2026/08/25/hennepin-notches-a-legal-victory-against-federal-abstinence-only-effort/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T11:00:00+00:00" data-pub="6:00 AM CDT">Tuesday, August 25, 2026 at 6:00 AM CDT</time></small></p>
-<p><small>MO / Columbia / <a href="https://www.columbiamissourian.com/">Columbia Missourian</a></small></p>
-<h2><a href="https://www.columbiamissourian.com/renaming-an-aircraft-carrier/image_045cf353-89ea-4528-bcbc-7944971801a1.html">Renaming an aircraft carrier</a></h2>
-<p class="byline"><small>By John Darkow</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.columbiamissourian.com/news/local/church-donation-boosts-vac-opportunity-campus/article_ec8b756a-0baa-4a85-bb92-07a66ff5b1a4.html">Donate</a></span></p>
-<a class="shot" href="https://www.columbiamissourian.com/renaming-an-aircraft-carrier/image_045cf353-89ea-4528-bcbc-7944971801a1.html" tabindex="-1" aria-hidden="true"><img src="../img/61ee477ef218213d61351e5bae87fa831067c7c4.jpg" alt="" width="300" height="169" loading="lazy" decoding="async"></a>
-<p class="more"><a href="https://www.columbiamissourian.com/renaming-an-aircraft-carrier/image_045cf353-89ea-4528-bcbc-7944971801a1.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://montclairlocal.news/donate/">Donate</a></aside>
+<p class="source"><a href="https://montclairlocal.news/"><strong>Montclair Local</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:11:44+00:00" data-pub="11:11 AM EDT">Tue, Aug 25 @ 11AM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a><a class="lozenge place" href="/search?place=Montclair&state=NJ">Montclair</a></p>
+<h2><a href="https://montclairlocal.news/2026/08/montclair-restaurant-openings-closings-industry-tavern-pineapple-express/">A New Tavern Coming to Montclair—Plus More Restaurant Openings and Closings</a></h2>
+<p class="byline">By Georgette Gilmore</p>
+<a class="shot" href="https://montclairlocal.news/2026/08/montclair-restaurant-openings-closings-industry-tavern-pineapple-express/" tabindex="-1" aria-hidden="true"><img src="../img/0b38f367d583ba802d2a57b4f362ae04ae6ccd08.webp" alt="Industry Tavern Montclair" width="249" height="229" loading="lazy" decoding="async"></a>
+<p>A new tavern is headed to Lackawanna Plaza, a Montclair favorite is making a comeback and two longtime spots have said goodbye. Here’s what’s opening, closing and coming soon. <a class="lozenge more" href="https://montclairlocal.news/2026/08/montclair-restaurant-openings-closings-industry-tavern-pineapple-express/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:30:00+00:00" data-pub="6:30 AM EDT">Tuesday, August 25, 2026 at 6:30 AM EDT</time></small></p>
-<p><small>NY / Saranac Lake / <a href="https://www.adirondackexplorer.org/">Adirondack Explorer</a></small></p>
-<h2><a href="https://www.adirondackexplorer.org/communities/adirondackers-people/honoring-the-life-and-work-of-nathan-farb/">Honoring the life and work of Nathan Farb</a></h2>
-<p class="byline"><small>By Tim Rowland</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.adirondackexplorer.org/donate-now/">Donate</a></span></p>
-<a class="shot" href="https://www.adirondackexplorer.org/communities/adirondackers-people/honoring-the-life-and-work-of-nathan-farb/" tabindex="-1" aria-hidden="true"><img src="../img/4ac190810593f231b37e20e773f49a6484a72259.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>Family and friends gathered to remember the fascinating photographer Nathan Farb who died in March.</p>
-<p class="more"><a href="https://www.adirondackexplorer.org/communities/adirondackers-people/honoring-the-life-and-work-of-nathan-farb/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://rochesterbeacon.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://rochesterbeacon.com/"><strong>Rochester Beacon</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:00:43+00:00" data-pub="11:00 AM EDT">Tue, Aug 25 @ 11AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Rochester&state=NY">Rochester</a></p>
+<h2><a href="https://rochesterbeacon.com/2026/08/25/hazardous-waste-found-at-former-hawkeye-property/">Hazardous waste found at former Hawkeye property</a></h2>
+<p class="byline">By ALEFIYA PRESSWALA</p>
+<p>The DEC has reclassified the property as a Class-2 Superfund site, but says this does not indicate that people are currently being exposed to contamination. <a class="lozenge more" href="https://rochesterbeacon.com/2026/08/25/hazardous-waste-found-at-former-hawkeye-property/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:01:00+00:00" data-pub="12:01 AM HST">Tuesday, August 25, 2026 at 12:01 AM HST</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>HI / Statewide / <a href="https://www.civilbeat.org/">Honolulu Civil Beat</a></small></p>
-<h2><a href="https://www.civilbeat.org/2026/08/5-takeaways-from-our-investigation-of-methamphetamine-in-hawaii/">5 Takeaways From Our Investigation Of Methamphetamine In Hawaiʻi</a></h2>
-<p class="byline"><small>By &quot;John Hill&quot;</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://civilbeat.fundjournalism.org/?amount=15&amp;campaign=701UI00000BcKdj&amp;frequency=monthly">Donate</a></span></p>
-<a class="shot" href="https://www.civilbeat.org/2026/08/5-takeaways-from-our-investigation-of-methamphetamine-in-hawaii/" tabindex="-1" aria-hidden="true"><img src="../img/c2510d50b72100da6b662bfbbb4e06c1ec857533.jpg" alt="" width="299" height="226" loading="lazy" decoding="async"></a>
-<p>A Civil Beat series starting today examines the people caught up in Hawaiʻi&#x27;s most severe drug problem, how it started and what&#x27;s being done about it.</p>
-<p class="more"><a href="https://www.civilbeat.org/2026/08/5-takeaways-from-our-investigation-of-methamphetamine-in-hawaii/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://ashland.news/donation/">Donate</a></aside>
+<p class="source"><a href="https://ashland.news/"><strong>Ashland.news</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:00:00+00:00" data-pub="8:00 AM PDT">Tue, Aug 25 @ 8AM PDT</time><a class="lozenge place" href="/search?state=OR">Oregon</a><a class="lozenge place" href="/search?place=Ashland&state=OR">Ashland</a></p>
+<h2><a href="https://ashland.news/poetry-corner-went-up/">Poetry Corner: Went up,</a></h2>
+<p class="byline">By Barry</p>
+<p>The removal of four dams on the Klamath River have dramatically begun the return of the river and surrounding lands to its natural state. Native flora and fauna are flourishing once again. <a class="lozenge more" href="https://ashland.news/poetry-corner-went-up/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:01:00+00:00" data-pub="12:01 AM HST">Tuesday, August 25, 2026 at 12:01 AM HST</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>HI / Statewide / <a href="https://www.civilbeat.org/">Honolulu Civil Beat</a></small></p>
-<h2><a href="https://www.civilbeat.org/2026/08/jeta-intellectual-theft-in-the-artificial-age/">Jeta: Intellectual Theft In The Artificial Age</a></h2>
-<p class="byline"><small>By &quot;Jenny &quot;Jeta&quot; Tang&quot;</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://civilbeat.fundjournalism.org/?amount=15&amp;campaign=701UI00000BcKdj&amp;frequency=monthly">Donate</a></span></p>
-<a class="shot" href="https://www.civilbeat.org/2026/08/jeta-intellectual-theft-in-the-artificial-age/" tabindex="-1" aria-hidden="true"><img src="../img/2b82da457e09ed9e004baae2a038b9aaf38f9b03.jpg" alt="" width="299" height="255" loading="lazy" decoding="async"></a>
-<p>Hawaiʻi musicians confront extraction, exploitation and ownership in the age of AI music.</p>
-<p class="more"><a href="https://www.civilbeat.org/2026/08/jeta-intellectual-theft-in-the-artificial-age/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.columbiamissourian.com/news/local/church-donation-boosts-vac-opportunity-campus/article_ec8b756a-0baa-4a85-bb92-07a66ff5b1a4.html">Donate</a></aside>
+<p class="source"><a href="https://www.columbiamissourian.com/"><strong>Columbia Missourian</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:00:00+00:00" data-pub="10:00 AM CDT">Tue, Aug 25 @ 10AM CDT</time><a class="lozenge place" href="/search?state=MO">Missouri</a><a class="lozenge place" href="/search?place=Columbia&state=MO">Columbia</a></p>
+<h2><a href="https://www.columbiamissourian.com/news/local/columbia-mayor-calls-out-deepfake-parodies-circulating-online/article_09d3fa95-c12e-46b8-a9cf-293b113616e9.html">Columbia mayor calls out deepfake parodies circulating online</a></h2>
+<p class="byline">By Nico Berlin, KBIA</p>
+<p>The videos imitating Mayor Barbara Buffaloe were still up Monday and have gathered tens of thousands of views. <a class="lozenge more" href="https://www.columbiamissourian.com/news/local/columbia-mayor-calls-out-deepfake-parodies-circulating-online/article_09d3fa95-c12e-46b8-a9cf-293b113616e9.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:01:00+00:00" data-pub="12:01 AM HST">Tuesday, August 25, 2026 at 12:01 AM HST</time></small></p>
-<p><small>HI / Statewide / <a href="https://www.civilbeat.org/">Honolulu Civil Beat</a></small></p>
-<h2><a href="https://www.civilbeat.org/2026/08/word-row-aug-25/">Word Row: Aug. 25</a></h2>
-<p class="byline"><small>By &quot;The Civil Beat Staff&quot;</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://civilbeat.fundjournalism.org/?amount=15&amp;campaign=701UI00000BcKdj&amp;frequency=monthly">Donate</a></span></p>
-<a class="shot" href="https://www.civilbeat.org/2026/08/word-row-aug-25/" tabindex="-1" aria-hidden="true"><img src="../img/66a62330aec93b74c957ab854cb0788e24e2c749.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
-<p>Six chances to figure out one five-letter word.</p>
-<p class="more"><a href="https://www.civilbeat.org/2026/08/word-row-aug-25/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://evanstonroundtable.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://evanstonroundtable.com/"><strong>Evanston RoundTable</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:00:00+00:00" data-pub="10:00 AM CDT">Tue, Aug 25 @ 10AM CDT</time><a class="lozenge place" href="/search?state=IL">Illinois</a><a class="lozenge place" href="/search?place=Evanston&state=IL">Evanston</a></p>
+<h2><a href="https://evanstonroundtable.com/2026/08/25/levy-senior-center-to-offer-two-free-classes-on-thursday/">Levy Senior Center to offer two free classes on Thursday</a></h2>
+<p class="byline">By Submitted by Levy Senior Center</p>
+<a class="shot" href="https://evanstonroundtable.com/2026/08/25/levy-senior-center-to-offer-two-free-classes-on-thursday/" tabindex="-1" aria-hidden="true"><img src="../img/97a123b3d7a836a1ba081156ac6209a3509b178a.webp" alt="" width="480" height="621" loading="lazy" decoding="async"></a>
+<p>Join the Levy Senior Center, 300 Dodge Ave., on Thursday for two free classes taught by experienced fitness instructor Sandy Nowarita. All levels are welcome. Whether you’re looking to get moving, improve flexibility, or enjoy a little relaxation and mindfulness, these free classes are a great opportunity to try something new. Space is limited. Call […] Levy Senior Center to offer two free classes <a class="lozenge more" href="https://evanstonroundtable.com/2026/08/25/levy-senior-center-to-offer-two-free-classes-on-thursday/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:01:00+00:00" data-pub="12:01 AM HST">Tuesday, August 25, 2026 at 12:01 AM HST</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>HI / Statewide / <a href="https://www.civilbeat.org/">Honolulu Civil Beat</a></small></p>
-<h2><a href="https://www.civilbeat.org/2026/08/rural-maui-residents-still-isolated-after-lala-washed-away-bridge/">Rural Maui Residents Still Isolated After Lala Washed Away Bridge</a></h2>
-<p class="byline"><small>By &quot;Erin Nolan&quot;</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://civilbeat.fundjournalism.org/?amount=15&amp;campaign=701UI00000BcKdj&amp;frequency=monthly">Donate</a></span></p>
-<a class="shot" href="https://www.civilbeat.org/2026/08/rural-maui-residents-still-isolated-after-lala-washed-away-bridge/" tabindex="-1" aria-hidden="true"><img src="../img/88c503c9e8e2e6877a7dc269ee70a93bfb0465c8.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
-<p>Emergency crews are flying in supplies to Nāhiku but a decades-long debate over who owns the bridge is complicating a long-term solution for this small community along the Road to Hana.</p>
-<p class="more"><a href="https://www.civilbeat.org/2026/08/rural-maui-residents-still-isolated-after-lala-washed-away-bridge/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://stocktonia.fundjournalism.org/donate/?campaign=6Mw4frEeMIYnrxMsnt">Donate</a></aside>
+<p class="source"><a href="https://stocktonia.org/"><strong>Stocktonia</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:00:00+00:00" data-pub="8:00 AM PDT">Tue, Aug 25 @ 8AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Stockton&state=CA">Stockton</a></p>
+<h2><a href="https://stocktonia.org/news/weather/2026/08/25/stockton-shares-its-heat-wave-with-other-california-cities-this-week-from-north-to-south/">Stockton faces a heat wave this week—and so does the rest of California</a></h2>
+<p class="byline">By Chris Woodyard • Stocktonia</p>
+<a class="shot" href="https://stocktonia.org/news/weather/2026/08/25/stockton-shares-its-heat-wave-with-other-california-cities-this-week-from-north-to-south/" tabindex="-1" aria-hidden="true"><img src="../img/d0499abce5170f5759ca4e97cb9d5fb33fcdf2ce.webp" alt="Silhouette of a utility pole and wires against a fiery orange sunset." width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Whether it&#x27;s Redding or Los Angeles, there are few places to the escape the heat in California this week. But an hour&#x27;s drive from Stockton is sublime. Stockton faces a heat wave this week—and so does the rest of California is a story from Stocktonia News, a rigorous and factual newsroom covering Greater Stockton, California. Please consider making a charitable contribution to support our journa <a class="lozenge more" href="https://stocktonia.org/news/weather/2026/08/25/stockton-shares-its-heat-wave-with-other-california-cities-this-week-from-north-to-south/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:01:00+00:00" data-pub="12:01 AM HST">Tuesday, August 25, 2026 at 12:01 AM HST</time></small></p>
-<p><small>HI / Statewide / <a href="https://www.civilbeat.org/">Honolulu Civil Beat</a></small></p>
-<h2><a href="https://www.civilbeat.org/2026/08/in-a-big-hurricane-dont-count-on-hawaii-shelters-to-protect-you/">In A Big Hurricane, Don’t Count On Hawaiʻi Shelters To Protect You</a></h2>
-<p class="byline"><small>By &quot;Hikari Mae Hida&quot;</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://civilbeat.fundjournalism.org/?amount=15&amp;campaign=701UI00000BcKdj&amp;frequency=monthly">Donate</a></span></p>
-<a class="shot" href="https://www.civilbeat.org/2026/08/in-a-big-hurricane-dont-count-on-hawaii-shelters-to-protect-you/" tabindex="-1" aria-hidden="true"><img src="../img/cc7e36b1deb28cce1168aac5b8055fcdc3c91bb8.jpg" alt="" width="300" height="169" loading="lazy" decoding="async"></a>
-<p>Eight years ago, a Civil Beat investigation found the island’s shelters were unable to withstand even a moderate hurricane. Today, officials won&#x27;t say what improvements they&#x27;ve made.</p>
-<p class="more"><a href="https://www.civilbeat.org/2026/08/in-a-big-hurricane-dont-count-on-hawaii-shelters-to-protect-you/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://indiacurrents.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://indiacurrents.com/"><strong>India Currents</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:00:00+00:00" data-pub="8:00 AM PDT">Tue, Aug 25 @ 8AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=San+Jose&state=CA">San Jose</a></p>
+<h2><a href="https://indiacurrents.com/desis-on-the-ballot-deepti-garg-for-new-haven-unified-school-district-ca/">Desis On The Ballot: Deepti Garg For New Haven Unified School District (CA)</a></h2>
+<p class="byline">By Staff Writer</p>
+<p>Deepti Garg, chair of the Union City Human Relations Commission, filed nomination papers today for the New Haven Unified School District Governing Board, Trustee Area 5, on the November 3 ballot. <a class="lozenge more" href="https://indiacurrents.com/desis-on-the-ballot-deepti-garg-for-new-haven-unified-school-district-ca/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:01:00+00:00" data-pub="12:01 AM HST">Tuesday, August 25, 2026 at 12:01 AM HST</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>HI / Statewide / <a href="https://www.civilbeat.org/">Honolulu Civil Beat</a></small></p>
-<h2><a href="https://www.civilbeat.org/2026/08/100-autopsies-meth-deaths-spiking-40-years-after-ice-seized-hawaii/">100 Autopsies: Meth Deaths Spiking 40 Years After Ice Seized Hawaiʻi</a></h2>
-<p class="byline"><small>By &quot;John Hill&quot;</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://civilbeat.fundjournalism.org/?amount=15&amp;campaign=701UI00000BcKdj&amp;frequency=monthly">Donate</a></span></p>
-<a class="shot" href="https://www.civilbeat.org/2026/08/100-autopsies-meth-deaths-spiking-40-years-after-ice-seized-hawaii/" tabindex="-1" aria-hidden="true"><img src="../img/84f24f781a8617880472c82a6b2d82c038a3a6de.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
-<p>Hawaiʻi was ground zero for smoking methamphetamine in the U.S. Today, it&#x27;s the only place where meth is far deadlier than opioids — yet the state has been slow to act.</p>
-<p class="more"><a href="https://www.civilbeat.org/2026/08/100-autopsies-meth-deaths-spiking-40-years-after-ice-seized-hawaii/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://localnewsmatters.org/support-our-publication/">Donate</a></aside>
+<p class="source"><a href="https://localnewsmatters.org/"><strong>Local News Matters</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:00:00+00:00" data-pub="8:00 AM PDT">Tue, Aug 25 @ 8AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Berkeley&state=CA">Berkeley</a></p>
+<h2><a href="https://localnewsmatters.org/2026/08/25/monterey-phishing-scam-fake-permit-payments/">Monterey officials warn of phishing scam using real addresses, permit information</a></h2>
+<p class="byline">By Gabe Agcaoili, Bay City News</p>
+<a class="shot" href="https://localnewsmatters.org/2026/08/25/monterey-phishing-scam-fake-permit-payments/" tabindex="-1" aria-hidden="true"><img src="../img/c9061dd870fa2f74f5a65532d0d00cf8e9db5e1a.webp" alt="" width="480" height="338" loading="lazy" decoding="async"></a>
+<p>Monterey officials are warning residents, property owners and contractors about a phishing scam in which fraudsters impersonate city staff and use real permit and property information to demand fake payments. In an alert Thursday, Monterey officials warned that scammers are sending emails containing accurate details about actual or past development projects, including architectural review permits, <a class="lozenge more" href="https://localnewsmatters.org/2026/08/25/monterey-phishing-scam-fake-permit-payments/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:00:52+00:00" data-pub="6:00 AM EDT">Tuesday, August 25, 2026 at 6:00 AM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>NY / Buffalo / <a href="https://www.investigativepost.org/">Investigative Post</a></small></p>
-<h2><a href="https://investigativepost.org/2026/08/25/program-pays-cops-to-help-border-patrol-arrest-immigrants/">Program pays local cops to arrest immigrants</a></h2>
-<p class="byline"><small>By Geoff Kelly</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://investigativepost.org/donate/">Donate</a></span></p>
-<a class="shot" href="https://investigativepost.org/2026/08/25/program-pays-cops-to-help-border-patrol-arrest-immigrants/" tabindex="-1" aria-hidden="true"><img src="../img/5ae08ad11444424b1d6bb572456d1c84079538b9.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>This story originally appeared in New York Focus, a nonprofit news publication investigating power in New York. Sign up for their newsletter here. A Jefferson County sheriff’s deputy was patrolling near a strip mall in Watertown, 30 miles south of New York’s border with Canada, last December, when he spotted a Chevrolet cargo van. He... View Article</p>
-<p class="more"><a href="https://investigativepost.org/2026/08/25/program-pays-cops-to-help-border-patrol-arrest-immigrants/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://peekskillherald.com/donation-form/">Donate</a></aside>
+<p class="source"><a href="https://peekskillherald.com/"><strong>Peekskill Herald</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:58:17+00:00" data-pub="10:58 AM EDT">Tue, Aug 25 @ 10AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Peekskill&state=NY">Peekskill</a></p>
+<h2><a href="https://peekskillherald.com/41672/news/reader-mail-rip-h2o-kayaking-nonpartisan-vs-apolitical-lawler-critics/">Reader Mail &gt; RIP H2O Kayaking, Nonpartisan vs. Apolitical, Lawler Critics</a></h2>
+<p>Letters to the Editor can be sent to letters@peekskillherald.com <a class="lozenge more" href="https://peekskillherald.com/41672/news/reader-mail-rip-h2o-kayaking-nonpartisan-vs-apolitical-lawler-critics/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:00:11+00:00" data-pub="6:00 AM EDT">Tuesday, August 25, 2026 at 6:00 AM EDT</time></small></p>
-<p><small>VA / Fredericksburg / <a href="https://www.fredericksburgfreepress.com/about-fredericksburg-free-press/">Fredericksburg Free Press</a></small></p>
-<h2><a href="https://www.fredericksburgfreepress.com/2026/08/25/biz-beat-banter-carrie-omalley/">Biz Beat Banter: Carrie O’Malley</a></h2>
-<p class="byline"><small>By Bill Freehling</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.fredericksburgfreepress.com/support/">Donate</a></span></p>
-<a class="shot" href="https://www.fredericksburgfreepress.com/2026/08/25/biz-beat-banter-carrie-omalley/" tabindex="-1" aria-hidden="true"><img src="../img/d7b3939c74e586467b273cbc2cf1ced23076aa9c.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>This week, Bill sits down with Carrie O’Malley, a local attorney who recently received a prestigious designation in her field.</p>
-<p class="more"><a href="https://www.fredericksburgfreepress.com/2026/08/25/biz-beat-banter-carrie-omalley/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://marbleheadcurrent.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://marbleheadcurrent.org/"><strong>Marblehead Current</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:50:30+00:00" data-pub="10:50 AM EDT">Tue, Aug 25 @ 10AM EDT</time><a class="lozenge place" href="/search?state=MA">Massachusetts</a><a class="lozenge place" href="/search?place=Marblehead&state=MA">Marblehead</a></p>
+<h2><a href="https://marbleheadcurrent.org/2026/08/25/letter-why-i-support-terrence-kennedy-for-governors-council/">LETTER: Why I support Terrence Kennedy for Governor’s Council</a></h2>
+<p class="byline">By Submitted Content</p>
+<p>To the editor: As voters across the 6th District prepare to cast their ballots in the upcoming Democratic primary, it is vital to look past campaign rhetoric and evaluate candidates <a class="lozenge more" href="https://marbleheadcurrent.org/2026/08/25/letter-why-i-support-terrence-kennedy-for-governors-council/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:00:00+00:00" data-pub="3:00 AM PDT">Tuesday, August 25, 2026 at 3:00 AM PDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>CA / Berkeley / <a href="https://localnewsmatters.org/">Local News Matters</a></small></p>
-<h2><a href="https://localnewsmatters.org/2026/08/25/santa-cruz-county-supervisors-salary-increase/">Santa Cruz County supervisors to consider raising their own salaries amid fiscal crisis</a></h2>
-<p class="byline"><small>By Thomas Hughes, Bay City News</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://localnewsmatters.org/support-our-publication/">Donate</a></span></p>
-<a class="shot" href="https://localnewsmatters.org/2026/08/25/santa-cruz-county-supervisors-salary-increase/" tabindex="-1" aria-hidden="true"><img src="../img/9e595a939326a2ad673e8a410f280f6d7e38ae6c.jpg" alt="" width="480" height="359" loading="lazy" decoding="async"></a>
-<p>It might seem easy to give yourself a raise, but the issue has divided the Santa Cruz County Board of Supervisors, which will consider Tuesday a proposal to increase Board members’ salaries. Board members voted to advance a plan to remove language in the county code that caps their salaries at a rate the county</p>
-<p class="more"><a href="https://localnewsmatters.org/2026/08/25/santa-cruz-county-supervisors-salary-increase/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://wausaupilotandreview.com/2026/08/24/dnr-seeks-hunters-meat-processors-for-deer-donation-program/">Donate</a></aside>
+<p class="source"><a href="https://www.wausaupilotandreview.com"><strong>Wausau Pilot &amp; Review</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:50:23+00:00" data-pub="9:50 AM CDT">Tue, Aug 25 @ 9AM CDT</time><a class="lozenge place" href="/search?state=WI">Wisconsin</a><a class="lozenge place" href="/search?place=Wausau&state=WI">Wausau</a></p>
+<h2><a href="https://wausaupilotandreview.com/2026/08/25/lincoln-county-deputies-report-threats-crashes-and-owi-arrests-in-weekly-wrap-up/">Lincoln County deputies report threats, crashes and OWI arrests in weekly wrap-up</a></h2>
+<p class="byline">By Shereen Siewert</p>
+<a class="shot" href="https://wausaupilotandreview.com/2026/08/25/lincoln-county-deputies-report-threats-crashes-and-owi-arrests-in-weekly-wrap-up/" tabindex="-1" aria-hidden="true"><img src="../img/28345e4aa713a0b7cef8610316727c8e9bcba799.jpg" alt="" width="336" height="189" loading="lazy" decoding="async"></a>
+<p>Wausau Pilot &amp; Review The Lincoln County Sheriff’s Office responded to several crashes and made arrests involving alleged threats and impaired driving during the week of Aug. 17-23. On Aug. 17, deputies responded to a two-vehicle crash on County Road E in the town of Rock Falls. Both vehicles had been traveling east when the <a class="lozenge more" href="https://wausaupilotandreview.com/2026/08/25/lincoln-county-deputies-report-threats-crashes-and-owi-arrests-in-weekly-wrap-up/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:00:00+00:00" data-pub="6:00 AM EDT">Tuesday, August 25, 2026 at 6:00 AM EDT</time></small></p>
-<p><small>MI / Flint / <a href="https://flintbeat.com/">Flint Beat</a></small></p>
-<h2><a href="https://www.flintbeat.com/gun-violence/flint-seeks-coordinated-response-as-gun-violence-continues-bd16398f">Flint calls for coordinated effort as gun violence continues</a></h2>
-<p class="byline"><small>By Jiquanda Johnson</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://flintbeat.com/">Support</a></span></p>
-<a class="shot" href="https://www.flintbeat.com/gun-violence/flint-seeks-coordinated-response-as-gun-violence-continues-bd16398f" tabindex="-1" aria-hidden="true"><img src="../img/180f62f657c29674dae289b36b6c9f71f86bd905.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Flint leaders propose a public safety summit as recent fatal shootings spur a broader response involving police, courts, prosecutors and community groups.</p>
-<p class="more"><a href="https://www.flintbeat.com/gun-violence/flint-seeks-coordinated-response-as-gun-violence-continues-bd16398f">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://rochesterbeacon.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://rochesterbeacon.com/"><strong>Rochester Beacon</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:50:10+00:00" data-pub="10:50 AM EDT">Tue, Aug 25 @ 10AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Rochester&state=NY">Rochester</a></p>
+<h2><a href="https://rochesterbeacon.com/2026/08/25/this-program-pays-new-york-cops-to-help-border-patrol-arrest-immigrants-hochul-backs-it/">This program pays New York cops to help Border Patrol arrest immigrants. Hochul backs it.</a></h2>
+<p class="byline">By ISABELLE TAFT</p>
+<a class="shot" href="https://rochesterbeacon.com/2026/08/25/this-program-pays-new-york-cops-to-help-border-patrol-arrest-immigrants-hochul-backs-it/" tabindex="-1" aria-hidden="true"><img src="../img/84b6070ab7150a66bff962736de19a853e9fd1fe.webp" alt="" width="480" height="72" loading="lazy" decoding="async"></a>
+<p>Border county sheriff’s deputies participating in Operation Stonegarden have facilitated dozens of immigration arrests in recent years. <a class="lozenge more" href="https://rochesterbeacon.com/2026/08/25/this-program-pays-new-york-cops-to-help-border-patrol-arrest-immigrants-hochul-backs-it/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T09:15:45+00:00" data-pub="4:15 AM CDT">Tuesday, August 25, 2026 at 4:15 AM CDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>IL / Evanston / <a href="https://evanstonroundtable.com/">Evanston RoundTable</a></small></p>
-<h2><a href="https://evanstonroundtable.com/2026/08/25/evanston-zoning-code-rewrite-code-studio-contract/">Council awards zoning rewrite contract, setting up second half of Envision Evanston</a></h2>
-<p class="byline"><small>By Alex Harrison</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://evanstonroundtable.com/donate/">Donate</a></span></p>
-<a class="shot" href="https://evanstonroundtable.com/2026/08/25/evanston-zoning-code-rewrite-code-studio-contract/" tabindex="-1" aria-hidden="true"><img src="../img/a6aa050dfe0e62d74860c7fc07cdb5b81d9dd23d.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Eight months after adopting a new comprehensive plan through Envision Evanston 2045, Evanston’s City Council moved the project forward to its second act on Monday, when it hired consulting firm Code Studio to lead a rewrite of the city’s zoning code. But that only come after councilmembers added a few new directives for the contract […] Council awards zoning rewrite contract, setting up second hal</p>
-<p class="more"><a href="https://evanstonroundtable.com/2026/08/25/evanston-zoning-code-rewrite-code-studio-contract/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://marbleheadcurrent.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://marbleheadcurrent.org/"><strong>Marblehead Current</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:48:31+00:00" data-pub="10:48 AM EDT">Tue, Aug 25 @ 10AM EDT</time><a class="lozenge place" href="/search?state=MA">Massachusetts</a><a class="lozenge place" href="/search?place=Marblehead&state=MA">Marblehead</a></p>
+<h2><a href="https://marbleheadcurrent.org/2026/08/25/letter-get-out-to-vote-sept-1/">LETTER: Get out to vote Sept. 1</a></h2>
+<p class="byline">By Submitted Content</p>
+<p>To the editor: What would it take to get 75% of eligible voters to actually vote in Marblehead? Do you need a ride to the polls? Ask a neighbor. Do <a class="lozenge more" href="https://marbleheadcurrent.org/2026/08/25/letter-get-out-to-vote-sept-1/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T09:00:20+00:00" data-pub="5:00 AM EDT">Tuesday, August 25, 2026 at 5:00 AM EDT</time></small></p>
-<p><small>NY / Cold Spring / <a href="https://highlandscurrent.org/">The Highlands Current</a></small></p>
-<h2><a href="https://highlandscurrent.org/2026/08/25/ticks-full-of-surprises-and-diseases/">Ticks Full of Surprises (and Diseases)</a></h2>
-<p class="byline"><small>By Brian PJ Cronin</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://highlandscurrent.org/membership/short-form">Donate</a></span></p>
-<p>New research upends conventional wisdom</p>
-<p class="more"><a href="https://highlandscurrent.org/2026/08/25/ticks-full-of-surprises-and-diseases/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.columbiamissourian.com/news/local/church-donation-boosts-vac-opportunity-campus/article_ec8b756a-0baa-4a85-bb92-07a66ff5b1a4.html">Donate</a></aside>
+<p class="source"><a href="https://www.columbiamissourian.com/"><strong>Columbia Missourian</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:48:00+00:00" data-pub="9:48 AM CDT">Tue, Aug 25 @ 9AM CDT</time><a class="lozenge place" href="/search?state=MO">Missouri</a><a class="lozenge place" href="/search?place=Columbia&state=MO">Columbia</a></p>
+<h2><a href="https://www.columbiamissourian.com/weather/forecast-mostly-cloudy-with-increasing-humidity-tuesday-isolated-showers-on-wednesday/article_cd823f4f-a5b7-51d2-a4a0-4a9a03db46d6.html">Forecast: Mostly cloudy with increasing humidity Tuesday, isolated showers on Wednesday</a></h2>
+<p class="byline">By Kesley Kobielusz, KOMU 8 First Alert Meteorologist</p>
+<a class="shot" href="https://www.columbiamissourian.com/weather/forecast-mostly-cloudy-with-increasing-humidity-tuesday-isolated-showers-on-wednesday/article_cd823f4f-a5b7-51d2-a4a0-4a9a03db46d6.html" tabindex="-1" aria-hidden="true"><img src="../img/e97bc951caa09bd0717ef58f68985a2d7c920629.webp" alt="" width="300" height="169" loading="lazy" decoding="async"></a>
+<p>Temperatures this morning are starting out in the middle 60s with a mostly cloudy sky. <a class="lozenge more" href="https://www.columbiamissourian.com/weather/forecast-mostly-cloudy-with-increasing-humidity-tuesday-isolated-showers-on-wednesday/article_cd823f4f-a5b7-51d2-a4a0-4a9a03db46d6.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T08:45:20+00:00" data-pub="4:45 AM EDT">Tuesday, August 25, 2026 at 4:45 AM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>VA / Fredericksburg / <a href="https://www.fredericksburgfreepress.com/about-fredericksburg-free-press/">Fredericksburg Free Press</a></small></p>
-<h2><a href="https://www.fredericksburgfreepress.com/2026/08/25/column-flat-declan-is-stafford-countys-version-of-flat-stanley/">COLUMN: ‘Flat Declan’ is Stafford County’s version of Flat Stanley</a></h2>
-<p class="byline"><small>By Jonathan Hunley</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.fredericksburgfreepress.com/support/">Donate</a></span></p>
-<a class="shot" href="https://www.fredericksburgfreepress.com/2026/08/25/column-flat-declan-is-stafford-countys-version-of-flat-stanley/" tabindex="-1" aria-hidden="true"><img src="../img/1abe561a241886b6f330beed1e0fc25468ab3372.jpg" alt="" width="480" height="327" loading="lazy" decoding="async"></a>
-<p>Nonprofit Ellie&#x27;s Elves started the project to boost the spirits of Declan Samuels, a 9-year-old battling cancer.</p>
-<p class="more"><a href="https://www.fredericksburgfreepress.com/2026/08/25/column-flat-declan-is-stafford-countys-version-of-flat-stanley/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://marbleheadcurrent.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://marbleheadcurrent.org/"><strong>Marblehead Current</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:47:17+00:00" data-pub="10:47 AM EDT">Tue, Aug 25 @ 10AM EDT</time><a class="lozenge place" href="/search?state=MA">Massachusetts</a><a class="lozenge place" href="/search?place=Marblehead&state=MA">Marblehead</a></p>
+<h2><a href="https://marbleheadcurrent.org/2026/08/25/letter-mhs-cross-country-track-teams-led-by-great-coaches/">LETTER: MHS cross country/track teams led by great coaches</a></h2>
+<p class="byline">By Submitted Content</p>
+<p>To the editor: As my son prepares to head off to college later this month, I was reflecting on his time at Marblehead High School. He had some great teachers <a class="lozenge more" href="https://marbleheadcurrent.org/2026/08/25/letter-mhs-cross-country-track-teams-led-by-great-coaches/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T08:20:00+00:00" data-pub="4:20 AM EDT">Tuesday, August 25, 2026 at 4:20 AM EDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>NY / Ithaca / <a href="https://ithacavoice.org/">The Ithaca Voice</a></small></p>
-<h2><a href="https://ithacavoice.org/2026/08/a-test-case-for-the-new-policy-that-may-reshape-the-city-as-we-know-it-backstory/">Zoning out: a test case for Ithaca’s new plan to build more housing | Backstory</a></h2>
-<p class="byline"><small>By Megan Zerez</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://ithacavoice.org/support-our-publication/">Donate</a></span></p>
-<a class="shot" href="https://ithacavoice.org/2026/08/a-test-case-for-the-new-policy-that-may-reshape-the-city-as-we-know-it-backstory/" tabindex="-1" aria-hidden="true"><img src="../img/76c2bfb6feb5170e5c34f068db7120d1eac25be0.jpg" alt="" width="400" height="267" loading="lazy" decoding="async"></a>
-<p>Backstory: an Ithaca Voice podcast | RSS.com Listen and subscribe to Backstory on: Apple Podcasts, Spotify, Overcast, Amazon Music, YouTube or wherever you get podcasts. Earlier this year, Ithaca’s Common</p>
-<p class="more"><a href="https://ithacavoice.org/2026/08/a-test-case-for-the-new-policy-that-may-reshape-the-city-as-we-know-it-backstory/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://inn.org/about/network/?utm_source=web&amp;utm_medium=website&amp;utm_campaign=member+badge">Become a member</a></aside>
+<p class="source"><a href="https://www.therecordnorthshore.org/"><strong>The Record North Shore</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:45:35+00:00" data-pub="9:45 AM CDT">Tue, Aug 25 @ 9AM CDT</time><a class="lozenge place" href="/search?state=IL">Illinois</a><a class="lozenge place" href="/search?place=Wilmette&state=IL">Wilmette</a></p>
+<h2><a href="https://www.therecordnorthshore.org/2026/08/25/beyond-excited-lucky-boys-confusion-with-their-local-frontman-to-headline-skokies-backlot-bash/">‘Beyond Excited’: Lucky Boys Confusion—with their local frontman—to headline Skokie’s Backlot Bash</a></h2>
+<p class="byline">By Samuel Lisec</p>
+<p>Growing up in a traditional Indian household, Kaustubh “Stubhy” Pandav recalls his father limited access to Western music. The first song he ever learned was the Super Bowl Shuffle after his mother snuck him the lyrics from the west-suburban Downers Grove Public Library. So when Pandav was invited to a friend’s band practice in his <a class="lozenge more" href="https://www.therecordnorthshore.org/2026/08/25/beyond-excited-lucky-boys-confusion-with-their-local-frontman-to-headline-skokies-backlot-bash/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T08:16:11+00:00" data-pub="1:16 AM PDT">Tuesday, August 25, 2026 at 1:16 AM PDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>OR / Ashland / <a href="https://ashland.news/">Ashland.news</a></small></p>
-<h2><a href="https://ashland.news/election-2026-ashland-city-council-candidate-makes-her-case/">Election 2026: Ashland City Council candidate makes her case</a></h2>
-<p class="byline"><small>By Steve Mitchell</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://ashland.news/donation/">Donate</a></span></p>
-<p>Linda Adams, a longtime participant in local politics, says Ashland’s next council must address significant challenges with long-term strategies rather than short-term fixes. She says her campaign platform emphasizes progressive revenue sources, wildfire preparedness, expanded affordable housing, and continued investment in parks and open spaces.</p>
-<p class="more"><a href="https://ashland.news/election-2026-ashland-city-council-candidate-makes-her-case/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://alamedapost.com/donate">Donate</a></aside>
+<p class="source"><a href="https://alamedapost.com/"><strong>Alameda Post</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:43:00+00:00" data-pub="7:43 AM PDT">Tue, Aug 25 @ 7AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Alameda&state=CA">Alameda</a></p>
+<h2><a href="https://alamedapost.com/features/alameda-life/art-across-the-island-celebrates-a-decade-of-student-art/">‘Art Across the Island’ Celebrates a Decade of Student Art</a></h2>
+<p class="byline">By Jillian Saxty</p>
+<a class="shot" href="https://alamedapost.com/features/alameda-life/art-across-the-island-celebrates-a-decade-of-student-art/" tabindex="-1" aria-hidden="true"><img src="../img/b894799fb6dabd8b1fb797faf6eb0f41b3b657d6.webp" alt="Alameda Post - A photo of two people looking at artwork displayed on a wall, and a photo of a smiling woman, Pam Riley Chang." width="480" height="268" loading="lazy" decoding="async"></a>
+<p>If you&#x27;ve enjoyed art from Alameda’s public school classrooms on the walls of your favorite library or store, you can thank AEF&#x27;s outgoing Art Program Coordinator, Pam Riley Chang. Jillian Saxty invites the community to celebrate a decade of achievement on September 30 at Books Inc. <a class="lozenge more" href="https://alamedapost.com/features/alameda-life/art-across-the-island-celebrates-a-decade-of-student-art/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T08:00:00+00:00" data-pub="1:00 AM PDT">Tuesday, August 25, 2026 at 1:00 AM PDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>CA / Berkeley / <a href="https://localnewsmatters.org/">Local News Matters</a></small></p>
-<h2><a href="https://localnewsmatters.org/2026/08/25/sonoma-county-property-tax-scam-1098-sr/">Sonoma County scammers promise property tax relief with fake ‘1098-SR’ form</a></h2>
-<p class="byline"><small>By Gabe Agcaoili, Bay City News</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://localnewsmatters.org/support-our-publication/">Donate</a></span></p>
-<a class="shot" href="https://localnewsmatters.org/2026/08/25/sonoma-county-property-tax-scam-1098-sr/" tabindex="-1" aria-hidden="true"><img src="../img/f31b459cce5bee038a7c4a011d745f1c9d52f500.jpg" alt="" width="480" height="338" loading="lazy" decoding="async"></a>
-<p>Sonoma County officials are warning seniors and other property owners about a tax scam spreading online and by phone that falsely claims people can reduce or freeze their property taxes by filing a nonexistent federal form. In a statement Thursday, Sonoma County Clerk Deva Marie Proto and County Auditor Erick Roeser said the scam promotes</p>
-<p class="more"><a href="https://localnewsmatters.org/2026/08/25/sonoma-county-property-tax-scam-1098-sr/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://marbleheadcurrent.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://marbleheadcurrent.org/"><strong>Marblehead Current</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:38:16+00:00" data-pub="10:38 AM EDT">Tue, Aug 25 @ 10AM EDT</time><a class="lozenge place" href="/search?state=MA">Massachusetts</a><a class="lozenge place" href="/search?place=Marblehead&state=MA">Marblehead</a></p>
+<h2><a href="https://marbleheadcurrent.org/2026/08/25/marblehead-police-log-bike-park-shed-vandalized-pickleball-noise-irks-neighbor/">Marblehead Police log: Bike park shed vandalized, pickleball noise irks neighbor</a></h2>
+<p class="byline">By Marblehead Current staff</p>
+<a class="shot" href="https://marbleheadcurrent.org/2026/08/25/marblehead-police-log-bike-park-shed-vandalized-pickleball-noise-irks-neighbor/" tabindex="-1" aria-hidden="true"><img src="../img/56fa1fa951e5b1efb87a91a50b53187d84180147.webp" alt="" width="480" height="640" loading="lazy" decoding="async"></a>
+<p>Saturday, Aug. 1Alarms: 1Building/property checks: 9Abandoned 911 calls: 2Vehicle stops, citations: 0Vehicle stops, verbal warnings: 4 8:02 a.m. A citizen was assisted on Rockaway Avenue. 8:54 a.m. An officer investigated <a class="lozenge more" href="https://marbleheadcurrent.org/2026/08/25/marblehead-police-log-bike-park-shed-vandalized-pickleball-noise-irks-neighbor/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T07:40:08+00:00" data-pub="12:40 AM PDT">Tuesday, August 25, 2026 at 12:40 AM PDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>OR / Ashland / <a href="https://ashland.news/">Ashland.news</a></small></p>
-<h2><a href="https://ashland.news/fired-nicu-doctors-push-for-changes-inside-asante-leadership/">Fired NICU doctors push for changes inside Asante leadership</a></h2>
-<p class="byline"><small>By Bert Etling</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://ashland.news/donation/">Donate</a></span></p>
-<a class="shot" href="https://ashland.news/fired-nicu-doctors-push-for-changes-inside-asante-leadership/" tabindex="-1" aria-hidden="true"><img src="../img/f8feb4d3695a74136c5d9ce8196a7c4ee74f8bc6.jpg" alt="" width="480" height="294" loading="lazy" decoding="async"></a>
-<p>Community outcry continues following the firing of nine long-time neonatal intensive care unit doctors at Asante Rogue Regional Medical Center in Medford last month. Families of recent patients of the region’s only NICU — which provides care for critically ill and premature infants born as early as 22 weeks and weighing less than 1 pound — voiced concerns about quality and consistency of care afte</p>
-<p class="more"><a href="https://ashland.news/fired-nicu-doctors-push-for-changes-inside-asante-leadership/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://boulderreportinglab.org/donate-to-us/">Donate</a></aside>
+<p class="source"><a href="https://boulderreportinglab.org/"><strong>Boulder Reporting Lab</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:29:56+00:00" data-pub="8:29 AM MDT">Tue, Aug 25 @ 8AM MDT</time><a class="lozenge place" href="/search?state=CO">Colorado</a><a class="lozenge place" href="/search?place=Boulder&state=CO">Boulder</a></p>
+<h2><a href="https://boulderreportinglab.org/2026/08/25/boulder-market-meals-turn-locally-grown-eggplant-into-smoky-baba-ghanoush/">Boulder Market Meals: Turn locally grown eggplant into smoky baba ghanoush</a></h2>
+<p class="byline">By John Lehndorff and Katie MacKinnon, Boulder County Farmers Markets</p>
+<a class="shot" href="https://boulderreportinglab.org/2026/08/25/boulder-market-meals-turn-locally-grown-eggplant-into-smoky-baba-ghanoush/" tabindex="-1" aria-hidden="true"><img src="../img/e79a3f1e1700a4a3de6d78e8f229e50292a23726.webp" alt="" width="480" height="321" loading="lazy" decoding="async"></a>
+<p>Grill fresh eggplant from Boulder County farmers markets to make this creamy, smoky dip for vegetables, grain bowls and sandwiches. <a class="lozenge more" href="https://boulderreportinglab.org/2026/08/25/boulder-market-meals-turn-locally-grown-eggplant-into-smoky-baba-ghanoush/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T06:34:13+00:00" data-pub="11:34 PM PDT">Monday, August 24, 2026 at 11:34 PM PDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>OR / Ashland / <a href="https://ashland.news/">Ashland.news</a></small></p>
-<h2><a href="https://ashland.news/playing-it-forward-james-dyson-and-the-giant-ripple-effect-wish/">Playing it forward: James Dyson and the giant, ‘ripple effect’ wish</a></h2>
-<p class="byline"><small>By Bert Etling</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://ashland.news/donation/">Donate</a></span></p>
-<a class="shot" href="https://ashland.news/playing-it-forward-james-dyson-and-the-giant-ripple-effect-wish/" tabindex="-1" aria-hidden="true"><img src="../img/b8bce83ead010866fae8c00c1c3447ab4626a4e5.jpg" alt="" width="480" height="283" loading="lazy" decoding="async"></a>
-<p>Ever since cancer survivor and Ashland City Band member James Dyson’s wish for a contrabassoon was granted by the Make-A-Wish Foundation in 2023, he’s dreamt of paying it forward. Now the Ashland High School graduate and soon-to-be Princeton University junior has done just that, fundraising more than $17,000 for the Make-A-Wish organization through a free benefit concert.</p>
-<p class="more"><a href="https://ashland.news/playing-it-forward-james-dyson-and-the-giant-ripple-effect-wish/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://marbleheadcurrent.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://marbleheadcurrent.org/"><strong>Marblehead Current</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:28:36+00:00" data-pub="10:28 AM EDT">Tue, Aug 25 @ 10AM EDT</time><a class="lozenge place" href="/search?state=MA">Massachusetts</a><a class="lozenge place" href="/search?place=Marblehead&state=MA">Marblehead</a></p>
+<h2><a href="https://marbleheadcurrent.org/2026/08/25/news-in-brief-mhs-drops-in-ranking-celebrating-70-years-of-local-theater/">NEWS IN BRIEF: MHS drops in ranking, MLT celebrates 70 years</a></h2>
+<p class="byline">By Leigh Blander</p>
+<a class="shot" href="https://marbleheadcurrent.org/2026/08/25/news-in-brief-mhs-drops-in-ranking-celebrating-70-years-of-local-theater/" tabindex="-1" aria-hidden="true"><img src="../img/e84d20022fd80abf9fb749431b588aed138a9059.webp" alt="" width="214" height="300" loading="lazy" decoding="async"></a>
+<p>The Current welcomes 150- to 200-word submissions to News in Brief. Send them to info@marbleheadnews.org. Marblehead High drops in state rankingIn the new U.S. News World Report ranking, <a class="lozenge more" href="https://marbleheadcurrent.org/2026/08/25/news-in-brief-mhs-drops-in-ranking-celebrating-70-years-of-local-theater/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T06:12:58+00:00" data-pub="2:12 AM EDT">Tuesday, August 25, 2026 at 2:12 AM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>KY / Hopkinsville / <a href="https://hoptownchronicle.org/">Hoptown Chronicle</a></small></p>
-<h2><a href="https://hoptownchronicle.org/amid-measles-outbreak-western-kentucky-doctor-advises-on-how-to-curb-spread-of-virus/">Amid measles outbreak, Western Kentucky doctor advises on how to curb spread of virus</a></h2>
-<p class="byline"><small>By Hannah Saad</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://hoptownchronicle.org/about/support-us/">Donate</a></span></p>
-<p>With 10 measles cases confirmed in Christian County, a western Kentucky doctor explains why the virus spreads so easily and how residents can protect themselves.</p>
-<p class="more"><a href="https://hoptownchronicle.org/amid-measles-outbreak-western-kentucky-doctor-advises-on-how-to-curb-spread-of-virus/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://sgfcitizen.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://sgfcitizen.org/"><strong>Springfield Daily Citizen</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:16:43+00:00" data-pub="9:16 AM CDT">Tue, Aug 25 @ 9AM CDT</time><a class="lozenge place" href="/search?state=MO">Missouri</a><a class="lozenge place" href="/search?place=Springfield&state=MO">Springfield</a></p>
+<h2><a href="https://sgfcitizen.org/economy-growth/business/springfield-dispensary-contract-wins/">Springfield cannabis workers secure Missouri’s second union contract after four-year wait</a></h2>
+<p class="byline">By Missouri Independent</p>
+<a class="shot" href="https://sgfcitizen.org/economy-growth/business/springfield-dispensary-contract-wins/" tabindex="-1" aria-hidden="true"><img src="../img/6a2b757a1cdaeccd21629768ad3c74ffcc01d7ac.webp" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Employees at Key Cannabis Dispensary in Springfield recently ratified their first collective bargaining agreement with the United Food and Commercial Workers Local 2, securing wage increases, bonuses, and enhanced workplace protections. It the the second collective bargaining agreement in place for cannabis workers in Missouri. <a class="lozenge more" href="https://sgfcitizen.org/economy-growth/business/springfield-dispensary-contract-wins/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:50:18+00:00" data-pub="12:50 AM EDT">Tuesday, August 25, 2026 at 12:50 AM EDT</time></small></p>
-<p><small>KY / Northern Kentucky / <a href="https://www.nkytribune.com/">Northern Kentucky Tribune</a></small></p>
-<h2><a href="https://nkytribune.com/2026/08/look-up-stargazers-on-thursday-evening-you-can-see-a-deep-partial-eclipse-of-the-moon/">Look up, stargazers: On Thursday evening you can see a deep partial eclipse of the Moon</a></h2>
-<p class="byline"><small>By Judy Clabes</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.nkytribune.com/">Support</a></span></p>
-<p>Thursday, August 27, will be a big night for stargazers in the Cincinnati area. The Cincinnati Observatory kicks off the evening with its monthly Pop-Up Planetarium at MadTree Brewing in Oakley, then opens its doors on Mt. Lookout for a free public telescope viewing of a deep partial lunar eclipse, one of the most striking</p>
-<p class="more"><a href="https://nkytribune.com/2026/08/look-up-stargazers-on-thursday-evening-you-can-see-a-deep-partial-eclipse-of-the-moon/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://eplocalnews.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://www.eplocalnews.org/"><strong>Eden Prairie Local</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:06:16+00:00" data-pub="9:06 AM CDT">Tue, Aug 25 @ 9AM CDT</time><a class="lozenge place" href="/search?state=MN">Minnesota</a><a class="lozenge place" href="/search?place=Eden+Prairie&state=MN">Eden Prairie</a></p>
+<h2><a href="https://eplocalnews.org/2026/08/25/eden-prairie-cyclist-calls-his-survival-after-cardiac-arrest-a-miracle/">Eden Prairie cyclist calls his survival after cardiac arrest ‘a miracle’</a></h2>
+<p class="byline">By Stuart Sudak, Editor-in-Chief</p>
+<a class="shot" href="https://eplocalnews.org/2026/08/25/eden-prairie-cyclist-calls-his-survival-after-cardiac-arrest-a-miracle/" tabindex="-1" aria-hidden="true"><img src="../img/e159bf597d278ccb35ed5459331f2f33d4be2b92.webp" alt="" width="480" height="343" loading="lazy" decoding="async"></a>
+<p>At his Eden Prairie home, the 45-year-old chiropractor described the blocked arteries doctors found, the people who helped save him and the faith that eased his fear of surgery. <a class="lozenge more" href="https://eplocalnews.org/2026/08/25/eden-prairie-cyclist-calls-his-survival-after-cardiac-arrest-a-miracle/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:48:04+00:00" data-pub="12:48 AM EDT">Tuesday, August 25, 2026 at 12:48 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>KY / Northern Kentucky / <a href="https://www.nkytribune.com/">Northern Kentucky Tribune</a></small></p>
-<h2><a href="https://nkytribune.com/2026/08/city-of-erlanger-to-host-opening-of-the-flow-bike-park-thursday-at-eons-adventure-park/">City of Erlanger to host opening of The Flow Bike Park Thursday at Eons Adventure Park</a></h2>
-<p class="byline"><small>By Ben Clabes</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.nkytribune.com/">Support</a></span></p>
-<p>The City of Erlanger has announced the ribbon cutting ceremony for The Flow Bike Park. Located within the Eons Adventure Park, The Flow Bike Park features a 1,000-foot jump line, a pump track, a beginner skills course and bicycle playground with eight elements, including hula hoops and tunnels. The park is fully progressive: a three-year-old</p>
-<p class="more"><a href="https://nkytribune.com/2026/08/city-of-erlanger-to-host-opening-of-the-flow-bike-park-thursday-at-eons-adventure-park/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://thecurrentla.com/support-us/">Donate</a></aside>
+<p class="source"><a href="https://thecurrentla.com/"><strong>The Current (LA)</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:01:00+00:00" data-pub="9:01 AM CDT">Tue, Aug 25 @ 9AM CDT</time><a class="lozenge place" href="/search?state=LA">Louisiana</a><a class="lozenge place" href="/search?place=Lafayette&state=LA">Lafayette</a></p>
+<h2><a href="https://thecurrentla.com/2026/live-is-spacex-coming-to-pecan-island/">LIVE: SpaceX to Pecan Island announcement imminent</a></h2>
+<p class="byline">By The Current Staff</p>
+<p>Live updates on Gov. Jeff Landry&#x27;s announcement on a potential SpaceX development in Vermillion Parish. <a class="lozenge more" href="https://thecurrentla.com/2026/live-is-spacex-coming-to-pecan-island/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:45:30+00:00" data-pub="12:45 AM EDT">Tuesday, August 25, 2026 at 12:45 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>KY / Northern Kentucky / <a href="https://www.nkytribune.com/">Northern Kentucky Tribune</a></small></p>
-<h2><a href="https://nkytribune.com/2026/08/learning-grove-names-patricia-nagelkirk-vp-of-youth-workforce-executive-director-of-navigo/">Learning Grove names Patricia Nagelkirk VP of youth workforce, executive director of Navigo</a></h2>
-<p class="byline"><small>By Jacob Clabes</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.nkytribune.com/">Support</a></span></p>
-<p>Learning Grove has named Patricia “Patty” Nagelkirk, regional leader in youth development, education strategy and cross-sector collaboration as vice president of youth workforce and executive director of NaviGo. Nagelkirk brings extensive experience working across education, nonprofits, philanthropy, business and civic sectors to build stronger pathways to opportunity for young people. “Patty has </p>
-<p class="more"><a href="https://nkytribune.com/2026/08/learning-grove-names-patricia-nagelkirk-vp-of-youth-workforce-executive-director-of-navigo/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://peekskillherald.com/donation-form/">Donate</a></aside>
+<p class="source"><a href="https://peekskillherald.com/"><strong>Peekskill Herald</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:00:21+00:00" data-pub="10:00 AM EDT">Tue, Aug 25 @ 10AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Peekskill&state=NY">Peekskill</a></p>
+<h2><a href="https://peekskillherald.com/41654/news/birdsall-house-owner-ordered-to-pay-52k-in-past-due-rent/">Birdsall House Owner Ordered to Pay $52K in Past Due  Rent</a></h2>
+<p class="byline">By By Eric Harvey, eric@peekskillherald.com</p>
+<a class="shot" href="https://peekskillherald.com/41654/news/birdsall-house-owner-ordered-to-pay-52k-in-past-due-rent/" tabindex="-1" aria-hidden="true"><img src="../img/cedf4d05226cd767f7895e99e42354da1db72466.webp" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Peekskill judge says landlord 970 Main Street LLC has met burden of proof in case against Blind Tiger Peekskill LLC <a class="lozenge more" href="https://peekskillherald.com/41654/news/birdsall-house-owner-ordered-to-pay-52k-in-past-due-rent/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:42:44+00:00" data-pub="12:42 AM EDT">Tuesday, August 25, 2026 at 12:42 AM EDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>KY / Northern Kentucky / <a href="https://www.nkytribune.com/">Northern Kentucky Tribune</a></small></p>
-<h2><a href="https://nkytribune.com/2026/08/kentucky-by-heart-recalling-fond-memories-and-making-new-ones-at-the-2026-kentucky-state-fair/">Kentucky by Heart: Recalling fond memories and making new ones at the 2026 Kentucky State Fair</a></h2>
-<p class="byline"><small>By Jacob Clabes</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.nkytribune.com/">Support</a></span></p>
-<p>By Steve Flairty NKyTribune columnist The 2026 Kentucky State Fair, designed to bring our state’s citizens together to celebrate our common resources — material and human — is now in session and it’s stoked a few enriching memories for me. I hope it does for others, too. A few years back, I wrote here about</p>
-<p class="more"><a href="https://nkytribune.com/2026/08/kentucky-by-heart-recalling-fond-memories-and-making-new-ones-at-the-2026-kentucky-state-fair/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://localnewsmatters.org/support-our-publication/">Donate</a></aside>
+<p class="source"><a href="https://localnewsmatters.org/"><strong>Local News Matters</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:00:00+00:00" data-pub="7:00 AM PDT">Tue, Aug 25 @ 7AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Berkeley&state=CA">Berkeley</a></p>
+<h2><a href="https://localnewsmatters.org/2026/08/25/san-francisco-navigation-center-employees-charged/">SF navigation center employees accused of harboring suspect charged with felonies</a></h2>
+<p class="byline">By Thomas Hughes, Bay City News</p>
+<a class="shot" href="https://localnewsmatters.org/2026/08/25/san-francisco-navigation-center-employees-charged/" tabindex="-1" aria-hidden="true"><img src="../img/7f45e12645e086697fa9b53ba7990b2133cc3d3e.webp" alt="" width="480" height="253" loading="lazy" decoding="async"></a>
+<p>Two employees at a San Francisco homeless navigation center were charged Monday with two felonies for allegedly interfering with an investigation into the May shooting of a police officer. Oakland resident Erika Porter, 45, and San Francisco resident Oliver Barcenas, 36, were accused of harboring Norris Reed III at the Bayshore Navigation Center after he <a class="lozenge more" href="https://localnewsmatters.org/2026/08/25/san-francisco-navigation-center-employees-charged/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:40:26+00:00" data-pub="12:40 AM EDT">Tuesday, August 25, 2026 at 12:40 AM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>KY / Northern Kentucky / <a href="https://www.nkytribune.com/">Northern Kentucky Tribune</a></small></p>
-<h2><a href="https://nkytribune.com/2026/08/ky-court-of-appeals-upholds-10-year-sentence-of-nky-man-convicted-for-possession-of-child-sexual-material/">KY Court of Appeals upholds 10-year sentence of NKY man convicted for possession of child sexual material</a></h2>
-<p class="byline"><small>By Ben Clabes</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.nkytribune.com/">Support</a></span></p>
-<p>The Kentucky Attorney General’s office has announced the Kentucky Court of Appeals upheld the conviction of a Kenton County man on 20 felony counts of possession of child sexual exploitation material. Rob Sanders, Commonwealth’s Attorney for Kenton County, prosecuted Kevin Master, 33, after federal law enforcement and the Kentucky State Police discovered a child sex</p>
-<p class="more"><a href="https://nkytribune.com/2026/08/ky-court-of-appeals-upholds-10-year-sentence-of-nky-man-convicted-for-possession-of-child-sexual-material/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.newhavenindependent.org/become-a-friend/">Donate</a></aside>
+<p class="source"><a href="https://www.newhavenindependent.org/"><strong>New Haven Independent</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T13:34:00+00:00" data-pub="9:34 AM EDT">Tue, Aug 25 @ 9AM EDT</time><a class="lozenge place" href="/search?state=CT">Connecticut</a><a class="lozenge place" href="/search?place=New+Haven&state=CT">New Haven</a></p>
+<h2><a href="https://www.newhavenindependent.org/2026/08/25/education-committee-agenda-aug-26/">Education Committee Agenda – Aug. 26</a></h2>
+<p class="byline">By Staff</p>
+<p>Legal notice. <a class="lozenge more" href="https://www.newhavenindependent.org/2026/08/25/education-committee-agenda-aug-26/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:38:07+00:00" data-pub="12:38 AM EDT">Tuesday, August 25, 2026 at 12:38 AM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>KY / Northern Kentucky / <a href="https://www.nkytribune.com/">Northern Kentucky Tribune</a></small></p>
-<h2><a href="https://nkytribune.com/2026/08/be-nky-growth-partnerships-kimberly-rossetti-promoted-to-chief-economic-development-officer/">BE NKY Growth Partnership’s Kimberly Rossetti promoted to chief economic development officer</a></h2>
-<p class="byline"><small>By Ben Clabes</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.nkytribune.com/">Support</a></span></p>
-<p>BE NKY Growth Partnership has announced the promotion Vice President of Economic Development Kimberly Rossetti to chief economic development officer. In this role, Rossetti will implement BE NKY’s strategies for advancing opportunity and prosperity for all Northern Kentuckians, develop economic development strategies, and play a key leadership role in BE NKY’s Build + Elevate 2032</p>
-<p class="more"><a href="https://nkytribune.com/2026/08/be-nky-growth-partnerships-kimberly-rossetti-promoted-to-chief-economic-development-officer/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://inewsource.org/planned-giving/">Donate</a></aside>
+<p class="source"><a href="https://inewsource.org/"><strong>Inewsource</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T13:30:00+00:00" data-pub="6:30 AM PDT">Tue, Aug 25 @ 6AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=San+Diego&state=CA">San Diego</a></p>
+<h2><a href="https://inewsource.org/2026/08/25/border-wall-construction-fisher-jacumba-wilderness/">A billion-dollar border wall could cut through a popular Southern California hiking area</a></h2>
+<p class="byline">By Sofía Mejías-Pascoe</p>
+<a class="shot" href="https://inewsource.org/2026/08/25/border-wall-construction-fisher-jacumba-wilderness/" tabindex="-1" aria-hidden="true"><img src="../img/6a6c5b87e747d8afd4379c86d2463997e70499d9.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Fisher Sand &amp; Gravel Co. won a $574 million contract for border wall construction in the Jacumba Wilderness in September. It&#x27;s now $1.2 billion. This content A billion-dollar border wall could cut through a popular Southern California hiking area appeared first on inewsource. <a class="lozenge more" href="https://inewsource.org/2026/08/25/border-wall-construction-fisher-jacumba-wilderness/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:36:16+00:00" data-pub="12:36 AM EDT">Tuesday, August 25, 2026 at 12:36 AM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>KY / Northern Kentucky / <a href="https://www.nkytribune.com/">Northern Kentucky Tribune</a></small></p>
-<h2><a href="https://nkytribune.com/2026/08/third-annual-menopause-masterclass-aims-to-help-women-better-understand-hormonal-changes/">Third annual Menopause Masterclass aims to help women better understand hormonal changes</a></h2>
-<p class="byline"><small>By Jacob Clabes</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.nkytribune.com/">Support</a></span></p>
-<p>Staff report Women can begin experiencing perimenopausal symptoms as early as their mid-30s, with hormonal changes affecting heart health, bone health, weight, mental health and overall well-being. The 3rd Annual Menopause Masterclass will bring together 20 health experts Saturday, Aug. 29, from 8 a.m.-noon at The Madison Event Center in Covington. Open to women of</p>
-<p class="more"><a href="https://nkytribune.com/2026/08/third-annual-menopause-masterclass-aims-to-help-women-better-understand-hormonal-changes/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.newhavenindependent.org/become-a-friend/">Donate</a></aside>
+<p class="source"><a href="https://www.newhavenindependent.org/"><strong>New Haven Independent</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T13:17:22+00:00" data-pub="9:17 AM EDT">Tue, Aug 25 @ 9AM EDT</time><a class="lozenge place" href="/search?state=CT">Connecticut</a><a class="lozenge place" href="/search?place=New+Haven&state=CT">New Haven</a></p>
+<h2><a href="https://www.newhavenindependent.org/2026/08/25/school-board-taps-in-house-facilities-director/">School Board Taps In-House Facilities Director</a></h2>
+<p class="byline">By Maya McFadden</p>
+<a class="shot" href="https://www.newhavenindependent.org/2026/08/25/school-board-taps-in-house-facilities-director/" tabindex="-1" aria-hidden="true"><img src="../img/7342dbdc6cbdfd3f19fe384ffcc213df8033605a.webp" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>New Haven’s school board took another step toward strengthening its in-house facilities management team in order to pay less to private contractors. The Board of Education did so by unanimously approving the promotional appointment of longterm Conte West Hills School building manager Dennis Tondalo to director of facilities at its Monday night meeting. <a class="lozenge more" href="https://www.newhavenindependent.org/2026/08/25/school-board-taps-in-house-facilities-director/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 </div>
 <p><a id="more" href="inn-member-3.html">More stories</a></p>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="../index.html">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -400,6 +448,47 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>

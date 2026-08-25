@@ -13,12 +13,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(../fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -27,22 +40,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -50,19 +69,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -75,7 +126,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -93,7 +144,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="../index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="../masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -106,7 +157,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="../subjects/news.html">News</a></li><li><a href="../subjects/politics.html">Politics</a></li><li><a href="../subjects/opinion.html">Opinion</a></li><li><a href="../subjects/health.html">Health</a></li><li><a href="../subjects/environment.html">Environment</a></li><li><a href="../subjects/education.html">Education</a></li><li><a href="../subjects/business.html">Business</a></li><li><a href="../subjects/housing.html">Housing</a></li><li><a href="../subjects/sports.html">Sports</a></li><li><a href="../subjects/food.html">Food</a></li><li><a href="../subjects/arts.html">Arts</a></li></ul></nav>
@@ -121,265 +172,251 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <main id="main">
 <div id="feed-items">
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T15:00:33+00:00" data-pub="10:00 AM CDT">Thursday, August 20, 2026 at 10:00 AM CDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>OK / Statewide / <a href="https://osagenews.org/">Osage News</a></small></p>
-<h2><a href="https://osagenews.org/osage-llc-expands-skyway-range-with-new-radar-system/">Osage LLC expands Skyway Range with new radar system</a></h2>
-<p class="byline"><small>By Collyn Combs</small><span class="aside"><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://osagenews.org/subscribe-to-updates/">Subscribe</a></span></p>
-<p>Expansions and upgrades are happening at Skyway Range. Osage LLC has approved the purchase of a radar system to allow for safe drone operations within the Skyway Range perimeter. Skyway</p>
-<p class="more"><a href="https://osagenews.org/osage-llc-expands-skyway-range-with-new-radar-system/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.redlakenationnews.com/about">Support</a></aside>
+<p class="source"><a href="https://www.redlakenationnews.com/about"><strong>Red Lake Nation News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T23:02:00+00:00" data-pub="6:02 PM CDT">Sun, Aug 23 @ 6PM CDT</time><a class="lozenge place" href="/search?state=MN">Minnesota</a><a class="lozenge place" href="/search?place=Red+Lake+Nation&state=MN">Red Lake Nation</a></p>
+<h2><a href="https://www.redlakenationnews.com/story/2026/08/24/news/21st-annual-niimiidiwin-holds-special-significance-for-leech-lake-family/142364.html">21st Annual Niimi&#x27;idiwin holds special significance for Leech Lake family</a></h2>
+<a class="shot" href="https://www.redlakenationnews.com/story/2026/08/24/news/21st-annual-niimiidiwin-holds-special-significance-for-leech-lake-family/142364.html" tabindex="-1" aria-hidden="true"><img src="../img/dcb74b064996deae2fa9982e38e40eaa6dac35af.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+<p>BEMIDJI - Thursday not only marked Courtney Krenz, Faith Fisher and her brother&#x27;s first time at the annual Niimi&#x27;idiwin, the former Sanford Healing Powwow. Hosted in a field west of Sanford Bemidji Medical Center, the family converged on the scene for an active afternoon of dancing and ceremony - punctuated by a deeply honorable occasion at the day&#x27;s end. Leech Lake members Krenz, <a class="lozenge more" href="https://www.redlakenationnews.com/story/2026/08/24/news/21st-annual-niimiidiwin-holds-special-significance-for-leech-lake-family/142364.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-19T20:35:46+00:00" data-pub="1:35 PM PDT">Wednesday, August 19, 2026 at 1:35 PM PDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>OR / Portland / <a href="https://www.underscore.news/">Underscore Native News</a></small></p>
-<h2><a href="https://www.underscore.news/justice/eight-native-candidates-in-washington-advance-to-general-election-in-november/">Eight Native Candidates in Washington Advance to General Election in November</a></h2>
-<p class="byline"><small>By Nika Bartoo-Smith, Underscore Native News + ICT</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.underscore.news/support-underscore/">Donate</a></span></p>
-<a class="shot" href="https://www.underscore.news/justice/eight-native-candidates-in-washington-advance-to-general-election-in-november/" tabindex="-1" aria-hidden="true"><img src="../img/9f05b72a3b5fe8b76d272bc219be879c99eca895.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Out of a dozen Native candidates on the ballot for the primary election on Aug. 4 in Washington, eight candidates won and will advance to the November election.</p>
-<p class="more"><a href="https://www.underscore.news/justice/eight-native-candidates-in-washington-advance-to-general-election-in-november/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.redlakenationnews.com/about">Support</a></aside>
+<p class="source"><a href="https://www.redlakenationnews.com/about"><strong>Red Lake Nation News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T23:02:00+00:00" data-pub="6:02 PM CDT">Sun, Aug 23 @ 6PM CDT</time><a class="lozenge place" href="/search?state=MN">Minnesota</a><a class="lozenge place" href="/search?place=Red+Lake+Nation&state=MN">Red Lake Nation</a></p>
+<h2><a href="https://www.redlakenationnews.com/story/2026/08/24/politics/walzs-decisions-put-klobuchar-on-the-spot-in-governors-race/142361.html">Walz&#x27;s decisions put Klobuchar on the spot in governor&#x27;s race</a></h2>
+<a class="shot" href="https://www.redlakenationnews.com/story/2026/08/24/politics/walzs-decisions-put-klobuchar-on-the-spot-in-governors-race/142361.html" tabindex="-1" aria-hidden="true"><img src="../img/46fa1cca288093e047176e934bca0b759c03629c.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+<p>U.S. Sen. Amy Klobuchar keeps having to answer a recurring question: Do you agree with Gov. Tim Walz? Walz&#x27;s handling of Minnesota&#x27;s fraud crisis - along with his recent decision to block mining near the Boundary Waters and his vote to pardon a sex offender facing deportation - has repeatedly forced Klobuchar to explain what she would do differently as she campaigns to succeed him. It <a class="lozenge more" href="https://www.redlakenationnews.com/story/2026/08/24/politics/walzs-decisions-put-klobuchar-on-the-spot-in-governors-race/142361.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-19T20:17:08+00:00" data-pub="3:17 PM CDT">Wednesday, August 19, 2026 at 3:17 PM CDT</time></small></p>
-<p><small>OK / Statewide / <a href="https://osagenews.org/">Osage News</a></small></p>
-<h2><a href="https://osagenews.org/struggling-with-addiction-kimberly-brave-got-sober-at-a-california-treatment-center-now-shes-fighting-allegations-tied-to-her-work-there/">Struggling with addiction, Kimberly Brave got sober at a California treatment center. Now she’s fighting allegations tied to her work there</a></h2>
-<p class="byline"><small>By Allison Herrera</small><span class="aside"><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://osagenews.org/subscribe-to-updates/">Subscribe</a></span></p>
-<p>Editor’s Note: Osage News Editor Shannon Shaw Duty did not participate in the editing or review of this story because Kimberly Brave is a relative. To avoid a conflict of</p>
-<p class="more"><a href="https://osagenews.org/struggling-with-addiction-kimberly-brave-got-sober-at-a-california-treatment-center-now-shes-fighting-allegations-tied-to-her-work-there/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.redlakenationnews.com/about">Support</a></aside>
+<p class="source"><a href="https://www.redlakenationnews.com/about"><strong>Red Lake Nation News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T23:02:00+00:00" data-pub="6:02 PM CDT">Sun, Aug 23 @ 6PM CDT</time><a class="lozenge place" href="/search?state=MN">Minnesota</a><a class="lozenge place" href="/search?place=Red+Lake+Nation&state=MN">Red Lake Nation</a></p>
+<h2><a href="https://www.redlakenationnews.com/story/2026/08/24/news/thousands-in-indiana-still-waiting-for-power-more-than-a-week-after-storm/142359.html">Thousands in Indiana still waiting for power more than a week after storm</a></h2>
+<a class="shot" href="https://www.redlakenationnews.com/story/2026/08/24/news/thousands-in-indiana-still-waiting-for-power-more-than-a-week-after-storm/142359.html" tabindex="-1" aria-hidden="true"><img src="../img/92f8c04ba38133158079f4715893b7a46c08d9f8.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+<p>he young married couple made it through the storm last week, swerving to dodge power lines and trees falling into the road as they drove to shelter. But 10 days later, they and thousands of their neighbors in Gary, Indiana, were still waiting for the power to come back on. It&#x27;s &quot;inhumane,&quot; said 26-year-old Adriana Harris. Now Harris and her husband, Jason Randolph, have fallen into <a class="lozenge more" href="https://www.redlakenationnews.com/story/2026/08/24/news/thousands-in-indiana-still-waiting-for-power-more-than-a-week-after-storm/142359.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-18T23:09:14+00:00" data-pub="6:09 PM CDT">Tuesday, August 18, 2026 at 6:09 PM CDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>OK / Statewide / <a href="https://osagenews.org/">Osage News</a></small></p>
-<h2><a href="https://osagenews.org/dismissed-batson-case-raises-questions-over-peyote-prosecution/">Dismissed Batson case raises questions over peyote prosecution</a></h2>
-<p class="byline"><small>By Shannon Shaw Duty</small><span class="aside"><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://osagenews.org/subscribe-to-updates/">Subscribe</a></span></p>
-<p>The criminal charges against former Osage Nation Treasurer Clark Batson have been dismissed, but members of the Congressional Governmental Operations Committee spent more than an hour on Aug. 10 questioning</p>
-<p class="more"><a href="https://osagenews.org/dismissed-batson-case-raises-questions-over-peyote-prosecution/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.redlakenationnews.com/about">Support</a></aside>
+<p class="source"><a href="https://www.redlakenationnews.com/about"><strong>Red Lake Nation News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T23:02:00+00:00" data-pub="6:02 PM CDT">Sun, Aug 23 @ 6PM CDT</time><a class="lozenge place" href="/search?state=MN">Minnesota</a><a class="lozenge place" href="/search?place=Red+Lake+Nation&state=MN">Red Lake Nation</a></p>
+<h2><a href="https://www.redlakenationnews.com/story/2026/08/24/politics/canada-sets-retaliatory-tariffs-in-response-to-50-percent-us-levies-as-trade-talks-fail/142358.html">Canada sets retaliatory tariffs in response to 50% U.S. levies as trade talks fail</a></h2>
+<a class="shot" href="https://www.redlakenationnews.com/story/2026/08/24/politics/canada-sets-retaliatory-tariffs-in-response-to-50-percent-us-levies-as-trade-talks-fail/142358.html" tabindex="-1" aria-hidden="true"><img src="../img/baf976a72927625ce113861815235fcb0f1e54ec.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+<p>U.S. tariffs on some Canadian goods took effect early Saturday, after a potential deal between the United States and Canada fell apart, a move that immediately drew a pledge of retaliation from America&#x27;s northern neighbor. Beer, dairy and a long list of other Canadian imports became subject to new 50 percent tariffs after talks on Friday collapsed. Canadian Prime Minister Mark Carney said <a class="lozenge more" href="https://www.redlakenationnews.com/story/2026/08/24/politics/canada-sets-retaliatory-tariffs-in-response-to-50-percent-us-levies-as-trade-talks-fail/142358.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-18T16:51:20+00:00" data-pub="9:51 AM MST">Tuesday, August 18, 2026 at 9:51 AM MST</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>AZ / Statewide / <a href="https://cronkitenews.azpbs.org/">Cronkite News</a></small></p>
-<h2><a href="https://cronkitenews.azpbs.org/2026/08/18/homelessness-voices/">What the streets remember: How they ended up here</a></h2>
-<p class="byline"><small>By By Dawson Iasillo</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://cronkitenews.azpbs.org/">Support</a></span></p>
-<a class="shot" href="https://cronkitenews.azpbs.org/2026/08/18/homelessness-voices/" tabindex="-1" aria-hidden="true"><img src="../img/c00eabd27d9bb62a050dc3c1f410821c8f8e94e1.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Homelessness took their homes, not their voices. Eight people share their stories of survival.</p>
-<p class="more"><a href="https://cronkitenews.azpbs.org/2026/08/18/homelessness-voices/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.redlakenationnews.com/about">Support</a></aside>
+<p class="source"><a href="https://www.redlakenationnews.com/about"><strong>Red Lake Nation News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T23:02:00+00:00" data-pub="6:02 PM CDT">Sun, Aug 23 @ 6PM CDT</time><a class="lozenge place" href="/search?state=MN">Minnesota</a><a class="lozenge place" href="/search?place=Red+Lake+Nation&state=MN">Red Lake Nation</a></p>
+<h2><a href="https://www.redlakenationnews.com/story/2026/08/24/news/trumps-new-tariffs-on-canada-will-hit-everything-from-whisky-to-hockey-sticks/142357.html">Trump&#x27;s new tariffs on Canada will hit everything from whisky to hockey sticks</a></h2>
+<a class="shot" href="https://www.redlakenationnews.com/story/2026/08/24/news/trumps-new-tariffs-on-canada-will-hit-everything-from-whisky-to-hockey-sticks/142357.html" tabindex="-1" aria-hidden="true"><img src="../img/0c1f2e540142352d6df1a924a3bda2853f1336cd.jpg" alt="" width="301" height="200" loading="lazy" decoding="async"></a>
+<p>Crown Royal whisky, goose down jackets, ice-hockey equipment and a long list of other Canadian goods could become much more expensive for American consumers. An array of imports are subject to new 50 percent tariffs after U.S.-Canada trade talks collapsed on Saturday. Negotiators had worked for weeks to reach a deal to avoid the tariffs, which President Donald Trump announced last month. The <a class="lozenge more" href="https://www.redlakenationnews.com/story/2026/08/24/news/trumps-new-tariffs-on-canada-will-hit-everything-from-whisky-to-hockey-sticks/142357.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-18T14:46:42+00:00" data-pub="9:46 AM CDT">Tuesday, August 18, 2026 at 9:46 AM CDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>OK / Statewide / <a href="https://osagenews.org/">Osage News</a></small></p>
-<h2><a href="https://osagenews.org/osage-broadband-expands-fiber-network-across-reservation/">Osage Broadband expands fiber network across reservation</a></h2>
-<p class="byline"><small>By Collyn Combs</small><span class="aside"><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://osagenews.org/subscribe-to-updates/">Subscribe</a></span></p>
-<p>Fiber optic internet by Osage Broadband, powered by AtLink, continues to expand across the Osage Nation Reservation. Wahzhazhe Connect has completed installing fiber along the entire Highway 60 corridor, Highway</p>
-<p class="more"><a href="https://osagenews.org/osage-broadband-expands-fiber-network-across-reservation/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.redlakenationnews.com/about">Support</a></aside>
+<p class="source"><a href="https://www.redlakenationnews.com/about"><strong>Red Lake Nation News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T23:02:00+00:00" data-pub="6:02 PM CDT">Sun, Aug 23 @ 6PM CDT</time><a class="lozenge place" href="/search?state=MN">Minnesota</a><a class="lozenge place" href="/search?place=Red+Lake+Nation&state=MN">Red Lake Nation</a></p>
+<h2><a href="https://www.redlakenationnews.com/story/2026/08/24/politics/secret-white-house-bunker-undercuts-trumps-ballroom-lawsuit-ex-officials-say/142356.html">Secret White House bunker undercuts Trump&#x27;s ballroom lawsuit, ex-officials say</a></h2>
+<a class="shot" href="https://www.redlakenationnews.com/story/2026/08/24/politics/secret-white-house-bunker-undercuts-trumps-ballroom-lawsuit-ex-officials-say/142356.html" tabindex="-1" aria-hidden="true"><img src="../img/567b05d4a1e0409bf0afc4a44deefd08dd47b95e.jpg" alt="" width="327" height="200" loading="lazy" decoding="async"></a>
+<p>President Donald Trump has claimed that the White House needs a massive new ballroom because it would provide him and future presidents with a secure, hardened facility. But former officials say the argument fails to acknowledge that the presidential complex already has one. More than a decade ago, federal officials built a highly protected bunker, embedded deep underground, that can shelter the <a class="lozenge more" href="https://www.redlakenationnews.com/story/2026/08/24/politics/secret-white-house-bunker-undercuts-trumps-ballroom-lawsuit-ex-officials-say/142356.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-18T13:00:00+00:00" data-pub="6:00 AM PDT">Tuesday, August 18, 2026 at 6:00 AM PDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>OR / Portland / <a href="https://www.underscore.news/">Underscore Native News</a></small></p>
-<h2><a href="https://www.underscore.news/justice/mmir/federal-cuts-since-early-2025-have-endangered-native-families-children-and-victims/">Federal Cuts Since Early 2025 Have Endangered Native Families, Children And Victims</a></h2>
-<p class="byline"><small>By Brian Bull, Underscore Native News</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.underscore.news/support-underscore/">Donate</a></span></p>
-<a class="shot" href="https://www.underscore.news/justice/mmir/federal-cuts-since-early-2025-have-endangered-native-families-children-and-victims/" tabindex="-1" aria-hidden="true"><img src="../img/ea753c16a5230ad4b20608b1d1c5c39df1bd9e51.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>The study from the Seattle-based Urban Indian Health Institute shows impacts of the White House scrapping funds for domestic violence, sexual assault and MMIP services.</p>
-<p class="more"><a href="https://www.underscore.news/justice/mmir/federal-cuts-since-early-2025-have-endangered-native-families-children-and-victims/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.redlakenationnews.com/about">Support</a></aside>
+<p class="source"><a href="https://www.redlakenationnews.com/about"><strong>Red Lake Nation News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T23:02:00+00:00" data-pub="6:02 PM CDT">Sun, Aug 23 @ 6PM CDT</time><a class="lozenge place" href="/search?state=MN">Minnesota</a><a class="lozenge place" href="/search?place=Red+Lake+Nation&state=MN">Red Lake Nation</a></p>
+<h2><a href="https://www.redlakenationnews.com/story/2026/08/24/business/tiktok-agrees-to-400-million-us-childrens-privacy-settlement/142355.html">TikTok agrees to $400 million US children&#x27;s privacy settlement</a></h2>
+<a class="shot" href="https://www.redlakenationnews.com/story/2026/08/24/business/tiktok-agrees-to-400-million-us-childrens-privacy-settlement/142355.html" tabindex="-1" aria-hidden="true"><img src="../img/701b994e8a29a4a0744f92e666b22fe99bb6cb4b.jpg" alt="" width="299" height="200" loading="lazy" decoding="async"></a>
+<p>WASHINGTON, Aug 21 (Reuters) - TikTok and its Chinese parent company ByteDance on Friday agreed ​to a $400-million settlement to resolve the U.S. Justice Department&#x27;s allegations the short-video app violated ‌children&#x27;s online privacy. The Justice Department sued TikTok and ByteDance in 2024 for allegedly failing to protect children&#x27;s privacy, and illegally collecting their informat <a class="lozenge more" href="https://www.redlakenationnews.com/story/2026/08/24/business/tiktok-agrees-to-400-million-us-childrens-privacy-settlement/142355.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T19:38:38+00:00" data-pub="2:38 PM CDT">Monday, August 17, 2026 at 2:38 PM CDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>OK / Statewide / <a href="https://osagenews.org/">Osage News</a></small></p>
-<h2><a href="https://osagenews.org/tillman-lifts-state-of-emergency-10-days-after-declaring-it/">Tillman lifts State of Emergency 10 days after declaring it</a></h2>
-<p class="byline"><small>By Shannon Shaw Duty</small><span class="aside"><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://osagenews.org/subscribe-to-updates/">Subscribe</a></span></p>
-<p>Principal Chief Joe Tillman lifted the Osage Nation’s State of Emergency on Aug. 14, 10 days after declaring the emergency over concerns about projected revenue and the Executive Branch’s fiscal</p>
-<p class="more"><a href="https://osagenews.org/tillman-lifts-state-of-emergency-10-days-after-declaring-it/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.redlakenationnews.com/about">Support</a></aside>
+<p class="source"><a href="https://www.redlakenationnews.com/about"><strong>Red Lake Nation News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T23:02:00+00:00" data-pub="6:02 PM CDT">Sun, Aug 23 @ 6PM CDT</time><a class="lozenge place" href="/search?state=MN">Minnesota</a><a class="lozenge place" href="/search?place=Red+Lake+Nation&state=MN">Red Lake Nation</a></p>
+<h2><a href="https://www.redlakenationnews.com/story/2026/08/24/news/pentagon-fires-us-military-newspaper-leadership/142354.html">Pentagon fires US military newspaper leadership</a></h2>
+<p>Summary Termination notices go to editor Erik Slavin, publisher Max Lederer and reporter Lara Korte Slavin says Pentagon fired him over CBS remarks on hypothetical censorship Paper gets Defense Department funding but has historically been editorially independent WASHINGTON, Aug 21 (Reuters) - The editor-in-chief of the Stars and Stripes U.S. military newspaper said on Friday that he ‌was being fir <a class="lozenge more" href="https://www.redlakenationnews.com/story/2026/08/24/news/pentagon-fires-us-military-newspaper-leadership/142354.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T14:28:09+00:00" data-pub="9:28 AM CDT">Monday, August 17, 2026 at 9:28 AM CDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>OK / Statewide / <a href="https://osagenews.org/">Osage News</a></small></p>
-<h2><a href="https://osagenews.org/fake-news-and-the-dismantling-of-trust/">‘Fake News’ and the dismantling of trust</a></h2>
-<p class="byline"><small>By Community Submission</small><span class="aside"><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://osagenews.org/subscribe-to-updates/">Subscribe</a></span></p>
-<p>Trust in government does not require citizens to agree with every decision. It requires something more basic: that citizens can reasonably rely upon the words of those they elect. Principal</p>
-<p class="more"><a href="https://osagenews.org/fake-news-and-the-dismantling-of-trust/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.redlakenationnews.com/about">Support</a></aside>
+<p class="source"><a href="https://www.redlakenationnews.com/about"><strong>Red Lake Nation News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T23:02:00+00:00" data-pub="6:02 PM CDT">Sun, Aug 23 @ 6PM CDT</time><a class="lozenge place" href="/search?state=MN">Minnesota</a><a class="lozenge place" href="/search?place=Red+Lake+Nation&state=MN">Red Lake Nation</a></p>
+<h2><a href="https://www.redlakenationnews.com/story/2026/08/24/news/us-plans-725-million-payment-towards-its-large-un-debt/142353.html">US plans $725 million payment towards its large UN debt</a></h2>
+<a class="shot" href="https://www.redlakenationnews.com/story/2026/08/24/news/us-plans-725-million-payment-towards-its-large-un-debt/142353.html" tabindex="-1" aria-hidden="true"><img src="../img/9e17c53711124ac58f9b4fbc2fa87ed4f52cb062.jpg" alt="" width="299" height="200" loading="lazy" decoding="async"></a>
+<p>Summary Less than 20% of what the UN says it is owed by Washington Payment could stave off immediate cuts, expert says Countries in arrears to UN can lose voting rights US is biggest contributor to UN, ahead of China WASHINGTON/GENEVA, Aug 21 (Reuters) - The Trump administration has informed Congress of its intention to pay $725 ​million to the United Nations, a congressional notification seen by <a class="lozenge more" href="https://www.redlakenationnews.com/story/2026/08/24/news/us-plans-725-million-payment-towards-its-large-un-debt/142353.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T12:17:00+00:00" data-pub="6:17 AM MDT">Monday, August 17, 2026 at 6:17 AM MDT</time></small></p>
-<p><small>MT / Crow Reservation / <a href="https://www.fourpointspress.org/">Four Points</a></small></p>
-<h2><a href="https://www.fourpointspress.org/notice-of-adoption-3/">Notice of Adoption</a></h2>
-<p class="byline"><small>By Luella Brien</small><span class="aside"><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.fourpointspress.org/donate/">Donate</a></span></p>
-<p>IN THE CROW TRIBAL JUNEVILE COURT IN AND FOR THE CROW INDIAN RESERVATION P.O. BOX 489 CROW AGENCY, MONTANA 59022 (406) 638-7400 CASE NO. CV-26-C038 JUNEVILE COURT — NOTICE OF PETITION FOR ADOPTION TO: PUBLIC You are hereby notified</p>
-<p class="more"><a href="https://www.fourpointspress.org/notice-of-adoption-3/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.redlakenationnews.com/about">Support</a></aside>
+<p class="source"><a href="https://www.redlakenationnews.com/about"><strong>Red Lake Nation News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T23:02:00+00:00" data-pub="6:02 PM CDT">Sun, Aug 23 @ 6PM CDT</time><a class="lozenge place" href="/search?state=MN">Minnesota</a><a class="lozenge place" href="/search?place=Red+Lake+Nation&state=MN">Red Lake Nation</a></p>
+<h2><a href="https://www.redlakenationnews.com/story/2026/08/24/news/faucis-lawyers-set-up-legal-defense-fund-as-us-probes-multiply/142352.html">Fauci&#x27;s lawyers set up legal defense fund as US probes multiply</a></h2>
+<a class="shot" href="https://www.redlakenationnews.com/story/2026/08/24/news/faucis-lawyers-set-up-legal-defense-fund-as-us-probes-multiply/142352.html" tabindex="-1" aria-hidden="true"><img src="../img/b2808094e0a37e4d4354b25730d4bad7eef9eeab.jpg" alt="" width="299" height="200" loading="lazy" decoding="async"></a>
+<p>Summary Fund aims to cover defense against federal and state investigations, Fauci&#x27;s lawyers say Fauci receives no payments from fund, which is managed by an independent trustee and adviser, lawyers say Rand Paul seeks Justice Department prosecution, while three states have launched their own probes WASHINGTON, Aug 21 (Reuters) - Lawyers for Anthony Fauci have launched a legal defense fund <a class="lozenge more" href="https://www.redlakenationnews.com/story/2026/08/24/news/faucis-lawyers-set-up-legal-defense-fund-as-us-probes-multiply/142352.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-16T23:03:08+00:00" data-pub="6:03 PM CDT">Sunday, August 16, 2026 at 6:03 PM CDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>OK / Statewide / <a href="https://osagenews.org/">Osage News</a></small></p>
-<h2><a href="https://osagenews.org/wahzhazhe-elections-board-officially-closes-2026-election-cycle/">Wahzhazhe Elections Board officially closes 2026 election cycle</a></h2>
-<p class="byline"><small>By Benny Polacca</small><span class="aside"><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://osagenews.org/subscribe-to-updates/">Subscribe</a></span></p>
-<p>The Wazhazhe Elections Board and staff closed on remaining 2026 election matters on July 9. The next Osage Nation General Election will take place in June 2028. The board finished</p>
-<p class="more"><a href="https://osagenews.org/wahzhazhe-elections-board-officially-closes-2026-election-cycle/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.redlakenationnews.com/about">Support</a></aside>
+<p class="source"><a href="https://www.redlakenationnews.com/about"><strong>Red Lake Nation News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T23:02:00+00:00" data-pub="6:02 PM CDT">Sun, Aug 23 @ 6PM CDT</time><a class="lozenge place" href="/search?state=MN">Minnesota</a><a class="lozenge place" href="/search?place=Red+Lake+Nation&state=MN">Red Lake Nation</a></p>
+<h2><a href="https://www.redlakenationnews.com/story/2026/08/24/news/us-judge-strikes-down-policy-suspending-immigrant-visa-processing-for-75-nations/142351.html">US judge strikes down policy suspending immigrant visa processing for 75 nations</a></h2>
+<a class="shot" href="https://www.redlakenationnews.com/story/2026/08/24/news/us-judge-strikes-down-policy-suspending-immigrant-visa-processing-for-75-nations/142351.html" tabindex="-1" aria-hidden="true"><img src="../img/b3b9aadcb482176f95ed0acc3838a9ee656e9ccb.jpg" alt="" width="299" height="200" loading="lazy" decoding="async"></a>
+<p>WASHINGTON, Aug 21 (Reuters) - A U.S. judge on Friday struck down a Trump administration policy suspending the issuance of immigrant visas to ​applicants from 75 countries, saying that the policy exceeded Secretary of ‌State Marco Rubio&#x27;s statutory authority. U.S. District Judge Jeannette Vargas in Manhattan said the policy that the State Department announced in January was &quot;patently unl <a class="lozenge more" href="https://www.redlakenationnews.com/story/2026/08/24/news/us-judge-strikes-down-policy-suspending-immigrant-visa-processing-for-75-nations/142351.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-14T22:33:05+00:00" data-pub="5:33 PM CDT">Friday, August 14, 2026 at 5:33 PM CDT</time></small></p>
-<p><small>OK / Muscogee Nation Reservation / <a href="https://www.crosswindsnews.net/">Crosswinds News</a></small></p>
-<h2><a href="https://www.crosswindsnews.net/tabling-at-an-upcoming-event-exhibition-may-give-tribes-departments-new-ideas-for-promo-products/">Tabling at an upcoming event? Exhibition may give tribes, departments new ideas for promo products</a></h2>
-<p class="byline"><small>By Rachael Schuit</small><span class="aside"><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.crosswindsnews.net/">Support</a></span></p>
-<a class="shot" href="https://www.crosswindsnews.net/tabling-at-an-upcoming-event-exhibition-may-give-tribes-departments-new-ideas-for-promo-products/" tabindex="-1" aria-hidden="true"><img src="../img/fc6670ba4c86665a18a045266b1a97018a919220.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>(WYANDOTTE, Okla.) If your tribe or tribal program has ever tabled at a conference, pow wow or event, you’ve probably had to make decisions about what types of promotional merchandise to hand out. Pens, business cards, water bottles - nearly anything can be customized with your tribe or tribal</p>
-<p class="more"><a href="https://www.crosswindsnews.net/tabling-at-an-upcoming-event-exhibition-may-give-tribes-departments-new-ideas-for-promo-products/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.redlakenationnews.com/about">Support</a></aside>
+<p class="source"><a href="https://www.redlakenationnews.com/about"><strong>Red Lake Nation News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T23:02:00+00:00" data-pub="6:02 PM CDT">Sun, Aug 23 @ 6PM CDT</time><a class="lozenge place" href="/search?state=MN">Minnesota</a><a class="lozenge place" href="/search?place=Red+Lake+Nation&state=MN">Red Lake Nation</a></p>
+<h2><a href="https://www.redlakenationnews.com/story/2026/08/24/news/tens-of-thousands-ordered-to-evacuate-in-nevada-as-fire-threatens-reno/142350.html">Tens of thousands ordered to evacuate in Nevada as fire threatens Reno</a></h2>
+<a class="shot" href="https://www.redlakenationnews.com/story/2026/08/24/news/tens-of-thousands-ordered-to-evacuate-in-nevada-as-fire-threatens-reno/142350.html" tabindex="-1" aria-hidden="true"><img src="../img/2002622a93a3415bd5e77e726524583badd44e61.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+<p>NEW YORK, Aug 23 (Reuters) - Tens of thousands of people have been evacuated this weekend from the area of Reno, Nevada, ​and many others were under orders to leave on Sunday as a ‌wildfire reached the outskirts of the state&#x27;s third-most-populous city. About 42,000 residents have been displaced or are in active evacuations with an additional 45,000 in &quot;be prepared to evacuate&quot; statu <a class="lozenge more" href="https://www.redlakenationnews.com/story/2026/08/24/news/tens-of-thousands-ordered-to-evacuate-in-nevada-as-fire-threatens-reno/142350.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-14T13:00:00+00:00" data-pub="6:00 AM PDT">Friday, August 14, 2026 at 6:00 AM PDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>OR / Portland / <a href="https://www.underscore.news/">Underscore Native News</a></small></p>
-<h2><a href="https://www.underscore.news/justice/federal-policy/proposed-changes-to-the-historic-preservation-act-could-make-tribal-consultation-optional/">Proposed Changes to the Historic Preservation Act Could Make Tribal Consultation Optional</a></h2>
-<p class="byline"><small>By Mackenzie Olivo, Underscore Native News</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.underscore.news/support-underscore/">Donate</a></span></p>
-<a class="shot" href="https://www.underscore.news/justice/federal-policy/proposed-changes-to-the-historic-preservation-act-could-make-tribal-consultation-optional/" tabindex="-1" aria-hidden="true"><img src="../img/e6ba9140a3d06b2a97bfb73901ae21d0a12c9b7d.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Section 106 aimed to give tribes a seat at the table in the development process and protect sacred sites.</p>
-<p class="more"><a href="https://www.underscore.news/justice/federal-policy/proposed-changes-to-the-historic-preservation-act-could-make-tribal-consultation-optional/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.redlakenationnews.com/about">Support</a></aside>
+<p class="source"><a href="https://www.redlakenationnews.com/about"><strong>Red Lake Nation News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T23:02:00+00:00" data-pub="6:02 PM CDT">Sun, Aug 23 @ 6PM CDT</time><a class="lozenge place" href="/search?state=MN">Minnesota</a><a class="lozenge place" href="/search?place=Red+Lake+Nation&state=MN">Red Lake Nation</a></p>
+<h2><a href="https://www.redlakenationnews.com/story/2026/08/24/news/canada-to-retaliate-for-us-tariffs-worsening-ties-after-talks-fail/142349.html">Canada to retaliate for US tariffs, worsening ties after talks fail</a></h2>
+<a class="shot" href="https://www.redlakenationnews.com/story/2026/08/24/news/canada-to-retaliate-for-us-tariffs-worsening-ties-after-talks-fail/142349.html" tabindex="-1" aria-hidden="true"><img src="../img/38e2e0419f032147c19f3f924fcb8c134bb6b76e.jpg" alt="" width="299" height="200" loading="lazy" decoding="async"></a>
+<p>Summary Retaliatory tariffs start September 8 and match US duties dollar for dollar Measures target steel, dairy, appliances, agricultural equipment, pulp and paper and electronics New US tariffs cover about $20 billion of Canadian exports, affecting sectors from wine to hockey equipment OTTAWA, Aug 22 (Reuters) - Canada will impose tariffs on some U.S. goods in retaliation for 50% ​levies ordered <a class="lozenge more" href="https://www.redlakenationnews.com/story/2026/08/24/news/canada-to-retaliate-for-us-tariffs-worsening-ties-after-talks-fail/142349.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-13T23:48:30+00:00" data-pub="4:48 PM PDT">Thursday, August 13, 2026 at 4:48 PM PDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>OR / Portland / <a href="https://www.underscore.news/">Underscore Native News</a></small></p>
-<h2><a href="https://www.underscore.news/land/wildfire/state-emergency-proclamation-amidst-community-relief-efforts-for-washington-fires/">State Emergency Proclamation Amidst Community Relief Efforts for Washington Fires</a></h2>
-<p class="byline"><small>By Nika Bartoo-Smith, Underscore Native News + ICT</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.underscore.news/support-underscore/">Donate</a></span></p>
-<a class="shot" href="https://www.underscore.news/land/wildfire/state-emergency-proclamation-amidst-community-relief-efforts-for-washington-fires/" tabindex="-1" aria-hidden="true"><img src="../img/147896ba2b536da568e649ca53fa18680f29e391.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>As crews work to fight fires across Washington state, the Confederated Tribes of the Colville Reservation, the Spokane Tribe of Indians and the Confederated Bands and Tribes of the Yakama Nation are all grappling with the impacts.</p>
-<p class="more"><a href="https://www.underscore.news/land/wildfire/state-emergency-proclamation-amidst-community-relief-efforts-for-washington-fires/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.redlakenationnews.com/about">Support</a></aside>
+<p class="source"><a href="https://www.redlakenationnews.com/about"><strong>Red Lake Nation News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T23:02:00+00:00" data-pub="6:02 PM CDT">Sun, Aug 23 @ 6PM CDT</time><a class="lozenge place" href="/search?state=MN">Minnesota</a><a class="lozenge place" href="/search?place=Red+Lake+Nation&state=MN">Red Lake Nation</a></p>
+<h2><a href="https://www.redlakenationnews.com/story/2026/08/24/news/eleven-bodies-recovered-after-boat-carrying-migrants-sinks-off-tunisia/142348.html">Eleven bodies recovered after boat carrying migrants sinks off Tunisia</a></h2>
+<a class="shot" href="https://www.redlakenationnews.com/story/2026/08/24/news/eleven-bodies-recovered-after-boat-carrying-migrants-sinks-off-tunisia/142348.html" tabindex="-1" aria-hidden="true"><img src="../img/c397ae4cd2e0244aa2474b5380055f2fca875268.jpg" alt="" width="293" height="200" loading="lazy" decoding="async"></a>
+<p>TUNIS, Aug 23 (Reuters) - Eleven bodies have been recovered by Tunisia&#x27;s coastguard after a boat carrying Tunisian ​migrants sank at the weekend en route to Italy, with three ‌others still unaccounted for, the National Guard said on Sunday. Coastguard, military and civil protection teams, backed by two helicopters, continued to search for the missing. The boat, which ​set off early on Thursda <a class="lozenge more" href="https://www.redlakenationnews.com/story/2026/08/24/news/eleven-bodies-recovered-after-boat-carrying-migrants-sinks-off-tunisia/142348.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-13T18:47:34+00:00" data-pub="11:47 AM PDT">Thursday, August 13, 2026 at 11:47 AM PDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>OR / Portland / <a href="https://www.underscore.news/">Underscore Native News</a></small></p>
-<h2><a href="https://www.underscore.news/land/wildfire/with-gains-made-on-bench-fire-warm-springs-leaders-focus-on-recovery/">With Gains Made on Bench Fire, Warm Springs Leaders Focus On Recovery</a></h2>
-<p class="byline"><small>By Brian Bull, Underscore Native News</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.underscore.news/support-underscore/">Donate</a></span></p>
-<a class="shot" href="https://www.underscore.news/land/wildfire/with-gains-made-on-bench-fire-warm-springs-leaders-focus-on-recovery/" tabindex="-1" aria-hidden="true"><img src="../img/99a4f68f4942f5b5dc6bcea8d4abb2963b6c7798.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>Bench Fire containment at 86%.</p>
-<p class="more"><a href="https://www.underscore.news/land/wildfire/with-gains-made-on-bench-fire-warm-springs-leaders-focus-on-recovery/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.redlakenationnews.com/about">Support</a></aside>
+<p class="source"><a href="https://www.redlakenationnews.com/about"><strong>Red Lake Nation News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T23:02:00+00:00" data-pub="6:02 PM CDT">Sun, Aug 23 @ 6PM CDT</time><a class="lozenge place" href="/search?state=MN">Minnesota</a><a class="lozenge place" href="/search?place=Red+Lake+Nation&state=MN">Red Lake Nation</a></p>
+<h2><a href="https://www.redlakenationnews.com/story/2026/08/24/news/offices-schools-closed-in-southern-taiwan-due-to-torrential-rain/142347.html">Offices, schools closed in southern Taiwan due to torrential rain</a></h2>
+<p>TAIPEI, Aug 24 (Reuters) - Regional governments in a swath of southern Taiwan closed offices and schools ​on Monday due to torrential rain, with ‌a typhoon expected to impact the north of the island at the end of ​the week. A low pressure system has ​hovered over southern Taiwan for the past ⁠few days, bringing heavy rain and ​causing flooding. The governments of the two ​cities of Kaohsiung and T <a class="lozenge more" href="https://www.redlakenationnews.com/story/2026/08/24/news/offices-schools-closed-in-southern-taiwan-due-to-torrential-rain/142347.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-13T18:32:59+00:00" data-pub="11:32 AM PDT">Thursday, August 13, 2026 at 11:32 AM PDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>OR / Portland / <a href="https://www.underscore.news/">Underscore Native News</a></small></p>
-<h2><a href="https://www.underscore.news/land/wildfire/hagen-fire-grows-paradise-fire-remains-uncontained-on-umatilla-reservation/">Hagen Fire Grows, Paradise Fire Remains Uncontained on Umatilla Reservation</a></h2>
-<p class="byline"><small>By Brian Bull, Underscore Native News</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.underscore.news/support-underscore/">Donate</a></span></p>
-<a class="shot" href="https://www.underscore.news/land/wildfire/hagen-fire-grows-paradise-fire-remains-uncontained-on-umatilla-reservation/" tabindex="-1" aria-hidden="true"><img src="../img/4cd61809a45ac018a5fc8833c906a07bf503bbaf.jpg" alt="" width="480" height="419" loading="lazy" decoding="async"></a>
-<p>Weather continues to be a tricky factor in suppression efforts.</p>
-<p class="more"><a href="https://www.underscore.news/land/wildfire/hagen-fire-grows-paradise-fire-remains-uncontained-on-umatilla-reservation/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.redlakenationnews.com/about">Support</a></aside>
+<p class="source"><a href="https://www.redlakenationnews.com/about"><strong>Red Lake Nation News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T23:02:00+00:00" data-pub="6:02 PM CDT">Sun, Aug 23 @ 6PM CDT</time><a class="lozenge place" href="/search?state=MN">Minnesota</a><a class="lozenge place" href="/search?place=Red+Lake+Nation&state=MN">Red Lake Nation</a></p>
+<h2><a href="https://www.redlakenationnews.com/story/2026/08/24/news/landslide-at-guinea-landfill-kills-30-government-says/142346.html">Landslide at Guinea landfill kills 30, government says</a></h2>
+<a class="shot" href="https://www.redlakenationnews.com/story/2026/08/24/news/landslide-at-guinea-landfill-kills-30-government-says/142346.html" tabindex="-1" aria-hidden="true"><img src="../img/3367d81788e4d52579201dc75e8ee9c67b4294bb.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+<p>CONAKRY, Aug 23 (Reuters) - A landslide at a landfill in Guinea&#x27;s capital killed 30 people, ​the government said on Sunday, after heavy rains overnight prompted the ‌collapse of a massive mound of waste that engulfed nearby tents and shacks. The incident occurred less than a week after the government announced plans to close the site and relocate the waste ​because of the threat it posed, esp <a class="lozenge more" href="https://www.redlakenationnews.com/story/2026/08/24/news/landslide-at-guinea-landfill-kills-30-government-says/142346.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-12T04:31:08+00:00" data-pub="11:31 PM CDT">Tuesday, August 11, 2026 at 11:31 PM CDT</time></small></p>
-<p><small>OK / Muscogee Nation Reservation / <a href="https://www.crosswindsnews.net/">Crosswinds News</a></small></p>
-<h2><a href="https://www.crosswindsnews.net/wewin-2026-brings-native-women-leaders-together-in-tulsa/">WEWIN 2026 brings Native women leaders together in Tulsa</a></h2>
-<p class="byline"><small>By Trista Vaughn</small><span class="aside"><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.crosswindsnews.net/">Support</a></span></p>
-<a class="shot" href="https://www.crosswindsnews.net/wewin-2026-brings-native-women-leaders-together-in-tulsa/" tabindex="-1" aria-hidden="true"><img src="../img/aa7e97b6b1ac5297ab3a12f76d97fafa829572f1.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>(TULSA, Okla.) For more than 20 years, Native women have gathered at Women Empowering Women for Indian Nations (WEWIN) to connect, inspire and empower one another. This year, hundreds gathered July 26-29 at River Spirit Casino Resort in Tulsa for the 2026 WEWIN conference. The theme for 2026</p>
-<p class="more"><a href="https://www.crosswindsnews.net/wewin-2026-brings-native-women-leaders-together-in-tulsa/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.redlakenationnews.com/about">Support</a></aside>
+<p class="source"><a href="https://www.redlakenationnews.com/about"><strong>Red Lake Nation News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T23:02:00+00:00" data-pub="6:02 PM CDT">Sun, Aug 23 @ 6PM CDT</time><a class="lozenge place" href="/search?state=MN">Minnesota</a><a class="lozenge place" href="/search?place=Red+Lake+Nation&state=MN">Red Lake Nation</a></p>
+<h2><a href="https://www.redlakenationnews.com/story/2026/08/24/news/indian-rescuers-search-for-22-people-missing-after-cargo-ship-sinks/142345.html">Indian rescuers search for 22 people missing after cargo ship sinks</a></h2>
+<p>NEW DELHI, Aug 23 (Reuters) - India&#x27;s coastguard and navy continued ​search-and-rescue operations off the eastern coast on Sunday after ‌a Panama-flagged bulk carrier carrying 24 crew members sank, with two Chinese nationals rescued, a senior official said. The two Chinese seafarers said the vessel, called the ​Ocean Winner, had developed a list on Friday and sank ​within eight minutes, forci <a class="lozenge more" href="https://www.redlakenationnews.com/story/2026/08/24/news/indian-rescuers-search-for-22-people-missing-after-cargo-ship-sinks/142345.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-11T20:56:08+00:00" data-pub="3:56 PM CDT">Tuesday, August 11, 2026 at 3:56 PM CDT</time></small></p>
-<p><small>OK / Statewide / <a href="https://www.astribe.com/newsletters">The Absentee Shawnee News</a></small></p>
-<h2><a href="https://www.astribe.com/spybuck-art-reception">Spybuck Art Reception</a></h2>
-<p class="byline"><small>By MindyL</small><span class="aside"><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.astribe.com/homeowner-assistance-fund-haf">Donate</a></span></p>
-<p>All AST members are invited to a special reception celebrating the restoration of an original painting by Ernest Spybuck. WHEN: August 19, 2026, 1pm-8pm WHERE: 18800 E Highway 9, Norman, OK</p>
-<p class="more"><a href="https://www.astribe.com/spybuck-art-reception">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.redlakenationnews.com/about">Support</a></aside>
+<p class="source"><a href="https://www.redlakenationnews.com/about"><strong>Red Lake Nation News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T23:02:00+00:00" data-pub="6:02 PM CDT">Sun, Aug 23 @ 6PM CDT</time><a class="lozenge place" href="/search?state=MN">Minnesota</a><a class="lozenge place" href="/search?place=Red+Lake+Nation&state=MN">Red Lake Nation</a></p>
+<h2><a href="https://www.redlakenationnews.com/story/2026/08/24/news/iran-says-new-sanctions-threatened-by-desperate-us-will-fail/142344.html">Iran says new sanctions threatened by &#x27;desperate&#x27; US will fail</a></h2>
+<a class="shot" href="https://www.redlakenationnews.com/story/2026/08/24/news/iran-says-new-sanctions-threatened-by-desperate-us-will-fail/142344.html" tabindex="-1" aria-hidden="true"><img src="../img/911e105bef3e8f65121eb030d3304f1997a7e3ce.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+<p>Summary US expected to announce new sanctions on Iran on Monday Iranian leaders remain defiant, say sanctions will fail Shipping at a virtual standstill in the Strait of Hormuz Mediator Pakistan&#x27;s army chief is set to visit Tehran DUBAI, Aug 23 (Reuters) - Iran&#x27;s foreign minister dismissed the threat of new U.S. sanctions ​as a sign of desperation on Sunday and said the expected new meas <a class="lozenge more" href="https://www.redlakenationnews.com/story/2026/08/24/news/iran-says-new-sanctions-threatened-by-desperate-us-will-fail/142344.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-10T23:53:20+00:00" data-pub="4:53 PM PDT">Monday, August 10, 2026 at 4:53 PM PDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>OR / Portland / <a href="https://www.underscore.news/">Underscore Native News</a></small></p>
-<h2><a href="https://www.underscore.news/land/wildfire/relief-for-warm-springs-farm-animals-one-bouquet-at-a-time/">Relief For Warm Springs’ Farm Animals, One Bouquet At A Time</a></h2>
-<p class="byline"><small>By Brian Bull, Underscore Native News</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.underscore.news/support-underscore/">Donate</a></span></p>
-<a class="shot" href="https://www.underscore.news/land/wildfire/relief-for-warm-springs-farm-animals-one-bouquet-at-a-time/" tabindex="-1" aria-hidden="true"><img src="../img/5121c5b0fedab9edabad79095ce00c4712d76b34.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>Oregonians pony up to help affected horses and livestock as Bench Fire rages on.</p>
-<p class="more"><a href="https://www.underscore.news/land/wildfire/relief-for-warm-springs-farm-animals-one-bouquet-at-a-time/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.redlakenationnews.com/about">Support</a></aside>
+<p class="source"><a href="https://www.redlakenationnews.com/about"><strong>Red Lake Nation News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T23:02:00+00:00" data-pub="6:02 PM CDT">Sun, Aug 23 @ 6PM CDT</time><a class="lozenge place" href="/search?state=MN">Minnesota</a><a class="lozenge place" href="/search?place=Red+Lake+Nation&state=MN">Red Lake Nation</a></p>
+<h2><a href="https://www.redlakenationnews.com/story/2026/08/24/news/us-vows-economic-d-day-as-iran-threatens-to-halt-all-oil-exports/142343.html">US vows &#x27;economic D-Day&#x27; as Iran threatens to halt all oil exports</a></h2>
+<a class="shot" href="https://www.redlakenationnews.com/story/2026/08/24/news/us-vows-economic-d-day-as-iran-threatens-to-halt-all-oil-exports/142343.html" tabindex="-1" aria-hidden="true"><img src="../img/9465e463fbe288955c95651d2d16a888876aa4b5.jpg" alt="" width="350" height="197" loading="lazy" decoding="async"></a>
+<p>Summary Adversaries have engaged in war of words over new US sanctions U.S. Treasury secretary to target Iran&#x27;s trading partners Senior Iranian official says &quot;not a drop&quot; of oil will flow CAIRO/WASHINGTON, Aug 24 (Reuters) - The U.S. threatened Iran with what it called &quot;the greatest financial offensive ever marshalled&quot; as it prepared to ​roll out economic sanctions on Mond <a class="lozenge more" href="https://www.redlakenationnews.com/story/2026/08/24/news/us-vows-economic-d-day-as-iran-threatens-to-halt-all-oil-exports/142343.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-10T12:06:17+00:00" data-pub="6:06 AM MDT">Monday, August 10, 2026 at 6:06 AM MDT</time></small></p>
-<p><small>MT / Crow Reservation / <a href="https://www.fourpointspress.org/">Four Points</a></small></p>
-<h2><a href="https://www.fourpointspress.org/notice-of-adoption-2/">Notice of Adoption</a></h2>
-<p class="byline"><small>By Luella Brien</small><span class="aside"><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.fourpointspress.org/donate/">Donate</a></span></p>
-<p>IN THE CROW TRIBAL JUNEVILE COURT IN AND FOR THE CROW INDIAN RESERVATION P.O. BOX 489 CROW AGENCY, MONTANA 59022 (406) 638-7400 CASE NO. CV-26-C038 JUNEVILE COURT — NOTICE OF PETITION FOR ADOPTION TO: PUBLIC You are hereby notified</p>
-<p class="more"><a href="https://www.fourpointspress.org/notice-of-adoption-2/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://alaska-native-news.com/">Support</a></aside>
+<p class="source"><a href="https://alaska-native-news.com/"><strong>Alaska Native News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T14:00:23+00:00" data-pub="6:00 AM AKDT">Sun, Aug 23 @ 6AM AKDT</time><a class="lozenge place" href="/search?state=AK">Alaska</a></p>
+<h2><a href="https://alaska-native-news.com/august-23rd-1914/44196/">This Day in Alaska History-August 23rd, 1914</a></h2>
+<p class="byline">By Alaska Native News</p>
+<p>By 1914, the war in Europe’s far reach began affecting the goings-on in Alaska. That war affected copper mining operations and several would close down in the winter of 1914. The closures were the result of labor shortages. Many of the miners were European immigrants, and those immigrants returned to Europe to fight in the <a class="lozenge more" href="https://alaska-native-news.com/august-23rd-1914/44196/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-04T01:30:50+00:00" data-pub="8:30 PM CDT">Monday, August 3, 2026 at 8:30 PM CDT</time></small></p>
-<p><small>OK / Muscogee Nation Reservation / <a href="https://www.crosswindsnews.net/">Crosswinds News</a></small></p>
-<h2><a href="https://www.crosswindsnews.net/native-community-centers-helped-preserve-culture-and-connection-during-urban-relocation/">Native community centers helped preserve culture and connection during urban relocation</a></h2>
-<p class="byline"><small>By Rachael Schuit</small><span class="aside"><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.crosswindsnews.net/">Support</a></span></p>
-<a class="shot" href="https://www.crosswindsnews.net/native-community-centers-helped-preserve-culture-and-connection-during-urban-relocation/" tabindex="-1" aria-hidden="true"><img src="../img/5b86210652281edcc313af0eb8a1ea87220af284.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>(TULSA, Okla.) While many Americans picture tribal members living on rural reservation land, more than 70% of Native people now live in urban areas. That demographic shift accelerated in the 1950s, when federal relocation policies uprooted Native families, disrupted communities and, in many cases, contributed to the development of Native</p>
-<p class="more"><a href="https://www.crosswindsnews.net/native-community-centers-helped-preserve-culture-and-connection-during-urban-relocation/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.crosswindsnews.net/">Support</a></aside>
+<p class="source"><a href="https://www.crosswindsnews.net/"><strong>Crosswinds News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T04:06:01+00:00" data-pub="11:06 PM CDT">Sat, Aug 22 @ 11PM CDT</time><a class="lozenge place" href="/search?state=OK">Oklahoma</a><a class="lozenge place" href="/search?place=Muscogee+Nation+Reservation&state=OK">Muscogee Nation Reservation</a></p>
+<h2><a href="https://www.crosswindsnews.net/storykeepers-returns-with-stem-focus-for-native-and-ally-youth/">StoryKeepers returns with STEM focus for Native and ally youth</a></h2>
+<p class="byline">By Rachael Schuit</p>
+<a class="shot" href="https://www.crosswindsnews.net/storykeepers-returns-with-stem-focus-for-native-and-ally-youth/" tabindex="-1" aria-hidden="true"><img src="../img/0fda1342a46eff18722b40c65bdb6fd3962c45d2.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>(TVLSE, Okla.) The next generation of young storytellers can now apply for Crosswinds News’ second cohort ofStoryKeepers. Applications are open to Native and ally youth ages 12 to 20 through Sept. 1. The 10-week program will begin in October and will be led by Crosswinds Co-founder <a class="lozenge more" href="https://www.crosswindsnews.net/storykeepers-returns-with-stem-focus-for-native-and-ally-youth/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-03T12:02:00+00:00" data-pub="6:02 AM MDT">Monday, August 3, 2026 at 6:02 AM MDT</time></small></p>
-<p><small>MT / Crow Reservation / <a href="https://www.fourpointspress.org/">Four Points</a></small></p>
-<h2><a href="https://www.fourpointspress.org/notice-of-adoption/">Notice of Adoption</a></h2>
-<p class="byline"><small>By Luella Brien</small><span class="aside"><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.fourpointspress.org/donate/">Donate</a></span></p>
-<p>IN THE CROW TRIBAL JUNEVILE COURT IN AND FOR THE CROW INDIAN RESERVATION P.O. BOX 489 CROW AGENCY, MONTANA 59022 (406) 638-7400 CASE NO. CV-26-C038 JUNEVILE COURT — NOTICE OF PETITION FOR ADOPTION TO: PUBLIC You are hereby notified</p>
-<p class="more"><a href="https://www.fourpointspress.org/notice-of-adoption/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://alaska-native-news.com/">Support</a></aside>
+<p class="source"><a href="https://alaska-native-news.com/"><strong>Alaska Native News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-22T18:51:21+00:00" data-pub="10:51 AM AKDT">Sat, Aug 22 @ 10AM AKDT</time><a class="lozenge place" href="/search?state=AK">Alaska</a></p>
+<h2><a href="https://alaska-native-news.com/a-government-of-the-rich-by-the-rich-for-the-rich-nearly-60-top-trump-officials-worth-100-million-or-more/85802/">‘A Government of the Rich, by the Rich, for the Rich’: Nearly 60 Top Trump Officials Worth $100 Million or More</a></h2>
+<p class="byline">By Stephen Prager-Common Dreams</p>
+<p>The Trump administration has over 10 times as many of these super-rich appointees as the Biden, Obama, and George W. Bush administrations. President Donald Trump has created a government “of the rich, by the rich, for the rich.” That’s what Sen. Bernie Sanders (I-Vt.) said on Monday following the release of a report demonstrating how the president has handed <a class="lozenge more" href="https://alaska-native-news.com/a-government-of-the-rich-by-the-rich-for-the-rich-nearly-60-top-trump-officials-worth-100-million-or-more/85802/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-02T16:22:00+00:00" data-pub="11:22 AM CDT">Sunday, August 2, 2026 at 11:22 AM CDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>OK / Muscogee Nation Reservation / <a href="https://www.crosswindsnews.net/">Crosswinds News</a></small></p>
-<h2><a href="https://www.crosswindsnews.net/album-74th-annual-tulsa-powwow-2026/">ALBUM: 74th Annual Tulsa Powwow 2026</a></h2>
-<p class="byline"><small>By Crosswinds News Team</small><span class="aside"><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.crosswindsnews.net/">Support</a></span></p>
-<a class="shot" href="https://www.crosswindsnews.net/album-74th-annual-tulsa-powwow-2026/" tabindex="-1" aria-hidden="true"><img src="../img/8edadaaa11b822147d2b7dabba914f2df35e8102.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>The 74th Annual Tulsa Powwow 2026 Album is now available on Flickr! July 25-26, 2026 Head Singer: George Valliere Emcees: Warren Queton, Marshal Williamson Arena Directors: Daniel Roberts, Chuck Bread Host Northern Drum: Host Southern Drum: Head Man: AJ Leading Fox Head Woman: Chalene Toehay-Tartsah Head Gourd: Hinglu</p>
-<p class="more"><a href="https://www.crosswindsnews.net/album-74th-annual-tulsa-powwow-2026/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://alaska-native-news.com/">Support</a></aside>
+<p class="source"><a href="https://alaska-native-news.com/"><strong>Alaska Native News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-22T14:05:10+00:00" data-pub="6:05 AM AKDT">Sat, Aug 22 @ 6AM AKDT</time><a class="lozenge place" href="/search?state=AK">Alaska</a></p>
+<h2><a href="https://alaska-native-news.com/kenai-peninsula-deer-updates-and-plans-for-the-future/85778/">Kenai Peninsula Deer: Updates and Plans for the Future</a></h2>
+<p class="byline">By Alaska Department of Fish and Game</p>
+<p>(Soldotna) – In late September and early October 2025, the Alaska Department of Fish &amp; Game (ADF&amp;G) translocated 19 Sitka black-tailed deer (14 does and 5 bucks) from Sitkinak Island to the south end of the Kenai Peninsula near Port Chatham. Deer were held in a soft release pen for a short time and monitored <a class="lozenge more" href="https://alaska-native-news.com/kenai-peninsula-deer-updates-and-plans-for-the-future/85778/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-01T18:00:54+00:00" data-pub="8:00 AM HST">Saturday, August 1, 2026 at 8:00 AM HST</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>HI / Statewide / <a href="https://kawaiola.news/about/">Ka Wai Ola</a></small></p>
-<h2><a href="https://kawaiola.news/columns/he-aupuni-palapala/hya-goes-to-keomolewa-kapalakiko/">HYA Goes to Keomolewa-Kapalakiko</a></h2>
-<p class="byline"><small>By Kamakanaokealoha Aquino</small><span class="aside"><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://kawaiola.news/subscribe/">Subscribe</a></span></p>
-<p>About eight years ago, Native Hawaiian Student Services (NHSS) at the University of Hawaiʻi at Mānoa restarted the Hawaiian Youths Abroad (HYA) program.</p>
-<p class="more"><a href="https://kawaiola.news/columns/he-aupuni-palapala/hya-goes-to-keomolewa-kapalakiko/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://alaska-native-news.com/">Support</a></aside>
+<p class="source"><a href="https://alaska-native-news.com/"><strong>Alaska Native News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-22T14:03:51+00:00" data-pub="6:03 AM AKDT">Sat, Aug 22 @ 6AM AKDT</time><a class="lozenge place" href="/search?state=AK">Alaska</a></p>
+<h2><a href="https://alaska-native-news.com/fairbanks-man-busted-after-selling-parts-from-stolen-vehicle-online/85784/">Fairbanks Man Busted after Selling Parts from Stolen Vehicle Online</a></h2>
+<p class="byline">By Alaska Native News</p>
+<p>On Wednesday, Alaska State Troopers recovered a 2017 Dodge Durango that had been reported stolen from a residence on Charlotte Lane in Fairbanks after investigators discovered the vehicle was being advertised online for sale as parts. Troopers contacted Fairbanks resident 37-year-old Dustin Deals, who was listed as the seller, Dusty Deals on Facebook’s Free, Buy <a class="lozenge more" href="https://alaska-native-news.com/fairbanks-man-busted-after-selling-parts-from-stolen-vehicle-online/85784/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-01T18:00:54+00:00" data-pub="8:00 AM HST">Saturday, August 1, 2026 at 8:00 AM HST</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>HI / Statewide / <a href="https://kawaiola.news/about/">Ka Wai Ola</a></small></p>
-<h2><a href="https://kawaiola.news/cover/waimea-valley-a-cultural-treasure-of-the-highest-order/">Waimea Valley: A Cultural Treasure of the Highest Order</a></h2>
-<p class="byline"><small>By Puanani Fernandez-Akamine</small><span class="aside"><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://kawaiola.news/subscribe/">Subscribe</a></span></p>
-<a class="shot" href="https://kawaiola.news/cover/waimea-valley-a-cultural-treasure-of-the-highest-order/" tabindex="-1" aria-hidden="true"><img src="../img/4a837ccdbc3ad6031ac5c534b3257e9b1e36aec4.jpg" alt="" width="480" height="311" loading="lazy" decoding="async"></a>
-<p>Culturally, historically, and spiritually Waimea, Oʻahu, is a Native Hawaiian cultural treasure of the highest possible order.</p>
-<p class="more"><a href="https://kawaiola.news/cover/waimea-valley-a-cultural-treasure-of-the-highest-order/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://alaska-native-news.com/">Support</a></aside>
+<p class="source"><a href="https://alaska-native-news.com/"><strong>Alaska Native News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-22T14:02:23+00:00" data-pub="6:02 AM AKDT">Sat, Aug 22 @ 6AM AKDT</time><a class="lozenge place" href="/search?state=AK">Alaska</a></p>
+<h2><a href="https://alaska-native-news.com/shapes-of-western-alaska-bays-influence-local-flood-danger/85788/">Shapes of Western Alaska bays influence local flood danger</a></h2>
+<p class="byline">By Jeff Richardson-UAF</p>
+<p>When large storms hit Western Alaska, some areas fare much worse than others. New research studying ex-Typhoon Merbok in September 2022 has found that a complex recipe of topography, tidal influences and seasonal water-level changes contribute to those differences. A University of Alaska Fairbanks-led team determined that the shape of bays and estuaries in the region <a class="lozenge more" href="https://alaska-native-news.com/shapes-of-western-alaska-bays-influence-local-flood-danger/85788/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-01T18:00:52+00:00" data-pub="8:00 AM HST">Saturday, August 1, 2026 at 8:00 AM HST</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>HI / Statewide / <a href="https://kawaiola.news/about/">Ka Wai Ola</a></small></p>
-<h2><a href="https://kawaiola.news/kaiaulu/makeke/makeke-the-marketplace-august-2026/">Mākeke | The Marketplace | August 2026</a></h2>
-<p class="byline"><small>By Ka Wai Ola Staff</small><span class="aside"><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://kawaiola.news/subscribe/">Subscribe</a></span></p>
-<p>Mākeke | The Marketplace | August 2026 Issue of Ka Wai Ola</p>
-<p class="more"><a href="https://kawaiola.news/kaiaulu/makeke/makeke-the-marketplace-august-2026/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://alaska-native-news.com/">Support</a></aside>
+<p class="source"><a href="https://alaska-native-news.com/"><strong>Alaska Native News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-22T14:01:09+00:00" data-pub="6:01 AM AKDT">Sat, Aug 22 @ 6AM AKDT</time><a class="lozenge place" href="/search?state=AK">Alaska</a></p>
+<h2><a href="https://alaska-native-news.com/trump-using-census-bureau-report-full-of-junk-data-science-to-sell-false-claims-of-2020-voter-fraud/85795/">Trump Using Census Bureau Report Full of ‘Junk Data Science’ to Sell False Claims of 2020 Voter Fraud</a></h2>
+<p class="byline">By Stephen Prager-Common Dreams</p>
+<p>One voting rights advocate said the administration “is abusing the Census Bureau data to generate sensational headlines that Trump wants.” As he gears up to sow doubt about this year’s midterms, President Donald Trump is once again attempting to use the government to lend legitimacy to his long-debunked claims that he was cheated out of the 2020 election. In <a class="lozenge more" href="https://alaska-native-news.com/trump-using-census-bureau-report-full-of-junk-data-science-to-sell-false-claims-of-2020-voter-fraud/85795/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-01T18:00:42+00:00" data-pub="8:00 AM HST">Saturday, August 1, 2026 at 8:00 AM HST</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>HI / Statewide / <a href="https://kawaiola.news/about/">Ka Wai Ola</a></small></p>
-<h2><a href="https://kawaiola.news/columns/the-military-in-hawaii/returning-to-makua/">Returning to Mākua</a></h2>
-<p class="byline"><small>By Hannah Kaʻiulani Coburn</small><span class="aside"><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://kawaiola.news/subscribe/">Subscribe</a></span></p>
-<p>The final resting place of Aunty Muriel “Puni” Ioane’s ancestors lies at the Mākua Protestant Cemetery, just ma kai of Mākua Valley on Oʻahu’s leeward coast.</p>
-<p class="more"><a href="https://kawaiola.news/columns/the-military-in-hawaii/returning-to-makua/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://alaska-native-news.com/">Support</a></aside>
+<p class="source"><a href="https://alaska-native-news.com/"><strong>Alaska Native News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-22T14:00:24+00:00" data-pub="6:00 AM AKDT">Sat, Aug 22 @ 6AM AKDT</time><a class="lozenge place" href="/search?state=AK">Alaska</a></p>
+<h2><a href="https://alaska-native-news.com/august-22nd-1794/44167/">This Day in Alaska History-August 22nd, 1794</a></h2>
+<p class="byline">By Alaska Native News</p>
+<p>After exploring the Pacific, Captain George Vancouver turned north into the Pacific Northwest in 1793 before setting south to the Sandwich Islands (Hawaii) to winter there before setting sail to Cook Inlet in search of the Northwest Passage. After Cook Inlet, Vancouver set south along the coastline, drawing detailed charts along the way through 1794. <a class="lozenge more" href="https://alaska-native-news.com/august-22nd-1794/44167/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-01T18:00:36+00:00" data-pub="8:00 AM HST">Saturday, August 1, 2026 at 8:00 AM HST</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>HI / Statewide / <a href="https://kawaiola.news/about/">Ka Wai Ola</a></small></p>
-<h2><a href="https://kawaiola.news/kaiaulu/hoohuiohana/family-reunions-august-2026/">Family Reunions: August 2026</a></h2>
-<p class="byline"><small>By Ka Wai Ola Staff</small><span class="aside"><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://kawaiola.news/subscribe/">Subscribe</a></span></p>
-<p>Family Reunions - August 2026 Issue of Ka Wai Ola</p>
-<p class="more"><a href="https://kawaiola.news/kaiaulu/hoohuiohana/family-reunions-august-2026/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://osagenews.org/subscribe-to-updates/">Subscribe</a></aside>
+<p class="source"><a href="https://osagenews.org/"><strong>Osage News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T18:44:52+00:00" data-pub="1:44 PM CDT">Fri, Aug 21 @ 1PM CDT</time><a class="lozenge place" href="/search?state=OK">Oklahoma</a></p>
+<h2><a href="https://osagenews.org/minerals-council-takes-aim-at-federal-rules-governing-osage-mineral-estate/">Minerals Council takes aim at federal rules governing Osage Mineral Estate</a></h2>
+<p class="byline">By Allison Herrera</p>
+<p>HOMINY, Okla.—The Osage Shareholder Association held its quarterly meeting on Aug. 16, the association’s first meeting since the 6th Osage Minerals Council was sworn in July 1. It <a class="lozenge more" href="https://osagenews.org/minerals-council-takes-aim-at-federal-rules-governing-osage-mineral-estate/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-01T18:00:33+00:00" data-pub="8:00 AM HST">Saturday, August 1, 2026 at 8:00 AM HST</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>HI / Statewide / <a href="https://kawaiola.news/about/">Ka Wai Ola</a></small></p>
-<h2><a href="https://kawaiola.news/aina/community-seeks-stewardship-of-punaluu/">Community Seeks Stewardship of Punaluʻu</a></h2>
-<p class="byline"><small>By Kuʻuwehi Hiraishi</small><span class="aside"><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://kawaiola.news/subscribe/">Subscribe</a></span></p>
-<a class="shot" href="https://kawaiola.news/aina/community-seeks-stewardship-of-punaluu/" tabindex="-1" aria-hidden="true"><img src="../img/990c0a1daa667abe7787d6130469a34690b92115.jpg" alt="" width="480" height="311" loading="lazy" decoding="async"></a>
-<p>Earlier this summer, dozens of Kaʻū families gathered at Punaluʻu Beach Park holding handmade cardboard signs reading “Respect Our Wahi Pana” and “Public Lands Not Private Hands.”</p>
-<p class="more"><a href="https://kawaiola.news/aina/community-seeks-stewardship-of-punaluu/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://cronkitenews.azpbs.org/">Support</a></aside>
+<p class="source"><a href="https://cronkitenews.azpbs.org/"><strong>Cronkite News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T17:27:51+00:00" data-pub="10:27 AM MST">Fri, Aug 21 @ 10AM MST</time><a class="lozenge place" href="/search?state=AZ">Arizona</a></p>
+<h2><a href="https://cronkitenews.azpbs.org/2026/08/21/phoenix-community-court/">Arrested for sitting on a curb: Phoenix Community Court offers restorative justice</a></h2>
+<p class="byline">By By A’lauren Gilchrist</p>
+<a class="shot" href="https://cronkitenews.azpbs.org/2026/08/21/phoenix-community-court/" tabindex="-1" aria-hidden="true"><img src="../img/af0f25a3feb5cd14b131cd8c2d8dbef93cf624fd.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Instead of facing fines or jail for low-level offenses, unhoused people can work with public defenders and case managers to secure housing, access services and resolve their cases. <a class="lozenge more" href="https://cronkitenews.azpbs.org/2026/08/21/phoenix-community-court/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-01T18:00:32+00:00" data-pub="8:00 AM HST">Saturday, August 1, 2026 at 8:00 AM HST</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>HI / Statewide / <a href="https://kawaiola.news/about/">Ka Wai Ola</a></small></p>
-<h2><a href="https://kawaiola.news/columns/malama-i-kou-kino/what-hurricane-prep-looks-like-here/">What Hurricane Prep Looks Like Here</a></h2>
-<p class="byline"><small>By Jodi Leslie Matsuo, DrPH, RDN</small><span class="aside"><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://kawaiola.news/subscribe/">Subscribe</a></span></p>
-<p>In August 1871, a hurricane tore through Waipiʻo Valley, destroying nearly 30 homes in about 90 minutes.</p>
-<p class="more"><a href="https://kawaiola.news/columns/malama-i-kou-kino/what-hurricane-prep-looks-like-here/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://www.underscore.news/support-underscore/">Donate</a></aside>
+<p class="source"><a href="https://www.underscore.news/"><strong>Underscore Native News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T15:00:53+00:00" data-pub="8:00 AM PDT">Fri, Aug 21 @ 8AM PDT</time><a class="lozenge place" href="/search?state=OR">Oregon</a><a class="lozenge place" href="/search?place=Portland&state=OR">Portland</a></p>
+<h2><a href="https://www.underscore.news/justice/slow-progress-on-renaming-oregons-offensive-place-names/">Slow Progress On Renaming Oregon’s Offensive Place Names</a></h2>
+<p class="byline">By Mackenzie Olivo, Underscore Native News</p>
+<a class="shot" href="https://www.underscore.news/justice/slow-progress-on-renaming-oregons-offensive-place-names/" tabindex="-1" aria-hidden="true"><img src="../img/de2bf7b44ce2aeee064e8bce14a03a354be0a7ba.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Under a state law passed in 2025, 90 names are up for replacement. Only two have been officially changed so far. <a class="lozenge more" href="https://www.underscore.news/justice/slow-progress-on-renaming-oregons-offensive-place-names/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 </div>
 <p><a id="more" href="native-owned-4.html">More stories</a></p>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="../index.html">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -395,6 +432,47 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>

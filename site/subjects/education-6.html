@@ -13,12 +13,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(../fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -27,22 +40,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -50,19 +69,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -75,7 +126,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -93,7 +144,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="../index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="../masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -106,7 +157,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="../subjects/news.html">News</a></li><li><a href="../subjects/politics.html">Politics</a></li><li><a href="../subjects/opinion.html">Opinion</a></li><li><a href="../subjects/health.html">Health</a></li><li><a href="../subjects/environment.html">Environment</a></li><li><a href="../subjects/education.html">Education</a></li><li><a href="../subjects/business.html">Business</a></li><li><a href="../subjects/housing.html">Housing</a></li><li><a href="../subjects/sports.html">Sports</a></li><li><a href="../subjects/food.html">Food</a></li><li><a href="../subjects/arts.html">Arts</a></li></ul></nav>
@@ -121,277 +172,272 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <main id="main">
 <div id="feed-items">
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T11:00:15+00:00" data-pub="5:00 AM MDT">Monday, August 24, 2026 at 5:00 AM MDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>ID / Statewide / <a href="https://www.idahoednews.org/">Idaho Education News</a></small></p>
-<h2><a href="https://www.idahoednews.org/top-news/tax-commission-wont-release-private-school-tax-credit-data-heres-whos-asking-and-why-its-been-denied/">Tax Commission won’t release private school tax-credit data. Here’s who’s asking, and why it’s been denied</a></h2>
-<p class="byline"><small>By Ryan Suppe</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.idahoednews.org/features/spelling-it-out/spelling-it-out-fund-balances/">Donate</a></span></p>
-<a class="shot" href="https://www.idahoednews.org/top-news/tax-commission-wont-release-private-school-tax-credit-data-heres-whos-asking-and-why-its-been-denied/" tabindex="-1" aria-hidden="true"><img src="../img/dd3ef4786a2dc70c333ad93c3aca6d016e1cf275.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Some of the denied data would test a selling point of the program: that it helps students who couldn’t otherwise afford a private education.</p>
-<p class="more"><a href="https://www.idahoednews.org/top-news/tax-commission-wont-release-private-school-tax-credit-data-heres-whos-asking-and-why-its-been-denied/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/college.html">College</a><a class="lozenge give" href="https://www.globeslcc.com/">Support</a></aside>
+<p class="source"><a href="https://www.globeslcc.com/"><strong>The Globe</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T16:14:31+00:00" data-pub="10:14 AM MDT">Mon, Aug 24 @ 10AM MDT</time><a class="lozenge place" href="/search?state=UT">Utah</a><a class="lozenge place" href="/search?place=Salt+Lake+City&state=UT">Salt Lake City</a></p>
+<h2><a href="https://www.globeslcc.com/2026/08/24/president-greg-peterson-welcome-message-to-students/">A message to students from President Greg Peterson</a></h2>
+<p class="byline">By glober</p>
+<p>Whether you’re beginning college for the first time, returning after time away or preparing for the next step in your career, we’re glad you’re here. <a class="lozenge more" href="https://www.globeslcc.com/2026/08/24/president-greg-peterson-welcome-message-to-students/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T11:00:00+00:00" data-pub="7:00 AM EDT">Monday, August 24, 2026 at 7:00 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>MA / Concord / <a href="https://theconcordbridge.org/">Concord Bridge</a></small></p>
-<h2><a href="https://concordbridge.org/index.php/2026/08/24/district-oks-1-64m-contract-for-cchs-amenities-building/">District OKs $1.64M contract for CCHS amenities building</a></h2>
-<p class="byline"><small>By Kim Carpenter</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://concordbridge.org/index.php/2022/10/27/donate/">Donate</a></span></p>
-<a class="shot" href="https://concordbridge.org/index.php/2026/08/24/district-oks-1-64m-contract-for-cchs-amenities-building/" tabindex="-1" aria-hidden="true"><img src="../img/d03040d066520259951af762b0b6fd101c510d15.jpg" alt="" width="480" height="80" loading="lazy" decoding="async"></a>
-<p>The Regional School Committee gave the contract to low bidder City Enterprises Inc. of Springfield on July 29.</p>
-<p class="more"><a href="https://concordbridge.org/index.php/2026/08/24/district-oks-1-64m-contract-for-cchs-amenities-building/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://bridgedetroit.fundjournalism.org/donate/?campaign=7011U000000m8QoQAI">Donate</a></aside>
+<p class="source"><a href="https://www.bridgedetroit.com/"><strong>Bridge Detroit</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T16:13:09+00:00" data-pub="12:13 PM EDT">Mon, Aug 24 @ 12PM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=Detroit&state=MI">Detroit</a></p>
+<h2><a href="https://www.bridgedetroit.com/first-day-of-school-metro-detroit/">First day excitement as metro Detroit students head back to school</a></h2>
+<p class="byline">By Beki San Martin, Hannah Dellinger, Chalkbeat Detroit, and Micah Walker</p>
+<a class="shot" href="https://www.bridgedetroit.com/first-day-of-school-metro-detroit/" tabindex="-1" aria-hidden="true"><img src="../img/3cd3708e289dec53ea6bd942046b1ddf4d4a1624.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Monday was the first day of school in the Detroit Public Schools Community District and many other school districts across Michigan. <a class="lozenge more" href="https://www.bridgedetroit.com/first-day-of-school-metro-detroit/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T10:45:58+00:00" data-pub="5:45 AM CDT">Monday, August 24, 2026 at 5:45 AM CDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>NE / Statewide / <a href="https://nebraskaexaminer.com/">Nebraska Examiner</a></small></p>
-<h2><a href="https://nebraskaexaminer.com/2026/08/24/opinion-perspective-needed-as-school-begins/">OPINION: Perspective needed as school begins</a></h2>
-<p class="byline"><small>By George Ayoub</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://nebraskaexaminer.com/">Support</a></span></p>
-<a class="shot" href="https://nebraskaexaminer.com/2026/08/24/opinion-perspective-needed-as-school-begins/" tabindex="-1" aria-hidden="true"><img src="../img/b4d52699d133bef02c1ac781b9d73ef91a828600.jpg" alt="" width="480" height="287" loading="lazy" decoding="async"></a>
-<p>Most of Nebraska’s students from preschoolers to Ph.D. candidates are now back in classrooms, running on playgrounds or dabbling in science labs. The ritual reopening of schools reminds me of two things: the value of a formal education and “The Death of Expertise,” a 2017 book by Tom Nichols, a professor emeritus at the U.S.</p>
-<p class="more"><a href="https://nebraskaexaminer.com/2026/08/24/opinion-perspective-needed-as-school-begins/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/college.html">College</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://lbcurrent.com/about/">Support</a></aside>
+<p class="source"><a href="https://lbcurrent.com/about/"><strong>Long Beach Current</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T16:00:30+00:00" data-pub="9:00 AM PDT">Mon, Aug 24 @ 9AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Long+Beach&state=CA">Long Beach</a></p>
+<h2><a href="https://lbcurrent.com/news/campus/2026/08/24/csulb-introduces-new-methods-of-learning-through-global-partnership-beyond-long-beach/">CSULB introduces global partnership with Taiwan university</a></h2>
+<p class="byline">By Josephine Kim</p>
+<p>Long Beach State has announced its partnership with Taiwan’s Ming Chuan University, making CSULB the only CSU with a permanent international university on its campus. The partnership will offer two dual-degree programs for graduate students and is set to launch in fall 2027. CSULB will offer an MBA program to students from both universities, which will pair MCU’s International Business and Trade t <a class="lozenge more" href="https://lbcurrent.com/news/campus/2026/08/24/csulb-introduces-new-methods-of-learning-through-global-partnership-beyond-long-beach/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T10:25:00+00:00" data-pub="6:25 AM EDT">Monday, August 24, 2026 at 6:25 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>FL / Lakeland / <a href="https://www.lkldnow.com/">LkldNow</a></small></p>
-<h2><a href="https://www.lkldnow.com/tutoring-hot-meals-and-ai-proof-trades-polks-free-after-school-boys-girls-clubs/">Tutoring, Hot Meals, and ‘AI-Proof’ Trades: Polk’s Free After-School Boys &amp; Girls Clubs</a></h2>
-<p class="byline"><small>By Sarah Semon</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.lkldnow.com/support/">Donate</a></span></p>
-<a class="shot" href="https://www.lkldnow.com/tutoring-hot-meals-and-ai-proof-trades-polks-free-after-school-boys-girls-clubs/" tabindex="-1" aria-hidden="true"><img src="../img/d60ab20dafd4570270ad758ea2259b2696156479.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>As Polk County students head back to the classroom, families face a familiar after-school hours scramble. Boys &amp; Girls Clubs of Polk County helps ease the strain.</p>
-<p class="more"><a href="https://www.lkldnow.com/tutoring-hot-meals-and-ai-proof-trades-polks-free-after-school-boys-girls-clubs/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://checkout.fundjournalism.org/memberform?org_id=oakland&amp;campaign=7010b0000014AXMAA2">Donate</a></aside>
+<p class="source"><a href="https://oaklandside.org/"><strong>The Oaklandside</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T16:00:00+00:00" data-pub="9:00 AM PDT">Mon, Aug 24 @ 9AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Oakland&state=CA">Oakland</a></p>
+<h2><a href="https://oaklandside.org/2026/08/24/ousd-banned-cellphones-are-chromebooks-next/">OUSD banned cellphones. Are Chromebooks next?</a></h2>
+<p class="byline">By Ashley McBride</p>
+<a class="shot" href="https://oaklandside.org/2026/08/24/ousd-banned-cellphones-are-chromebooks-next/" tabindex="-1" aria-hidden="true"><img src="../img/6f710423ab312de0ef230cab42e830d43ac58489.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>OUSD banned cellphones. Are Chromebooks next? A proposed policy, echoing Los Angeles and San Diego, would forbid students from using devices during their free time and require district leaders to create guidelines for next year. <a class="lozenge more" href="https://oaklandside.org/2026/08/24/ousd-banned-cellphones-are-chromebooks-next/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T10:01:00+00:00" data-pub="12:01 AM HST">Monday, August 24, 2026 at 12:01 AM HST</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>HI / Statewide / <a href="https://www.civilbeat.org/">Honolulu Civil Beat</a></small></p>
-<h2><a href="https://www.civilbeat.org/2026/08/white-kids-sued-kamehameha-native-hawaiians-cant-get-in-either/">White Kids Sued Kamehameha. Native Hawaiians Can’t Get In Either</a></h2>
-<p class="byline"><small>By &quot;Blaze Lovell&quot;</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://civilbeat.fundjournalism.org/?amount=15&amp;campaign=701UI00000BcKdj&amp;frequency=monthly">Donate</a></span></p>
-<a class="shot" href="https://www.civilbeat.org/2026/08/white-kids-sued-kamehameha-native-hawaiians-cant-get-in-either/" tabindex="-1" aria-hidden="true"><img src="../img/7af8d43390198b3bba542d3427151a4f512c67ec.jpg" alt="" width="300" height="210" loading="lazy" decoding="async"></a>
-<p>Gaining admission to the school — which can be a life-changing opportunity — is a competitive and challenging process for many Native Hawaiian families.</p>
-<p class="more"><a href="https://www.civilbeat.org/2026/08/white-kids-sued-kamehameha-native-hawaiians-cant-get-in-either/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://edsource.org">Support</a></aside>
+<p class="source"><a href="https://edsource.org"><strong>Edsource</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T15:57:52+00:00" data-pub="8:57 AM PDT">Mon, Aug 24 @ 8AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a></p>
+<h2><a href="https://edsource.org/updates/88-claim-sexual-abuse-in-san-diego-county-juvenile-hall-or-foster-care-in-new-lawsuits">88 claim sexual abuse in San Diego County juvenile hall or foster care in new lawsuits</a></h2>
+<p class="byline">By Emma Gallegos</p>
+<p>At least 88 former wards in juvenile hall or foster care in San Diego County have claimed that they were sexually abused by county employees in two new lawsuits, according to the San Diego Union-Tribune. This brings the number of pending lawsuits of childhood sexual abuse to over 300, which means county taxpayers could be on the hook for hundreds of millions of dollars. <a class="lozenge more" href="https://edsource.org/updates/88-claim-sexual-abuse-in-san-diego-county-juvenile-hall-or-foster-care-in-new-lawsuits">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T10:00:33+00:00" data-pub="5:00 AM CDT">Monday, August 24, 2026 at 5:00 AM CDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>IL / Evanston / <a href="https://dailynorthwestern.com/">Daily Northwestern</a></small></p>
-<h2><a href="https://dailynorthwestern.com/2026/08/24/top-stories/tenure-track-positions-for-nu-humanities-ph-d-graduates-decline-amid-challenging-academic-job-market/">Tenure-track positions for NU humanities Ph.D. graduates decline amid challenging academic job market</a></h2>
-<p class="byline"><small>By Ryoka Tanoi, Reporter</small><span class="aside"><a class="lozenge" href="../tags/college.html">College</a><a class="lozenge give" href="https://dailynorthwestern.com/2020/12/01/donate/support-the-daily/">Donate</a></span></p>
-<p>Sixth-year History Ph.D. candidate Xi Min Ling said he is ready to walk away from academia after completing his doctorate in history. “There are really still valid reasons for doing a humanities Ph.D.,” Ling said. “It’s just that getting a job is not one of them.” Humanities Ph.D. students face a historically challenging job market</p>
-<p class="more"><a href="https://dailynorthwestern.com/2026/08/24/top-stories/tenure-track-positions-for-nu-humanities-ph-d-graduates-decline-amid-challenging-academic-job-market/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://wilmingtonapple.com/">Support</a></aside>
+<p class="source"><a href="https://wilmingtonapple.com/"><strong>Wilmingon Apple</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T15:54:00+00:00" data-pub="11:54 AM EDT">Mon, Aug 24 @ 11AM EDT</time><a class="lozenge place" href="/search?state=MA">Massachusetts</a><a class="lozenge place" href="/search?place=Wilmington&state=MA">Wilmington</a></p>
+<h2><a href="https://wilmingtonapple.com/2026/08/24/this-weekend-wilmingtons-grace-chapel-to-host-free-back-to-school-bash-kids-shoe-giveaway-on-august-29/">THIS WEEKEND: Wilmington’s Grace Chapel To Host Free Back To School Bash &amp; Kids Shoe Giveaway On August 29</a></h2>
+<p class="byline">By Robert Hayes</p>
+<a class="shot" href="https://wilmingtonapple.com/2026/08/24/this-weekend-wilmingtons-grace-chapel-to-host-free-back-to-school-bash-kids-shoe-giveaway-on-august-29/" tabindex="-1" aria-hidden="true"><img src="../img/002d8f8f69f0135938576c34cc3f736a1de38c1d.jpg" alt="" width="300" height="300" loading="lazy" decoding="async"></a>
+<p>Grace Chapel plans to give away 1,825 pairs of new shoes across its four locations. <a class="lozenge more" href="https://wilmingtonapple.com/2026/08/24/this-weekend-wilmingtons-grace-chapel-to-host-free-back-to-school-bash-kids-shoe-giveaway-on-august-29/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T10:00:23+00:00" data-pub="6:00 AM EDT">Monday, August 24, 2026 at 6:00 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>PA / Philadelphia / <a href="https://thephiladelphiacitizen.org/about/">The Philadelphia Citizen</a></small></p>
-<h2><a href="https://thephiladelphiacitizen.org/help-philly-schools/">How to Help Schools, Students and Teachers</a></h2>
-<p class="byline"><small>By Jessica Blatt Press</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://thephiladelphiacitizen.org/donate/">Donate</a></span></p>
-<a class="shot" href="https://thephiladelphiacitizen.org/help-philly-schools/" tabindex="-1" aria-hidden="true"><img src="../img/c729ebf3cd3a8caa53d094660ab5b2f7833a352c.jpg" alt="" width="480" height="243" loading="lazy" decoding="async"></a>
-<p>School’s in session. (And somewhat suddenly.) For Philadelphia families with students — and anyone who cares about kids, education, safety, even transportation to school — there’s plenty of help needed. Our city’s seemingly endless public education crises, exacerbated by poor building conditions, and lacks of: teachers, bus drivers, support staff, materials, even, as of next … Continue reading How</p>
-<p class="more"><a href="https://thephiladelphiacitizen.org/help-philly-schools/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://wilmingtonapple.com/">Support</a></aside>
+<p class="source"><a href="https://wilmingtonapple.com/"><strong>Wilmingon Apple</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T15:53:00+00:00" data-pub="11:53 AM EDT">Mon, Aug 24 @ 11AM EDT</time><a class="lozenge place" href="/search?state=MA">Massachusetts</a><a class="lozenge place" href="/search?place=Wilmington&state=MA">Wilmington</a></p>
+<h2><a href="https://wilmingtonapple.com/2026/08/24/wilmingtons-september-2026-school-breakfast-lunch-calendar/">Wilmington’s September 2026 School Breakfast &amp; Lunch Calendar</a></h2>
+<p class="byline">By Robert Hayes</p>
+<a class="shot" href="https://wilmingtonapple.com/2026/08/24/wilmingtons-september-2026-school-breakfast-lunch-calendar/" tabindex="-1" aria-hidden="true"><img src="../img/322d0d663279882042fb23ae61c7fe6fe13917b5.jpg" alt="" width="358" height="300" loading="lazy" decoding="async"></a>
+<p>Find out what&#x27;s to eat at each Wilmington school this month. <a class="lozenge more" href="https://wilmingtonapple.com/2026/08/24/wilmingtons-september-2026-school-breakfast-lunch-calendar/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T10:00:00+00:00" data-pub="6:00 AM EDT">Monday, August 24, 2026 at 6:00 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>CT / Bristol / <a href="https://www.bristoledition.org/">The Bristol Edition</a></small></p>
-<h2><a href="https://bristoledition.org/blog/2026/08/24/school-attendance-has-bounced-back-in-ct-leaders-hail-leap-program/">School attendance has bounced back in CT. Leaders hail LEAP program</a></h2>
-<p class="byline"><small>By CT Mirror</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://bristoledition.fundjournalism.org/support-our-work/">Donate</a></span></p>
-<a class="shot" href="https://bristoledition.org/blog/2026/08/24/school-attendance-has-bounced-back-in-ct-leaders-hail-leap-program/" tabindex="-1" aria-hidden="true"><img src="../img/f95fbb714cf241bf9ff8a02e3769b2258c60a40d.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>by Theo Peck-Suzuki, CT Mirror August 19, 2026 It began in 2021, at the height of the COVID-19 pandemic: an effort, backed by federal dollars from the American Rescue Plan Act, to get Connecticut students back in school amid a spike in chronic absenteeism. The strategy: send volunteers directly into homes to build relationships with</p>
-<p class="more"><a href="https://bristoledition.org/blog/2026/08/24/school-attendance-has-bounced-back-in-ct-leaders-hail-leap-program/">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Also in <a href="https://ctmirror.org/2026/08/19/ct-leaders-cheer-5-years-of-leap-as-chronic-absenteeism-declines/">The Connecticut Mirror</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.mymcmedia.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://www.mymcmedia.org"><strong>MyMCMedia</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T15:52:40+00:00" data-pub="11:52 AM EDT">Mon, Aug 24 @ 11AM EDT</time><a class="lozenge place" href="/search?state=MD">Maryland</a><a class="lozenge place" href="/search?place=Silver+Spring&state=MD">Silver Spring</a></p>
+<h2><a href="https://www.mymcmedia.org/mmr-vaccine-school-requirement-montgomery-county/">Montgomery County answers MMR vaccine questions before school starts</a></h2>
+<p class="byline">By Alexandria Barnes</p>
+<a class="shot" href="https://www.mymcmedia.org/mmr-vaccine-school-requirement-montgomery-county/" tabindex="-1" aria-hidden="true"><img src="../img/412db22770a312e9d83ca857fc6cd8c475ed9ab6.jpg" alt="" width="480" height="375" loading="lazy" decoding="async"></a>
+<p>Montgomery County health officials are hearing confusion from parents about the measles vaccine. They want to clear things up before school starts. Nothing has changed. Parents have been asking healthcare <a class="lozenge more" href="https://www.mymcmedia.org/mmr-vaccine-school-requirement-montgomery-county/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T10:00:00+00:00" data-pub="6:00 AM EDT">Monday, August 24, 2026 at 6:00 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>MI / Detroit / <a href="https://www.bridgedetroit.com/">Bridge Detroit</a></small></p>
-<h2><a href="https://www.bridgedetroit.com/dpscd-special-education-changes-aim-to-help-families-did-they/">DPSCD special education changes aim to help families. Did they?</a></h2>
-<p class="byline"><small>By Micah Walker</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://bridgedetroit.fundjournalism.org/donate/?campaign=7011U000000m8QoQAI">Donate</a></span></p>
-<a class="shot" href="https://www.bridgedetroit.com/dpscd-special-education-changes-aim-to-help-families-did-they/" tabindex="-1" aria-hidden="true"><img src="../img/0f86133d0857061000f7974f9dd9715aa3e47202.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>The restructuring aimed to ensure every special education classroom was fully staffed and reduce travel time for families. But a year since DPSCD redesigned its special education department, reactions to the changes have been mixed.</p>
-<p class="more"><a href="https://www.bridgedetroit.com/dpscd-special-education-changes-aim-to-help-families-did-they/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://givebutter.com/local-news-that-answers-to-coastal-georgia-bdsovj">Donate</a></aside>
+<p class="source"><a href="https://thecurrentga.org/"><strong>The Current</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T15:34:23+00:00" data-pub="11:34 AM EDT">Mon, Aug 24 @ 11AM EDT</time><a class="lozenge place" href="/search?state=GA">Georgia</a><a class="lozenge place" href="/search?place=Savannah&state=GA">Savannah</a></p>
+<h2><a href="https://thecurrentga.org/2026/08/24/georgia-school-district-accused-of-illegally-delaying-enrollment-of-foster-children/">Georgia school district accused of illegally delaying enrollment of foster children</a></h2>
+<p class="byline">By Ross Williams/Georgia Recorder</p>
+<a class="shot" href="https://thecurrentga.org/2026/08/24/georgia-school-district-accused-of-illegally-delaying-enrollment-of-foster-children/" tabindex="-1" aria-hidden="true"><img src="../img/e50d093c4f390658181d6cfe8610730cd336fb6c.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>The Georgia Division of Family and Children Services accused the Muscogee County School District of violating law by misinterpreting a bill designed to expedite school enrollment for foster children. The Current is an inclusive nonprofit, non-partisan news organization providing in-depth watchdog journalism for Savannah and Coastal Georgia’s communities. <a class="lozenge more" href="https://thecurrentga.org/2026/08/24/georgia-school-district-accused-of-illegally-delaying-enrollment-of-foster-children/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T10:00:00+00:00" data-pub="5:00 AM CDT">Monday, August 24, 2026 at 5:00 AM CDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>TX / San Antonio / <a href="https://sanantonioreport.org/">San Antonio Report</a></small></p>
-<h2><a href="https://sanantonioreport.org/emerging-educator-pathway-teachers-saisd-schenck-elementary/">She graduated from SAISD a few months ago. Now she’s working in an SAISD classroom.</a></h2>
-<p class="byline"><small>By Xochilt Garcia</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://sanantonioreport.fundjournalism.org/donate/?campaign=7018Y000001aKFYQA2">Donate</a></span></p>
-<a class="shot" href="https://sanantonioreport.org/emerging-educator-pathway-teachers-saisd-schenck-elementary/" tabindex="-1" aria-hidden="true"><img src="../img/7fc1f64491c2eae2234958166db45ace2aab0779.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Sylvia Marquez graduated from SAISD a few months ago. Now she&#x27;s working in one of the district&#x27;s classrooms with hopes of becoming a teacher.She graduated from SAISD a few months ago. Now she’s working in an SAISD classroom. was first posted on August 24, 2026 at 5:00 am. ©2021 &quot;San Antonio Report&quot;. Use of this feed is for personal non-commercial use only. If you are not reading this article in yo</p>
-<p class="more"><a href="https://sanantonioreport.org/emerging-educator-pathway-teachers-saisd-schenck-elementary/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://phinneywood.com/2026/08/donate-school-supplies-for-local-families/">Donate</a></aside>
+<p class="source"><a href="https://PhinneyWood.com"><strong>PhinneyWood.com</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T15:30:00+00:00" data-pub="8:30 AM PDT">Mon, Aug 24 @ 8AM PDT</time><a class="lozenge place" href="/search?state=WA">Washington</a><a class="lozenge place" href="/search?place=Seattle&state=WA">Seattle</a></p>
+<h2><a href="https://phinneywood.com/2026/08/dance-fremont-fall-registration-is-open/">Dance Fremont Celebrates 30 Years and Opens Registration for Fall Classes</a></h2>
+<p class="byline">By Guest Writer</p>
+<a class="shot" href="https://phinneywood.com/2026/08/dance-fremont-fall-registration-is-open/" tabindex="-1" aria-hidden="true"><img src="../img/a1d3d4c7d947f5efc1e25cce53da0e44696fd1a0.jpg" alt="" width="480" height="343" loading="lazy" decoding="async"></a>
+<p>As summer winds down and families begin settling into back-to-school routines, Dance Fremont is inviting youth and adult students to register for its 2026-2027 school year program. Fall classes begin <a class="lozenge more" href="https://phinneywood.com/2026/08/dance-fremont-fall-registration-is-open/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T09:56:00+00:00" data-pub="4:56 AM CDT">Monday, August 24, 2026 at 4:56 AM CDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>OK / Tulsa / <a href="https://tulsaflyer.org/">Tulsa Flyer</a></small></p>
-<h2><a href="https://tulsaflyer.org/2026/08/24/schools-families/post/meet-young-teachers-corps-members-dedicating-time-tps/">Meet the young teachers and corps members dedicating their time to Tulsa Public Schools this year</a></h2>
-<p class="byline"><small>By Anna Colletto</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://tulsaflyer.org/donate/">Donate</a></span></p>
-<a class="shot" href="https://tulsaflyer.org/2026/08/24/schools-families/post/meet-young-teachers-corps-members-dedicating-time-tps/" tabindex="-1" aria-hidden="true"><img src="../img/70177fd1c9a97e71706ea1d37113bc88cd8c74f8.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>Many of the Teach for America and City Year service members hope to find purpose and impact in Tulsa’s classrooms this year.</p>
-<p class="more"><a href="https://tulsaflyer.org/2026/08/24/schools-families/post/meet-young-teachers-corps-members-dedicating-time-tps/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/college.html">College</a><a class="lozenge give" href="https://www.globeslcc.com/">Support</a></aside>
+<p class="source"><a href="https://www.globeslcc.com/"><strong>The Globe</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T15:26:03+00:00" data-pub="9:26 AM MDT">Mon, Aug 24 @ 9AM MDT</time><a class="lozenge place" href="/search?state=UT">Utah</a><a class="lozenge place" href="/search?place=Salt+Lake+City&state=UT">Salt Lake City</a></p>
+<h2><a href="https://www.globeslcc.com/2026/08/24/five-elective-classes-without-prerequisites/">Unexpected elective classes to liven up your schedule</a></h2>
+<p class="byline">By glober</p>
+<p>Elective classes give students a chance to try different areas of study and even help them figure out what career they want to pursue. <a class="lozenge more" href="https://www.globeslcc.com/2026/08/24/five-elective-classes-without-prerequisites/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T09:50:00+00:00" data-pub="5:50 AM EDT">Monday, August 24, 2026 at 5:50 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>MA / Franklin / <a href="https://www.franklinmatters.org/">Franklin Matters</a></small></p>
-<h2><a href="https://feeds.feedblitz.com/~/968163638/0/franklinmatters.html">Franklin School Committee agenda for meeting Tuesday, August 25, 2026</a></h2>
-<p class="byline"><small>By Steve Sherlock (noreply@blogger.com)</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.franklinmatters.org/search/label/fund%20raising">Donate</a></span></p>
-<p>Franklin School Committee August 25, 2026 = 7:00 PM Municipal Building – Council Chambers Call to OrderDr. Griffith Announcements from the Chair Pledge of Allegiance Moment of Silence I.Routine Business A.Review of Agenda B.Payment of BillsMr. Callaghan C.PayrollDr. Griffith D.FHS Student Representative Comments E.Superintendent’s Report II.Guests/Presentations A.Introduce New Administrators B.HR </p>
-<p class="more"><a href="https://feeds.feedblitz.com/~/968163638/0/franklinmatters.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://donate.stripe.com/4gw4h6f7o6MObcIfZ2">Donate</a></aside>
+<p class="source"><a href="https://www.richmonder.org/"><strong>The Richmonder</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T15:25:50+00:00" data-pub="11:25 AM EDT">Mon, Aug 24 @ 11AM EDT</time><a class="lozenge place" href="/search?state=VA">Virginia</a><a class="lozenge place" href="/search?place=Richmond&state=VA">Richmond</a></p>
+<h2><a href="https://www.richmonder.org/mold-found-on-laptops-music-equipment-at-barack-obama-elementary-as-school-prepares-to-reopen/">Barack Obama Elementary will close indefinitely after mold is found in art room and on computers</a></h2>
+<p class="byline">By Victoria A. Ifatusin</p>
+<a class="shot" href="https://www.richmonder.org/mold-found-on-laptops-music-equipment-at-barack-obama-elementary-as-school-prepares-to-reopen/" tabindex="-1" aria-hidden="true"><img src="../img/8ac787a128ce1e555764f059412485e63773c611.jpg" alt="" width="480" height="313" loading="lazy" decoding="async"></a>
+<p>The school’s reopening is uncertain. <a class="lozenge more" href="https://www.richmonder.org/mold-found-on-laptops-music-equipment-at-barack-obama-elementary-as-school-prepares-to-reopen/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T09:30:57+00:00" data-pub="5:30 AM EDT">Monday, August 24, 2026 at 5:30 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>KY / Statewide / <a href="https://kentuckylantern.com/">Kentucky Lantern</a></small></p>
-<h2><a href="https://kentuckylantern.com/2026/08/24/a-new-visa-rule-will-hurt-kentuckys-universities-and-americas-lead-in-science/">A new visa rule will hurt Kentucky’s universities — and America’s lead in science</a></h2>
-<p class="byline"><small>By Kumble Subbaswamy</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://kentuckylantern.com/">Support</a></span></p>
-<a class="shot" href="https://kentuckylantern.com/2026/08/24/a-new-visa-rule-will-hurt-kentuckys-universities-and-americas-lead-in-science/" tabindex="-1" aria-hidden="true"><img src="../img/1d912db07d5c199789ad69421965fce508db6dd0.jpg" alt="" width="480" height="272" loading="lazy" decoding="async"></a>
-<p>When I led major research universities, I saw a simple truth up close: in the physical sciences, engineering, and computing, we could not have staffed our laboratories or taught our core courses without international graduate students. That is not sentiment; it is arithmetic. And a rule the Department of Homeland Security finalized in July now threatens that</p>
-<p class="more"><a href="https://kentuckylantern.com/2026/08/24/a-new-visa-rule-will-hurt-kentuckys-universities-and-americas-lead-in-science/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://theportlandmedium.com/news/national-news/new-york-fund-apologizes-for-role-in-tuskegee-syphilis-study/">Donate</a></aside>
+<p class="source"><a href="https://theportlandmedium.com/"><strong>Portland Medium</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T15:20:00+00:00" data-pub="8:20 AM PDT">Mon, Aug 24 @ 8AM PDT</time><a class="lozenge place" href="/search?state=OR">Oregon</a><a class="lozenge place" href="/search?place=Portland&state=OR">Portland</a></p>
+<h2><a href="https://theportlandmedium.com/news/national-news/drones-school-shooting-security-industry/">Drones Are The Latest Buzzy Tech Aimed At Stopping A School Shooting. They’re Part Of A Billion-Dollar Industry</a></h2>
+<p class="byline">By Josiah Scott</p>
+<a class="shot" href="https://theportlandmedium.com/news/national-news/drones-school-shooting-security-industry/" tabindex="-1" aria-hidden="true"><img src="../img/a039a11260fd31c82ca0854a581e717eaff6c303.jpg" alt="" width="480" height="312" loading="lazy" decoding="async"></a>
+<p>As the $4 billion school shooting security industry continues to grow, some school districts are turning to a controversial new technology to protect students: remotely piloted drones. <a class="lozenge more" href="https://theportlandmedium.com/news/national-news/drones-school-shooting-security-industry/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://seattlemedium.com/drones-school-shooting-security-industry/">Seattle Medium</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T09:30:00+00:00" data-pub="5:30 AM EDT">Monday, August 24, 2026 at 5:30 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>MD / Baltimore / <a href="https://www.thebaltimorebanner.com/">The Baltimore Banner</a></small></p>
-<h2><a href="https://www.thebanner.com/education/k-12-schools/maryland-school-math-curriculum-changes-SE4DRKGFBZB2TIJBAHHQGY56JA/">Maryland schools will teach math differently this year. Here’s what to expect.</a></h2>
-<p class="byline"><small>By Liz Bowie</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.thebaltimorebanner.com/give">Donate</a></span></p>
-<a class="shot" href="https://www.thebanner.com/education/k-12-schools/maryland-school-math-curriculum-changes-SE4DRKGFBZB2TIJBAHHQGY56JA/" tabindex="-1" aria-hidden="true"><img src="../img/ac437586231ac2341af268a04b5de66d8a2d0bd9.jpg" alt="" width="480" height="319" loading="lazy" decoding="async"></a>
-<p>Parents will be happy to know they shouldn’t have to rearrange their evenings to help their children with math homework.</p>
-<p class="more"><a href="https://www.thebanner.com/education/k-12-schools/maryland-school-math-curriculum-changes-SE4DRKGFBZB2TIJBAHHQGY56JA/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://saobserver.com/">Support</a></aside>
+<p class="source"><a href="https://saobserver.com/"><strong>San Antonio Observer</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T15:14:55+00:00" data-pub="10:14 AM CDT">Mon, Aug 24 @ 10AM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=San+Antonio&state=TX">San Antonio</a></p>
+<h2><a href="https://saobserver.com/southern-universitys-human-jukebox-leads-gaps-new-denim-campaign/">Southern University’s Human Jukebox Leads Gap’s New Denim Campaign</a></h2>
+<p class="byline">By Observer Staff</p>
+<a class="shot" href="https://saobserver.com/southern-universitys-human-jukebox-leads-gaps-new-denim-campaign/" tabindex="-1" aria-hidden="true"><img src="../img/8a062077790fa23b18d2283ba9b0d4c61ab8e138.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+<p>The Legendary HBCU Marching Band Pairs Its Signature Sound With Custom Blue-And-Gold Denim In A National Spotlight Southern University’s Human Jukebox is taking its sound from the stadium to the national fashion stage as the centerpiece of Gap’s latest denim campaign. The Baton Rouge-based HBCU marching band performs its own arrangement of Robyn’s “Dancing on <a class="lozenge more" href="https://saobserver.com/southern-universitys-human-jukebox-leads-gaps-new-denim-campaign/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T09:00:27+00:00" data-pub="4:00 AM CDT">Monday, August 24, 2026 at 4:00 AM CDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>LA / Statewide / <a href="https://lailluminator.com/">Lousiana Illuminator</a></small></p>
-<h2><a href="https://lailluminator.com/2026/08/24/southern-university-dress-code/">Southern University board chairman wants dress code for its campuses</a></h2>
-<p class="byline"><small>By Piper Hutchinson</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://lailluminator.com/">Support</a></span></p>
-<a class="shot" href="https://lailluminator.com/2026/08/24/southern-university-dress-code/" tabindex="-1" aria-hidden="true"><img src="../img/95ebd2f465be8caf4ed04ebfbe757fb205932613.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>The leader of Southern University’s Board of Supervisors said he wants the system to follow the lead of other historically Black colleges and universities and adopt a dress code. Board chairman Tony Clayton, who’s also the district attorney for Iberville, West Baton Rouge and Pointe Coupee parishes, said he wants to pull together the chancellors</p>
-<p class="more"><a href="https://lailluminator.com/2026/08/24/southern-university-dress-code/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://gofund.me/f20a37c1">Donate</a></aside>
+<p class="source"><a href="https://www.harlemcommunitynews.com/"><strong>Harlem Community News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T15:00:30+00:00" data-pub="11:00 AM EDT">Mon, Aug 24 @ 11AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Harlem&state=NY">Harlem</a></p>
+<h2><a href="https://www.harlemcommunitynews.com/whats-new-in-harlem/">What’s New in Harlem: A Neighborhood in Constant Motion</a></h2>
+<p class="byline">By ginasmith2610@gmail.com</p>
+<p>Harlem has never stood still. From the cultural explosion of the Harlem Renaissance to today’s wave of new restaurants, businesses, and development projects, the neighborhood is defined as much by <a class="lozenge more" href="https://www.harlemcommunitynews.com/whats-new-in-harlem/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T09:00:00+00:00" data-pub="5:00 AM EDT">Monday, August 24, 2026 at 5:00 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>NC / Statewide / <a href="https://www.ednc.org/">EdNC (EducationNC)</a></small></p>
-<h2><a href="https://www.ednc.org/perspective-leading-beyond-the-principals-office/">Perspective | Leading beyond the principal’s office</a></h2>
-<p class="byline"><small>By Z. Smith Reynolds Foundation</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.ednc.org/donate/">Donate</a></span></p>
-<p>Don’t ask Patrick Greene, principal of Greene Central High School in Snow Hill, about school dress codes. “I hate them!” he said with a laugh. But ask him about the things that really matter — creating opportunity for students, building a</p>
-<p class="more"><a href="https://www.ednc.org/perspective-leading-beyond-the-principals-office/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.sunjournal.com/subscription-plans/">Subscribe</a></aside>
+<p class="source"><a href="https://www.sunjournal.com/"><strong>Sun Journal</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T14:58:26+00:00" data-pub="10:58 AM EDT">Mon, Aug 24 @ 10AM EDT</time><a class="lozenge place" href="/search?state=ME">Maine</a><a class="lozenge place" href="/search?place=Lewiston&state=ME">Lewiston</a></p>
+<h2><a href="https://www.sunjournal.com/2026/08/24/lewiston-announces-november-candidates-for-mayor-city-council-and-school-committee/">Lewiston announces November candidates for mayor, City Council and School Committee</a></h2>
+<p class="byline">By Joe Charpentier</p>
+<a class="shot" href="https://www.sunjournal.com/2026/08/24/lewiston-announces-november-candidates-for-mayor-city-council-and-school-committee/" tabindex="-1" aria-hidden="true"><img src="../img/a6e3dc0a7275424764e2c78e9cc3e9642bc7b5bc.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>This year&#x27;s Nov. 3 local ballot consists of 8 races: mayor; councilors for Wards 2, 4 and 6; and school board members for Wards 1, 3, 5 and 7. <a class="lozenge more" href="https://www.sunjournal.com/2026/08/24/lewiston-announces-november-candidates-for-mayor-city-council-and-school-committee/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T09:00:00+00:00" data-pub="5:00 AM EDT">Monday, August 24, 2026 at 5:00 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>NC / Statewide / <a href="https://www.ednc.org/">EdNC (EducationNC)</a></small></p>
-<h2><a href="https://www.ednc.org/beyond-policy-why-literacy-reform-is-entering-a-new-phase/">Beyond policy: Why literacy reform is entering a new phase</a></h2>
-<p class="byline"><small>By Amy Rhyne</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.ednc.org/donate/">Donate</a></span></p>
-<p>Over the past several years, states across the country have rewritten early literacy policy at an unprecedented pace. Science of reading legislation, teacher training requirements, instructional material reforms, and early intervention initiatives have reshaped the national literacy landscape. Today, nearly</p>
-<p class="more"><a href="https://www.ednc.org/beyond-policy-why-literacy-reform-is-entering-a-new-phase/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://alamedapost.com/donate">Donate</a></aside>
+<p class="source"><a href="https://alamedapost.com/"><strong>Alameda Post</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T14:45:00+00:00" data-pub="7:45 AM PDT">Mon, Aug 24 @ 7AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Alameda&state=CA">Alameda</a></p>
+<h2><a href="https://alamedapost.com/news/simon-lays-out-progressive-priorities-at-alameda-town-hall/">Simon Lays Out Progressive Priorities at Alameda Town Hall</a></h2>
+<p class="byline">By Karin K. Jensen</p>
+<a class="shot" href="https://alamedapost.com/news/simon-lays-out-progressive-priorities-at-alameda-town-hall/" tabindex="-1" aria-hidden="true"><img src="../img/435541410d7fa6f20d92c133f0293aa2cd19cf17.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>At her town hall meeting at Alameda High School, Congresswoman Lateefah Simon laid out a broad progressive agenda. Karin K. Jensen reports that Simon pledged to fight for disability rights, affordable housing, and healthcare. She also opposed war, cuts to social programs, and coal in Oakland. <a class="lozenge more" href="https://alamedapost.com/news/simon-lays-out-progressive-priorities-at-alameda-town-hall/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T08:49:34+00:00" data-pub="4:49 AM EDT">Monday, August 24, 2026 at 4:49 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>PA / Statewide / <a href="https://www.penncapital-star.com/">Pennsylvania Capital-Star</a></small></p>
-<h2><a href="https://penncapital-star.com/education/philadelphia-to-make-digital-hall-pass-and-student-tracking-system-available-at-all-schools/">Philadelphia to make digital hall pass and student tracking system available at all schools</a></h2>
-<p class="byline"><small>By Sammy Caiola, Chalkbeat</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.penncapital-star.com/">Support</a></span></p>
-<a class="shot" href="https://penncapital-star.com/education/philadelphia-to-make-digital-hall-pass-and-student-tracking-system-available-at-all-schools/" tabindex="-1" aria-hidden="true"><img src="../img/046ff36615801a2cfda8c2a749d67c280d30f5d5.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>The Philadelphia school district is making a digital hall pass available at all schools for the upcoming year that allows administrators to closely track students’ whereabouts.</p>
-<p class="more"><a href="https://penncapital-star.com/education/philadelphia-to-make-digital-hall-pass-and-student-tracking-system-available-at-all-schools/">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Also in <a href="https://www.chalkbeat.org/philadelphia/2026/08/20/virtual-hall-pass-tracks-students/">Chalkbeat</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://gofund.me/f20a37c1">Donate</a></aside>
+<p class="source"><a href="https://www.harlemcommunitynews.com/"><strong>Harlem Community News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T14:43:40+00:00" data-pub="10:43 AM EDT">Mon, Aug 24 @ 10AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Harlem&state=NY">Harlem</a></p>
+<h2><a href="https://www.harlemcommunitynews.com/brooklyn-events/">Brooklyn Events: Where Every Neighborhood Has Its Own Rhythm</a></h2>
+<p class="byline">By ginasmith2610@gmail.com</p>
+<p>Brooklyn is often described as a city within a city, and its event scene proves the point. From Bed-Stuy to Bushwick, Flatbush to Fort Greene, Brooklyn events reflect the borough’s <a class="lozenge more" href="https://www.harlemcommunitynews.com/brooklyn-events/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T08:05:00+00:00" data-pub="4:05 AM EDT">Monday, August 24, 2026 at 4:05 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>VA / Roanoke / <a href="https://cardinalnews.org/">Cardinal News</a></small></p>
-<h2><a href="https://cardinalnews.org/2026/08/24/canvas-is-back-in-the-classroom-despite-security-concerns-following-hack/">Canvas is back in the classroom despite security concerns following hack</a></h2>
-<p class="byline"><small>By Tad Dickens and Meghan Mangrum</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://give.donorbox.org/o/cardinal-news">Donate</a></span></p>
-<a class="shot" href="https://cardinalnews.org/2026/08/24/canvas-is-back-in-the-classroom-despite-security-concerns-following-hack/" tabindex="-1" aria-hidden="true"><img src="../img/32ce61fc7ad98775f784661162ff9804fa460ab5.jpg" alt="" width="480" height="222" loading="lazy" decoding="async"></a>
-<p>Experts say it likely isn’t feasible for local school divisions to build their own online learning platforms despite security concerns with third-party vendors.</p>
-<p class="more"><a href="https://cardinalnews.org/2026/08/24/canvas-is-back-in-the-classroom-despite-security-concerns-following-hack/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://alaska-native-news.com/">Support</a></aside>
+<p class="source"><a href="https://alaska-native-news.com/"><strong>Alaska Native News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T14:02:56+00:00" data-pub="6:02 AM AKDT">Mon, Aug 24 @ 6AM AKDT</time><a class="lozenge place" href="/search?state=AK">Alaska</a></p>
+<h2><a href="https://alaska-native-news.com/uncorking-the-secrets-of-a-tiny-bottle-of-volcanic-ash/85823/">Uncorking the secrets of a tiny bottle of volcanic ash</a></h2>
+<p class="byline">By Rod Boyce-Geophysical Institute,</p>
+<p>I opened the living room window in our rented Anchorage waterfront condominium on what began as a mild mid-August day in 1992. I don’t remember what I was expecting when I looked across Cook Inlet that evening, but it wasn’t my face being speckled with volcanic ash. Mount Spurr, 78 miles west of our living <a class="lozenge more" href="https://alaska-native-news.com/uncorking-the-secrets-of-a-tiny-bottle-of-volcanic-ash/85823/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T08:05:00+00:00" data-pub="4:05 AM EDT">Monday, August 24, 2026 at 4:05 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>VA / Roanoke / <a href="https://cardinalnews.org/">Cardinal News</a></small></p>
-<h2><a href="https://cardinalnews.org/2026/08/24/extra-credit-washington-lee-expands-free-tuition-program/">Extra Credit: Washington &amp; Lee expands free tuition program</a></h2>
-<p class="byline"><small>By Meghan Mangrum</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://give.donorbox.org/o/cardinal-news">Donate</a></span></p>
-<a class="shot" href="https://cardinalnews.org/2026/08/24/extra-credit-washington-lee-expands-free-tuition-program/" tabindex="-1" aria-hidden="true"><img src="../img/41262f20dee65ee4f159b0fd94205d56690b6bdf.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Plus: Emory &amp; Henry welcomes its largest class ever, Roanoke County Public Schools wants feedback on its strategic plan and Roanoke College launches a leadership program.</p>
-<p class="more"><a href="https://cardinalnews.org/2026/08/24/extra-credit-washington-lee-expands-free-tuition-program/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.idahoednews.org/features/spelling-it-out/spelling-it-out-fund-balances/">Donate</a></aside>
+<p class="source"><a href="https://www.idahoednews.org/"><strong>Idaho Education News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T14:00:28+00:00" data-pub="8:00 AM MDT">Mon, Aug 24 @ 8AM MDT</time><a class="lozenge place" href="/search?state=ID">Idaho</a></p>
+<h2><a href="https://www.idahoednews.org/news/bachelor-degree-in-high-school-raises-questions/">Idaho private school offers bachelor’s degrees before students graduate high school</a></h2>
+<p class="byline">By Kaeden Lincoln</p>
+<a class="shot" href="https://www.idahoednews.org/news/bachelor-degree-in-high-school-raises-questions/" tabindex="-1" aria-hidden="true"><img src="../img/77da1d03a32bc8803cdd749a63b83b3fb9778722.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>But some of those university relationships appear tenuous. When Idaho Education News reached out to the institutions that offer courses through the program, one president denied having a “partnership” with the company—and threatened to sue EdNews if it described the arrangement that way. <a class="lozenge more" href="https://www.idahoednews.org/news/bachelor-degree-in-high-school-raises-questions/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T08:00:00+00:00" data-pub="4:00 AM EDT">Monday, August 24, 2026 at 4:00 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>ME / Central Maine / <a href="https://www.centralmaine.com/times-record/">Times Record</a></small></p>
-<h2><a href="https://www.centralmaine.com/2026/08/24/missing-items-sank-rsu-9-student-homelessness-grant-application/">Missing items sank Mt. Blue student homelessness grant application</a></h2>
-<p class="byline"><small>By Rebecca Richard</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.centralmaine.com/subscription-plans/">Subscribe</a></span></p>
-<a class="shot" href="https://www.centralmaine.com/2026/08/24/missing-items-sank-rsu-9-student-homelessness-grant-application/" tabindex="-1" aria-hidden="true"><img src="../img/47c82122e45c3f4022f1c712944e2dc08ef09c5d.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>MaineHousing says RSU 9’s $350,000 student homelessness grant application did not advance because seven required submission items were missing.</p>
-<p class="more"><a href="https://www.centralmaine.com/2026/08/24/missing-items-sank-rsu-9-student-homelessness-grant-application/">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Also in <a href="https://www.sunjournal.com/2026/08/24/missing-items-sank-rsu-9-student-homelessness-grant-application/">Sun Journal</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://chicosol.org/donate">Donate</a></aside>
+<p class="source"><a href="https://chicosol.org"><strong>Chico Sol</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T14:00:00+00:00" data-pub="7:00 AM PDT">Mon, Aug 24 @ 7AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Sacramento+Valley&state=CA">Sacramento Valley</a></p>
+<h2><a href="https://chicosol.org/2026/08/24/what-happened-to-free-speech-at-chico-state/">What happened to free speech at Chico State?</a></h2>
+<p class="byline">By Adin White</p>
+<a class="shot" href="https://chicosol.org/2026/08/24/what-happened-to-free-speech-at-chico-state/" tabindex="-1" aria-hidden="true"><img src="../img/ea7f5c0aa6f15ff27d1ff224d7e0873447678893.jpg" alt="" width="280" height="300" loading="lazy" decoding="async"></a>
+<p>ChicoSol runs guest commentary and analysis on Mondays. In early 2025, a social media post advertised a sit-in protest at an upcoming job fair on the Chico State campus. Immigration and Customs Enforcement (ICE) would be present at the fair to recruit students. The social media post triggered an email to students that warned that ... What happened to free speech at Chico State? <a class="lozenge more" href="https://chicosol.org/2026/08/24/what-happened-to-free-speech-at-chico-state/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T07:10:00+00:00" data-pub="12:10 AM PDT">Monday, August 24, 2026 at 12:10 AM PDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>CA / Statewide / <a href="https://edsource.org">Edsource</a></small></p>
-<h2><a href="https://edsource.org/2026/how-three-bills-to-close-californias-student-achievement-gap-ran-aground/764576">How three bills to close California’s student achievement gap ran aground</a></h2>
-<p class="byline"><small>By John Fensterwald</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://edsource.org">Support</a></span></p>
-<p>Bills that may look like they have momentum can meet an unexplained death in an appropriations committee; that’s what happened to three of four proposed bills focusing on closing the achievement gap.</p>
-<p class="more"><a href="https://edsource.org/2026/how-three-bills-to-close-californias-student-achievement-gap-ran-aground/764576">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.sfltimes.com/category/business/donate">Donate</a></aside>
+<p class="source"><a href="https://www.sfltimes.com/"><strong>South Florida Times</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T13:35:52+00:00" data-pub="9:35 AM EDT">Mon, Aug 24 @ 9AM EDT</time><a class="lozenge place" href="/search?state=FL">Florida</a><a class="lozenge place" href="/search?place=Fort+Lauderdale&state=FL">Fort Lauderdale</a></p>
+<h2><a href="https://www.sfltimes.com/news/technology/black-students-disproportionately-falsely-accused-of-cheating-using-ai-for-important-assignments">Black students disproportionately falsely accused of cheating using AI for assignments</a></h2>
+<p class="byline">By David Snelling</p>
+<a class="shot" href="https://www.sfltimes.com/news/technology/black-students-disproportionately-falsely-accused-of-cheating-using-ai-for-important-assignments" tabindex="-1" aria-hidden="true"><img src="../img/487736f298adcc878f2de8c7ddc64f3fa047ad9d.jpg" alt="" width="480" height="322" loading="lazy" decoding="async"></a>
+<p>Photo courtesy of www.freepick.com By David L. Snelling Black high school students said they have been unfairly accused of cheating using Al to finish their <a class="lozenge more" href="https://www.sfltimes.com/news/technology/black-students-disproportionately-falsely-accused-of-cheating-using-ai-for-important-assignments">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T05:00:00+00:00" data-pub="1:00 AM EDT">Monday, August 24, 2026 at 1:00 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>PA / Philadelphia / <a href="https://resolvephilly.org/">Resolve Philly</a></small></p>
-<h2><a href="https://resolvephilly.org/gih/philadelphia-community-fridges-food-insecurity/">How Philly’s Community Fridges grew from pandemic mutual aid to a hunger-relief lifeline</a></h2>
-<p class="byline"><small>By Rasheed Ajamu</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://givebutter.com/CXUnZH">Donate</a></span></p>
-<a class="shot" href="https://resolvephilly.org/gih/philadelphia-community-fridges-food-insecurity/" tabindex="-1" aria-hidden="true"><img src="../img/a00476f5a7f6a7fd7870606f7bbc00b78905f53b.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Across Philadelphia, community fridges that began as pandemic mutual aid projects are evolving into larger, more permanent food-support networks as organizers respond to rising hunger and dwindling resources.</p>
-<p class="more"><a href="https://resolvephilly.org/gih/philadelphia-community-fridges-food-insecurity/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.paypal.com/donate/?hosted_button_id=CSYL9VMKB2Y2E">Donate</a></aside>
+<p class="source"><a href="https://aframnews.com/"><strong>African-American News and Issues</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T13:14:18+00:00" data-pub="8:14 AM CDT">Mon, Aug 24 @ 8AM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=Houston&state=TX">Houston</a></p>
+<h2><a href="https://aframnews.com/education/hall-of-fame-administrator-ashley-robinson-as-athletic-director/">HALL OF FAME ADMINISTRATOR ASHLEY ROBINSON AS ATHLETIC DIRECTOR</a></h2>
+<p class="byline">By TSU -</p>
+<p>Texas Southern University announced Wednesday the hiring of two-time National Athletics Director of the Year Ashley Robinson as the new Vice President and Athletic Director. Robinson is one of the most accomplished and decorated athletics administrators in the country. He comes to Texas Southern after six transformative years at Jackson State University, where his leadership <a class="lozenge more" href="https://aframnews.com/education/hall-of-fame-administrator-ashley-robinson-as-athletic-director/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T05:00:00+00:00" data-pub="1:00 AM EDT">Monday, August 24, 2026 at 1:00 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>National / Education / <a href="https://hechingerreport.org/">The Hechinger Report</a></small></p>
-<h2><a href="https://hechingerreport.org/federal-tax-credits-for-school-choice-could-have-an-unexpected-beneficiary-public-schools/">Private schools have benefited from vouchers. Now public schools aim to cash in</a></h2>
-<p class="byline"><small>By Neal Morton</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://hechingerreport.org/support-the-hechinger-report/?utm_source=website&amp;utm_medium=homepage&amp;utm_campaign=header">Donate</a></span></p>
-<a class="shot" href="https://hechingerreport.org/federal-tax-credits-for-school-choice-could-have-an-unexpected-beneficiary-public-schools/" tabindex="-1" aria-hidden="true"><img src="../img/a43d12c3b365db85d348bc46addba727a1755a06.jpg" alt="" width="480" height="313" loading="lazy" decoding="async"></a>
-<p>Forget fun runs, PTA bake sales and Saturday morning car washes. The future of public school fundraising may soon look more like a payroll deduction. Or perhaps door-to-door campaigns each tax season asking filers to earmark donations to support nearby public schools. When President Donald Trump’s tax overhaul known as the One Big Beautiful Bill</p>
-<p class="more"><a href="https://hechingerreport.org/federal-tax-credits-for-school-choice-could-have-an-unexpected-beneficiary-public-schools/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://thehilltoponline.com/the-hilltop-digital/donations/">Donate</a></aside>
+<p class="source"><a href="https://thehilltoponline.com/"><strong>Hilltop</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T13:00:00+00:00" data-pub="9:00 AM EDT">Mon, Aug 24 @ 9AM EDT</time><a class="lozenge place" href="/search?state=DC">Washington, D.C.</a><a class="lozenge place" href="/search?place=Washington&state=DC">Washington</a></p>
+<h2><a href="https://thehilltoponline.com/2026/08/24/miss-howard-university-makes-strides-against-literary-crisis/">Miss Howard University Makes Strides Against Literary Crisis</a></h2>
+<p class="byline">By Aniya Northern</p>
+<p>Brown Kids Read is expanding to other universities as part of their goal to distribute one million books nationwide. <a class="lozenge more" href="https://thehilltoponline.com/2026/08/24/miss-howard-university-makes-strides-against-literary-crisis/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T05:00:00+00:00" data-pub="1:00 AM EDT">Monday, August 24, 2026 at 1:00 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>National / Education / <a href="https://hechingerreport.org/">The Hechinger Report</a></small></p>
-<h2><a href="https://hechingerreport.org/top-level-nurses-cant-finish-their-degrees-because-of-a-severe-shortage-of-mentors/">Top-level nurses can’t finish their degrees because of a severe shortage of mentors</a></h2>
-<p class="byline"><small>By Colleen Connolly</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://hechingerreport.org/support-the-hechinger-report/?utm_source=website&amp;utm_medium=homepage&amp;utm_campaign=header">Donate</a></span></p>
-<a class="shot" href="https://hechingerreport.org/top-level-nurses-cant-finish-their-degrees-because-of-a-severe-shortage-of-mentors/" tabindex="-1" aria-hidden="true"><img src="../img/cafd39aa41357522e11674ceb41d72ba8111676e.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>CHICAGO — Midway through her graduate nursing program, Yesenia Raithel Vargas made a desperate plea to a Facebook group for other moms in Chicago: Does anyone know a licensed therapist willing to let her sit in on sessions and work with their clients under their supervision? It was a strange ask in the therapy world,</p>
-<p class="more"><a href="https://hechingerreport.org/top-level-nurses-cant-finish-their-degrees-because-of-a-severe-shortage-of-mentors/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.paypal.com/donate/?hosted_button_id=Y2BGTBX294YEY">Donate</a></aside>
+<p class="source"><a href="https://www.kewaneevoice.com"><strong>The Kewanee Voice</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T12:40:03+00:00" data-pub="7:40 AM CDT">Mon, Aug 24 @ 7AM CDT</time><a class="lozenge place" href="/search?state=IL">Illinois</a><a class="lozenge place" href="/search?place=Kewanee&state=IL">Kewanee</a></p>
+<h2><a href="https://kewaneevoice.com/whs-class-of-76-honored-at-annual-meeting/">WHS Class of ‘76 honored at annual meeting</a></h2>
+<p class="byline">By Dave Clarke</p>
+<a class="shot" href="https://kewaneevoice.com/whs-class-of-76-honored-at-annual-meeting/" tabindex="-1" aria-hidden="true"><img src="../img/9677f98cf7abc96d435d7da5a3c45e4a604761a2.jpg" alt="" width="480" height="347" loading="lazy" decoding="async"></a>
+<p>Wethersfield High School’s Class of 1976 was honored for its special place in school history at the annual meeting of the Frank H. Craig Wethersfield Alumni Association held last Sunday in the school cafeteria. Seventy-two seniors walked across the stage on Thursday, May 27, 1976 when they were introduced as Wethersfield High School’s Bicentennial Class.… Continue reading WHS Class of ‘76 honored  <a class="lozenge more" href="https://kewaneevoice.com/whs-class-of-76-honored-at-annual-meeting/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T04:42:18+00:00" data-pub="12:42 AM EDT">Monday, August 24, 2026 at 12:42 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>KY / Northern Kentucky / <a href="https://www.nkytribune.com/">Northern Kentucky Tribune</a></small></p>
-<h2><a href="https://nkytribune.com/2026/08/wood-carving-showcase-returns-to-cold-spring-with-wood-carvers-artists-and-charitable-purposes/">Wood Carving Showcase returns to Cold Spring, with wood carvers, artists — and charitable purposes</a></h2>
-<p class="byline"><small>By Judy Clabes</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.nkytribune.com/">Support</a></span></p>
-<p>Staff report The River Valley Wood Carvers, a nonprofit serving the Greater Cincinnati region, will host the Ohio Valley Woodcarvers Expo 2026 on September 26-27, 10 a.m.-4 p.m. at the Elks Lodge Facility in Cold Spring. The two-day event brings together some of the region’s most accomplished wood carvers and wood burning artists for a</p>
-<p class="more"><a href="https://nkytribune.com/2026/08/wood-carving-showcase-returns-to-cold-spring-with-wood-carvers-artists-and-charitable-purposes/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://blockclubchicago.org/donate">Donate</a></aside>
+<p class="source"><a href="https://blockclubchicago.org/"><strong>Block Club Chicago</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T12:15:00+00:00" data-pub="7:15 AM CDT">Mon, Aug 24 @ 7AM CDT</time><a class="lozenge place" href="/search?state=IL">Illinois</a><a class="lozenge place" href="/search?place=Chicago&state=IL">Chicago</a></p>
+<h2><a href="https://blockclubchicago.org/2026/08/24/cps-black-student-success-plan-limps-forward-with-few-resources-little-guidance-from-city/">CPS’ Black Student Success Plan Limps Forward With Few Resources, Little Guidance</a></h2>
+<p class="byline">By Grace Asiegbu</p>
+<a class="shot" href="https://blockclubchicago.org/2026/08/24/cps-black-student-success-plan-limps-forward-with-few-resources-little-guidance-from-city/" tabindex="-1" aria-hidden="true"><img src="../img/508e53b7694e1c6958580c05a5792968f63704c4.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>A year after launching, the state-legislated plan to reduce educational inequities for Black Chicago students faces federal investigation and budget woes. <a class="lozenge more" href="https://blockclubchicago.org/2026/08/24/cps-black-student-success-plan-limps-forward-with-few-resources-little-guidance-from-city/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T04:34:02+00:00" data-pub="9:34 PM PDT">Sunday, August 23, 2026 at 9:34 PM PDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>CA / Statewide / <a href="https://edsource.org">Edsource</a></small></p>
-<h2><a href="https://edsource.org/2026/california-special-education-funding-crisis/764597">Special education funding model is failing California schools</a></h2>
-<p class="byline"><small>By EdSource Commentaries</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://edsource.org">Support</a></span></p>
-<p>California has promised students with disabilities the services they need, but school districts are increasingly struggling to fund and staff those services. It’s time for California and Washington to rethink how special education and student mental health are funded and delivered.</p>
-<p class="more"><a href="https://edsource.org/2026/california-special-education-funding-crisis/764597">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://ecori.org/giving/">Donate</a></aside>
+<p class="source"><a href="https://ecori.org/"><strong>ecoRI News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T12:04:05+00:00" data-pub="8:04 AM EDT">Mon, Aug 24 @ 8AM EDT</time><a class="lozenge place" href="/search?state=RI">Rhode Island</a><a class="lozenge place" href="/search?place=Providence&state=RI">Providence</a></p>
+<h2><a href="https://ecori.org/planning-board-to-consider-controversial-north-smithfield-subdivision/">Planning Board to Consider Controversial North Smithfield Subdivision</a></h2>
+<p class="byline">By Bonnie Phillips</p>
+<p>The proposed development off Douglas Pike includes a 126-house subdivision that would be built in 10 phases. <a class="lozenge more" href="https://ecori.org/planning-board-to-consider-controversial-north-smithfield-subdivision/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T04:03:00+00:00" data-pub="12:03 AM EDT">Monday, August 24, 2026 at 12:03 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>OH / Akron / <a href="https://signalakron.org/">Signal Akron</a></small></p>
-<h2><a href="https://signalakron.org/still-deciding-where-your-child-will-go-to-school-here-are-akron-families-options/">Still deciding where your child will go to school? Here are Akron families’ options</a></h2>
-<p class="byline"><small>By Carissa Woytach</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://signalnews.info/4fGEJIJ">Donate</a></span></p>
-<a class="shot" href="https://signalakron.org/still-deciding-where-your-child-will-go-to-school-here-are-akron-families-options/" tabindex="-1" aria-hidden="true"><img src="../img/419476c185e032fd44c2b6969a0e9da854131fe0.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>The school year is almost here, but Akron families still have options. Here’s what to know about enrollment, a new kindergarten age cutoff, community schools, EdChoice vouchers and homeschooling.</p>
-<p class="more"><a href="https://signalakron.org/still-deciding-where-your-child-will-go-to-school-here-are-akron-families-options/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://www.sltrib.com/">Support</a></aside>
+<p class="source"><a href="https://www.sltrib.com/"><strong>The Salt Lake Tribune</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T12:00:00+00:00" data-pub="6:00 AM MDT">Mon, Aug 24 @ 6AM MDT</time><a class="lozenge place" href="/search?state=UT">Utah</a><a class="lozenge place" href="/search?place=Salt+Lake+City&state=UT">Salt Lake City</a></p>
+<h2><a href="https://www.sltrib.com/news/education/2026/08/24/university-utahs-sandy-campus-is/">The University of Utah is closing its Sandy campus, citing state-mandated budget changes</a></h2>
+<p class="byline">By Courtney Tanner</p>
+<a class="shot" href="https://www.sltrib.com/news/education/2026/08/24/university-utahs-sandy-campus-is/" tabindex="-1" aria-hidden="true"><img src="../img/7fac66d0d29bccf04e7047f568ca8a75ce627760.webp" alt="" width="480" height="318" loading="lazy" decoding="async"></a>
+<p>Most students weren’t alerted that the Sandy campus would shutter until late last week. <a class="lozenge more" href="https://www.sltrib.com/news/education/2026/08/24/university-utahs-sandy-campus-is/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T04:00:00+00:00" data-pub="12:00 AM EDT">Monday, August 24, 2026 at 12:00 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>NC / Newport / <a href="https://www.coastalreview.org">Coastal Review Online</a></small></p>
-<h2><a href="https://coastalreview.org/2026/08/in-memory-of-teachers-elizabeth-city-states-archival-photos/">Recalling the teachers: Elizabeth City State’s archival photos</a></h2>
-<p class="byline"><small>By David Cecelski</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.coastalreview.org/support/">Donate</a></span></p>
-<a class="shot" href="https://coastalreview.org/2026/08/in-memory-of-teachers-elizabeth-city-states-archival-photos/" tabindex="-1" aria-hidden="true"><img src="../img/cce7314f8d667115599b66a23228f73f30ac25d3.jpg" alt="" width="480" height="309" loading="lazy" decoding="async"></a>
-<p>Historian David Cecelski&#x27;s lecture earlier this year at ECSU came after he had spent much of the day on campus, including a visit to the University Archives where historical treasures and photographs celebrate the young role models.</p>
-<p class="more"><a href="https://coastalreview.org/2026/08/in-memory-of-teachers-elizabeth-city-states-archival-photos/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/spanish.html">Spanish</a><a class="lozenge give" href="https://www.sltrib.com/">Support</a></aside>
+<p class="source"><a href="https://www.sltrib.com/"><strong>The Salt Lake Tribune</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T12:00:00+00:00" data-pub="6:00 AM MDT">Mon, Aug 24 @ 6AM MDT</time><a class="lozenge place" href="/search?state=UT">Utah</a><a class="lozenge place" href="/search?place=Salt+Lake+City&state=UT">Salt Lake City</a></p>
+<h2><a href="https://www.sltrib.com/news/education/2026/08/24/usu-lab-took-longer-than-needed/">Utah State lab euthanized 82 naked mole rats in a way that took longer than necessary, federal investigators find</a></h2>
+<p class="byline">By Courtney Tanner</p>
+<a class="shot" href="https://www.sltrib.com/news/education/2026/08/24/usu-lab-took-longer-than-needed/" tabindex="-1" aria-hidden="true"><img src="../img/2cfa7a2e1f505294cb9d0357a8cd7a9aba253e66.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>A PETA official said the animals died a “a slow, agonizing suffocation.” <a class="lozenge more" href="https://www.sltrib.com/news/education/2026/08/24/usu-lab-took-longer-than-needed/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T03:15:00+00:00" data-pub="11:15 PM EDT">Sunday, August 23, 2026 at 11:15 PM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>DC / Washington / <a href="https://afro.com/section/news/washington-d-c-news/">Afro-American</a></small></p>
-<h2><a href="https://www.afro.com/education/how-to-help-your-kids-make-friends-at-a-new-school-452a15a4">How to help your kids make friends at a new school.</a></h2>
-<p class="byline"><small>By By Cheyanne Mumphrey,  AP Education Writer</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://afro.com/section/news/washington-d-c-news/">Support</a></span></p>
-<a class="shot" href="https://www.afro.com/education/how-to-help-your-kids-make-friends-at-a-new-school-452a15a4" tabindex="-1" aria-hidden="true"><img src="../img/2598f2d7883e354a7260c2e4b519103ba8b95615.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Parents can help children build connections at a new school through playdates, activities and conversations about friendship—while giving them room to navigate relationships themselves.</p>
-<p class="more"><a href="https://www.afro.com/education/how-to-help-your-kids-make-friends-at-a-new-school-452a15a4">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="http://benitolink.fundjournalism.org/support">Donate</a></aside>
+<p class="source"><a href="https://benitolink.com"><strong>BenitoLink</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T12:00:00+00:00" data-pub="5:00 AM PDT">Mon, Aug 24 @ 5AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Hollister&state=CA">Hollister</a></p>
+<h2><a href="https://benitolink.com/county-planners-reject-high-school-district-land-swap-plan-tied-to-second-campus/">County planners reject high school district land swap plan tied to second campus</a></h2>
+<p class="byline">By John Chadwell</p>
+<a class="shot" href="https://benitolink.com/county-planners-reject-high-school-district-land-swap-plan-tied-to-second-campus/" tabindex="-1" aria-hidden="true"><img src="../img/4ffe27ebbeb7e93d044429f2aa0c97b1e4d2d70f.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>Lea este artículo en español aquí. Editor’s Note: A proposed land swap involving the San Benito High School District and would trade a larger, district-owned Wright Road property and $1.5 <a class="lozenge more" href="https://benitolink.com/county-planners-reject-high-school-district-land-swap-plan-tied-to-second-campus/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 </div>
 <p><a id="more" href="education-7.html">More stories</a></p>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="../index.html">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -407,6 +453,47 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>

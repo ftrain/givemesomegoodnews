@@ -13,12 +13,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -27,22 +40,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -50,19 +69,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -75,7 +126,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -93,7 +144,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -106,7 +157,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="subjects/news.html">News</a></li><li><a href="subjects/politics.html">Politics</a></li><li><a href="subjects/opinion.html">Opinion</a></li><li><a href="subjects/health.html">Health</a></li><li><a href="subjects/environment.html">Environment</a></li><li><a href="subjects/education.html">Education</a></li><li><a href="subjects/business.html">Business</a></li><li><a href="subjects/housing.html">Housing</a></li><li><a href="subjects/sports.html">Sports</a></li><li><a href="subjects/food.html">Food</a></li><li><a href="subjects/arts.html">Arts</a></li></ul></nav>
@@ -121,274 +172,270 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <main id="main">
 <div id="feed-items">
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:00:00+00:00" data-pub="6:00 AM EDT">Tuesday, August 25, 2026 at 6:00 AM EDT</time></small><a class="lozenge" href="subjects/arts.html">Arts</a></p>
-<p><small>PA / Philadelphia / <a href="https://billypenn.com/">Billy Penn</a></small></p>
-<h2><a href="https://billypenn.com/2026/08/25/philadelphia-fringe-festival-how-to-guide/">How to Fringe: Your guide to Philly’s massive Fringe Festival</a></h2>
-<p class="byline"><small>By Jane M. Von Bergen</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://billypenn.com/support-our-work/">Donate</a></span></p>
-<a class="shot" href="https://billypenn.com/2026/08/25/philadelphia-fringe-festival-how-to-guide/" tabindex="-1" aria-hidden="true"><img src="img/9369ea126e7f1751b748884347b73551f40eb0e3.jpg" alt="" width="480" height="326" loading="lazy" decoding="async"></a>
-<p>Love Philly? So do we. Let’s be friends. Sign up for the Billy Penn newsletter today. Ryan Mann, a self-described Fringe nut, only sounds slightly embarrassed when he describes his</p>
-<p class="more"><a href="https://billypenn.com/2026/08/25/philadelphia-fringe-festival-how-to-guide/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/politics.html">Politics</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.washingtoninformer.com/support-our-publication/">Donate</a></aside>
+<p class="source"><a href="http://www.washingtoninformer.com/"><strong>The Washington Informer</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:33:00+00:00" data-pub="10:33 AM EDT">Tue, Aug 25 @ 10AM EDT</time><a class="lozenge place" href="/search?state=DC">Washington, D.C.</a><a class="lozenge place" href="/search?place=Washington&state=DC">Washington</a></p>
+<h2><a href="https://www.washingtoninformer.com/us-canada-trade-war-escalates/">U.S.-Canada Trade War Lands at D.C.’s Checkout Counter</a></h2>
+<p class="byline">By Stacy M. Brown</p>
+<a class="shot" href="https://www.washingtoninformer.com/us-canada-trade-war-escalates/" tabindex="-1" aria-hidden="true"><img src="img/1894c1034aa014739fdbcd9a5fff1856d06528e8.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>President Donald Trump imposed 50% tariffs on approximately $20 billion in Canadian goods, prompting Prime Minister Mark Carney to promise a &quot;dollar for dollar&quot; response starting Sept. 8. <a class="lozenge more" href="https://www.washingtoninformer.com/us-canada-trade-war-escalates/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:00:00+00:00" data-pub="6:00 AM EDT">Tuesday, August 25, 2026 at 6:00 AM EDT</time></small><a class="lozenge" href="subjects/business.html">Business</a></p>
-<p><small>MA / Belmont / <a href="https://belmontvoice.org/">Belmont Voice</a></small></p>
-<h2><a href="https://belmontvoice.org/trash-becomes-treasure-at-recycled-arts-camp/">Trash Becomes Treasure at Recycled Arts Camp</a></h2>
-<p class="byline"><small>By Claire Hlotyak</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://belmontvoice.org/donate/">Donate</a></span></p>
-<a class="shot" href="https://belmontvoice.org/trash-becomes-treasure-at-recycled-arts-camp/" tabindex="-1" aria-hidden="true"><img src="img/ba57f2332cc003b65b41deb6d9eba46871fdf6ba.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>By Claire Hlotyak, Belmont Voice staff When community artist Melissa Arellano found an Iggy’s bread box on the side of the road, she brought it to Still Life Studios on Mt. Auburn Street in Cambridge, where she holds her Recycled Arts Camp. With the help of her students, they turned trash into treasure. Twinkle lights, yarn, hot glue, and creativity transformed the bread box into the Recycled City</p>
-<p class="more"><a href="https://belmontvoice.org/trash-becomes-treasure-at-recycled-arts-camp/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/chinese.html">Chinese</a><a class="lozenge give" href="https://newsforchinese.com/v3/">Support</a></aside>
+<p class="source"><a href="https://newsforchinese.com/v3/"><strong>News for Chinese Inc.</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:32:57+00:00" data-pub="7:32 AM PDT">Tue, Aug 25 @ 7AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=San+Francisco&state=CA">San Francisco</a></p>
+<h2><a href="https://newsforchinese.com/v3/2026/08/25/gavin-newsom750%e8%90%ac%e5%85%83%e5%87%ba%e5%94%aefair-oaks%e4%bd%8f%e5%ae%85/">Gavin Newsom750萬出售Fair Oaks住宅</a></h2>
+<p class="byline">By Jean</p>
+<p>在州長Gavin Newsom準備2027年1月離任之際，Newsom和家人出售他們在Sacramento地區的住宅。 Newsom的這一住宅位於Fair Oaks的Tobia Way，面積12700平方英尺。這棟住宅週一以750萬元掛牌出售。Newsom發言人Izzy Gardon表示，州長全家2024年開始搬到Marin縣以便為孩子教育提供連續性，當時州長在那裏Marin縣買了一棟住宅。Gardon說：「出售他們在Sacramento的住宅是過渡的下一步。」房地產估價師Ryan Lundquist正在觀察有多少可能買家會嘗試滿足Newsom房屋要價。Newsom夫婦2018年以Fair Oaks創紀錄的390萬元收購了這棟住宅。在它現在以750萬元上市之際，這一紀錄仍然存在。Newsom辦公室表示，他是連續第三位在Sacramento和州其他地區之間分配時間的加州州長，儘管Fair O <a class="lozenge more" href="https://newsforchinese.com/v3/2026/08/25/gavin-newsom750%e8%90%ac%e5%85%83%e5%87%ba%e5%94%aefair-oaks%e4%bd%8f%e5%ae%85/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:00:00+00:00" data-pub="6:00 AM EDT">Tuesday, August 25, 2026 at 6:00 AM EDT</time></small><a class="lozenge" href="subjects/politics.html">Politics</a></p>
-<p><small>MA / Belmont / <a href="https://belmontvoice.org/">Belmont Voice</a></small></p>
-<h2><a href="https://belmontvoice.org/state-senate-candidates-square-off-over-myriad-issues/">State Senate Candidates Square Off Over Myriad Issues</a></h2>
-<p class="byline"><small>By Mary Byrne</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://belmontvoice.org/donate/">Donate</a></span></p>
-<p>The two Democratic candidates for state Senate went head-to-head Thursday afternoon at a virtual debate hosted by the Charles River Regional Chamber of Commerce. Though questions focused partly on Watertown, Sen. William Brownsberger and challenger Daniel Lander also addressed support for small businesses, housing and development, and the transparency and urgency of legislative business. The two c</p>
-<p class="more"><a href="https://belmontvoice.org/state-senate-candidates-square-off-over-myriad-issues/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/education.html">Education</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://valley.newhavenindependent.org/obituaries">Support</a></aside>
+<p class="source"><a href="https://valley.newhavenindependent.org/obituaries"><strong>Valley Independent Sentinel</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:32:30+00:00" data-pub="10:32 AM EDT">Tue, Aug 25 @ 10AM EDT</time><a class="lozenge place" href="/search?state=CT">Connecticut</a><a class="lozenge place" href="/search?place=Naugatuck+Valley&state=CT">Naugatuck Valley</a></p>
+<h2><a href="https://valley.newhavenindependent.org/2026/08/25/ansonia-high-school-soccer-fundraiser/">Ansonia High School Soccer Fundraiser</a></h2>
+<p class="byline">By Press Release</p>
+<a class="shot" href="https://valley.newhavenindependent.org/2026/08/25/ansonia-high-school-soccer-fundraiser/" tabindex="-1" aria-hidden="true"><img src="img/84be0ba4cd6974d2dd942ad4c92095b995921f48.webp" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>Monday, Aug. 31! <a class="lozenge more" href="https://valley.newhavenindependent.org/2026/08/25/ansonia-high-school-soccer-fundraiser/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T10:00:00+00:00" data-pub="6:00 AM EDT">Tuesday, August 25, 2026 at 6:00 AM EDT</time></small><a class="lozenge" href="subjects/arts.html">Arts</a></p>
-<p><small>GA / Atlanta / <a href="https://atlantablackstar.com/">Atlanta Black Star</a></small></p>
-<h2><a href="https://atlantablackstar.com/2026/08/25/trump-leaves-in-a-fit-of-rage-after-being-snubbed-by-melania/">‘Who Is He Looking for?’: Trump Leaves in a Fit of Rage After Being Snubbed by Melania—And Cameras Catch the Tense Moment That Set Him Off</a></h2>
-<p class="byline"><small>By Maurice Cassidy</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://atlantablackstar.com/">Support</a></span></p>
-<a class="shot" href="https://atlantablackstar.com/2026/08/25/trump-leaves-in-a-fit-of-rage-after-being-snubbed-by-melania/" tabindex="-1" aria-hidden="true"><img src="img/50606c8f33029cd372232778884ba9eb4df7d3d7.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Melania Trump’s latest reemergence has people acting like the first lady just returned from a secret society or witness protection. The attention has now shifted […] ‘Who Is He Looking for?’: Trump Leaves in a Fit of Rage After Being Snubbed by Melania—And Cameras Catch the Tense Moment That Set Him Off</p>
-<p class="more"><a href="https://atlantablackstar.com/2026/08/25/trump-leaves-in-a-fit-of-rage-after-being-snubbed-by-melania/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/politics.html">Politics</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://capitalandmain.com/support-real-journalism">Donate</a></aside>
+<p class="source"><a href="https://capitalandmain.com/"><strong>Capital &amp; Main</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:32:00+00:00" data-pub="7:32 AM PDT">Tue, Aug 25 @ 7AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Economy+%26+labor&state=CA">Economy &amp; labor</a></p>
+<h2><a href="https://capitalandmain.com/she-fled-russia-for-freedom-in-the-u-s-ten-years-later-shes-still-waiting">She Fled Russia for Freedom in the U.S. Ten Years Later, She’s Still Waiting.</a></h2>
+<p class="byline">By Kate Morrissey</p>
+<p>Persecuted in her homeland, a mother asked for protection but ran into a perfect storm of policy changes instead. <a class="lozenge more" href="https://capitalandmain.com/she-fled-russia-for-freedom-in-the-u-s-ten-years-later-shes-still-waiting">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T09:59:42+00:00" data-pub="4:59 AM CDT">Tuesday, August 25, 2026 at 4:59 AM CDT</time></small><a class="lozenge" href="subjects/politics.html">Politics</a></p>
-<p><small>AL / Statewide / <a href="https://alabamareflector.com/">Alabama Reflector</a></small></p>
-<h2><a href="https://alabamareflector.com/2026/08/25/alabama-death-row-inmate-files-suit-to-prevent-2nd-execution-attempt/">Alabama death row inmate files suit to prevent 2nd execution attempt</a></h2>
-<p class="byline"><small>By Ralph Chapoco</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://alabamareflector.com/">Support</a></span></p>
-<a class="shot" href="https://alabamareflector.com/2026/08/25/alabama-death-row-inmate-files-suit-to-prevent-2nd-execution-attempt/" tabindex="-1" aria-hidden="true"><img src="img/4648a3e41eb1c3d1a684772f3494e5b1808244f4.jpg" alt="" width="480" height="321" loading="lazy" decoding="async"></a>
-<p>A death row inmate who successfully challenged Alabama’s nitrogen gas protocol filed a lawsuit earlier this month in Montgomery County Circuit Court to prevent his execution by lethal injection. Attorneys for Jeffery Lee argued in a suit filed on Aug. 14 in Montgomery Circuit Court that Alabama law does not allow the state to use</p>
-<p class="more"><a href="https://alabamareflector.com/2026/08/25/alabama-death-row-inmate-files-suit-to-prevent-2nd-execution-attempt/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/arts.html">Arts</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://identidadlatina.com/category/locales/">Support</a></aside>
+<p class="source"><a href="https://identidadlatina.com/category/locales/"><strong>Identidad Latina</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:31:56+00:00" data-pub="10:31 AM EDT">Tue, Aug 25 @ 10AM EDT</time><a class="lozenge place" href="/search?state=CT">Connecticut</a></p>
+<h2><a href="https://identidadlatina.com/2026/08/un-asiento-y-una-ventana/">Un asiento y una ventana</a></h2>
+<p class="byline">By identidadlatina</p>
+<p>CRONICAS Escrito en May 2012 Un asiento, la ventana de un auto, Connecticut, Estados Unidos de Norteamérica, una supercarretera bordeada <a class="lozenge more" href="https://identidadlatina.com/2026/08/un-asiento-y-una-ventana/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T09:59:34+00:00" data-pub="5:59 AM EDT">Tuesday, August 25, 2026 at 5:59 AM EDT</time></small><a class="lozenge" href="subjects/arts.html">Arts</a></p>
-<p><small>National / Arts / <a href="https://southwestcontemporary.com/">Southwest Contemporary</a></small></p>
-<h2><a href="https://southwestcontemporary.com/wrought-by-fire-metalwork-of-the-southwest-spotlights-four-women-artists/">Wrought by Fire: Metalwork of the Southwest Spotlights Four Women Artists</a></h2>
-<p class="byline"><small>By Lauren Tresp</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/arts.html">Arts</a><a class="lozenge give" href="https://southwestcontemporary.com/artist-hopid/">Become a member</a></span></p>
-<a class="shot" href="https://southwestcontemporary.com/wrought-by-fire-metalwork-of-the-southwest-spotlights-four-women-artists/" tabindex="-1" aria-hidden="true"><img src="img/f089423a94cf08e0d97521a1c573e5a5e82b5068.webp" alt="" width="480" height="348" loading="lazy" decoding="async"></a>
-<p>Celebrate the fall season at ASU Art Museum with an evening of art, music, and community on Thursday, September 10.</p>
-<p class="more"><a href="https://southwestcontemporary.com/wrought-by-fire-metalwork-of-the-southwest-spotlights-four-women-artists/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/news.html">News</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.pressherald.com/subscription-plans/">Subscribe</a></aside>
+<p class="source"><a href="https://www.pressherald.com/"><strong>Portland Press Herald</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:31:30+00:00" data-pub="10:31 AM EDT">Tue, Aug 25 @ 10AM EDT</time><a class="lozenge place" href="/search?state=ME">Maine</a><a class="lozenge place" href="/search?place=Portland&state=ME">Portland</a></p>
+<h2><a href="https://www.pressherald.com/2026/08/25/founder-of-cascos-pachamama-sanctuary-details-lawsuit-over-ayahuasca/">Founder of Casco’s Pachamama Sanctuary details lawsuit over ayahuasca</a></h2>
+<p class="byline">By Rory Sweeting</p>
+<a class="shot" href="https://www.pressherald.com/2026/08/25/founder-of-cascos-pachamama-sanctuary-details-lawsuit-over-ayahuasca/" tabindex="-1" aria-hidden="true"><img src="img/ae1529964c3339e0dc7e49fb9d5b470a603b155c.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Derek Januszewski sued multiple federal agencies, claiming they were impeding a religious use of ayahuasca. <a class="lozenge more" href="https://www.pressherald.com/2026/08/25/founder-of-cascos-pachamama-sanctuary-details-lawsuit-over-ayahuasca/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T09:58:00+00:00" data-pub="4:58 AM CDT">Tuesday, August 25, 2026 at 4:58 AM CDT</time></small><a class="lozenge" href="subjects/arts.html">Arts</a></p>
-<p><small>OK / Tulsa / <a href="https://tulsaflyer.org/">Tulsa Flyer</a></small></p>
-<h2><a href="https://tulsaflyer.org/2026/08/25/culture/entertainment/post/filmaker-comes-home-make-tulsa-movie-set/">Zach Singer comes home to make Tulsa his movie set in ‘The Day Before’</a></h2>
-<p class="byline"><small>By Tim Landes</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://tulsaflyer.org/donate/">Donate</a></span></p>
-<a class="shot" href="https://tulsaflyer.org/2026/08/25/culture/entertainment/post/filmaker-comes-home-make-tulsa-movie-set/" tabindex="-1" aria-hidden="true"><img src="img/f1b0a0ddb2a19c0ce5a64524533c1bac22711a31.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>After spending time in New York and Los Angeles, native Tulsan Zach Singer makes his cinematic homecoming through a short film premiering in the East Village this week.</p>
-<p class="more"><a href="https://tulsaflyer.org/2026/08/25/culture/entertainment/post/filmaker-comes-home-make-tulsa-movie-set/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://eldiariony.com/">Support</a></aside>
+<p class="source"><a href="https://eldiariony.com/"><strong>El Diario NY</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:31:27+00:00" data-pub="10:31 AM EDT">Tue, Aug 25 @ 10AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Brooklyn&state=NY">Brooklyn</a></p>
+<h2><a href="https://eldiariony.com/2026/08/25/columna-de-maria-marin-mas-comun-de-lo-que-parece/">Columna de María Marín: Más común de lo que parece</a></h2>
+<p class="byline">By Liseth Pérez-Almeida</p>
+<a class="shot" href="https://eldiariony.com/2026/08/25/columna-de-maria-marin-mas-comun-de-lo-que-parece/" tabindex="-1" aria-hidden="true"><img src="img/dd65e8a993fdd73f25bb718d5567b060dd9ba1b0.webp" alt="" width="480" height="221" loading="lazy" decoding="async"></a>
+<p>Algunos secretos que la mayoría de las mujeres mantenemos bien guardados y los hombres ni se imaginan <a class="lozenge more" href="https://eldiariony.com/2026/08/25/columna-de-maria-marin-mas-comun-de-lo-que-parece/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T09:56:00+00:00" data-pub="3:56 AM MDT">Tuesday, August 25, 2026 at 3:56 AM MDT</time></small><a class="lozenge" href="subjects/education.html">Education</a></p>
-<p><small>CO / Denver / <a href="https://coloradosun.com/">The Colorado Sun</a></small></p>
-<h2><a href="https://coloradosun.com/2026/08/25/high-school-students-rise-and-shine-journalism-workshop/">Are you a Colorado high school student wanting to report, edit or take photos? Apply to our workshop.</a></h2>
-<p class="byline"><small>By Erica Breunlin</small><span class="aside"><a class="lozenge" href="tags/journalist-owned.html">Journalist-owned</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://coloradosun.com/support?utm_source=navbar_button">Donate</a></span></p>
-<a class="shot" href="https://coloradosun.com/2026/08/25/high-school-students-rise-and-shine-journalism-workshop/" tabindex="-1" aria-hidden="true"><img src="img/36ea4b60892209dc9ed96f0b3f53616672300251.jpg" alt="" width="480" height="330" loading="lazy" decoding="async"></a>
-<p>Applications are now open for The Colorado Sun’s Rise &amp; Shine Journalism Workshop on Oct. 12</p>
-<p class="more"><a href="https://coloradosun.com/2026/08/25/high-school-students-rise-and-shine-journalism-workshop/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/environment.html">Environment</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://sjclimate.news/6813/uncategorized/contribute-to-the-work-of-south-jersey-climate-news/">Donate</a></aside>
+<p class="source"><a href="https://sjclimate.news/"><strong>South Jersey Climate News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:31:25+00:00" data-pub="10:31 AM EDT">Tue, Aug 25 @ 10AM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a><a class="lozenge place" href="/search?place=South+Jersey&state=NJ">South Jersey</a></p>
+<h2><a href="https://sjclimate.news/8443/from-our-news-partners/conservationists-push-to-preserve-new-jerseys-wildlife-refuges-fearing-federal-changes/">Conservationists push to preserve New Jersey’s wildlife refuges, fearing federal changes</a></h2>
+<p class="byline">By Dana DiFilippo, New Jersey Monitor</p>
+<p>Conservationists fear the Trump administration&#x27;s ongoing review of national wildlife refuge policies will leave public lands unprotected. <a class="lozenge more" href="https://sjclimate.news/8443/from-our-news-partners/conservationists-push-to-preserve-new-jerseys-wildlife-refuges-fearing-federal-changes/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T09:55:00+00:00" data-pub="3:55 AM MDT">Tuesday, August 25, 2026 at 3:55 AM MDT</time></small><a class="lozenge" href="subjects/arts.html">Arts</a></p>
-<p><small>CO / Denver / <a href="https://coloradosun.com/">The Colorado Sun</a></small></p>
-<h2><a href="https://coloradosun.com/2026/08/25/colorado-is-eager-for-sundance-but-how-much-has-it-done-for-indie-films/">Colorado is eager for Sundance. But how much has it done for indie films?</a></h2>
-<p class="byline"><small>By Parker Yamasaki</small><span class="aside"><a class="lozenge" href="tags/journalist-owned.html">Journalist-owned</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://coloradosun.com/support?utm_source=navbar_button">Donate</a></span></p>
-<a class="shot" href="https://coloradosun.com/2026/08/25/colorado-is-eager-for-sundance-but-how-much-has-it-done-for-indie-films/" tabindex="-1" aria-hidden="true"><img src="img/ffc9d12d49094d57d393241520cfea584d2357e5.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>The film industry in Colorado has been growing rapidly for years, but the infrastructure and incentives needed to sustain the growth are lagging</p>
-<p class="more"><a href="https://coloradosun.com/2026/08/25/colorado-is-eager-for-sundance-but-how-much-has-it-done-for-indie-films/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/business.html">Business</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://blockclubchicago.org/donate">Donate</a></aside>
+<p class="source"><a href="https://blockclubchicago.org/"><strong>Block Club Chicago</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:31:16+00:00" data-pub="9:31 AM CDT">Tue, Aug 25 @ 9AM CDT</time><a class="lozenge place" href="/search?state=IL">Illinois</a><a class="lozenge place" href="/search?place=Chicago&state=IL">Chicago</a></p>
+<h2><a href="https://blockclubchicago.org/2026/08/25/ohare-flyer-train-would-bring-visitors-from-airport-to-downtown-in-just-15-minutes/">O’Hare Flyer Train Would Bring Visitors From Airport To Downtown In Just 15 Minutes</a></h2>
+<p class="byline">By Molly DeVore</p>
+<a class="shot" href="https://blockclubchicago.org/2026/08/25/ohare-flyer-train-would-bring-visitors-from-airport-to-downtown-in-just-15-minutes/" tabindex="-1" aria-hidden="true"><img src="img/4be89e9a8cc956fbc9d3e1471bdee6eb7c2723b8.webp" alt="" width="480" height="268" loading="lazy" decoding="async"></a>
+<p>The express train, which plans to use freight tracks, aims to launch in the next five years. <a class="lozenge more" href="https://blockclubchicago.org/2026/08/25/ohare-flyer-train-would-bring-visitors-from-airport-to-downtown-in-just-15-minutes/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T09:50:21+00:00" data-pub="5:50 AM EDT">Tuesday, August 25, 2026 at 5:50 AM EDT</time></small><a class="lozenge" href="subjects/housing.html">Housing</a></p>
-<p><small>PA / Philadelphia / <a href="https://thephiladelphiacitizen.org/about/">The Philadelphia Citizen</a></small></p>
-<h2><a href="https://thephiladelphiacitizen.org/the-new-urban-order-retail-public-good-meantime/">The New Urban Order: Retail as a Public Good?</a></h2>
-<p class="byline"><small>By Diana Lind</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://thephiladelphiacitizen.org/donate/">Donate</a></span></p>
-<a class="shot" href="https://thephiladelphiacitizen.org/the-new-urban-order-retail-public-good-meantime/" tabindex="-1" aria-hidden="true"><img src="img/29d988536e8aa7f5c2d83e120cdfc551675a49f1.jpg" alt="" width="480" height="240" loading="lazy" decoding="async"></a>
-<p>As Philadelphia prepared to host a run of major 2026 events — the 250th, the World Cup, the MLB All-Star Weekend — it got to work on public space beautification and wayfinding. Sidewalks were repaired; flowers were planted; new signage went in. The city wanted to look its best, and as someone who’s taken a … Continue reading The New Urban Order: Retail as a Public Good?</p>
-<p class="more"><a href="https://thephiladelphiacitizen.org/the-new-urban-order-retail-public-good-meantime/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/opinion.html">Opinion</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://armenianweekly.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://armenianweekly.com"><strong>Armenian Weekly</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:31:12+00:00" data-pub="10:31 AM EDT">Tue, Aug 25 @ 10AM EDT</time><a class="lozenge place" href="/search?state=MA">Massachusetts</a><a class="lozenge place" href="/search?place=Watertown&state=MA">Watertown</a></p>
+<h2><a href="https://armenianweekly.com/2026/08/25/baku-may-regret-suing-cnn-for-its-report-on-israeli-forces-in-azerbaijan/">Baku may regret suing CNN for its report on Israeli forces in Azerbaijan</a></h2>
+<p class="byline">By Harut Sassounian</p>
+<p>The government of Azerbaijan filed a lawsuit last week against CNN in a U.S. federal court for reporting that “Israel sent troops to Azerbaijan during the Iran war.” Based on unnamed sources, CNN reported on June 5, 2026, that the Israeli forces in Azerbaijan “consisted of several dozen troops, including members of Israel’s special operations <a class="lozenge more" href="https://armenianweekly.com/2026/08/25/baku-may-regret-suing-cnn-for-its-report-on-israeli-forces-in-azerbaijan/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T09:50:00+00:00" data-pub="5:50 AM EDT">Tuesday, August 25, 2026 at 5:50 AM EDT</time></small></p>
-<p><small>WV / Statewide / <a href="https://therealwv.com/">The Real WV</a></small></p>
-<h2><a href="https://therealwv.com/2026/08/25/inside-the-hollerwood-house-reimagining-a-ronceverte-classic/">Inside The Hollerwood House: Reimagining a Ronceverte classic</a></h2>
-<p class="byline"><small>By Newsroom</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://therealwv.com/support-us/">Donate</a></span></p>
-<a class="shot" href="https://therealwv.com/2026/08/25/inside-the-hollerwood-house-reimagining-a-ronceverte-classic/" tabindex="-1" aria-hidden="true"><img src="img/1a2e4409058c81738fa825f88183871606363540.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>A cornerstone of Ronceverte’s history reopened its doors this year as an inn and event space</p>
-<p class="more"><a href="https://therealwv.com/2026/08/25/inside-the-hollerwood-house-reimagining-a-ronceverte-classic/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/opinion.html">Opinion</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://armenianweekly.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://armenianweekly.com"><strong>Armenian Weekly</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:30:59+00:00" data-pub="10:30 AM EDT">Tue, Aug 25 @ 10AM EDT</time><a class="lozenge place" href="/search?state=MA">Massachusetts</a><a class="lozenge place" href="/search?place=Watertown&state=MA">Watertown</a></p>
+<h2><a href="https://armenianweekly.com/2026/08/25/noncombat-deaths-expose-a-deeper-crisis-in-armenias-army/">Noncombat deaths expose a deeper crisis in Armenia’s army</a></h2>
+<p class="byline">By Davo Barseghyan</p>
+<p>In recent years, problems within the Armenian army have worsened and require urgent solutions. The Armenian army, which is the guarantor of the country’s security, is itself becoming a high-risk environment for its own soldiers. Although the country is not in a state of full-scale war, service members continue to die in barracks—at <a class="lozenge more" href="https://armenianweekly.com/2026/08/25/noncombat-deaths-expose-a-deeper-crisis-in-armenias-army/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T09:50:00+00:00" data-pub="5:50 AM EDT">Tuesday, August 25, 2026 at 5:50 AM EDT</time></small><a class="lozenge" href="subjects/education.html">Education</a></p>
-<p><small>MA / Franklin / <a href="https://www.franklinmatters.org/">Franklin Matters</a></small></p>
-<h2><a href="https://feeds.feedblitz.com/~/968205437/0/franklinmatters.html">Franklin Food Pantry Welcomes Community Leader Tom Mercer to Board of Directors</a></h2>
-<p class="byline"><small>By Steve Sherlock (noreply@blogger.com)</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.franklinmatters.org/search/label/fund%20raising">Donate</a></span></p>
-<p>The Franklin Food Pantry is pleased to announce the appointment of lifelong Franklin resident Tom Mercer to its Board of Directors. Tom brings decades of public service, local governance expertise, and business leadership to the organization as it continues its mission to alleviate food insecurity. Tom’s extensive record of civic involvement includes 10 years on the Franklin School Committee and 1</p>
-<p class="more"><a href="https://feeds.feedblitz.com/~/968205437/0/franklinmatters.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://trabajadorinmigrante.com/">Support</a></aside>
+<p class="source"><a href="https://trabajadorinmigrante.com/"><strong>Trabajador Inmigrante</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:30:57+00:00" data-pub="10:30 AM EDT">Tue, Aug 25 @ 10AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=New+York+City&state=NY">New York City</a></p>
+<h2><a href="https://trabajadorinmigrante.com/2026/08/trump-considera-renombrar-el-lago-ontario-como-lago-america-en-plena-guerra-comercial-con-canada/">Trump considera renombrar el lago Ontario como “lago América” en plena guerra comercial con Canadá</a></h2>
+<p class="byline">By Trabajador Inmigrante</p>
+<a class="shot" href="https://trabajadorinmigrante.com/2026/08/trump-considera-renombrar-el-lago-ontario-como-lago-america-en-plena-guerra-comercial-con-canada/" tabindex="-1" aria-hidden="true"><img src="img/4e5e12caa0f0517c9a245c82757aa8ca8384f6af.webp" alt="" width="480" height="311" loading="lazy" decoding="async"></a>
+<p>AP NEWS WASHINGTON (AP)—El presidente Donald Trump afirmó el martes que está considerando cambiar el nombre del lago Ontario a “lago América”, mientras se intensifica la guerra comercial entre Washington y Canadá. Un cambio así recordaría la medida unilateral tomada por el presidente republicano el año pasado, cuando mediante una orden ejecutiva rebautizó <a class="lozenge more" href="https://trabajadorinmigrante.com/2026/08/trump-considera-renombrar-el-lago-ontario-como-lago-america-en-plena-guerra-comercial-con-canada/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T09:47:00+00:00" data-pub="4:47 AM CDT">Tuesday, August 25, 2026 at 4:47 AM CDT</time></small><a class="lozenge" href="subjects/business.html">Business</a></p>
-<p><small>TX / Amarillo / <a href="https://amarillotribune.org/">Amarillo Tribune</a></small></p>
-<h2><a href="https://amarillotribune.org/2026/08/25/in-brief-aug-25-2026/">In Brief: Aug. 25, 2026</a></h2>
-<p class="byline"><small>By Jackie Kingston</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://amarillotribune.org/support-our-publication/">Donate</a></span></p>
-<a class="shot" href="https://amarillotribune.org/2026/08/25/in-brief-aug-25-2026/" tabindex="-1" aria-hidden="true"><img src="img/e8e8c1f38c4270da6129d9efa0a72299c8e760ed.jpg" alt="" width="480" height="319" loading="lazy" decoding="async"></a>
-<p>Downtown street maintenance is still underway and is expected to continue through Wednesday.</p>
-<p class="more"><a href="https://amarillotribune.org/2026/08/25/in-brief-aug-25-2026/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://elsoln1.us8.list-manage.com/subscribe?u=b58aaf173a09bc54d9b0bd9c9&amp;id=a2d335e1c7">Subscribe</a></aside>
+<p class="source"><a href="https://elsolnewsmedia.com/"><strong>El Sol Latino Newspaper</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:30:11+00:00" data-pub="10:30 AM EDT">Tue, Aug 25 @ 10AM EDT</time><a class="lozenge place" href="/search?state=FL">Florida</a><a class="lozenge place" href="/search?place=Miami&state=FL">Miami</a></p>
+<h2><a href="https://elsolnewsmedia.com/secuela-michael-acusaciones-abuso/">La secuela de “Michael” abordará acusaciones de abuso contra el cantante, según Jaafar Jackson</a></h2>
+<p class="byline">By Sara Pacheco</p>
+<p>La secuela de la película biográfica Michael abordará las acusaciones de abuso infantil presentadas contra el cantante, según confirmó su sobrino y protagonista de la cinta, Jaafar Jackson. El actor señaló que la nueva entrega ofrecerá mayor perspectiva sobre la postura de su tío frente a estos episodios. La primera parte de la historia, dirigida <a class="lozenge more" href="https://elsolnewsmedia.com/secuela-michael-acusaciones-abuso/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T09:45:00+00:00" data-pub="5:45 AM EDT">Tuesday, August 25, 2026 at 5:45 AM EDT</time></small><a class="lozenge" href="subjects/news.html">News</a></p>
-<p><small>WV / Charleston / <a href="https://www.wvgazettemail.com/">Charleson Gazette-Mail</a></small></p>
-<h2><a href="https://www.wvgazettemail.com/news/energy_and_environment/psc-staff-makes-case-for-path-to-dismissing-nexteras-1b-marl-power-line-project/article_e9c69e7d-5b79-4b1b-9989-a75fecf29660.html">PSC staff makes case for path to dismissing NextEra&#x27;s $1B+ MARL power line project</a></h2>
-<p class="byline"><small>By By Mike Tony mtony@hdmediallc.com</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.wvgazettemail.com/subscribe">Subscribe</a></span></p>
-<p>The staff of the West Virginia Public Service Commission has made a case to the agency that it should consider dismissing the application it’s considering for regulatory certification of a deeply unpopular, $1 billion-plus regional interstate power transmission line project.</p>
-<p class="more"><a href="https://www.wvgazettemail.com/news/energy_and_environment/psc-staff-makes-case-for-path-to-dismissing-nexteras-1b-marl-power-line-project/article_e9c69e7d-5b79-4b1b-9989-a75fecf29660.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://mosaic.nj.com/">Support</a></aside>
+<p class="source"><a href="https://mosaic.nj.com/"><strong>Mosaic</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:30:00+00:00" data-pub="10:30 AM EDT">Tue, Aug 25 @ 10AM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a></p>
+<h2><a href="https://www.nj.com/live-entertainment/2026/08/is-seahearnow-music-festival-worth-your-money-an-honest-look-from-a-2-time-attendee.html">Is Sea.Hear.Now music festival worth your money? An honest look from a 2-time attendee</a></h2>
+<p class="byline">By Nicole Iuzzolino</p>
+<a class="shot" href="https://www.nj.com/live-entertainment/2026/08/is-seahearnow-music-festival-worth-your-money-an-honest-look-from-a-2-time-attendee.html" tabindex="-1" aria-hidden="true"><img src="img/ab50c789331148216570cbbb5b6da6cfc2e1e99b.webp" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>Sea.Hear.Now is the music festival I look forward to every year. If you have been thinking about getting tickets, here&#x27;s what you need to know. <a class="lozenge more" href="https://www.nj.com/live-entertainment/2026/08/is-seahearnow-music-festival-worth-your-money-an-honest-look-from-a-2-time-attendee.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T09:45:00+00:00" data-pub="5:45 AM EDT">Tuesday, August 25, 2026 at 5:45 AM EDT</time></small><a class="lozenge" href="subjects/opinion.html">Opinion</a></p>
-<p><small>MA / Pittsfield / <a href="https://www.berkshireeagle.com/">The Berkshire Eagle</a></small></p>
-<h2><a href="https://www.berkshireeagle.com/opinion/columnists/tara-jacobs-context-and-record-matter-in-governors-council-race/article_b7ff105c-a0d8-47f6-b5dd-6b3084cb54c5.html">Tara Jacobs: Context and record matter in Governor&#x27;s Council race</a></h2>
-<p class="byline"><small>By By Tara Jacobs</small><span class="aside"><a class="lozenge give" href="https://www.berkshireeagle.com/donate/">Donate</a></span></p>
-<a class="shot" href="https://www.berkshireeagle.com/opinion/columnists/tara-jacobs-context-and-record-matter-in-governors-council-race/article_b7ff105c-a0d8-47f6-b5dd-6b3084cb54c5.html" tabindex="-1" aria-hidden="true"><img src="img/12b8ed90872409c5a675e141596024361c47d43a.jpg" alt="" width="300" height="225" loading="lazy" decoding="async"></a>
-<p>In response to the recent article highlighting Berkshire County endorsements of the challenger in the Governor’s Council District 8 race, allow me, the incumbent, to offer some corrective context.</p>
-<p class="more"><a href="https://www.berkshireeagle.com/opinion/columnists/tara-jacobs-context-and-record-matter-in-governors-council-race/article_b7ff105c-a0d8-47f6-b5dd-6b3084cb54c5.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/politics.html">Politics</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.cambridgeday.com/donate">Donate</a></aside>
+<p class="source"><a href="https://www.cambridgeday.com/"><strong>Cambridge Day</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:30:00+00:00" data-pub="10:30 AM EDT">Tue, Aug 25 @ 10AM EDT</time><a class="lozenge place" href="/search?state=MA">Massachusetts</a><a class="lozenge place" href="/search?place=Cambridge&state=MA">Cambridge</a></p>
+<h2><a href="https://www.cambridgeday.com/2026/08/25/domestic-violence-survivors-oppose-judicial-pick/">Domestic violence survivors oppose judicial pick, challenge in Governor’s Council race</a></h2>
+<p class="byline">By Nathan Metcalf</p>
+<a class="shot" href="https://www.cambridgeday.com/2026/08/25/domestic-violence-survivors-oppose-judicial-pick/" tabindex="-1" aria-hidden="true"><img src="img/d23fec5436a5469782622d54c832c31ea1b07d62.webp" alt="" width="480" height="299" loading="lazy" decoding="async"></a>
+<p>A retired trial attorney and family court reform advocate is challenging incumbent Mara Dolan in this year’s race for the District 3 seat on the Massachusetts Governor’s Council. The challenge means that District 3, which includes Brookline, parts of Boston and two dozen other towns, will see one of the few contested races for the <a class="lozenge more" href="https://www.cambridgeday.com/2026/08/25/domestic-violence-survivors-oppose-judicial-pick/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T09:44:00+00:00" data-pub="2:44 AM MST">Tuesday, August 25, 2026 at 2:44 AM MST</time></small></p>
-<p><small>AZ / Statewide / <a href="https://www.votebeat.org/arizona/">Votebeat Arizona</a></small></p>
-<h2><a href="https://www.votebeat.org/texas/2026/08/25/galveston-county-redistricting-after-primary-legal-challenge/">What we know about Galveston County’s redistricting and what it means for voters</a></h2>
-<p class="byline"><small>By Natalia Contreras</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://votebeat.fundjournalism.org/donate/?campaign=701Pc00000M3cVWIAZ">Donate</a></span></p>
-<a class="shot" href="https://www.votebeat.org/texas/2026/08/25/galveston-county-redistricting-after-primary-legal-challenge/" tabindex="-1" aria-hidden="true"><img src="img/648abafb8e6f6abf48c8e68e4ed3de8cca3f77cd.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Texas City, Galveston County, industrial skyline. While still battling legal challenges over a map in 2021 that voting rights advocates said diluted the voting power of Black and Latino voters, Galveston County has now redrawn its precinct lines again, just months before the 2026 general election.</p>
-<p class="more"><a href="https://www.votebeat.org/texas/2026/08/25/galveston-county-redistricting-after-primary-legal-challenge/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://laopinion.com">Support</a></aside>
+<p class="source"><a href="https://laopinion.com"><strong>La Opinión</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:30:00+00:00" data-pub="7:30 AM PDT">Tue, Aug 25 @ 7AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://laopinion.com/2026/08/25/maxwell-vuelve-a-perder-en-tribunales-y-seguira-presa-por-su-condena-de-20-anos/">Maxwell vuelve a perder en tribunales y seguirá presa por su condena de 20 años</a></h2>
+<p class="byline">By Maribel Velázquez</p>
+<a class="shot" href="https://laopinion.com/2026/08/25/maxwell-vuelve-a-perder-en-tribunales-y-seguira-presa-por-su-condena-de-20-anos/" tabindex="-1" aria-hidden="true"><img src="img/28b94c1bdd0b64c759f098c21516ece26b3a943d.webp" alt="" width="480" height="315" loading="lazy" decoding="async"></a>
+<p>Un juez federal de Nueva York rechazó la solicitud de la excolaboradora de Epstein para dejar sin efecto la sentencia que recibió en 2021 <a class="lozenge more" href="https://laopinion.com/2026/08/25/maxwell-vuelve-a-perder-en-tribunales-y-seguira-presa-por-su-condena-de-20-anos/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T09:44:00+00:00" data-pub="4:44 AM CDT">Tuesday, August 25, 2026 at 4:44 AM CDT</time></small></p>
-<p><small>TX / Amarillo / <a href="https://amarillotribune.org/">Amarillo Tribune</a></small></p>
-<h2><a href="https://amarillotribune.org/2026/08/25/dont-miss-amarillo-man-faces-child-pornography-charges-after-web-investigation/">Don’t Miss: Amarillo man faces child pornography charges after web investigation</a></h2>
-<p class="byline"><small>By Jo Early</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://amarillotribune.org/support-our-publication/">Donate</a></span></p>
-<a class="shot" href="https://amarillotribune.org/2026/08/25/dont-miss-amarillo-man-faces-child-pornography-charges-after-web-investigation/" tabindex="-1" aria-hidden="true"><img src="img/98b2f79f68c6fb16dcbf8cd6bc878a9465aed104.jpg" alt="" width="480" height="600" loading="lazy" decoding="async"></a>
-<p>In January 2024, an FBI agent searching the Tor network found a site advertising child sexual abuse material.</p>
-<p class="more"><a href="https://amarillotribune.org/2026/08/25/dont-miss-amarillo-man-faces-child-pornography-charges-after-web-investigation/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://boulderreportinglab.org/donate-to-us/">Donate</a></aside>
+<p class="source"><a href="https://boulderreportinglab.org/"><strong>Boulder Reporting Lab</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:29:56+00:00" data-pub="8:29 AM MDT">Tue, Aug 25 @ 8AM MDT</time><a class="lozenge place" href="/search?state=CO">Colorado</a><a class="lozenge place" href="/search?place=Boulder&state=CO">Boulder</a></p>
+<h2><a href="https://boulderreportinglab.org/2026/08/25/boulder-market-meals-turn-locally-grown-eggplant-into-smoky-baba-ghanoush/">Boulder Market Meals: Turn locally grown eggplant into smoky baba ghanoush</a></h2>
+<p class="byline">By John Lehndorff and Katie MacKinnon, Boulder County Farmers Markets</p>
+<a class="shot" href="https://boulderreportinglab.org/2026/08/25/boulder-market-meals-turn-locally-grown-eggplant-into-smoky-baba-ghanoush/" tabindex="-1" aria-hidden="true"><img src="img/e79a3f1e1700a4a3de6d78e8f229e50292a23726.webp" alt="" width="480" height="321" loading="lazy" decoding="async"></a>
+<p>Grill fresh eggplant from Boulder County farmers markets to make this creamy, smoky dip for vegetables, grain bowls and sandwiches. <a class="lozenge more" href="https://boulderreportinglab.org/2026/08/25/boulder-market-meals-turn-locally-grown-eggplant-into-smoky-baba-ghanoush/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T09:41:53+00:00" data-pub="5:41 AM EDT">Tuesday, August 25, 2026 at 5:41 AM EDT</time></small></p>
-<p><small>PR / San Juan / <a href="https://www.metro.pr/">Metro Puerto Rico</a></small></p>
-<h2><a href="https://www.metro.pr/noticias/2026/08/25/investigan-en-patillas-el-que-seria-el-noveno-feminicidio-intimo-de-2026/">Investigan en Patillas el que sería el noveno feminicidio íntimo de 2026</a></h2>
-<p class="byline"><small>By Metro Puerto Rico</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://www.metro.pr/">Support</a></span></p>
-<a class="shot" href="https://www.metro.pr/noticias/2026/08/25/investigan-en-patillas-el-que-seria-el-noveno-feminicidio-intimo-de-2026/" tabindex="-1" aria-hidden="true"><img src="img/0ece39c807a8d04b6d4037bb291f5d9cdeb9b0d7.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Hilda Milagros Meléndez Morales, de 64 años, fue encontrada con una herida de arma blanca en una residencia. En el lugar también fue hallado muerto un hombre de 60 años que, según la Policía, se privó de la vida.</p>
-<p class="more"><a href="https://www.metro.pr/noticias/2026/08/25/investigan-en-patillas-el-que-seria-el-noveno-feminicidio-intimo-de-2026/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://stlargusnews.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://www.stlargusnews.com"><strong>St. Louis Argus</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:29:36+00:00" data-pub="9:29 AM CDT">Tue, Aug 25 @ 9AM CDT</time><a class="lozenge place" href="/search?state=MO">Missouri</a><a class="lozenge place" href="/search?place=St.+Louis&state=MO">St. Louis</a></p>
+<h2><a href="https://stlargusnews.com/2026/08/25/bonnets-busts-and-the-burden-of-black-respectability/">Bonnets, Busts and the Burden of Black Respectability</a></h2>
+<p class="byline">By ArgusStaff</p>
+<a class="shot" href="https://stlargusnews.com/2026/08/25/bonnets-busts-and-the-burden-of-black-respectability/" tabindex="-1" aria-hidden="true"><img src="img/50143a1a4bd2daa717ac99d8d0de0bade45aa3f4.webp" alt="" width="480" height="269" loading="lazy" decoding="async"></a>
+<p>Why Tuskegee’s dress code became a cultural indictment while Penn State’s alleged cocaine ring remained a criminal case involving individuals By Talibdin “TD” El-Amin Tuskegee University’s decision to prohibit bonnets, durags, bedroom shoes and revealing clothing in classrooms, dining facilities and certain official settings ignited a national debate over professionalism, personal freedom and the  <a class="lozenge more" href="https://stlargusnews.com/2026/08/25/bonnets-busts-and-the-burden-of-black-respectability/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T09:40:00+00:00" data-pub="5:40 AM EDT">Tuesday, August 25, 2026 at 5:40 AM EDT</time></small></p>
-<p><small>MA / Franklin / <a href="https://www.franklinmatters.org/">Franklin Matters</a></small></p>
-<h2><a href="https://feeds.feedblitz.com/~/968205221/0/franklinmatters.html">Reps. Auchincloss, Newhouse, Moolenaar, and Khanna Reintroduce Bipartisan Legislation Targeting China’s Role in U.S. Fentanyl Crisis</a></h2>
-<p class="byline"><small>By Steve Sherlock (noreply@blogger.com)</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.franklinmatters.org/search/label/fund%20raising">Donate</a></span></p>
-<p>Today (8/24/26), Representatives Jake Auchincloss (D-MA) and Dan Newhouse (R-WA), alongside House Select Committee on the Strategic Competition Between the United States and the Chinese Communist Party (CCP) Chairman John Moolenaar (R-MI)and Ranking Member Ro Khanna (D-CA) reintroduced the CCP Fentanyl Sanctions Act to hold the Chinese Community Party responsible for its role in the U.S. fentanyl </p>
-<p class="more"><a href="https://feeds.feedblitz.com/~/968205221/0/franklinmatters.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/news.html">News</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://miamitimes.typeform.com/to/mQvUpc">Subscribe</a></aside>
+<p class="source"><a href="https://www.miamitimesonline.com/"><strong>The Miami Times</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:29:00+00:00" data-pub="10:29 AM EDT">Tue, Aug 25 @ 10AM EDT</time><a class="lozenge place" href="/search?state=FL">Florida</a><a class="lozenge place" href="/search?place=Miami&state=FL">Miami</a></p>
+<h2><a href="https://www.miamitimesonline.com/news/world_national/washington-post-ordered-to-reinstate-black-opinion-writer-fired-after-charlie-kirk-posts/article_e37208ad-baf2-4cb0-a7df-53f6a99b86de.html">Washington Post ordered to reinstate Black opinion writer fired after Charlie Kirk posts</a></h2>
+<p class="byline">By Corey Williams, The Associated Press</p>
+<p>An arbitrator has ordered The Washington Post to reinstate a Black opinion writer fired over social media posts about violent white men following last year’s killing of Charlie Kirk. <a class="lozenge more" href="https://www.miamitimesonline.com/news/world_national/washington-post-ordered-to-reinstate-black-opinion-writer-fired-after-charlie-kirk-posts/article_e37208ad-baf2-4cb0-a7df-53f6a99b86de.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T09:35:00+00:00" data-pub="5:35 AM EDT">Tuesday, August 25, 2026 at 5:35 AM EDT</time></small><a class="lozenge" href="subjects/health.html">Health</a></p>
-<p><small>MA / Franklin / <a href="https://www.franklinmatters.org/">Franklin Matters</a></small></p>
-<h2><a href="https://feeds.feedblitz.com/~/968205035/0/franklinmatters.html">Franklin Garden Club Kicks Off Season with Program on Bitters - Tuesday, Sep 1 (correct date)</a></h2>
-<p class="byline"><small>By Steve Sherlock (noreply@blogger.com)</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.franklinmatters.org/search/label/fund%20raising">Donate</a></span></p>
-<p>A program on “Bitters, The Missing Ingredient” by Barbara Aspland-Wolf will highlight the opening meeting of the Franklin Garden Club’s 2026-2027 season. The meeting will take place on Tuesday, September 1, 2026, at the Franklin Senior Center, 10 Daniel McCahill Street, from 6:00– 8:30 PM. An informal social get-together will take place from 6:00 – 6:30 PM. followed by the program. The meeting is </p>
-<p class="more"><a href="https://feeds.feedblitz.com/~/968205035/0/franklinmatters.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/education.html">Education</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://marbleheadcurrent.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://marbleheadcurrent.org/"><strong>Marblehead Current</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:28:36+00:00" data-pub="10:28 AM EDT">Tue, Aug 25 @ 10AM EDT</time><a class="lozenge place" href="/search?state=MA">Massachusetts</a><a class="lozenge place" href="/search?place=Marblehead&state=MA">Marblehead</a></p>
+<h2><a href="https://marbleheadcurrent.org/2026/08/25/news-in-brief-mhs-drops-in-ranking-celebrating-70-years-of-local-theater/">NEWS IN BRIEF: MHS drops in ranking, MLT celebrates 70 years</a></h2>
+<p class="byline">By Leigh Blander</p>
+<a class="shot" href="https://marbleheadcurrent.org/2026/08/25/news-in-brief-mhs-drops-in-ranking-celebrating-70-years-of-local-theater/" tabindex="-1" aria-hidden="true"><img src="img/e84d20022fd80abf9fb749431b588aed138a9059.webp" alt="" width="214" height="300" loading="lazy" decoding="async"></a>
+<p>The Current welcomes 150- to 200-word submissions to News in Brief. Send them to info@marbleheadnews.org. Marblehead High drops in state rankingIn the new U.S. News World Report ranking, <a class="lozenge more" href="https://marbleheadcurrent.org/2026/08/25/news-in-brief-mhs-drops-in-ranking-celebrating-70-years-of-local-theater/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T09:32:00+00:00" data-pub="5:32 AM EDT">Tuesday, August 25, 2026 at 5:32 AM EDT</time></small><a class="lozenge" href="subjects/sports.html">Sports</a></p>
-<p><small>WV / Statewide / <a href="https://therealwv.com/">The Real WV</a></small></p>
-<h2><a href="https://therealwv.com/2026/08/25/marion-county-courthouse-news-aug-18-24-2026/">Marion County Courthouse News: Aug. 18–24, 2026</a></h2>
-<p class="byline"><small>By Newsroom</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://therealwv.com/support-us/">Donate</a></span></p>
-<a class="shot" href="https://therealwv.com/2026/08/25/marion-county-courthouse-news-aug-18-24-2026/" tabindex="-1" aria-hidden="true"><img src="img/4fa32e65a0e23c842e7aab7b7ce414242c5b3057.jpg" alt="" width="480" height="297" loading="lazy" decoding="async"></a>
-<p>Marriage licenses issued Joshua Steven Jones &amp; Keaira Madison Cross Davin Matthew Tate &amp; Abby Lynn Grimmett Brenton Allen Thorne &amp; Stephanie Marie Dumire Ruben Mario Pena Jr. &amp; Maria Iva Huffman Vater Clifford Allen Devault &amp; Crystal Adair Brown Haws Kolbie Lee Hamilton &amp; Guinevere Rose Wigal Dean Duane Brewer Jr. &amp; Deborah Lee</p>
-<p class="more"><a href="https://therealwv.com/2026/08/25/marion-county-courthouse-news-aug-18-24-2026/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/news.html">News</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/newsletter-native.html">Newsletter-native</a><a class="lozenge give" href="https://communityengagement.substack.com/">Support</a></aside>
+<p class="source"><a href="https://communityengagement.substack.com/"><strong>Charlottesville Community Engagement</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:26:59+00:00" data-pub="10:26 AM EDT">Tue, Aug 25 @ 10AM EDT</time><a class="lozenge place" href="/search?state=VA">Virginia</a><a class="lozenge place" href="/search?place=Charlottesville&state=VA">Charlottesville</a></p>
+<h2><a href="https://communityengagement.substack.com/p/tuesday-august-25-2026-charlottesville">Tuesday, August 25, 2026: Charlottesville asks Dewberry for action plan on future of hotel skeleton and encourages sale</a></h2>
+<p class="byline">By Sean Tubbs</p>
+<a class="shot" href="https://communityengagement.substack.com/p/tuesday-august-25-2026-charlottesville" tabindex="-1" aria-hidden="true"><img src="img/90b5d4f17f0225501d901be31d9afa5f08f114a3.webp" alt="" width="480" height="717" loading="lazy" decoding="async"></a>
+<p>Plus: John Sales leaving as CRHA director <a class="lozenge more" href="https://communityengagement.substack.com/p/tuesday-august-25-2026-charlottesville">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T09:30:45+00:00" data-pub="5:30 AM EDT">Tuesday, August 25, 2026 at 5:30 AM EDT</time></small><a class="lozenge" href="subjects/opinion.html">Opinion</a></p>
-<p><small>KY / Statewide / <a href="https://kentuckylantern.com/">Kentucky Lantern</a></small></p>
-<h2><a href="https://kentuckylantern.com/2026/08/25/stay-with-the-child-kentucky-must-rethink-how-it-serves-vulnerable-children/">Stay with the child: Kentucky must rethink how it serves vulnerable children.</a></h2>
-<p class="byline"><small>By Norma Hatfield</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://kentuckylantern.com/">Support</a></span></p>
-<a class="shot" href="https://kentuckylantern.com/2026/08/25/stay-with-the-child-kentucky-must-rethink-how-it-serves-vulnerable-children/" tabindex="-1" aria-hidden="true"><img src="img/6f04112160a59055b0f488f1a3cc45e2d7e4c1cc.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Stay with the child. It sounds simple, but it may be the most important principle Kentucky can bring to serving vulnerable children and families. At the August 19, 2026, Interim Joint Committee (IJC) on Families and Children meeting, Senator Danny Carroll, R-Paducah, shared that he has filed a bill request to establish a working group</p>
-<p class="more"><a href="https://kentuckylantern.com/2026/08/25/stay-with-the-child-kentucky-must-rethink-how-it-serves-vulnerable-children/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/opinion.html">Opinion</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://support.apple.com/downloads/safari">Donate</a></aside>
+<p class="source"><a href="https://www.elnuevodia.com/"><strong>El Nuevo Dia</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:25:53+00:00" data-pub="10:25 AM EDT">Tue, Aug 25 @ 10AM EDT</time></p>
+<h2><a href="https://www.elnuevodia.com/deportes/beisbol/notas/el-dueno-de-los-padres-se-canta-fanatico-de-clemente-y-bromea-por-tener-el-mismo-nombre-del-cantante-jose-feliciano/">El dueño de los Padres se canta fanático de Clemente y bromea por tener el mismo nombre del cantante José Feliciano</a></h2>
+<p class="byline">By Greg Beacham / The Associated Press</p>
+<a class="shot" href="https://www.elnuevodia.com/deportes/beisbol/notas/el-dueno-de-los-padres-se-canta-fanatico-de-clemente-y-bromea-por-tener-el-mismo-nombre-del-cantante-jose-feliciano/" tabindex="-1" aria-hidden="true"><img src="img/483e328b819d74942ee19e80bfa591a3020240c8.webp" alt="" width="480" height="352" loading="lazy" decoding="async"></a>
+<p>Junto a su esposa Kwanza Jones, los nuevos propietarios de la franquicia de San Diego tuvieron ayer su presentación oficial en una conferencia <a class="lozenge more" href="https://www.elnuevodia.com/deportes/beisbol/notas/el-dueno-de-los-padres-se-canta-fanatico-de-clemente-y-bromea-por-tener-el-mismo-nombre-del-cantante-jose-feliciano/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T09:30:00+00:00" data-pub="5:30 AM EDT">Tuesday, August 25, 2026 at 5:30 AM EDT</time></small></p>
-<p><small>WV / Statewide / <a href="https://therealwv.com/">The Real WV</a></small></p>
-<h2><a href="https://therealwv.com/2026/08/25/monroe-county-courthouse-news-aug-18-24-2026/">Monroe County Courthouse News: Aug. 18–24, 2026</a></h2>
-<p class="byline"><small>By Newsroom</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://therealwv.com/support-us/">Donate</a></span></p>
-<a class="shot" href="https://therealwv.com/2026/08/25/monroe-county-courthouse-news-aug-18-24-2026/" tabindex="-1" aria-hidden="true"><img src="img/df4220636bdc119dcf9647a0e1579c475fa4d6d5.jpg" alt="" width="480" height="329" loading="lazy" decoding="async"></a>
-<p>Marriage licenses issued None Death certificates issued None Land transfers Mark A. Hunt, West Virginia state auditor, by appointee Christal G. Perry, and Jason Burdette Trout, life estate → Billy Joe Boggs Jr.One tract, Sweet Springs District Ronald Thomas Sawyer and Mary Ellen Sawyer → Christopher Christian and Michelle Christian28.53 acres, more or less, with</p>
-<p class="more"><a href="https://therealwv.com/2026/08/25/monroe-county-courthouse-news-aug-18-24-2026/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/sports.html">Sports</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/chinese.html">Chinese</a><a class="lozenge give" href="https://newsforchinese.com/v3/">Support</a></aside>
+<p class="source"><a href="https://newsforchinese.com/v3/"><strong>News for Chinese Inc.</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:25:37+00:00" data-pub="7:25 AM PDT">Tue, Aug 25 @ 7AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=San+Francisco&state=CA">San Francisco</a></p>
+<h2><a href="https://newsforchinese.com/v3/2026/08/25/richmond%e4%bd%8f%e6%89%80%e7%b8%b1%e7%81%ab%e6%a1%88%e5%9b%9b%e9%81%87%e9%9b%a3%e8%80%85%e8%ba%ab%e4%bb%bd%e7%a2%ba%e8%aa%8d/">Richmond住所縱火案四遇難者身份確認</a></h2>
+<p class="byline">By Jean</p>
+<p>Sergio Rivera Vega週一首次出庭。他被指控故意點燃家庭Richmond住所並通過縱火殺害了四名家庭成員。 這名32歲被告出現在一名Contra Costa縣法官前時沒有進行抗辯。他被控縱火和四項謀殺罪。這場悲劇中年齡最小受害者是一名2歲女孩。 Rivera-Vega和父親、姐姐以及姐姐年幼的孩子住在15th Street一所房子裏。8月18日，消防員發現這家人的住所著火，四名受害者在裏面。消防員將受害者救出，但四人均因傷勢過重死亡。警員在住所附近發現Rivera-Vega並將其逮捕。在法庭文檔中，四名受害者被確認為：·Andrew Alexander Rivera-Vega，被告5歲外甥·Arlette Rivera Vega，被告兩歲外甥女·Maria Rivera-Vega，兩個遇難孩子的母親和被告33歲姐姐·Jose Rivera，被告47歲父親地方檢察官Diana  <a class="lozenge more" href="https://newsforchinese.com/v3/2026/08/25/richmond%e4%bd%8f%e6%89%80%e7%b8%b1%e7%81%ab%e6%a1%88%e5%9b%9b%e9%81%87%e9%9b%a3%e8%80%85%e8%ba%ab%e4%bb%bd%e7%a2%ba%e8%aa%8d/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T09:30:00+00:00" data-pub="5:30 AM EDT">Tuesday, August 25, 2026 at 5:30 AM EDT</time></small><a class="lozenge" href="subjects/housing.html">Housing</a></p>
-<p><small>PA / Pittsburgh / <a href="https://www.publicsource.org/about/">Pittsburgh&#x27;s Public Source</a></small></p>
-<h2><a href="https://www.publicsource.org/pittsburgh-childcare-costs-struggles/">Childcare’s high cost, low supply pushes Pittsburgh families to get creative</a></h2>
-<p class="byline"><small>By Matt Petras</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://checkout.fundjournalism.org/memberform?org_id=publicsource&amp;campaign=7015x000000SBixAAG">Donate</a></span></p>
-<a class="shot" href="https://www.publicsource.org/pittsburgh-childcare-costs-struggles/" tabindex="-1" aria-hidden="true"><img src="img/deb70ee1858eed88f618e2b4a0c86d057b07a285.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Southwestern Pennsylvania households struggle to find affordable care for kids. A hybrid worker, a homeschooler, a nanny and a former daycare worker talk about their paths through a difficult space.</p>
-<p class="more"><a href="https://www.publicsource.org/pittsburgh-childcare-costs-struggles/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/arts.html">Arts</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://identidadlatina.com/category/locales/">Support</a></aside>
+<p class="source"><a href="https://identidadlatina.com/category/locales/"><strong>Identidad Latina</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:25:31+00:00" data-pub="10:25 AM EDT">Tue, Aug 25 @ 10AM EDT</time><a class="lozenge place" href="/search?state=CT">Connecticut</a></p>
+<h2><a href="https://identidadlatina.com/2026/08/make-the-road-ct-celebra-su-recaudacion-anual-en-hartford/">Make the Road CT celebra su Recaudación Anual en Hartford</a></h2>
+<p class="byline">By identidadlatina</p>
+<p>Bajo el lema “Con raíces en nuestra comunidad, avanzamos juntos”, Make the Road CT invita a la comunidad a participar <a class="lozenge more" href="https://identidadlatina.com/2026/08/make-the-road-ct-celebra-su-recaudacion-anual-en-hartford/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T09:30:00+00:00" data-pub="5:30 AM EDT">Tuesday, August 25, 2026 at 5:30 AM EDT</time></small></p>
-<p><small>MA / Franklin / <a href="https://www.franklinmatters.org/">Franklin Matters</a></small></p>
-<h2><a href="https://feeds.feedblitz.com/~/968204879/0/franklinmatters.html">Need to get a Minuteman library card?</a></h2>
-<p class="byline"><small>By Steve Sherlock (noreply@blogger.com)</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.franklinmatters.org/search/label/fund%20raising">Donate</a></span></p>
-<p>via Friends of the Franklin Library: &quot;Still don&#x27;t have your Minuteman library card? Sign up in seconds using the link below to get access to all the amazing things our library has to offer! https://www.minlib.net/ecard If you want to know how you can support the Franklin Library, become a Friend!!&quot; Shared from - https://www.facebook.com/share/18wYwqSh9v/ Check out the Friends page and become a mem</p>
-<p class="more"><a href="https://feeds.feedblitz.com/~/968204879/0/franklinmatters.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/business.html">Business</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://newyorktrendnyc.com/">Support</a></aside>
+<p class="source"><a href="https://newyorktrendnyc.com/"><strong>New York Trend</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:24:38+00:00" data-pub="10:24 AM EDT">Tue, Aug 25 @ 10AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Long+Island&state=NY">Long Island</a></p>
+<h2><a href="https://newyorktrendnyc.com/2026/08/barkue-tubman-zawolo-joins-midori-star-media-group-client-roster/">Barkue Tubman-Zawolo Joins Midori Star Media Group Client Roster</a></h2>
+<p class="byline">By NEW YORK TREND</p>
+<a class="shot" href="https://newyorktrendnyc.com/2026/08/barkue-tubman-zawolo-joins-midori-star-media-group-client-roster/" tabindex="-1" aria-hidden="true"><img src="img/41a5dc052660cf4949f84c90af8fd11f21c79191.webp" alt="" width="480" height="434" loading="lazy" decoding="async"></a>
+<p>Barkue Tubman-Zawolo, a business executive, global strategist and communications leader known for connecting business, culture and economic development, has signed with Midori Star Media Group. The New York-based media company announced the partnership as part of its expanding roster of clients, with plans to elevate Tubman-Zawolo’s executive expertise, entrepreneurial work and international leade <a class="lozenge more" href="https://newyorktrendnyc.com/2026/08/barkue-tubman-zawolo-joins-midori-star-media-group-client-roster/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T09:30:00+00:00" data-pub="5:30 AM EDT">Tuesday, August 25, 2026 at 5:30 AM EDT</time></small><a class="lozenge" href="subjects/politics.html">Politics</a></p>
-<p><small>FL / Statewide / <a href="https://floridatrib.org/category/local-government/">Florida Tributary</a></small></p>
-<h2><a href="https://floridatrib.org/2026/08/25/state-licensed-scams-florida-regulators-allow-contractors-accused-of-deception-to-keep-licenses/">State-licensed scams: Florida regulators allow contractors accused of deception to keep licenses</a></h2>
-<p class="byline"><small>By Rhiannon Rashidi</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://floridatrib.org/donate">Donate</a></span></p>
-<a class="shot" href="https://floridatrib.org/2026/08/25/state-licensed-scams-florida-regulators-allow-contractors-accused-of-deception-to-keep-licenses/" tabindex="-1" aria-hidden="true"><img src="img/cfc0aa0c1f9fa896fef5005f35b3b9a0604fdf4e.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>The Florida department that issues business licenses leaves untouched those held by contractors with lengthy records of complaints, including from state officials</p>
-<p class="more"><a href="https://floridatrib.org/2026/08/25/state-licensed-scams-florida-regulators-allow-contractors-accused-of-deception-to-keep-licenses/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/news.html">News</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.paypal.com/donate/?token=ExkxQJKIQjbj7KzXa2aUH4-YDFNLoktpLzjLiqy0y-DW7sWiimVufIXabD2Zi6v1dDoVv0&amp;country.x=US&amp;locale.x=US">Donate</a></aside>
+<p class="source"><a href="https://www.hummelreport.org/"><strong>Lake Wales News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:23:32+00:00" data-pub="10:23 AM EDT">Tue, Aug 25 @ 10AM EDT</time><a class="lozenge place" href="/search?state=FL">Florida</a><a class="lozenge place" href="/search?place=Lake+Wales&state=FL">Lake Wales</a></p>
+<h2><a href="https://www.hummelreport.org/post/lively-8-21-2026">Lively 8/21/2026</a></h2>
+<p class="byline">By News Feed</p>
+<p>What does a candidate need to do to win a race in 2026? Some Rhode Island candidates are increasingly turning to social media to reach voters and build momentum. Many campaigns still target voters with a barrage of TV ads. This week on Lively, moderator Jim Hummel discusses the evolving campaign playbook with former Providence mayor Angel Taveras and Rhode Island filmmaker Dante Bellini Jr. Watch  <a class="lozenge more" href="https://www.hummelreport.org/post/lively-8-21-2026">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T09:30:00+00:00" data-pub="5:30 AM EDT">Tuesday, August 25, 2026 at 5:30 AM EDT</time></small><a class="lozenge" href="subjects/news.html">News</a></p>
-<p><small>WV / Charleston / <a href="https://www.wvgazettemail.com/">Charleson Gazette-Mail</a></small></p>
-<h2><a href="https://www.wvgazettemail.com/news/huntington-residents-launch-ballot-initiative-in-attempt-to-ban-surveillance-tech/article_c8e7c847-0718-4d38-947b-b1f110a3385b.html">Huntington residents launch ballot initiative in attempt to ban surveillance tech</a></h2>
-<p class="byline"><small>By By Destiney Dingess ddingess@hdmediallc.com</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.wvgazettemail.com/subscribe">Subscribe</a></span></p>
-<a class="shot" href="https://www.wvgazettemail.com/news/huntington-residents-launch-ballot-initiative-in-attempt-to-ban-surveillance-tech/article_c8e7c847-0718-4d38-947b-b1f110a3385b.html" tabindex="-1" aria-hidden="true"><img src="img/17366337818fb0922e3bdc8d44338d2b35b003c0.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
-<p class="more"><a href="https://www.wvgazettemail.com/news/huntington-residents-launch-ballot-initiative-in-attempt-to-ban-surveillance-tech/article_c8e7c847-0718-4d38-947b-b1f110a3385b.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/arts.html">Arts</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://atlantablackstar.com/">Support</a></aside>
+<p class="source"><a href="https://atlantablackstar.com/"><strong>Atlanta Black Star</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:23:01+00:00" data-pub="10:23 AM EDT">Tue, Aug 25 @ 10AM EDT</time><a class="lozenge place" href="/search?state=GA">Georgia</a><a class="lozenge place" href="/search?place=Atlanta&state=GA">Atlanta</a></p>
+<h2><a href="https://atlantablackstar.com/2026/08/25/karoline-leavitt-humiliated-twice-in-one-day/">‘Very Angry With Her’: Trump Calls Out Karoline Leavitt to Her Face for Leaving Him—Then Twists the Knife by Bringing Up His Former Press Secretary</a></h2>
+<p class="byline">By ArLuther Lee</p>
+<a class="shot" href="https://atlantablackstar.com/2026/08/25/karoline-leavitt-humiliated-twice-in-one-day/" tabindex="-1" aria-hidden="true"><img src="img/193f7926db1f29123a5c7ed98737414adfa941c9.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>The goodbye lasted only a few minutes, but White House Press Secretary Karoline Leavitt has since made it clear she isn’t going very far. On […] ‘Very Angry With Her’: Trump Calls Out Karoline Leavitt to Her Face for Leaving Him—Then Twists the Knife by Bringing Up His Former Press Secretary <a class="lozenge more" href="https://atlantablackstar.com/2026/08/25/karoline-leavitt-humiliated-twice-in-one-day/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T09:30:00+00:00" data-pub="5:30 AM EDT">Tuesday, August 25, 2026 at 5:30 AM EDT</time></small><a class="lozenge" href="subjects/opinion.html">Opinion</a></p>
-<p><small>MA / Pittsfield / <a href="https://www.berkshireeagle.com/">The Berkshire Eagle</a></small></p>
-<h2><a href="https://www.berkshireeagle.com/opinion/columnists/michael-a-fenton-the-governors-council-must-deliver-for-the-berkshires/article_38cbb13c-abe0-48ed-a386-a3db1f48a77c.html">Michael A. Fenton: The Governor&#x27;s Council must deliver for the Berkshires</a></h2>
-<p class="byline"><small>By By Michael A. Fenton</small><span class="aside"><a class="lozenge give" href="https://www.berkshireeagle.com/donate/">Donate</a></span></p>
-<a class="shot" href="https://www.berkshireeagle.com/opinion/columnists/michael-a-fenton-the-governors-council-must-deliver-for-the-berkshires/article_38cbb13c-abe0-48ed-a386-a3db1f48a77c.html" tabindex="-1" aria-hidden="true"><img src="img/f408806bdc1fba7ea43719f858282353a0d6ded2.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
-<p>I am a Springfield lawyer running for Governor’s Council, and I am asking for Berkshire County residents to support me over an incumbent from North Adams. Here’s why:</p>
-<p class="more"><a href="https://www.berkshireeagle.com/opinion/columnists/michael-a-fenton-the-governors-council-must-deliver-for-the-berkshires/article_38cbb13c-abe0-48ed-a386-a3db1f48a77c.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/politics.html">Politics</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://statesnewsroom.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://stateline.org/"><strong>Stateline</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:22:23+00:00" data-pub="10:22 AM EDT">Tue, Aug 25 @ 10AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=State+policy&state=DC">State policy</a></p>
+<h2><a href="https://stateline.org/2026/08/25/repub/20-states-sue-trump-administration-for-threatening-safety-grants-over-immigration-compliance/">20 states sue Trump administration for threatening safety grants over immigration compliance</a></h2>
+<p class="byline">By Isiah Holmes</p>
+<a class="shot" href="https://stateline.org/2026/08/25/repub/20-states-sue-trump-administration-for-threatening-safety-grants-over-immigration-compliance/" tabindex="-1" aria-hidden="true"><img src="img/d661b1e81efc1bb2a2b85ca6193c2d9c6fe89064.webp" alt="Protesters march in Milwaukee following a surge in ICE arrests in early July 2026. (Photo by Isiah Holmes/Wisconsin Examiner)" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>The Wisconsin Department of Justice (DOJ) has joined 19 other states, including the commonwealths of Massachusetts and Virginia, in a lawsuit pushing back against the Trump administration’s attempts to attach immigration enforcement requirements to federal grants supporting state and local public safety efforts. “Threatening to cut funding that supports law enforcement if states don’t agree <a class="lozenge more" href="https://stateline.org/2026/08/25/repub/20-states-sue-trump-administration-for-threatening-safety-grants-over-immigration-compliance/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T09:30:00+00:00" data-pub="5:30 AM EDT">Tuesday, August 25, 2026 at 5:30 AM EDT</time></small><a class="lozenge" href="subjects/business.html">Business</a></p>
-<p><small>MD / Baltimore / <a href="https://www.thebaltimorebanner.com/">The Baltimore Banner</a></small></p>
-<h2><a href="https://www.thebanner.com/economy/growth-development/maryland-data-center-faq-SA6FZOGBAVGUVOMGSAEDN7G2AM/">What to know about data centers in Maryland</a></h2>
-<p class="byline"><small>By Bria Overs</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.thebaltimorebanner.com/give">Donate</a></span></p>
-<a class="shot" href="https://www.thebanner.com/economy/growth-development/maryland-data-center-faq-SA6FZOGBAVGUVOMGSAEDN7G2AM/" tabindex="-1" aria-hidden="true"><img src="img/234dd227b92af67c91395d960e4c57dd908dbf73.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>As data center proposals spread across Maryland, communities weigh benefits like tax revenue against costs to utilities, water and quality of life. Here’s what to know.</p>
-<p class="more"><a href="https://www.thebanner.com/economy/growth-development/maryland-data-center-faq-SA6FZOGBAVGUVOMGSAEDN7G2AM/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/opinion.html">Opinion</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://support.apple.com/downloads/safari">Donate</a></aside>
+<p class="source"><a href="https://www.elnuevodia.com/"><strong>El Nuevo Dia</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:21:44+00:00" data-pub="10:21 AM EDT">Tue, Aug 25 @ 10AM EDT</time></p>
+<h2><a href="https://www.elnuevodia.com/entretenimiento/musica/notas/concierto-solidario-ya-ha-recaudado-14-millones-para-los-damnificados-de-los-terremotos-en-colombia/">Concierto solidario ya ha recaudado $1.4 millones para los damnificados de los terremotos en Colombia</a></h2>
+<p class="byline">By Agencia EFE</p>
+<a class="shot" href="https://www.elnuevodia.com/entretenimiento/musica/notas/concierto-solidario-ya-ha-recaudado-14-millones-para-los-damnificados-de-los-terremotos-en-colombia/" tabindex="-1" aria-hidden="true"><img src="img/7c21ba7a7c5c5411586a55dad81fb34917fe7687.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Los fondos se distribuirán para apoyar la reconstrucción de las zonas más afectadas por el sismo, que ha dejado 329 fallecidos <a class="lozenge more" href="https://www.elnuevodia.com/entretenimiento/musica/notas/concierto-solidario-ya-ha-recaudado-14-millones-para-los-damnificados-de-los-terremotos-en-colombia/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T09:30:00+00:00" data-pub="5:30 AM EDT">Tuesday, August 25, 2026 at 5:30 AM EDT</time></small><a class="lozenge" href="subjects/business.html">Business</a></p>
-<p><small>MD / Baltimore / <a href="https://www.thebaltimorebanner.com/">The Baltimore Banner</a></small></p>
-<h2><a href="https://www.thebanner.com/economy/science-medicine/nurses-licensing-technology-PWSEUYSW7BGJ3HYTC7B4FGKJ3M/">Maryland’s system to license nurses was broken. The $4 million fix didn’t help.</a></h2>
-<p class="byline"><small>By Meredith Cohn</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.thebaltimorebanner.com/give">Donate</a></span></p>
-<a class="shot" href="https://www.thebanner.com/economy/science-medicine/nurses-licensing-technology-PWSEUYSW7BGJ3HYTC7B4FGKJ3M/" tabindex="-1" aria-hidden="true"><img src="img/ce1bf03c337c2b4745da3c7570052765362bbb36.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>Maryland rolled out a new licensing system for nurses, but it&#x27;s causing new problems.</p>
-<p class="more"><a href="https://www.thebanner.com/economy/science-medicine/nurses-licensing-technology-PWSEUYSW7BGJ3HYTC7B4FGKJ3M/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/politics.html">Politics</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://mosaic.nj.com/">Support</a></aside>
+<p class="source"><a href="https://mosaic.nj.com/"><strong>Mosaic</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T14:21:40+00:00" data-pub="10:21 AM EDT">Tue, Aug 25 @ 10AM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a></p>
+<h2><a href="https://www.nj.com/politics/2026/08/abandonment-issues-trump-in-yet-another-poke-at-departing-leavitt.html">Abandonment issues? Trump in yet another poke at departing Leavitt</a></h2>
+<p class="byline">By Tom Wrobleski</p>
+<a class="shot" href="https://www.nj.com/politics/2026/08/abandonment-issues-trump-in-yet-another-poke-at-departing-leavitt.html" tabindex="-1" aria-hidden="true"><img src="img/9590f80077e07b0178f7b175ed82cea9f1ac5d2a.webp" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>“I’m very upset about this.” <a class="lozenge more" href="https://www.nj.com/politics/2026/08/abandonment-issues-trump-in-yet-another-poke-at-departing-leavitt.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 </div>
 <p><a id="more" href="everything-17.html">More stories</a></p>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="index.html">Today&#x27;s news</a> · <a href="map.html">Map</a> · <a href="catalog.html">Newsrooms</a> · <a href="big-stories.html">Big Stories</a> · <a href="story-links.html">Story Links</a> · <a href="resources.html">Resources</a> · <a href="text/">Plain text edition</a> · <a href="feeds.html">RSS Feeds</a> · <a href="about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="map.html">Map</a> · <a href="catalog.html">Newsrooms</a> · <a href="big-stories.html">Big Stories</a> · <a href="story-links.html">Story Links</a> · <a href="resources.html">Resources</a> · <a href="text/">Plain text edition</a> · <a href="feeds.html">RSS Feeds</a> · <a href="about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -404,6 +451,47 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>

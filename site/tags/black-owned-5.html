@@ -13,12 +13,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(../fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -27,22 +40,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -50,19 +69,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -75,7 +126,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -93,7 +144,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="../index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="../masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -106,7 +157,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="../subjects/news.html">News</a></li><li><a href="../subjects/politics.html">Politics</a></li><li><a href="../subjects/opinion.html">Opinion</a></li><li><a href="../subjects/health.html">Health</a></li><li><a href="../subjects/environment.html">Environment</a></li><li><a href="../subjects/education.html">Education</a></li><li><a href="../subjects/business.html">Business</a></li><li><a href="../subjects/housing.html">Housing</a></li><li><a href="../subjects/sports.html">Sports</a></li><li><a href="../subjects/food.html">Food</a></li><li><a href="../subjects/arts.html">Arts</a></li></ul></nav>
@@ -121,282 +172,260 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <main id="main">
 <div id="feed-items">
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T22:30:45+00:00" data-pub="6:30 PM EDT">Monday, August 24, 2026 at 6:30 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>GA / Atlanta / <a href="https://atlantablackstar.com/">Atlanta Black Star</a></small></p>
-<h2><a href="https://atlantablackstar.com/2026/08/24/trump-goes-off-the-rails-in-rant-about-his-former-allies/">‘Pretty Low IQ’: Trump Goes Off the Rails in Rant About His Former Allies — But His Attempt at a Brutal Insult Only Puts Him to Shame</a></h2>
-<p class="byline"><small>By ArLuther Lee</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://atlantablackstar.com/">Support</a></span></p>
-<a class="shot" href="https://atlantablackstar.com/2026/08/24/trump-goes-off-the-rails-in-rant-about-his-former-allies/" tabindex="-1" aria-hidden="true"><img src="../img/5789a2635a77aebd01ba334a16d903912f8a3fea.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Another late-night social media attack from President Donald Trump last week turned one of his favorite political weapons back on himself. After years of boasting […] ‘Pretty Low IQ’: Trump Goes Off the Rails in Rant About His Former Allies — But His Attempt at a Brutal Insult Only Puts Him to Shame</p>
-<p class="more"><a href="https://atlantablackstar.com/2026/08/24/trump-goes-off-the-rails-in-rant-about-his-former-allies/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://blackchronicle.com/product/the-black-chronicle-newspaper-subscription-now-with-the-all-new-tbc-magazine/">Subscribe</a></aside>
+<p class="source"><a href="https://blackchronicle.com/"><strong>Black Chronicle</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T03:44:15+00:00" data-pub="10:44 PM CDT">Mon, Aug 24 @ 10PM CDT</time><a class="lozenge place" href="/search?state=OK">Oklahoma</a><a class="lozenge place" href="/search?place=Oklahoma+City&state=OK">Oklahoma City</a></p>
+<h2><a href="https://blackchronicle.com/education/coalition-sues-trump-over-foreign-student-visa-policy/">Coalition sues Trump over foreign student visa policy</a></h2>
+<p class="byline">By Black Chronicle News Service</p>
+<a class="shot" href="https://blackchronicle.com/education/coalition-sues-trump-over-foreign-student-visa-policy/" tabindex="-1" aria-hidden="true"><img src="../img/436e5b4f6c18d61d78d348cdc22f9ef71dfdb9c4.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>(The Center Square) – A coalition of education and union groups sued the Trump administration, seeking to block a rule that would impose time limits on visas for international students, exchange visitors and foreign journalists. […] Continue reading with a Black Chronicle subscription. Purchase The Black Chronicle Newspaper Subscription – Now with the All-New TBC Magazine! or The Black Chronicle N <a class="lozenge more" href="https://blackchronicle.com/education/coalition-sues-trump-over-foreign-student-visa-policy/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T21:49:22+00:00" data-pub="5:49 PM EDT">Monday, August 24, 2026 at 5:49 PM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>NY / Long Island / <a href="https://newyorktrendnyc.com/">New York Trend</a></small></p>
-<h2><a href="https://newyorktrendnyc.com/2026/08/chief-2026-to-prepare-caribbean-tourism-leaders-for-the-industrys-next-decade/">CHIEF 2026 to Prepare Caribbean Tourism Leaders for the Industry’s Next Decade</a></h2>
-<p class="byline"><small>By Ann Brown</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://newyorktrendnyc.com/">Support</a></span></p>
-<a class="shot" href="https://newyorktrendnyc.com/2026/08/chief-2026-to-prepare-caribbean-tourism-leaders-for-the-industrys-next-decade/" tabindex="-1" aria-hidden="true"><img src="../img/c57b866b507f47b793442a0e7a27ca3aaaa56121.jpg" alt="" width="480" height="439" loading="lazy" decoding="async"></a>
-<p>Caribbean hospitality and tourism leaders will gather in Barbados this November for the 2026 Caribbean Hospitality Industry and Exchange Forum, as the industry looks toward the challenges and opportunities expected to shape tourism through 2030. The Caribbean Hotel and Tourism Association has unveiled the program for CHIEF 2026, scheduled for November 16-18 at the Wyndham</p>
-<p class="more"><a href="https://newyorktrendnyc.com/2026/08/chief-2026-to-prepare-caribbean-tourism-leaders-for-the-industrys-next-decade/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.thecommunityvoice.com/users/admin/contribute/article/">Donate</a></aside>
+<p class="source"><a href="https://www.thecommunityvoice.com/"><strong>The Community Voice</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T03:40:02+00:00" data-pub="8:40 PM PDT">Mon, Aug 24 @ 8PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Sonoma+County&state=CA">Sonoma County</a></p>
+<h2><a href="https://www.thecommunityvoice.com/online_features/press_releases/foxfire-canoes-merges-artisan-woodworking-with-paddle-sport-performance-to-create-the-ultimate-fly-fishing/article_5a4212ce-0fd8-5f7a-a8e3-7fd61a86aa7a.html">Foxfire Canoes Merges Artisan Woodworking With Paddle Sport Performance to Create the Ultimate Fly Fishing Watercraft</a></h2>
+<p><a class="lozenge more" href="https://www.thecommunityvoice.com/online_features/press_releases/foxfire-canoes-merges-artisan-woodworking-with-paddle-sport-performance-to-create-the-ultimate-fly-fishing/article_5a4212ce-0fd8-5f7a-a8e3-7fd61a86aa7a.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://www.forwardtimes.com/online_features/press_releases/foxfire-canoes-merges-artisan-woodworking-with-paddle-sport-performance-to-create-the-ultimate-fly-fishing/article_a09b83e0-fe42-54f2-89a6-8aa6ab13af4e.html">Houston Forward Times</a> &middot; <a href="https://www.flcourier.com/online_features/press_releases/foxfire-canoes-merges-artisan-woodworking-with-paddle-sport-performance-to-create-the-ultimate-fly-fishing/article_f320eb41-7c97-5848-9500-cacb2ddccf11.html">Florida Courier</a> &middot; <a href="https://www.miamitimesonline.com/online_features/press_releases/foxfire-canoes-merges-artisan-woodworking-with-paddle-sport-performance-to-create-the-ultimate-fly-fishing/article_945b47ec-387a-53c8-b14d-34d99901a81e.html">The Miami Times</a> &middot; <a href="https://www.insightnews.com/online_features/press_releases/foxfire-canoes-merges-artisan-woodworking-with-paddle-sport-performance-to-create-the-ultimate-fly-fishing/article_675286a4-dfc9-54be-ba08-dfc695916185.html">Insight News</a> &middot; <a href="https://www.daytonatimes.com/online_features/press_releases/foxfire-canoes-merges-artisan-woodworking-with-paddle-sport-performance-to-create-the-ultimate-fly-fishing/article_b5e1d062-ba8f-509d-82ef-54aa74472565.html">Daytona Times</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T21:16:19+00:00" data-pub="4:16 PM CDT">Monday, August 24, 2026 at 4:16 PM CDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>OK / Tulsa / <a href="https://theblackwallsttimes.com/">Black Wall Street Times</a></small></p>
-<h2><a href="https://theblackwallsttimes.com/2026/08/24/black-communities-shouldnt-fear-pacs-we-should-understand-them/">Black communities shouldn’t fear PACs. We should understand them.</a></h2>
-<p class="byline"><small>By Nehemiah Frank</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://theblackwallsttimes.com/support-black-media/">Donate</a></span></p>
-<a class="shot" href="https://theblackwallsttimes.com/2026/08/24/black-communities-shouldnt-fear-pacs-we-should-understand-them/" tabindex="-1" aria-hidden="true"><img src="../img/44107ca373524e06f41b4d93f430917babe103f7.jpg" alt="" width="480" height="192" loading="lazy" decoding="async"></a>
-<p>The word “PAC” makes some people nervous. I understand why. For years, Americans have watched enormous sums of money pour into elections — billionaires, corporations, special interests, Super PACs, dark money. Political ads flood our screens and feeds without always disclosing who’s really paying for them. So when a political action committee enters an election,</p>
-<p class="more"><a href="https://theblackwallsttimes.com/2026/08/24/black-communities-shouldnt-fear-pacs-we-should-understand-them/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.thecommunityvoice.com/users/admin/contribute/article/">Donate</a></aside>
+<p class="source"><a href="https://www.thecommunityvoice.com/"><strong>The Community Voice</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T03:40:02+00:00" data-pub="8:40 PM PDT">Mon, Aug 24 @ 8PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Sonoma+County&state=CA">Sonoma County</a></p>
+<h2><a href="https://www.thecommunityvoice.com/online_features/press_releases/hrh-candle-introduces-revolutionary-crystal-wax-candle-system-that-empowers-consumers-to-customize-their-home/article_66e39939-c0b8-58c6-8b38-3db1e81ea0b5.html">HRH Candle Introduces Revolutionary Crystal Wax Candle System That Empowers Consumers to Customize Their Home Fragrance Experience</a></h2>
+<p><a class="lozenge more" href="https://www.thecommunityvoice.com/online_features/press_releases/hrh-candle-introduces-revolutionary-crystal-wax-candle-system-that-empowers-consumers-to-customize-their-home/article_66e39939-c0b8-58c6-8b38-3db1e81ea0b5.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://www.forwardtimes.com/online_features/press_releases/hrh-candle-introduces-revolutionary-crystal-wax-candle-system-that-empowers-consumers-to-customize-their-home/article_d6a6e86e-78fe-5b5a-a0a6-a6d3a4e5e842.html">Houston Forward Times</a> &middot; <a href="https://www.flcourier.com/online_features/press_releases/hrh-candle-introduces-revolutionary-crystal-wax-candle-system-that-empowers-consumers-to-customize-their-home/article_af3d1536-77d0-5235-810e-e70aea1bdbb3.html">Florida Courier</a> &middot; <a href="https://www.miamitimesonline.com/online_features/press_releases/hrh-candle-introduces-revolutionary-crystal-wax-candle-system-that-empowers-consumers-to-customize-their-home/article_0515c494-5f7e-5c4e-99e8-cc3657123022.html">The Miami Times</a> &middot; <a href="https://www.insightnews.com/online_features/press_releases/hrh-candle-introduces-revolutionary-crystal-wax-candle-system-that-empowers-consumers-to-customize-their-home/article_d720e91a-d627-5588-91d2-ddf6a4eaf967.html">Insight News</a> &middot; <a href="https://www.daytonatimes.com/online_features/press_releases/hrh-candle-introduces-revolutionary-crystal-wax-candle-system-that-empowers-consumers-to-customize-their-home/article_a59c7a69-baa2-5f9f-b224-a0b6025dd46f.html">Daytona Times</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T21:16:00+00:00" data-pub="5:16 PM EDT">Monday, August 24, 2026 at 5:16 PM EDT</time></small></p>
-<p><small>NC / Raleigh / <a href="https://caro.news/">The Carolinian</a></small></p>
-<h2><a href="https://caro.news/no-mall-no-arcade-no-space-the-search-for-teen-autonomy-in-the-wake-of-triangle-takeover-events/">No Mall, No Arcade, No Space: The Search For Teen Autonomy In The Wake Of Triangle Takeover Events</a></h2>
-<p class="byline"><small>By The Carolinian</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://caro.news/">Support</a></span></p>
-<a class="shot" href="https://caro.news/no-mall-no-arcade-no-space-the-search-for-teen-autonomy-in-the-wake-of-triangle-takeover-events/" tabindex="-1" aria-hidden="true"><img src="../img/4f8f92925832fe9c794a66b7c18494e2ae29f7ed.jpg" alt="" width="480" height="406" loading="lazy" decoding="async"></a>
-<p>WUNC - It was a scene that might be familiar to others across the country, but it was new to the Triangle. On the night of July 4, in several</p>
-<p class="more"><a href="https://caro.news/no-mall-no-arcade-no-space-the-search-for-teen-autonomy-in-the-wake-of-triangle-takeover-events/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.thecommunityvoice.com/users/admin/contribute/article/">Donate</a></aside>
+<p class="source"><a href="https://www.thecommunityvoice.com/"><strong>The Community Voice</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T03:35:04+00:00" data-pub="8:35 PM PDT">Mon, Aug 24 @ 8PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Sonoma+County&state=CA">Sonoma County</a></p>
+<h2><a href="https://www.thecommunityvoice.com/online_features/press_releases/veteran-founded-house-of-enough-bridges-mental-health-expertise-and-body-care-to-serve-women/article_08b073b9-46b0-5c96-8404-fa82bf06c90f.html">Veteran-Founded House of Enough Bridges Mental Health Expertise and Body Care to Serve Women Often Overlooked by Beauty Brands</a></h2>
+<p><a class="lozenge more" href="https://www.thecommunityvoice.com/online_features/press_releases/veteran-founded-house-of-enough-bridges-mental-health-expertise-and-body-care-to-serve-women/article_08b073b9-46b0-5c96-8404-fa82bf06c90f.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://www.forwardtimes.com/online_features/press_releases/veteran-founded-house-of-enough-bridges-mental-health-expertise-and-body-care-to-serve-women/article_6d0af119-8205-5438-83bd-0e9db9dff7b6.html">Houston Forward Times</a> &middot; <a href="https://www.flcourier.com/online_features/press_releases/veteran-founded-house-of-enough-bridges-mental-health-expertise-and-body-care-to-serve-women/article_95260899-fcfa-51bf-a8ae-89a63fb69e0c.html">Florida Courier</a> &middot; <a href="https://www.miamitimesonline.com/online_features/press_releases/veteran-founded-house-of-enough-bridges-mental-health-expertise-and-body-care-to-serve-women/article_66ba34ab-8e5a-547b-a228-928450b68c72.html">The Miami Times</a> &middot; <a href="https://www.insightnews.com/online_features/press_releases/veteran-founded-house-of-enough-bridges-mental-health-expertise-and-body-care-to-serve-women/article_aae5e26c-b7b1-5bb4-a6c7-2d87e13e20d7.html">Insight News</a> &middot; <a href="https://www.daytonatimes.com/online_features/press_releases/veteran-founded-house-of-enough-bridges-mental-health-expertise-and-body-care-to-serve-women/article_6829a92d-c752-5bda-a562-a1e4e0915c4c.html">Daytona Times</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T21:13:12+00:00" data-pub="4:13 PM CDT">Monday, August 24, 2026 at 4:13 PM CDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>IA / Statewide / <a href="https://blackiowanews.com">Black Iowa News</a></small></p>
-<h2><a href="https://blackiowanews.com/passing-the-baton-who-will-document-the-black-experience-in-iowa-for-the-next-250-years/">Passing the Baton: Who will document the Black experience in Iowa for the next 250 years?</a></h2>
-<p class="byline"><small>By Wayne Ford</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://blackiowanews.com/support-us">Donate</a></span></p>
-<a class="shot" href="https://blackiowanews.com/passing-the-baton-who-will-document-the-black-experience-in-iowa-for-the-next-250-years/" tabindex="-1" aria-hidden="true"><img src="../img/6f4a8c7b083514f33f1af9f60d64625c96ef2a85.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>The Black Press has long documented the lived experiences of Black Iowans. Sustaining it into the future will require more.</p>
-<p class="more"><a href="https://blackiowanews.com/passing-the-baton-who-will-document-the-black-experience-in-iowa-for-the-next-250-years/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://saobserver.com/">Support</a></aside>
+<p class="source"><a href="https://saobserver.com/"><strong>San Antonio Observer</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T03:33:40+00:00" data-pub="10:33 PM CDT">Mon, Aug 24 @ 10PM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=San+Antonio&state=TX">San Antonio</a></p>
+<h2><a href="https://saobserver.com/target-admits-minstrel-like-halloween-costume-was-wrong/">Target Admits ‘Minstrel-Like’ Halloween Costume Was ‘Wrong’</a></h2>
+<p class="byline">By Observer Staff</p>
+<a class="shot" href="https://saobserver.com/target-admits-minstrel-like-halloween-costume-was-wrong/" tabindex="-1" aria-hidden="true"><img src="../img/aacf7a760209ffd45f2903e0e540c39aa6a512f9.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+<p>The Retailer Apologized After a Children’s Clown Costume Featuring a Black Model Drew Comparisons to Blackface and Minstrel Shows Target has pulled a children’s Halloween costume from its shelves after widespread criticism that the design and its marketing evoked racist minstrel imagery and historical caricatures of Black Americans. The retailer removed the $25 costume from <a class="lozenge more" href="https://saobserver.com/target-admits-minstrel-like-halloween-costume-was-wrong/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T21:11:19+00:00" data-pub="2:11 PM PDT">Monday, August 24, 2026 at 2:11 PM PDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>CA / San Diego / <a href="https://sdvoice.info/">The San Diego Voice &amp; Viewpoint Newspaper</a></small></p>
-<h2><a href="https://sdvoice.info/secretary-of-state-shirley-n-weber-urges-californians-to-vote-early/">Secretary of State Shirley N. Weber Urges Californians to Vote Early</a></h2>
-<p class="byline"><small>By California Black Media</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://sdvoice.info/support-our-publication">Donate</a></span></p>
-<a class="shot" href="https://sdvoice.info/secretary-of-state-shirley-n-weber-urges-californians-to-vote-early/" tabindex="-1" aria-hidden="true"><img src="../img/46615bfabb61dfa9c2285ac783faa9744571ae9d.jpg" alt="" width="480" height="319" loading="lazy" decoding="async"></a>
-<p>Their discussion focused on election integrity, leadership and the future of democracy. Weber described California’s voting process as a “special system” that empowers people while requiring election officials to manage complex logistical, security and communications responsibilities.</p>
-<p class="more"><a href="https://sdvoice.info/secretary-of-state-shirley-n-weber-urges-californians-to-vote-early/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.thecommunityvoice.com/users/admin/contribute/article/">Donate</a></aside>
+<p class="source"><a href="https://www.thecommunityvoice.com/"><strong>The Community Voice</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T03:30:02+00:00" data-pub="8:30 PM PDT">Mon, Aug 24 @ 8PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Sonoma+County&state=CA">Sonoma County</a></p>
+<h2><a href="https://www.thecommunityvoice.com/online_features/press_releases/prv-tree-service-highlights-efficient-land-clearing-solutions-for-austin-tx-property-development/article_565fc957-3c35-58ce-b48e-63dc5cdb8d74.html">PRV Tree Service Highlights Efficient Land Clearing Solutions for Austin, TX Property Development</a></h2>
+<p><a class="lozenge more" href="https://www.thecommunityvoice.com/online_features/press_releases/prv-tree-service-highlights-efficient-land-clearing-solutions-for-austin-tx-property-development/article_565fc957-3c35-58ce-b48e-63dc5cdb8d74.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://www.forwardtimes.com/online_features/press_releases/prv-tree-service-highlights-efficient-land-clearing-solutions-for-austin-tx-property-development/article_f05a057e-9841-5b5b-bf42-da61b30e705e.html">Houston Forward Times</a> &middot; <a href="https://www.flcourier.com/online_features/press_releases/prv-tree-service-highlights-efficient-land-clearing-solutions-for-austin-tx-property-development/article_b2dcc5d3-c0bc-5b02-9ce5-ff405d3d9c00.html">Florida Courier</a> &middot; <a href="https://www.miamitimesonline.com/online_features/press_releases/prv-tree-service-highlights-efficient-land-clearing-solutions-for-austin-tx-property-development/article_f6acffcc-2efe-552c-a681-40e5a59b55ce.html">The Miami Times</a> &middot; <a href="https://www.insightnews.com/online_features/press_releases/prv-tree-service-highlights-efficient-land-clearing-solutions-for-austin-tx-property-development/article_4a3fd281-f9da-5a26-8e47-759621b21278.html">Insight News</a> &middot; <a href="https://www.daytonatimes.com/online_features/press_releases/prv-tree-service-highlights-efficient-land-clearing-solutions-for-austin-tx-property-development/article_0e1f9f04-5165-54d1-9f36-4f8806370270.html">Daytona Times</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T21:01:25+00:00" data-pub="5:01 PM EDT">Monday, August 24, 2026 at 5:01 PM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>GA / Atlanta / <a href="https://theatlantavoice.com/category/news/">The Atlanta Voice</a></small></p>
-<h2><a href="https://capitol-beat.org/2026/08/georgia-chamber-to-counter-misinformation-disinformation-about-data-centers/">Georgia Chamber to counter ‘misinformation, disinformation’ about data centers</a></h2>
-<p class="byline"><small>By Capital Beat News Service</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://theatlantavoice.com/category/news/">Support</a></span></p>
-<a class="shot" href="https://capitol-beat.org/2026/08/georgia-chamber-to-counter-misinformation-disinformation-about-data-centers/" tabindex="-1" aria-hidden="true"><img src="../img/725ba6746c7f725c184922d9e4b7c2ecbaa4c758.webp" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>With opposition to data centers growing, the Georgia Chamber is launching an alliance to promote their economic benefits and counter concerns over water use, power costs and transparency.</p>
-<p class="more"><a href="https://capitol-beat.org/2026/08/georgia-chamber-to-counter-misinformation-disinformation-about-data-centers/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.thecommunityvoice.com/users/admin/contribute/article/">Donate</a></aside>
+<p class="source"><a href="https://www.thecommunityvoice.com/"><strong>The Community Voice</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T03:30:02+00:00" data-pub="8:30 PM PDT">Mon, Aug 24 @ 8PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Sonoma+County&state=CA">Sonoma County</a></p>
+<h2><a href="https://www.thecommunityvoice.com/online_features/press_releases/the-estate-lawyers-attorneys-carl-l-jones-and-michael-c-mcdonald-recognized-in-2027-best/article_87c8990f-fe5a-55aa-826c-d82611a25bb2.html">The Estate Lawyers Attorneys Carl L. Jones and Michael C. McDonald Recognized in 2027 Best Lawyers: Ones to Watch® in America</a></h2>
+<p><a class="lozenge more" href="https://www.thecommunityvoice.com/online_features/press_releases/the-estate-lawyers-attorneys-carl-l-jones-and-michael-c-mcdonald-recognized-in-2027-best/article_87c8990f-fe5a-55aa-826c-d82611a25bb2.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://www.forwardtimes.com/online_features/press_releases/the-estate-lawyers-attorneys-carl-l-jones-and-michael-c-mcdonald-recognized-in-2027-best/article_ef548717-9e4a-556a-917c-60a7b6c511b7.html">Houston Forward Times</a> &middot; <a href="https://www.flcourier.com/online_features/press_releases/the-estate-lawyers-attorneys-carl-l-jones-and-michael-c-mcdonald-recognized-in-2027-best/article_8f03ab35-7cd4-5344-963e-dd9b4c3f3ea2.html">Florida Courier</a> &middot; <a href="https://www.miamitimesonline.com/online_features/press_releases/the-estate-lawyers-attorneys-carl-l-jones-and-michael-c-mcdonald-recognized-in-2027-best/article_33c911e1-b420-5753-90d6-0a9d2b183dc7.html">The Miami Times</a> &middot; <a href="https://www.insightnews.com/online_features/press_releases/the-estate-lawyers-attorneys-carl-l-jones-and-michael-c-mcdonald-recognized-in-2027-best/article_74ab4eda-ef0a-5671-9abc-49f5dd88ed17.html">Insight News</a> &middot; <a href="https://www.daytonatimes.com/online_features/press_releases/the-estate-lawyers-attorneys-carl-l-jones-and-michael-c-mcdonald-recognized-in-2027-best/article_2c0f8b90-e86a-5348-979c-93bf676681c8.html">Daytona Times</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T21:00:47+00:00" data-pub="5:00 PM EDT">Monday, August 24, 2026 at 5:00 PM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>PA / Philadelphia / <a href="https://philasun.com/category/local/">Philadelphia Sunday Sun</a></small></p>
-<h2><a href="https://philasun.com/commentary/commentary-trash-and-the-city-of-brotherly-love/">Commentary:  Trash and the city of brotherly love</a></h2>
-<p class="byline"><small>By Teresa Emerson</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://philasun.com/subscribe/">Subscribe</a></span></p>
-<p>Photo: Shuttlestock Philadelphia is known as the city of brotherly love, but that sentiment doesn’t seem to extend to our trash issues. Has this always been the case? As we approach this time of year, it’s disheartening for those living near Temple University. The influx of students can lead to a messy environment when they</p>
-<p class="more"><a href="https://philasun.com/commentary/commentary-trash-and-the-city-of-brotherly-love/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.thecommunityvoice.com/users/admin/contribute/article/">Donate</a></aside>
+<p class="source"><a href="https://www.thecommunityvoice.com/"><strong>The Community Voice</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T03:25:02+00:00" data-pub="8:25 PM PDT">Mon, Aug 24 @ 8PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Sonoma+County&state=CA">Sonoma County</a></p>
+<h2><a href="https://www.thecommunityvoice.com/online_features/press_releases/woman-owned-nuyou360-ventures-llc-publishes-full-red-light-therapy-device-specifications-to-combat-skincare/article_58d677df-e883-5655-b9d9-d37023589d7d.html">Woman-Owned NuYOU360 Ventures LLC Publishes Full Red Light Therapy Device Specifications to Combat Skincare Industry Misinformation</a></h2>
+<p><a class="lozenge more" href="https://www.thecommunityvoice.com/online_features/press_releases/woman-owned-nuyou360-ventures-llc-publishes-full-red-light-therapy-device-specifications-to-combat-skincare/article_58d677df-e883-5655-b9d9-d37023589d7d.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://www.forwardtimes.com/online_features/press_releases/woman-owned-nuyou360-ventures-llc-publishes-full-red-light-therapy-device-specifications-to-combat-skincare/article_db225d4c-0105-5a37-a279-317db24def99.html">Houston Forward Times</a> &middot; <a href="https://www.flcourier.com/online_features/press_releases/woman-owned-nuyou360-ventures-llc-publishes-full-red-light-therapy-device-specifications-to-combat-skincare/article_c3916bfe-5a6b-5d8a-befb-1ce75b7b7817.html">Florida Courier</a> &middot; <a href="https://www.miamitimesonline.com/online_features/press_releases/woman-owned-nuyou360-ventures-llc-publishes-full-red-light-therapy-device-specifications-to-combat-skincare/article_f9e025d6-eca0-5fa8-b4e5-4fe414bb0f1c.html">The Miami Times</a> &middot; <a href="https://www.insightnews.com/online_features/press_releases/woman-owned-nuyou360-ventures-llc-publishes-full-red-light-therapy-device-specifications-to-combat-skincare/article_a111b35e-89a9-5b3c-9b99-66928b5543b0.html">Insight News</a> &middot; <a href="https://www.daytonatimes.com/online_features/press_releases/woman-owned-nuyou360-ventures-llc-publishes-full-red-light-therapy-device-specifications-to-combat-skincare/article_90aef83a-135e-5481-835c-09b7ea14ddd0.html">Daytona Times</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T21:00:00+00:00" data-pub="5:00 PM EDT">Monday, August 24, 2026 at 5:00 PM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>GA / Atlanta / <a href="https://atlantablackstar.com/">Atlanta Black Star</a></small></p>
-<h2><a href="https://atlantablackstar.com/2026/08/24/austin-metcalfs-dad-exposed-for-threatening-message/">‘You’re a Coward!’: Austin Metcalf’s Dad Exposed for Threatening Message to Civil Rights Activist During Karmelo Anthony Hearing</a></h2>
-<p class="byline"><small>By Mary Ginther</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://atlantablackstar.com/">Support</a></span></p>
-<a class="shot" href="https://atlantablackstar.com/2026/08/24/austin-metcalfs-dad-exposed-for-threatening-message/" tabindex="-1" aria-hidden="true"><img src="../img/87b5a100c498c3066cf8c4aa1f53887fc08598ac.jpg" alt="" width="480" height="251" loading="lazy" decoding="async"></a>
-<p>The father of slain Texas teenager Austin Metcalf sent a confrontational Facebook message to a spokesperson for Karmelo Anthony’s family before a judge’s decision to […] ‘You’re a Coward!’: Austin Metcalf’s Dad Exposed for Threatening Message to Civil Rights Activist During Karmelo Anthony Hearing</p>
-<p class="more"><a href="https://atlantablackstar.com/2026/08/24/austin-metcalfs-dad-exposed-for-threatening-message/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.thecommunityvoice.com/users/admin/contribute/article/">Donate</a></aside>
+<p class="source"><a href="https://www.thecommunityvoice.com/"><strong>The Community Voice</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T03:20:02+00:00" data-pub="8:20 PM PDT">Mon, Aug 24 @ 8PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Sonoma+County&state=CA">Sonoma County</a></p>
+<h2><a href="https://www.thecommunityvoice.com/online_features/press_releases/sunshinescoffee-invites-adventurous-drinkers-to-explore-a-new-world-of-flavor-with-its-signature-blends/article_0e706936-95d0-5fc7-9248-fdd5cdc41dd1.html">SunshinesCoffee Invites Adventurous Drinkers to Explore a New World of Flavor With Its Signature Blends</a></h2>
+<p><a class="lozenge more" href="https://www.thecommunityvoice.com/online_features/press_releases/sunshinescoffee-invites-adventurous-drinkers-to-explore-a-new-world-of-flavor-with-its-signature-blends/article_0e706936-95d0-5fc7-9248-fdd5cdc41dd1.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://www.forwardtimes.com/online_features/press_releases/sunshinescoffee-invites-adventurous-drinkers-to-explore-a-new-world-of-flavor-with-its-signature-blends/article_0724c974-cef7-5613-a6a2-b6b6a595da8e.html">Houston Forward Times</a> &middot; <a href="https://www.miamitimesonline.com/online_features/press_releases/sunshinescoffee-invites-adventurous-drinkers-to-explore-a-new-world-of-flavor-with-its-signature-blends/article_3e036246-a2ff-5644-ba51-8454d049b484.html">The Miami Times</a> &middot; <a href="https://www.insightnews.com/online_features/press_releases/sunshinescoffee-invites-adventurous-drinkers-to-explore-a-new-world-of-flavor-with-its-signature-blends/article_4f49f2c1-7e61-558e-ab13-e0a57b116040.html">Insight News</a> &middot; <a href="https://www.daytonatimes.com/online_features/press_releases/sunshinescoffee-invites-adventurous-drinkers-to-explore-a-new-world-of-flavor-with-its-signature-blends/article_a5710cbb-de1a-59bd-9481-2ec3cfbd05cd.html">Daytona Times</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T20:54:17+00:00" data-pub="4:54 PM EDT">Monday, August 24, 2026 at 4:54 PM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>DC / Washington / <a href="https://afro.com/section/news/washington-d-c-news/">Afro-American</a></small></p>
-<h2><a href="https://www.afro.com/health/baltimore-leaders-fight-youth-tobacco-use-with-new-lawsmoke-shops-prohibited-from-operating-near-schools-and-parks-262801e8">Baltimore leaders fight youth tobacco use with new law
-Smoke shops prohibited from operating near schools and parks</a></h2>
-<p class="byline"><small>By Kendra Bryant, Special to the AFRO</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://afro.com/section/news/washington-d-c-news/">Support</a></span></p>
-<a class="shot" href="https://www.afro.com/health/baltimore-leaders-fight-youth-tobacco-use-with-new-lawsmoke-shops-prohibited-from-operating-near-schools-and-parks-262801e8" tabindex="-1" aria-hidden="true"><img src="../img/a86ecf31fe5d6e75f48301b737802ae7ff4ecbd3.jpg" alt="" width="480" height="393" loading="lazy" decoding="async"></a>
-<p>Mayor Brandon M. Scott has signed a law prohibiting Baltimore smoke shops from operating within 750 feet of schools and parks. Business owners have two years to close or relocate.</p>
-<p class="more"><a href="https://www.afro.com/health/baltimore-leaders-fight-youth-tobacco-use-with-new-lawsmoke-shops-prohibited-from-operating-near-schools-and-parks-262801e8">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.thecommunityvoice.com/users/admin/contribute/article/">Donate</a></aside>
+<p class="source"><a href="https://www.thecommunityvoice.com/"><strong>The Community Voice</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T03:15:02+00:00" data-pub="8:15 PM PDT">Mon, Aug 24 @ 8PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Sonoma+County&state=CA">Sonoma County</a></p>
+<h2><a href="https://www.thecommunityvoice.com/online_features/press_releases/fewer-than-30-of-eligible-small-businesses-claim-the-r-d-tax-credit-k-38/article_c5d68e8e-a315-56b2-a04d-69204b7344ac.html">Fewer Than 30% of Eligible Small Businesses Claim the R&amp;D Tax Credit, K-38 Consulting Reports</a></h2>
+<p><a class="lozenge more" href="https://www.thecommunityvoice.com/online_features/press_releases/fewer-than-30-of-eligible-small-businesses-claim-the-r-d-tax-credit-k-38/article_c5d68e8e-a315-56b2-a04d-69204b7344ac.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://www.forwardtimes.com/online_features/press_releases/fewer-than-30-of-eligible-small-businesses-claim-the-r-d-tax-credit-k-38/article_7ff6f3e9-9a8c-58ff-aac5-36e55687613c.html">Houston Forward Times</a> &middot; <a href="https://www.miamitimesonline.com/online_features/press_releases/fewer-than-30-of-eligible-small-businesses-claim-the-r-d-tax-credit-k-38/article_53949447-9337-55fd-8098-a8882a065d05.html">The Miami Times</a> &middot; <a href="https://www.daytonatimes.com/online_features/press_releases/fewer-than-30-of-eligible-small-businesses-claim-the-r-d-tax-credit-k-38/article_5f12d1a4-e653-5ad1-8fe8-2356fc50e62e.html">Daytona Times</a> &middot; <a href="https://www.insightnews.com/online_features/press_releases/fewer-than-30-of-eligible-small-businesses-claim-the-r-d-tax-credit-k-38/article_6c264191-9508-586c-9de4-5818b585a4bc.html">Insight News</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T20:15:00+00:00" data-pub="3:15 PM CDT">Monday, August 24, 2026 at 3:15 PM CDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>MO / St. Louis / <a href="https://www.stlamerican.com/">St. Louis American</a></small></p>
-<h2><a href="https://www.stlamerican.com/news/local-news/racial-justice-coalition-wants-to-hold-prosecutors-accountable/">Racial justice coalition wants to hold prosecutors accountable</a></h2>
-<p class="byline"><small>By Marissanne Lewis-Thompson of St. Louis Public Radio</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.stlamerican.com/support/">Donate</a></span></p>
-<a class="shot" href="https://www.stlamerican.com/news/local-news/racial-justice-coalition-wants-to-hold-prosecutors-accountable/" tabindex="-1" aria-hidden="true"><img src="../img/8f6e60a75688fe0d8c5ffb85c91d5dbc325c4a90.jpg" alt="" width="480" height="298" loading="lazy" decoding="async"></a>
-<p>A coalition of racial justice groups in the St. Louis region has released its Prosecutor Watch: An Introduction report. It’s the first of a planned series taking a critical look at the St. Louis and St. Louis County prosecutor offices. “We hope that the prosecutors in St. Louis city and county take this opportunity to make</p>
-<p class="more"><a href="https://www.stlamerican.com/news/local-news/racial-justice-coalition-wants-to-hold-prosecutors-accountable/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://afro.com/section/news/washington-d-c-news/">Support</a></aside>
+<p class="source"><a href="https://afro.com/section/news/washington-d-c-news/"><strong>Afro-American</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T03:15:00+00:00" data-pub="11:15 PM EDT">Mon, Aug 24 @ 11PM EDT</time><a class="lozenge place" href="/search?state=DC">Washington, D.C.</a><a class="lozenge place" href="/search?place=Washington&state=DC">Washington</a></p>
+<h2><a href="https://www.afro.com/word-in-black/barber-takes-moral-mondays-from-protest-to-the-polls-8c6a41b5">Barber takes Moral Mondays from protest to the polls</a></h2>
+<p class="byline">By By Rev. Dorothy S. Boulware, Word In Black</p>
+<a class="shot" href="https://www.afro.com/word-in-black/barber-takes-moral-mondays-from-protest-to-the-polls-8c6a41b5" tabindex="-1" aria-hidden="true"><img src="../img/74a5cbce5832c88bae37bc2ce2d8239648993f07.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>After weeks of protest and arrests on Capitol Hill, Bishop William Barber II is shifting his movement’s focus from Washington to communities nationwide, betting that organizing millions of infrequent voters can change who holds political power. <a class="lozenge more" href="https://www.afro.com/word-in-black/barber-takes-moral-mondays-from-protest-to-the-polls-8c6a41b5">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T20:10:00+00:00" data-pub="4:10 PM EDT">Monday, August 24, 2026 at 4:10 PM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>GA / Atlanta / <a href="https://atlantablackstar.com/">Atlanta Black Star</a></small></p>
-<h2><a href="https://atlantablackstar.com/2026/08/24/florida-cop-caught-scrambling-to-find-a-way-to-keep-illegally-detaining-two-black-brothers/">‘How Do I Match the Description?’: Florida Cop Caught Scrambling to Find a Way to Keep Illegally Detaining Two Black Brothers Headed to Work</a></h2>
-<p class="byline"><small>By Mary Spiller</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://atlantablackstar.com/">Support</a></span></p>
-<a class="shot" href="https://atlantablackstar.com/2026/08/24/florida-cop-caught-scrambling-to-find-a-way-to-keep-illegally-detaining-two-black-brothers/" tabindex="-1" aria-hidden="true"><img src="../img/562fd59fdbecc9be6c3e0286a4445a834ec0447b.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>A routine trip to work took an unexpected turn for two Black brothers in Orlando after police stopped them because officers reportedly believed they matched […] ‘How Do I Match the Description?’: Florida Cop Caught Scrambling to Find a Way to Keep Illegally Detaining Two Black Brothers Headed to Work</p>
-<p class="more"><a href="https://atlantablackstar.com/2026/08/24/florida-cop-caught-scrambling-to-find-a-way-to-keep-illegally-detaining-two-black-brothers/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://tncpnews.com/donate/">Donate</a></aside>
+<p class="source"><a href="http://www.tncp.net/"><strong>New Citizens Press</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T03:12:06+00:00" data-pub="11:12 PM EDT">Mon, Aug 24 @ 11PM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=East+Lansing&state=MI">East Lansing</a></p>
+<h2><a href="https://tncpnews.com/michigan-auto-law-explains-school-bus-safety-laws-what-every-driver-must-know-before-the-school-year-starts/">Michigan Auto Law Explains School Bus Safety Laws: What Every Driver Must Know Before the School Year Starts</a></h2>
+<p class="byline">By Rina Risper</p>
+<p>Photo by Vitaliy Haiduk From the 20-foot stop rule to school zone speed limits, violations can mean fines, points, or even jail time. By Michigan Auto Law Farmington Hills, MI—As students across Michigan head back to school, drivers should review the state’s school bus and school zone traffic laws. These laws protect children, <a class="lozenge more" href="https://tncpnews.com/michigan-auto-law-explains-school-bus-safety-laws-what-every-driver-must-know-before-the-school-year-starts/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T19:00:00+00:00" data-pub="3:00 PM EDT">Monday, August 24, 2026 at 3:00 PM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>GA / Atlanta / <a href="https://atlantablackstar.com/">Atlanta Black Star</a></small></p>
-<h2><a href="https://atlantablackstar.com/2026/08/24/target-pulls-halloween-costume-over-racist-image/">‘We Got This Wrong’: Target Pulls Halloween Costume After Viral Image Has Social Media Calling Out Racist Imagery Hiding in Plain Sight</a></h2>
-<p class="byline"><small>By Mary Ginther</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://atlantablackstar.com/">Support</a></span></p>
-<a class="shot" href="https://atlantablackstar.com/2026/08/24/target-pulls-halloween-costume-over-racist-image/" tabindex="-1" aria-hidden="true"><img src="../img/5d1b67ccf8a7296d735f8798403d2a9a77ef7ab6.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Target has pulled a children’s Halloween costume from its website after social media users accused the retailer of selling a design that appeared to resemble […] ‘We Got This Wrong’: Target Pulls Halloween Costume After Viral Image Has Social Media Calling Out Racist Imagery Hiding in Plain Sight</p>
-<p class="more"><a href="https://atlantablackstar.com/2026/08/24/target-pulls-halloween-costume-over-racist-image/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.forwardtimes.com/">Support</a></aside>
+<p class="source"><a href="https://www.forwardtimes.com/"><strong>Houston Forward Times</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T03:10:01+00:00" data-pub="10:10 PM CDT">Mon, Aug 24 @ 10PM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=Houston&state=TX">Houston</a></p>
+<h2><a href="https://www.forwardtimes.com/online_features/press_releases/canadian-medical-thriller-author-jenny-white-brings-nursing-expertise-and-survivor-perspective-to-new-mccord/article_d6395783-2dfd-5671-8bf9-92661d5fdda7.html">Canadian Medical Thriller Author Jenny White Brings Nursing Expertise and Survivor Perspective to New McCord List Network Television Series</a></h2>
+<p><a class="lozenge more" href="https://www.forwardtimes.com/online_features/press_releases/canadian-medical-thriller-author-jenny-white-brings-nursing-expertise-and-survivor-perspective-to-new-mccord/article_d6395783-2dfd-5671-8bf9-92661d5fdda7.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://www.miamitimesonline.com/online_features/press_releases/canadian-medical-thriller-author-jenny-white-brings-nursing-expertise-and-survivor-perspective-to-new-mccord/article_6c99d234-4d6e-50a0-834b-ac7269a9a2fd.html">The Miami Times</a> &middot; <a href="https://www.daytonatimes.com/online_features/press_releases/canadian-medical-thriller-author-jenny-white-brings-nursing-expertise-and-survivor-perspective-to-new-mccord/article_9ecc9f42-6c2e-5c24-b684-98a1bee0b17f.html">Daytona Times</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T18:55:45+00:00" data-pub="2:55 PM EDT">Monday, August 24, 2026 at 2:55 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>FL / Miami / <a href="https://haitiantimes.com/florida-news/">The Haitian Times</a></small></p>
-<h2><a href="https://haitiantimes.com/2026/08/24/oas-ramdin-haiti-elections-gangs/">OAS warns Haiti needs help as it prepares to hold elections for the first time since 2016</a></h2>
-<p class="byline"><small>By The Haitian Times</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://haitiantimes.com/donate/">Donate</a></span></p>
-<a class="shot" href="https://haitiantimes.com/2026/08/24/oas-ramdin-haiti-elections-gangs/" tabindex="-1" aria-hidden="true"><img src="../img/2502e0611d2267f6c7c322b98b97890ab833256b.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>The OAS secretary general says Haiti needs more security support and faster voter registration as it prepares for its first general elections since 2016.</p>
-<p class="more"><a href="https://haitiantimes.com/2026/08/24/oas-ramdin-haiti-elections-gangs/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.forwardtimes.com/">Support</a></aside>
+<p class="source"><a href="https://www.forwardtimes.com/"><strong>Houston Forward Times</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T03:10:01+00:00" data-pub="10:10 PM CDT">Mon, Aug 24 @ 10PM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=Houston&state=TX">Houston</a></p>
+<h2><a href="https://www.forwardtimes.com/online_features/press_releases/veilapp-prepares-to-launch-privacy-first-communications-platform-that-eliminates-the-need-for-phone-numbers/article_50ad419b-972a-5a3f-a7ad-28f9d62d7897.html">VeilApp Prepares to Launch Privacy-First Communications Platform That Eliminates the Need for Phone Numbers or Email Addresses</a></h2>
+<p><a class="lozenge more" href="https://www.forwardtimes.com/online_features/press_releases/veilapp-prepares-to-launch-privacy-first-communications-platform-that-eliminates-the-need-for-phone-numbers/article_50ad419b-972a-5a3f-a7ad-28f9d62d7897.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://www.miamitimesonline.com/online_features/press_releases/veilapp-prepares-to-launch-privacy-first-communications-platform-that-eliminates-the-need-for-phone-numbers/article_1198b1a5-2739-5338-be14-285c6eba3672.html">The Miami Times</a> &middot; <a href="https://www.daytonatimes.com/online_features/press_releases/veilapp-prepares-to-launch-privacy-first-communications-platform-that-eliminates-the-need-for-phone-numbers/article_64636a11-85b5-532b-b4ed-8670c06fb50a.html">Daytona Times</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T18:45:20+00:00" data-pub="1:45 PM CDT">Monday, August 24, 2026 at 1:45 PM CDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>MS / Jackson / <a href="https://jacksonadvocateonline.com/">Jackson Advocate</a></small></p>
-<h2><a href="https://jacksonadvocateonline.com/dont-work-so-hard-that-you-miss-the-season/">Don’t Work So Hard That You Miss the Season</a></h2>
-<p class="byline"><small>By Jackson Advocate News Service</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://jacksonadvocateonline.com/support-us/">Donate</a></span></p>
-<a class="shot" href="https://jacksonadvocateonline.com/dont-work-so-hard-that-you-miss-the-season/" tabindex="-1" aria-hidden="true"><img src="../img/c85dcaa76cd21a56d69b46151d92c7b4d7440db4.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>By Dr. Kathy L. Amos There is a difference between faithfully working the vision and becoming so consumed with making it happen that we fail to recognize what God is</p>
-<p class="more"><a href="https://jacksonadvocateonline.com/dont-work-so-hard-that-you-miss-the-season/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://tncpnews.com/donate/">Donate</a></aside>
+<p class="source"><a href="http://www.tncp.net/"><strong>New Citizens Press</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T03:01:15+00:00" data-pub="11:01 PM EDT">Mon, Aug 24 @ 11PM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=East+Lansing&state=MI">East Lansing</a></p>
+<h2><a href="https://tncpnews.com/interpersonal-edge-how-to-end-workplace-wars/">Interpersonal Edge: How to end workplace wars</a></h2>
+<p class="byline">By Rina Risper</p>
+<p>By Dr. Daneen Skube Tribune Content Agency Interpersonal Edge Q: There are two departments in my company that are having a war and cannot get anything done. I’m managing the department heads. Both sides blame the other for not communicating. I’m at my wits end! How can I get them to stop fighting, and start <a class="lozenge more" href="https://tncpnews.com/interpersonal-edge-how-to-end-workplace-wars/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T18:44:55+00:00" data-pub="2:44 PM EDT">Monday, August 24, 2026 at 2:44 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>NY / New York City / <a href="https://blackstarnews.com/articles/ny-watch/">Black Star News</a></small></p>
-<h2><a href="https://blackstarnews.com/from-prison-hospital-bed-to-prison-cells-the-world-is-watching-uganda-over-besigye/">From Prison Hospital Bed To Prison Cells: ‘The World Is Watching Uganda Over Besigye’</a></h2>
-<p class="byline"><small>By Black Star</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.blackstarnews.com/subscribe-html/">Subscribe</a></span></p>
-<a class="shot" href="https://blackstarnews.com/from-prison-hospital-bed-to-prison-cells-the-world-is-watching-uganda-over-besigye/" tabindex="-1" aria-hidden="true"><img src="../img/394454f71ae74614b3aaee797fba4dea478a7365.jpg" alt="" width="480" height="266" loading="lazy" decoding="async"></a>
-<p class="more"><a href="https://blackstarnews.com/from-prison-hospital-bed-to-prison-cells-the-world-is-watching-uganda-over-besigye/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.forwardtimes.com/">Support</a></aside>
+<p class="source"><a href="https://www.forwardtimes.com/"><strong>Houston Forward Times</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T03:00:01+00:00" data-pub="10:00 PM CDT">Mon, Aug 24 @ 10PM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=Houston&state=TX">Houston</a></p>
+<h2><a href="https://www.forwardtimes.com/online_features/press_releases/fur-missile-launches-humor-driven-apparel-line-celebrating-the-hilarious-double-life-of-hunting-dogs/article_1f0796a6-bfbb-5e5d-af84-353581d771cb.html">Fur Missile Launches Humor-Driven Apparel Line Celebrating the Hilarious Double Life of Hunting Dogs Everywhere</a></h2>
+<p><a class="lozenge more" href="https://www.forwardtimes.com/online_features/press_releases/fur-missile-launches-humor-driven-apparel-line-celebrating-the-hilarious-double-life-of-hunting-dogs/article_1f0796a6-bfbb-5e5d-af84-353581d771cb.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T18:22:46+00:00" data-pub="2:22 PM EDT">Monday, August 24, 2026 at 2:22 PM EDT</time></small></p>
-<p><small>DC / Washington / <a href="https://afro.com/section/news/washington-d-c-news/">Afro-American</a></small></p>
-<h2><a href="https://www.afro.com/word-in-black/the-woman-behind-dr-kings-letter-is-getting-her-due-61ac7322">The woman behind Dr. King’s ‘Letter’ is getting her due</a></h2>
-<p class="byline"><small>By By Rev. Dorothy S. Boulware, Word In Black</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://afro.com/section/news/washington-d-c-news/">Support</a></span></p>
-<a class="shot" href="https://www.afro.com/word-in-black/the-woman-behind-dr-kings-letter-is-getting-her-due-61ac7322" tabindex="-1" aria-hidden="true"><img src="../img/b11b0daecba1742aa5922fbc04aea92601a3fe6d.jpg" alt="" width="480" height="326" loading="lazy" decoding="async"></a>
-<p>Willie Pearl Mackey King had no idea the scraps scattered across an SCLC office floor would become one of the most important writings in American history. Sixty-three years later, a new foundation is making sure her role in creating it isn&#x27;t forgotten.</p>
-<p class="more"><a href="https://www.afro.com/word-in-black/the-woman-behind-dr-kings-letter-is-getting-her-due-61ac7322">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Also in <a href="https://seattlemedium.com/willie-pearl-mackey-king-dr-kings-letter/">Seattle Medium</a> · <a href="https://wordinblack.com/2026/08/the-woman-behind-dr-kings-letter-is-getting-her-due">Sacramento Observer</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.forwardtimes.com/">Support</a></aside>
+<p class="source"><a href="https://www.forwardtimes.com/"><strong>Houston Forward Times</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T02:55:02+00:00" data-pub="9:55 PM CDT">Mon, Aug 24 @ 9PM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=Houston&state=TX">Houston</a></p>
+<h2><a href="https://www.forwardtimes.com/online_features/press_releases/fort-collins-artisan-jeweler-justin-rogers-creator-of-wildbeard-legacy-co-brings-healing-through-handcrafted/article_38eedfe1-20f3-5607-aaa7-c00dcd3debed.html">Fort Collins Artisan Jeweler, Justin Rogers Creator of WildBeard Legacy Co, Brings Healing Through Handcrafted Pet Memorial Keepsakes and Custom Rings</a></h2>
+<p><a class="lozenge more" href="https://www.forwardtimes.com/online_features/press_releases/fort-collins-artisan-jeweler-justin-rogers-creator-of-wildbeard-legacy-co-brings-healing-through-handcrafted/article_38eedfe1-20f3-5607-aaa7-c00dcd3debed.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://www.miamitimesonline.com/online_features/press_releases/fort-collins-artisan-jeweler-justin-rogers-creator-of-wildbeard-legacy-co-brings-healing-through-handcrafted/article_f856507f-70b6-57e1-8741-1a0103a92cdb.html">The Miami Times</a> &middot; <a href="https://www.daytonatimes.com/online_features/press_releases/fort-collins-artisan-jeweler-justin-rogers-creator-of-wildbeard-legacy-co-brings-healing-through-handcrafted/article_e1db109b-56b9-5eb6-8f30-259cd1d9139c.html">Daytona Times</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T18:03:51+00:00" data-pub="1:03 PM CDT">Monday, August 24, 2026 at 1:03 PM CDT</time></small></p>
-<p><small>WI / Milwaukee / <a href="https://communityjournal.net/">The Milwaukee Community Journal</a></small></p>
-<h2><a href="https://communityjournal.net/american-men-have-been-in-crisis-for-generations-a-remedy-from-1879-offers-hope/">American Men Have Been In Crisis for Generations. A Remedy from 1879 Offers Hope</a></h2>
-<p class="byline"><small>By MKE Community Journal</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="http://www.drtntscholarship.org">Donate</a></span></p>
-<a class="shot" href="https://communityjournal.net/american-men-have-been-in-crisis-for-generations-a-remedy-from-1879-offers-hope/" tabindex="-1" aria-hidden="true"><img src="../img/653628411fc28f53a2fa3a5c63eb1f7144b12230.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Working-class men of every color have been in crisis for generations. The way out is to come together, for the sake of all our kids. I understood the depth of</p>
-<p class="more"><a href="https://communityjournal.net/american-men-have-been-in-crisis-for-generations-a-remedy-from-1879-offers-hope/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://tncpnews.com/donate/">Donate</a></aside>
+<p class="source"><a href="http://www.tncp.net/"><strong>New Citizens Press</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T02:53:37+00:00" data-pub="10:53 PM EDT">Mon, Aug 24 @ 10PM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=East+Lansing&state=MI">East Lansing</a></p>
+<h2><a href="https://tncpnews.com/michigans-largest-foster-care-agency-has-concerns-about-medicaid/">Michigan’s largest foster care agency has concerns about Medicaid</a></h2>
+<p class="byline">By Rina Risper</p>
+<p>By Chrystal Blair – Producer Public News Service New federal Medicaid requirements could create hardships for some families in Michigan’s foster care system, according to the state’s largest private foster care and adoption agencies. Samaritas serves almost 40,000 people each year through programs including foster care, adoption, mental health and housing. Dave Morin, president and <a class="lozenge more" href="https://tncpnews.com/michigans-largest-foster-care-agency-has-concerns-about-medicaid/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T18:00:00+00:00" data-pub="2:00 PM EDT">Monday, August 24, 2026 at 2:00 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>GA / Atlanta / <a href="https://atlantablackstar.com/">Atlanta Black Star</a></small></p>
-<h2><a href="https://atlantablackstar.com/2026/08/24/trump-feels-walls-closing-in-and-goes-rogue-with-economic-d-day-as-iran-standoff-spirals/">‘Nobody’s Afraid of Him’: Trump Feels Walls Closing In and Goes Rogue With ‘Economic D-Day’ as Iran Standoff Spirals</a></h2>
-<p class="byline"><small>By ArLuther Lee</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://atlantablackstar.com/">Support</a></span></p>
-<a class="shot" href="https://atlantablackstar.com/2026/08/24/trump-feels-walls-closing-in-and-goes-rogue-with-economic-d-day-as-iran-standoff-spirals/" tabindex="-1" aria-hidden="true"><img src="../img/8ee05ac695058349569fd426cf60fd407cbfe753.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Treasury Secretary Scott Bessent announced Monday that the United States will impose punishing sanctions on countries, companies and financial institutions that continue doing business with […] ‘Nobody’s Afraid of Him’: Trump Feels Walls Closing In and Goes Rogue With ‘Economic D-Day’ as Iran Standoff Spirals</p>
-<p class="more"><a href="https://atlantablackstar.com/2026/08/24/trump-feels-walls-closing-in-and-goes-rogue-with-economic-d-day-as-iran-standoff-spirals/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.forwardtimes.com/">Support</a></aside>
+<p class="source"><a href="https://www.forwardtimes.com/"><strong>Houston Forward Times</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T02:50:02+00:00" data-pub="9:50 PM CDT">Mon, Aug 24 @ 9PM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=Houston&state=TX">Houston</a></p>
+<h2><a href="https://www.forwardtimes.com/online_features/press_releases/rare-houston-meteorite-event-brings-dozens-of-new-photos-to-the-public/article_6c4bee88-ed8a-5687-80de-b39e7d89f39f.html">Rare Houston Meteorite Event Brings Dozens Of New Photos To The Public</a></h2>
+<a class="shot" href="https://www.forwardtimes.com/online_features/press_releases/rare-houston-meteorite-event-brings-dozens-of-new-photos-to-the-public/article_6c4bee88-ed8a-5687-80de-b39e7d89f39f.html" tabindex="-1" aria-hidden="true"><img src="../img/80cb1bab23437ba8e0ab5f6154571c5e215a9073.webp" alt="" width="300" height="168" loading="lazy" decoding="async"></a>
+<p><a class="lozenge more" href="https://www.forwardtimes.com/online_features/press_releases/rare-houston-meteorite-event-brings-dozens-of-new-photos-to-the-public/article_6c4bee88-ed8a-5687-80de-b39e7d89f39f.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://www.miamitimesonline.com/online_features/press_releases/rare-houston-meteorite-event-brings-dozens-of-new-photos-to-the-public/article_cfa477f6-a8c1-5a75-b6fe-433d0ac19dc9.html">The Miami Times</a> &middot; <a href="https://www.daytonatimes.com/online_features/press_releases/rare-houston-meteorite-event-brings-dozens-of-new-photos-to-the-public/article_a4d64bbc-0475-5649-b47a-cb28020e4a74.html">Daytona Times</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T17:50:00+00:00" data-pub="12:50 PM CDT">Monday, August 24, 2026 at 12:50 PM CDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>MO / St. Louis / <a href="https://www.stlamerican.com/">St. Louis American</a></small></p>
-<h2><a href="https://www.stlamerican.com/news/more-people-in-st-louis-could-qualify-for-radiation-compensation-under-bipartisan-bill/">More people in St. Louis could qualify for radiation compensation under bipartisan bill</a></h2>
-<p class="byline"><small>By Lacretia Wimbley | St. Louis Public Radio</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.stlamerican.com/support/">Donate</a></span></p>
-<a class="shot" href="https://www.stlamerican.com/news/more-people-in-st-louis-could-qualify-for-radiation-compensation-under-bipartisan-bill/" tabindex="-1" aria-hidden="true"><img src="../img/d5b14aff456a97628d3c0bd4c556adf9b9615c72.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Last summer was the first time individuals in Missouri impacted by the U.S. government’s toxic radiation waste could apply for compensation, and a new bipartisan bill introduced in Congress on Monday would expand who qualifies — including parents whose children died due to radiation exposure. The House bill was introduced by Del. James Moylan, R-Guam. Congressman Wesley</p>
-<p class="more"><a href="https://www.stlamerican.com/news/more-people-in-st-louis-could-qualify-for-radiation-compensation-under-bipartisan-bill/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://blackchronicle.com/product/the-black-chronicle-newspaper-subscription-now-with-the-all-new-tbc-magazine/">Subscribe</a></aside>
+<p class="source"><a href="https://blackchronicle.com/"><strong>Black Chronicle</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T02:44:43+00:00" data-pub="9:44 PM CDT">Mon, Aug 24 @ 9PM CDT</time><a class="lozenge place" href="/search?state=OK">Oklahoma</a><a class="lozenge place" href="/search?place=Oklahoma+City&state=OK">Oklahoma City</a></p>
+<h2><a href="https://blackchronicle.com/national/bessent-announces-economic-d-day-sanctions-campaign-against-iran/">Bessent Announces ‘Economic D-Day’ Sanctions Campaign Against Iran</a></h2>
+<p class="byline">By Ebony McMorris</p>
+<a class="shot" href="https://blackchronicle.com/national/bessent-announces-economic-d-day-sanctions-campaign-against-iran/" tabindex="-1" aria-hidden="true"><img src="../img/710e7931b281df335370dd6c84e5d7521aebbc3d.jpg" alt="" width="480" height="321" loading="lazy" decoding="async"></a>
+<p>WASHINGTON (AURN News)—Treasury Secretary Scott Bessent announced a new sanctions campaign aimed at further isolating Iran from the global economy, warning, “Every country, every entity should know that they should be prepared to […] Continue reading with a Black Chronicle subscription. Purchase The Black Chronicle Newspaper Subscription – Now with the All-New TBC Magazine! or The Black Chronicl <a class="lozenge more" href="https://blackchronicle.com/national/bessent-announces-economic-d-day-sanctions-campaign-against-iran/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T17:47:24+00:00" data-pub="12:47 PM CDT">Monday, August 24, 2026 at 12:47 PM CDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>WI / Milwaukee / <a href="https://communityjournal.net/">The Milwaukee Community Journal</a></small></p>
-<h2><a href="https://communityjournal.net/online-registration-now-open-for-2026-back-to-school-festival/">Online registration now open for 2026 Back to School Festival</a></h2>
-<p class="byline"><small>By MKE Community Journal</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="http://www.drtntscholarship.org">Donate</a></span></p>
-<a class="shot" href="https://communityjournal.net/online-registration-now-open-for-2026-back-to-school-festival/" tabindex="-1" aria-hidden="true"><img src="../img/cc4c79e530894b3b5a7eb1fea5e2a895ee4cb9c7.jpg" alt="" width="480" height="271" loading="lazy" decoding="async"></a>
-<p>Alderman Mark Chambers, Jr. is strongly encouraging families to register online to ensure that they will be able to receive free book bags and qualify for other giveaways during the</p>
-<p class="more"><a href="https://communityjournal.net/online-registration-now-open-for-2026-back-to-school-festival/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.forwardtimes.com/">Support</a></aside>
+<p class="source"><a href="https://www.forwardtimes.com/"><strong>Houston Forward Times</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T02:40:03+00:00" data-pub="9:40 PM CDT">Mon, Aug 24 @ 9PM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=Houston&state=TX">Houston</a></p>
+<h2><a href="https://www.forwardtimes.com/online_features/press_releases/global-career-institute-expands-executive-leadership-development-across-the-caribbean-with-international-programme/article_24958a90-32de-590b-bfab-01ad85df867b.html">Global Career Institute Expands Executive Leadership Development Across the Caribbean with International Programme</a></h2>
+<a class="shot" href="https://www.forwardtimes.com/online_features/press_releases/global-career-institute-expands-executive-leadership-development-across-the-caribbean-with-international-programme/article_24958a90-32de-590b-bfab-01ad85df867b.html" tabindex="-1" aria-hidden="true"><img src="../img/baec2f939c2683623232ee49d2bfb71467b30117.webp" alt="" width="300" height="300" loading="lazy" decoding="async"></a>
+<p>International leadership expert Professor Joel Farnworth to lead four-session executive programme focused on leadership, people and organisational performance <a class="lozenge more" href="https://www.forwardtimes.com/online_features/press_releases/global-career-institute-expands-executive-leadership-development-across-the-caribbean-with-international-programme/article_24958a90-32de-590b-bfab-01ad85df867b.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://www.miamitimesonline.com/online_features/press_releases/global-career-institute-expands-executive-leadership-development-across-the-caribbean-with-international-programme/article_85b26576-5231-5ef9-9eb4-2c191efd8ad2.html">The Miami Times</a> &middot; <a href="https://www.daytonatimes.com/online_features/press_releases/global-career-institute-expands-executive-leadership-development-across-the-caribbean-with-international-programme/article_e741580a-e969-5a85-8982-1b80bb6e4c03.html">Daytona Times</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T17:39:26+00:00" data-pub="1:39 PM EDT">Monday, August 24, 2026 at 1:39 PM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>DC / Washington / <a href="https://afro.com/section/news/washington-d-c-news/">Afro-American</a></small></p>
-<h2><a href="https://www.afro.com/national-news/texas-judge-denies-karmelo-anthonys-request-for-new-trial-e1f26736">Texas judge denies Karmelo Anthony&#x27;s request for new trial</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://afro.com/section/news/washington-d-c-news/">Support</a></span></p>
-<a class="shot" href="https://www.afro.com/national-news/texas-judge-denies-karmelo-anthonys-request-for-new-trial-e1f26736" tabindex="-1" aria-hidden="true"><img src="../img/2c354b3c1f5a59056fcfa051edd71c21a922e3f6.jpg" alt="" width="480" height="370" loading="lazy" decoding="async"></a>
-<p>Karmelo Anthony’s 35-year murder sentence stands after a Texas judge denied his request for a new trial. His attorney said the defense will appeal.</p>
-<p class="more"><a href="https://www.afro.com/national-news/texas-judge-denies-karmelo-anthonys-request-for-new-trial-e1f26736">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Also in <a href="https://aframnews.com/daily-updates/texas-judge-denies-karmelo-anthonys-request-for-new-trial/">African-American News and Issues</a> · <a href="https://lasentinel.net/texas-judge-denies-karmelo-anthonys-request-for-new-trial.html">Los Angeles Sentinel</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.forwardtimes.com/">Support</a></aside>
+<p class="source"><a href="https://www.forwardtimes.com/"><strong>Houston Forward Times</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T02:35:02+00:00" data-pub="9:35 PM CDT">Mon, Aug 24 @ 9PM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=Houston&state=TX">Houston</a></p>
+<h2><a href="https://www.forwardtimes.com/online_features/press_releases/divorce-lawyers-in-arlington-va-share-common-diy-divorce-filing-errors/article_eb947868-e4c5-5a9d-bef1-212918522953.html">Divorce Lawyers In Arlington VA Share Common DIY Divorce Filing Errors</a></h2>
+<p><a class="lozenge more" href="https://www.forwardtimes.com/online_features/press_releases/divorce-lawyers-in-arlington-va-share-common-diy-divorce-filing-errors/article_eb947868-e4c5-5a9d-bef1-212918522953.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://www.miamitimesonline.com/online_features/press_releases/divorce-lawyers-in-arlington-va-share-common-diy-divorce-filing-errors/article_72f88215-9425-5951-9750-73c1e88b1ea0.html">The Miami Times</a> &middot; <a href="https://www.daytonatimes.com/online_features/press_releases/divorce-lawyers-in-arlington-va-share-common-diy-divorce-filing-errors/article_addff0cb-3561-53ac-8a08-fdc666738c6b.html">Daytona Times</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T17:25:00+00:00" data-pub="1:25 PM EDT">Monday, August 24, 2026 at 1:25 PM EDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>NY / Brooklyn / <a href="https://bkreader.com/">BK Reader</a></small></p>
-<h2><a href="https://www.bkreader.com/featured-news/bedstuy-family-day-photos-1-12697938">Bed-Stuy Family Photo Day: Preserving Black Family Legacies Through Portraiture</a></h2>
-<p class="byline"><small>By Richard Burroughs</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://bkreader.com/">Support</a></span></p>
-<a class="shot" href="https://www.bkreader.com/featured-news/bedstuy-family-day-photos-1-12697938" tabindex="-1" aria-hidden="true"><img src="../img/4aabf29462c386a2bbd1727b84bb637bbeb2b2a5.jpg" alt="" width="480" height="365" loading="lazy" decoding="async"></a>
-<p>Richard Beavers Gallery hosts the 3rd iteration of its grassroots family celebration alongside local businesses.</p>
-<p class="more"><a href="https://www.bkreader.com/featured-news/bedstuy-family-day-photos-1-12697938">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://saobserver.com/">Support</a></aside>
+<p class="source"><a href="https://saobserver.com/"><strong>San Antonio Observer</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T02:31:55+00:00" data-pub="9:31 PM CDT">Mon, Aug 24 @ 9PM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=San+Antonio&state=TX">San Antonio</a></p>
+<h2><a href="https://saobserver.com/karen-attiah-reinstated-at-washington-post-after-arbitrator-rules-firing-was-unjustified/">Karen Attiah Reinstated at Washington Post After Being Fired For Charlie Kirk Posts</a></h2>
+<p class="byline">By Observer Staff</p>
+<a class="shot" href="https://saobserver.com/karen-attiah-reinstated-at-washington-post-after-arbitrator-rules-firing-was-unjustified/" tabindex="-1" aria-hidden="true"><img src="../img/d5f19abd55f96e8141559d2abf028b094ad6c8ad.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+<p>Karen Attiah reinstated at Washington Post after an arbitrator ruled the newspaper lacked sufficient cause to fire her over social media posts. <a class="lozenge more" href="https://saobserver.com/karen-attiah-reinstated-at-washington-post-after-arbitrator-rules-firing-was-unjustified/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T17:22:23+00:00" data-pub="1:22 PM EDT">Monday, August 24, 2026 at 1:22 PM EDT</time></small></p>
-<p><small>NY / Brooklyn / <a href="https://bkreader.com/">BK Reader</a></small></p>
-<h2><a href="https://www.bkreader.com/featured-news/at-green-wood-cemetery-brooklyns-colonial-history-comes-to-life-12699206">At Green-Wood Cemetery, Brooklyn’s Colonial History Comes to Life</a></h2>
-<p class="byline"><small>By Ava Sharahy</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://bkreader.com/">Support</a></span></p>
-<a class="shot" href="https://www.bkreader.com/featured-news/at-green-wood-cemetery-brooklyns-colonial-history-comes-to-life-12699206" tabindex="-1" aria-hidden="true"><img src="../img/82aaedd6adb04ca6f35c1e57d87867467fc17b9c.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>From historical interpreters to panels hosted by Brooklyn cultural institutions, Green-Wood Cemetery hosts their biggest Battle Week to date to celebrate the 250th anniversary of the Battle of Brooklyn.</p>
-<p class="more"><a href="https://www.bkreader.com/featured-news/at-green-wood-cemetery-brooklyns-colonial-history-comes-to-life-12699206">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.forwardtimes.com/">Support</a></aside>
+<p class="source"><a href="https://www.forwardtimes.com/"><strong>Houston Forward Times</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T02:30:03+00:00" data-pub="9:30 PM CDT">Mon, Aug 24 @ 9PM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=Houston&state=TX">Houston</a></p>
+<h2><a href="https://www.forwardtimes.com/online_features/press_releases/austin-immigration-lawyer-clarifies-new-bia-decision-on-advance-parole/article_9d947102-2774-53f9-a209-51a17e0664c1.html">Austin Immigration Lawyer Clarifies New BIA Decision On Advance Parole</a></h2>
+<p><a class="lozenge more" href="https://www.forwardtimes.com/online_features/press_releases/austin-immigration-lawyer-clarifies-new-bia-decision-on-advance-parole/article_9d947102-2774-53f9-a209-51a17e0664c1.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://www.miamitimesonline.com/online_features/press_releases/austin-immigration-lawyer-clarifies-new-bia-decision-on-advance-parole/article_8767dcce-4b2d-5ce0-bac9-0e986581b120.html">The Miami Times</a> &middot; <a href="https://www.daytonatimes.com/online_features/press_releases/austin-immigration-lawyer-clarifies-new-bia-decision-on-advance-parole/article_c886575e-a449-5d38-bbd8-e5cabc66ed59.html">Daytona Times</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T17:16:16+00:00" data-pub="10:16 AM PDT">Monday, August 24, 2026 at 10:16 AM PDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>OR / Portland / <a href="https://theportlandmedium.com/">Portland Medium</a></small></p>
-<h2><a href="https://theportlandmedium.com/local-news/multnomah-county-preschool-for-all-coverage/">Multnomah County’s Preschool For All Nears Universal Coverage Years Ahead Of Schedule</a></h2>
-<p class="byline"><small>By Josiah Scott</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://theportlandmedium.com/news/national-news/new-york-fund-apologizes-for-role-in-tuskegee-syphilis-study/">Donate</a></span></p>
-<a class="shot" href="https://theportlandmedium.com/local-news/multnomah-county-preschool-for-all-coverage/" tabindex="-1" aria-hidden="true"><img src="../img/2dbe4f973c300f1539cf91b0fdb42860d8272d6b.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Multnomah County&#x27;s Preschool for All program could reach universal coverage years ahead of its original 2030 goal, as new population projections show the county will need about 8,000 preschool seats to provide free preschool to every 3- and 4-year-old whose family wants it.</p>
-<p class="more"><a href="https://theportlandmedium.com/local-news/multnomah-county-preschool-for-all-coverage/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://miamitimes.typeform.com/to/mQvUpc">Subscribe</a></aside>
+<p class="source"><a href="https://www.miamitimesonline.com/"><strong>The Miami Times</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T02:15:00+00:00" data-pub="10:15 PM EDT">Mon, Aug 24 @ 10PM EDT</time><a class="lozenge place" href="/search?state=FL">Florida</a><a class="lozenge place" href="/search?place=Miami&state=FL">Miami</a></p>
+<h2><a href="https://www.miamitimesonline.com/online_features/press_releases/mini-pc-brand-vzmore-makes-global-debut-at-showstoppers-ifa-2026-bringing-advanced-thermal-innovation/article_e0da5d61-6031-5158-832d-c24f301559bd.html">Mini PC Brand VZMORE Makes Global Debut at ShowStoppers @ IFA 2026, Bringing Advanced Thermal Innovation to Mini PCs</a></h2>
+<p class="byline">By By VZMORE</p>
+<a class="shot" href="https://www.miamitimesonline.com/online_features/press_releases/mini-pc-brand-vzmore-makes-global-debut-at-showstoppers-ifa-2026-bringing-advanced-thermal-innovation/article_e0da5d61-6031-5158-832d-c24f301559bd.html" tabindex="-1" aria-hidden="true"><img src="../img/8e8980ed7ef3fec3e3b798298450fd11d9fe3e24.webp" alt="" width="300" height="169" loading="lazy" decoding="async"></a>
+<p>BERLIN, Aug. 24, 2026 /PRNewswire/ -- VZMORE, a German-owned Mini PC brand focused on high-performance and quiet desktop computing, will make its public debut at ShowStoppers @ IFA 2026 in Berlin. The company will showcase four flagship products—the AX9 Max, <a class="lozenge more" href="https://www.miamitimesonline.com/online_features/press_releases/mini-pc-brand-vzmore-makes-global-debut-at-showstoppers-ifa-2026-bringing-advanced-thermal-innovation/article_e0da5d61-6031-5158-832d-c24f301559bd.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://www.daytonatimes.com/online_features/press_releases/mini-pc-brand-vzmore-makes-global-debut-at-showstoppers-ifa-2026-bringing-advanced-thermal-innovation/article_4d7bfe9f-f267-5fdc-a972-58974cfc1aab.html">Daytona Times</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T17:15:40+00:00" data-pub="10:15 AM PDT">Monday, August 24, 2026 at 10:15 AM PDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>OR / Portland / <a href="https://theportlandmedium.com/">Portland Medium</a></small></p>
-<h2><a href="https://theportlandmedium.com/local-news/buckman-neighborhood-police-search-guns-seized/">Three Arrested, Five Guns Seized After Police Search In Buckman Neighborhood</a></h2>
-<p class="byline"><small>By Josiah Scott</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://theportlandmedium.com/news/national-news/new-york-fund-apologizes-for-role-in-tuskegee-syphilis-study/">Donate</a></span></p>
-<a class="shot" href="https://theportlandmedium.com/local-news/buckman-neighborhood-police-search-guns-seized/" tabindex="-1" aria-hidden="true"><img src="../img/5f40d9ebcbca2b400e8aee3daf2ae0b9fe55cf41.jpg" alt="" width="480" height="312" loading="lazy" decoding="async"></a>
-<p>Three people were arrested and five firearms were recovered after a traffic stop in Southeast Portland led to a vehicle fleeing, a crash and a multi-hour police search that prompted a shelter-in-place alert for residents in the Buckman neighborhood, according to the Portland Police Bureau.</p>
-<p class="more"><a href="https://theportlandmedium.com/local-news/buckman-neighborhood-police-search-guns-seized/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://wavepublication.com/">Support</a></aside>
+<p class="source"><a href="https://wavepublication.com/"><strong>Los Angeles Wave Newspapers</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T02:09:21+00:00" data-pub="7:09 PM PDT">Mon, Aug 24 @ 7PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://wavepublication.com/cal-state-l-a-sets-fundraising-record-with-55-8-million-in-fiscal-year-2026/">Cal State L.A. sets fundraising record with $55.8 million in fiscal year 2026</a></h2>
+<p class="byline">By Wave Staff</p>
+<p>Wave Staff Report LOS ANGELES—Cal State Los Angeles closed the most successful fundraising year in its history in fiscal year 2026, securing $55.8 million in philanthropic commitments to advance student success, academic excellence and community impact across Los Angeles. The record-setting year was anchored by a landmark $48 million grant from Ballmer Group, <a class="lozenge more" href="https://wavepublication.com/cal-state-l-a-sets-fundraising-record-with-55-8-million-in-fiscal-year-2026/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T17:15:02+00:00" data-pub="10:15 AM PDT">Monday, August 24, 2026 at 10:15 AM PDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>OR / Portland / <a href="https://theportlandmedium.com/">Portland Medium</a></small></p>
-<h2><a href="https://theportlandmedium.com/local-news/slow-down-for-students/">PBOT Urges Drivers To Slow Down As Portland Students Return To School</a></h2>
-<p class="byline"><small>By Josiah Scott</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://theportlandmedium.com/news/national-news/new-york-fund-apologizes-for-role-in-tuskegee-syphilis-study/">Donate</a></span></p>
-<a class="shot" href="https://theportlandmedium.com/local-news/slow-down-for-students/" tabindex="-1" aria-hidden="true"><img src="../img/f267c884b54b7c077e8c8c9d7b305fb3e21d2e2c.jpg" alt="" width="480" height="312" loading="lazy" decoding="async"></a>
-<p>As students across Portland return to school, the Portland Bureau of Transportation is urging drivers to slow down and use extra caution as thousands of children begin walking, biking, rolling and taking transit to and from classrooms.</p>
-<p class="more"><a href="https://theportlandmedium.com/local-news/slow-down-for-students/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://wavepublication.com/">Support</a></aside>
+<p class="source"><a href="https://wavepublication.com/"><strong>Los Angeles Wave Newspapers</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T02:02:45+00:00" data-pub="7:02 PM PDT">Mon, Aug 24 @ 7PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://wavepublication.com/governor-signs-law-shielding-immigration-service-providers-from-threats/">Governor signs law shielding immigration service providers from threats</a></h2>
+<p class="byline">By Wave Staff</p>
+<p>By Antonio‌ ‌Ray‌ ‌Harvey‌ Contributing Writer SACRAMENTO—Gov. Gavin Newsom signed legislation on Aug. 22 designed to protect immigration service providers and humanitarian volunteers from targeted harassment, doxxing and violence. Authored by Assemblywoman Mia Bonta, D-Oakland, Assembly Bill 2624, the Privacy for Immigration Support Services Providers Act, establishes an address confidentiality <a class="lozenge more" href="https://wavepublication.com/governor-signs-law-shielding-immigration-service-providers-from-threats/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T17:14:44+00:00" data-pub="10:14 AM PDT">Monday, August 24, 2026 at 10:14 AM PDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>OR / Portland / <a href="https://theportlandmedium.com/">Portland Medium</a></small></p>
-<h2><a href="https://theportlandmedium.com/local-news/vacant-storefront-grant-program/">Portland Launches $800,000 Vacant Storefront Grant Program For Local Businesses</a></h2>
-<p class="byline"><small>By Josiah Scott</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://theportlandmedium.com/news/national-news/new-york-fund-apologizes-for-role-in-tuskegee-syphilis-study/">Donate</a></span></p>
-<a class="shot" href="https://theportlandmedium.com/local-news/vacant-storefront-grant-program/" tabindex="-1" aria-hidden="true"><img src="../img/edf727cff419a0de7ea939b035883ab4e6717a9b.jpg" alt="" width="480" height="312" loading="lazy" decoding="async"></a>
-<p>The city of Portland is launching an $800,000 grant program aimed at helping grocery stores, restaurants and retailers move into vacant commercial spaces by reimbursing a portion of the cost of tenant improvements.</p>
-<p class="more"><a href="https://theportlandmedium.com/local-news/vacant-storefront-grant-program/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://wavepublication.com/">Support</a></aside>
+<p class="source"><a href="https://wavepublication.com/"><strong>Los Angeles Wave Newspapers</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T01:46:03+00:00" data-pub="6:46 PM PDT">Mon, Aug 24 @ 6PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://wavepublication.com/college-brings-goats-to-campus-to-manage-vegetation-reduce-fire-hazards/">College brings goats to campus to manage vegetation, reduce fire hazards</a></h2>
+<p class="byline">By Wave Staff</p>
+<p>Wave Staff Report WHITTIER—Río Hondo College is taking a nature-based approach to fire prevention, bringing goats to the campus to help manage vegetation and reduce potential fire hazards while creating a safer environment for students, employees and community members. To give the community an opportunity to learn more about the effort and meet <a class="lozenge more" href="https://wavepublication.com/college-brings-goats-to-campus-to-manage-vegetation-reduce-fire-hazards/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T17:14:25+00:00" data-pub="10:14 AM PDT">Monday, August 24, 2026 at 10:14 AM PDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>OR / Portland / <a href="https://theportlandmedium.com/">Portland Medium</a></small></p>
-<h2><a href="https://theportlandmedium.com/local-news/no-turn-at-red-restrictions/">Portland Council Approves No Turn On Red Restrictions At High-Crash Intersections</a></h2>
-<p class="byline"><small>By Josiah Scott</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://theportlandmedium.com/news/national-news/new-york-fund-apologizes-for-role-in-tuskegee-syphilis-study/">Donate</a></span></p>
-<a class="shot" href="https://theportlandmedium.com/local-news/no-turn-at-red-restrictions/" tabindex="-1" aria-hidden="true"><img src="../img/7d1cba94b64fb27d51773288b09793af7dc317f1.jpg" alt="" width="480" height="312" loading="lazy" decoding="async"></a>
-<p>The Portland City Council has unanimously approved an ordinance restricting right turns on red at some of the city&#x27;s most dangerous intersections, a move aimed at reducing crashes involving pedestrians, bicyclists and other vulnerable road users.</p>
-<p class="more"><a href="https://theportlandmedium.com/local-news/no-turn-at-red-restrictions/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://www.forwardtimes.com/">Support</a></aside>
+<p class="source"><a href="https://www.forwardtimes.com/"><strong>Houston Forward Times</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T01:40:02+00:00" data-pub="8:40 PM CDT">Mon, Aug 24 @ 8PM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=Houston&state=TX">Houston</a></p>
+<h2><a href="https://www.forwardtimes.com/online_features/press_releases/tidbits-for-expectant-moms-stories-to-feed-strengthen-and-soothe-a-mother-s-heart-by/article_172e5413-48d9-5660-8533-2d04da0a622c.html">Tidbits for Expectant Moms: Stories to Feed, Strengthen, and Soothe a Mother’s Heart By Connie Danner, ND</a></h2>
+<a class="shot" href="https://www.forwardtimes.com/online_features/press_releases/tidbits-for-expectant-moms-stories-to-feed-strengthen-and-soothe-a-mother-s-heart-by/article_172e5413-48d9-5660-8533-2d04da0a622c.html" tabindex="-1" aria-hidden="true"><img src="../img/e385a68b83751b1bceef2893dc4421645cf7d9f1.webp" alt="" width="300" height="220" loading="lazy" decoding="async"></a>
+<p><a class="lozenge more" href="https://www.forwardtimes.com/online_features/press_releases/tidbits-for-expectant-moms-stories-to-feed-strengthen-and-soothe-a-mother-s-heart-by/article_172e5413-48d9-5660-8533-2d04da0a622c.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://www.miamitimesonline.com/online_features/press_releases/tidbits-for-expectant-moms-stories-to-feed-strengthen-and-soothe-a-mother-s-heart-by/article_0361e7d3-1149-5c51-9779-445a671399a0.html">The Miami Times</a> &middot; <a href="https://www.daytonatimes.com/online_features/press_releases/tidbits-for-expectant-moms-stories-to-feed-strengthen-and-soothe-a-mother-s-heart-by/article_bcca4b74-a818-515e-86a5-97f381950c27.html">Daytona Times</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T17:14:06+00:00" data-pub="10:14 AM PDT">Monday, August 24, 2026 at 10:14 AM PDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>OR / Portland / <a href="https://theportlandmedium.com/">Portland Medium</a></small></p>
-<h2><a href="https://theportlandmedium.com/local-news/credit-union-investment-authority-act/">Bynum Introduces Bipartisan Bill To Expand Federal Credit Union Investment Options</a></h2>
-<p class="byline"><small>By Josiah Scott</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://theportlandmedium.com/news/national-news/new-york-fund-apologizes-for-role-in-tuskegee-syphilis-study/">Donate</a></span></p>
-<a class="shot" href="https://theportlandmedium.com/local-news/credit-union-investment-authority-act/" tabindex="-1" aria-hidden="true"><img src="../img/9cfbb09a5f2e3b2c31e61dea32acf8cb51452e48.jpg" alt="" width="480" height="312" loading="lazy" decoding="async"></a>
-<p>The Credit Union Investment Authority Act would amend the Federal Credit Union Act to allow federally chartered credit unions to invest in corporate debt and asset-backed securities, expanding investment options that are currently more limited than those available to some other financial institutions.</p>
-<p class="more"><a href="https://theportlandmedium.com/local-news/credit-union-investment-authority-act/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://wavepublication.com/">Support</a></aside>
+<p class="source"><a href="https://wavepublication.com/"><strong>Los Angeles Wave Newspapers</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T01:38:56+00:00" data-pub="6:38 PM PDT">Mon, Aug 24 @ 6PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://wavepublication.com/lawyers-to-appeal-denial-of-new-trial-in-case-of-black-athlete-who-stabbed-white-teen/">Lawyers to appeal denial of new trial in case of Black athlete who stabbed white teen</a></h2>
+<p class="byline">By Wave Staff</p>
+<p>By Jamie Stengle Contributing Writer DALLAS (AP)—Lawyers for a Black athlete who fatally stabbed a white teenager at a high school track meet in 2025 say they will appeal a judge’s decision not to order a new trial in the high-profile case. “Our commitment to our client has not changed,” attorney Russell Wilson <a class="lozenge more" href="https://wavepublication.com/lawyers-to-appeal-denial-of-new-trial-in-case-of-black-athlete-who-stabbed-white-teen/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 </div>
 <p><a id="more" href="black-owned-6.html">More stories</a></p>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="../index.html">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -412,6 +441,47 @@ Smoke shops prohibited from operating near schools and parks</a></h2>
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>

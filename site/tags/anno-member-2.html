@@ -13,12 +13,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(../fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -27,22 +40,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -50,19 +69,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -75,7 +126,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -93,7 +144,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="../index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="../masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -106,7 +157,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="../subjects/news.html">News</a></li><li><a href="../subjects/politics.html">Politics</a></li><li><a href="../subjects/opinion.html">Opinion</a></li><li><a href="../subjects/health.html">Health</a></li><li><a href="../subjects/environment.html">Environment</a></li><li><a href="../subjects/education.html">Education</a></li><li><a href="../subjects/business.html">Business</a></li><li><a href="../subjects/housing.html">Housing</a></li><li><a href="../subjects/sports.html">Sports</a></li><li><a href="../subjects/food.html">Food</a></li><li><a href="../subjects/arts.html">Arts</a></li></ul></nav>
@@ -121,268 +172,266 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <main id="main">
 <div id="feed-items">
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T16:29:30+00:00" data-pub="12:29 PM EDT">Monday, August 24, 2026 at 12:29 PM EDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>RI / Providence / <a href="https://ecori.org/">ecoRI News</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://www.thedailycatch.org/donations/">Donate</a></aside>
+<p class="source"><a href="https://www.thedailycatch.org/"><strong>The Red Hook Daily Catch</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T22:34:11+00:00" data-pub="6:34 PM EDT">Mon, Aug 24 @ 6PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Red+Hook&state=NY">Red Hook</a></p>
+<h2><a href="https://www.thedailycatch.org/articles/faces-of-the-fair-day-0-can-the-apple-crisp-win-again-clermonts-belgian-draft-horses-noelle-washes-down-a-cow/">Faces of the Fair (Day 0): Can the Apple Crisp Win Again? + Clermont’s Belgian Draft Horses + Noelle the Heifer Takes A Bath</a></h2>
+<p class="byline">By Emily Sachar, Editor</p>
+<p>As the Dutchess County Fair kicks off Tuesday, Daily Catch reporters are on-site from dawn to dark to bring you another year of Faces of the Fair. <a class="lozenge more" href="https://www.thedailycatch.org/articles/faces-of-the-fair-day-0-can-the-apple-crisp-win-again-clermonts-belgian-draft-horses-noelle-washes-down-a-cow/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://eastlansinginfo.news/donate/">Donate</a></aside>
+<p class="source"><a href="https://eastlansinginfo.news/"><strong>East Lansing Info</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T22:30:00+00:00" data-pub="6:30 PM EDT">Mon, Aug 24 @ 6PM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=East+Lansing&state=MI">East Lansing</a></p>
+<h2><a href="https://eastlansinginfo.news/a-community-watch-group-is-monitoring-elpd-as-msu-students-return-to-east-lansing/">A Community Watch Group is Monitoring ELPD as MSU Students Return to East Lansing</a></h2>
+<p class="byline">By Anna Liz Nichols</p>
+<p>The group began sending members downtown last fall amid a series of policing controversies. <a class="lozenge more" href="https://eastlansinginfo.news/a-community-watch-group-is-monitoring-elpd-as-msu-students-return-to-east-lansing/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://dcwitness.org/">Support</a></aside>
+<p class="source"><a href="https://dcwitness.org/"><strong>D.C. Witness</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T21:08:46+00:00" data-pub="5:08 PM EDT">Mon, Aug 24 @ 5PM EDT</time><a class="lozenge place" href="/search?state=DC">Washington, D.C.</a><a class="lozenge place" href="/search?place=Washington&state=DC">Washington</a></p>
+<h2><a href="https://dcwitness.org/homicide-defendant-pleads-not-guilty-at-arraignment-co-defendant-ordered-to-undergo-mental-evaluation/">Homicide Defendant Pleads Not Guilty at Arraignment, Co-Defendant Ordered to Undergo Mental Evaluation</a></h2>
+<p class="byline">By Adriana Marroquin</p>
+<p>A homicide defendant pleaded not guilty and was denied release on Aug. 21 by DC Superior Court Judge Jason Park. His co-defendant was ordered to undergo mental evaluations. Corey Noble, 28, and Zyon Humphrey, 26, are charged with first-degree murder while armed, attempted robbery while armed, and two counts of possession of a firearm during <a class="lozenge more" href="https://dcwitness.org/homicide-defendant-pleads-not-guilty-at-arraignment-co-defendant-ordered-to-undergo-mental-evaluation/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://www.thedailycatch.org/donations/">Donate</a></aside>
+<p class="source"><a href="https://www.thedailycatch.org/"><strong>The Red Hook Daily Catch</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T21:01:16+00:00" data-pub="5:01 PM EDT">Mon, Aug 24 @ 5PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Red+Hook&state=NY">Red Hook</a></p>
+<h2><a href="https://www.thedailycatch.org/articles/behind-the-canvas-28-local-artists-invite-visitors-into-their-studios-gardens-and-homes/">Behind the Canvas: 28 Local Artists Invite Visitors Into Their Studios, Gardens and Homes</a></h2>
+<p class="byline">By Emily Sachar, Editor</p>
+<p>Art Studio Views returns for the 19th year on Labor Day Weekend throughout Hyde Park, Germantown, Red Hook, Rhinebeck, and Tivoli. <a class="lozenge more" href="https://www.thedailycatch.org/articles/behind-the-canvas-28-local-artists-invite-visitors-into-their-studios-gardens-and-homes/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://www.vallejosun.com/membership/">Become a member</a></aside>
+<p class="source"><a href="https://www.vallejosun.com"><strong>Vallejo Sun</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T20:51:37+00:00" data-pub="1:51 PM PDT">Mon, Aug 24 @ 1PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Solano+County&state=CA">Solano County</a></p>
+<h2><a href="https://www.vallejosun.com/vallejos-sunshine-smoothies-and-coffee-to-give-away-3-000-free-smoothies/">Vallejo’s Sunshine Smoothies and Coffee to give away 3,000 free smoothies</a></h2>
+<p class="byline">By Isidra Mencos</p>
+<a class="shot" href="https://www.vallejosun.com/vallejos-sunshine-smoothies-and-coffee-to-give-away-3-000-free-smoothies/" tabindex="-1" aria-hidden="true"><img src="../img/9a20848570653736afce31f197630cc784000ef7.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>To celebrate its 11th anniversary, Sunshine Smoothies and Coffee will give away 3,000 smoothies on Saturday, Aug. 29. <a class="lozenge more" href="https://www.vallejosun.com/vallejos-sunshine-smoothies-and-coffee-to-give-away-3-000-free-smoothies/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://therapidian.org/">Support</a></aside>
+<p class="source"><a href="https://therapidian.org/"><strong>The Rapidian</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T20:45:00+00:00" data-pub="4:45 PM EDT">Mon, Aug 24 @ 4PM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=Grand+Rapids&state=MI">Grand Rapids</a></p>
+<h2><a href="https://therapidian.org/what-to-know-before-the-grand-rapids-city-commission-hosts-flock-hearing">What to know before the Grand Rapids City Commission hosts Flock hearing</a></h2>
+<p class="byline">By ericjj9829@gmail.com (Eric Johnson)</p>
+<a class="shot" href="https://therapidian.org/what-to-know-before-the-grand-rapids-city-commission-hosts-flock-hearing" tabindex="-1" aria-hidden="true"><img src="../img/fdb9cde3d44e72700d4b1b93529fdbdc332882bc.jpg" alt="" width="480" height="361" loading="lazy" decoding="async"></a>
+<p>At Tuesday&#x27;s City Commission Public Safety Committee meeting, the Grand Rapids Police Department and officials from Flock will be presenting on Flock cameras. <a class="lozenge more" href="https://therapidian.org/what-to-know-before-the-grand-rapids-city-commission-hosts-flock-hearing">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://amarillotribune.org/support-our-publication/">Donate</a></aside>
+<p class="source"><a href="https://amarillotribune.org/"><strong>Amarillo Tribune</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T20:18:23+00:00" data-pub="3:18 PM CDT">Mon, Aug 24 @ 3PM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=Amarillo&state=TX">Amarillo</a></p>
+<h2><a href="https://amarillotribune.org/2026/08/24/potter-county-commissioners-approve-budget-and-potential-2026-tax-rate/">Potter County Commissioners approve budget and potential 2026 tax rate</a></h2>
+<p class="byline">By Brianna Maestas</p>
+<a class="shot" href="https://amarillotribune.org/2026/08/24/potter-county-commissioners-approve-budget-and-potential-2026-tax-rate/" tabindex="-1" aria-hidden="true"><img src="../img/1ac183b4d426b8fde940a36bd06d746888947ba1.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Editor’s note: Local elected officials make decisions every week. The Amarillo Tribune follows those conversations closely and shares what matters most, and what it means for you, in our Need to Know series. Here’s what you need to know about the Potter County Commissioners’ Court meeting on Aug. 24, 2026, briefly explained in a few <a class="lozenge more" href="https://amarillotribune.org/2026/08/24/potter-county-commissioners-approve-budget-and-potential-2026-tax-rate/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://ecori.org/giving/">Donate</a></aside>
+<p class="source"><a href="https://ecori.org/"><strong>ecoRI News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T19:40:04+00:00" data-pub="3:40 PM EDT">Mon, Aug 24 @ 3PM EDT</time><a class="lozenge place" href="/search?state=RI">Rhode Island</a><a class="lozenge place" href="/search?place=Providence&state=RI">Providence</a></p>
+<h2><a href="https://ecori.org/alleged-chemical-leaks-in-providences-wanskuck-neighborhood-raise-concerns/">Alleged Chemical Leaks in Providence’s Wanskuck Neighborhood Raise Concerns</a></h2>
+<p class="byline">By Frank Carini</p>
+<a class="shot" href="https://ecori.org/alleged-chemical-leaks-in-providences-wanskuck-neighborhood-raise-concerns/" tabindex="-1" aria-hidden="true"><img src="../img/53568f54ef4e2c6ced6497e103e79dbd4c476990.jpg" alt="" width="480" height="590" loading="lazy" decoding="async"></a>
+<p>Former and current employees of a metal-finishing and chromium-coating facility on Houghton Street have raised concerns about two possible chemical leaks they say haven’t been fixed. <a class="lozenge more" href="https://ecori.org/alleged-chemical-leaks-in-providences-wanskuck-neighborhood-raise-concerns/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://ecori.org/giving/">Donate</a></aside>
+<p class="source"><a href="https://ecori.org/"><strong>ecoRI News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T18:45:17+00:00" data-pub="2:45 PM EDT">Mon, Aug 24 @ 2PM EDT</time><a class="lozenge place" href="/search?state=RI">Rhode Island</a><a class="lozenge place" href="/search?place=Providence&state=RI">Providence</a></p>
+<h2><a href="https://ecori.org/comparing-the-2026-rhode-island-attorney-general-candidates-environmental-policies/">Comparing the 2026 Rhode Island Attorney General Candidates’ Environmental Policies</a></h2>
+<p class="byline">By Joanna Detz</p>
+<p>This information was gathered from campaign websites, candidate interviews, public comment, debates, and forums, as of Aug. 21. Download PDF <a class="lozenge more" href="https://ecori.org/comparing-the-2026-rhode-island-attorney-general-candidates-environmental-policies/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://ecori.org/giving/">Donate</a></aside>
+<p class="source"><a href="https://ecori.org/"><strong>ecoRI News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T18:44:55+00:00" data-pub="2:44 PM EDT">Mon, Aug 24 @ 2PM EDT</time><a class="lozenge place" href="/search?state=RI">Rhode Island</a><a class="lozenge place" href="/search?place=Providence&state=RI">Providence</a></p>
+<h2><a href="https://ecori.org/comparing-the-environmental-policies-of-the-2026-rhode-island-candidates-for-u-s-senate/">Comparing the Environmental Policies of the 2026 Rhode Island Candidates for U.S. Senate</a></h2>
+<p class="byline">By Joanna Detz</p>
+<p>This information was gathered from campaign websites, candidate interviews, public comment, debates, and forums, as of Aug. 21. Download PDF <a class="lozenge more" href="https://ecori.org/comparing-the-environmental-policies-of-the-2026-rhode-island-candidates-for-u-s-senate/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://ecori.org/comparing-the-2026-rhode-island-gubernatorial-candidates-environmental-policies/">ecoRI News</a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://amarillotribune.org/support-our-publication/">Donate</a></aside>
+<p class="source"><a href="https://amarillotribune.org/"><strong>Amarillo Tribune</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T18:42:28+00:00" data-pub="1:42 PM CDT">Mon, Aug 24 @ 1PM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=Amarillo&state=TX">Amarillo</a></p>
+<h2><a href="https://amarillotribune.org/2026/08/24/amarillo-reservoir-still-not-recovered-through-week-of-voluntary-water-conservation-efforts/">Amarillo reservoir still not recovered through week of voluntary water conservation efforts</a></h2>
+<p class="byline">By Jo Early and Jackie Kingston</p>
+<a class="shot" href="https://amarillotribune.org/2026/08/24/amarillo-reservoir-still-not-recovered-through-week-of-voluntary-water-conservation-efforts/" tabindex="-1" aria-hidden="true"><img src="../img/df9718dbb9a03ec2b302973da73295a419646c27.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Editor’s note: This article was written by Jo Early. Jackie Kingston represented the Amarillo Tribune and asked our questions during a media availability at City Hall on Monday. Last Monday, the City of Amarillo entered Stage 1 of its drought contingency plan after reservoir storage levels hit 60% of its capacity. After a week of <a class="lozenge more" href="https://amarillotribune.org/2026/08/24/amarillo-reservoir-still-not-recovered-through-week-of-voluntary-water-conservation-efforts/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://pelhamexaminer.com/ads/daronco-donation-ad/">Donate</a></aside>
+<p class="source"><a href="https://pelhamexaminer.com/"><strong>Pelham Examiner</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T18:14:43+00:00" data-pub="2:14 PM EDT">Mon, Aug 24 @ 2PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Pelham&state=NY">Pelham</a></p>
+<h2><a href="https://pelhamexaminer.com/84359/latest-news/fall-campaign-season-arrives-early-as-wolfgang-and-borsella-take-on-mohan-and-miller-town-councils-burke-to-run-for-village-trustee/">Fall campaign season arrives early as Wolfgang and Borsella take on Mohan and Miller; Town Council’s Burke to run for Village trustee</a></h2>
+<p class="byline">By By  Greg Farrell</p>
+<a class="shot" href="https://pelhamexaminer.com/84359/latest-news/fall-campaign-season-arrives-early-as-wolfgang-and-borsella-take-on-mohan-and-miller-town-councils-burke-to-run-for-village-trustee/" tabindex="-1" aria-hidden="true"><img src="../img/87e2292dc8c364cfa790b6a17f3754f1190956cb.jpg" alt="" width="300" height="327" loading="lazy" decoding="async"></a>
+<p>It’s two weeks until Labor Day, but campaigns for top slots in Pelham’s townwide government as well as its two villages are in full swing. Scott Wolfgang and Maureen Borsella launched their joint campaign for townwide offices over the weekend. Wolfgang is running for Town Supervisor against incumbent Theresa Mohan, and Borsella is running for <a class="lozenge more" href="https://pelhamexaminer.com/84359/latest-news/fall-campaign-season-arrives-early-as-wolfgang-and-borsella-take-on-mohan-and-miller-town-councils-burke-to-run-for-village-trustee/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://ecori.org/giving/">Donate</a></aside>
+<p class="source"><a href="https://ecori.org/"><strong>ecoRI News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T16:36:43+00:00" data-pub="12:36 PM EDT">Mon, Aug 24 @ 12PM EDT</time><a class="lozenge place" href="/search?state=RI">Rhode Island</a><a class="lozenge place" href="/search?place=Providence&state=RI">Providence</a></p>
+<h2><a href="https://ecori.org/cancer-seems-to-be-the-price-were-willing-to-pay-for-dandelion-free-lawns/">Cancer Seems to be the Price We’re Willing to Pay for Dandelion-Free Lawns</a></h2>
+<p class="byline">By Frank Carini</p>
+<p>The Environmental Protection Agency has said glyphosate is unlikely to cause cancer when used as directed. Is the EPA familiar with the human race? Following directions isn’t our forte. <a class="lozenge more" href="https://ecori.org/cancer-seems-to-be-the-price-were-willing-to-pay-for-dandelion-free-lawns/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://ecori.org/giving/">Donate</a></aside>
+<p class="source"><a href="https://ecori.org/"><strong>ecoRI News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T16:31:42+00:00" data-pub="12:31 PM EDT">Mon, Aug 24 @ 12PM EDT</time><a class="lozenge place" href="/search?state=RI">Rhode Island</a><a class="lozenge place" href="/search?place=Providence&state=RI">Providence</a></p>
+<h2><a href="https://ecori.org/ripta-board-transit-advocates-clash-over-decision-to-relocate-bus-hub/">RIPTA Board, Transit Advocates Clash Over Decision to Relocate Bus Hub</a></h2>
+<p class="byline">By Bonnie Phillips</p>
+<p>RIPTA officials said the new center would be funded through a 2014 transit bond intended to invest in mass-transit infrastructure that has sat unused for years. <a class="lozenge more" href="https://ecori.org/ripta-board-transit-advocates-clash-over-decision-to-relocate-bus-hub/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/environment.html">Environment</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://ecori.org/giving/">Donate</a></aside>
+<p class="source"><a href="https://ecori.org/"><strong>ecoRI News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T16:29:30+00:00" data-pub="12:29 PM EDT">Mon, Aug 24 @ 12PM EDT</time><a class="lozenge place" href="/search?state=RI">Rhode Island</a><a class="lozenge place" href="/search?place=Providence&state=RI">Providence</a></p>
 <h2><a href="https://ecori.org/annual-dem-deer-survey-offers-glimpse-into-state-population/">Annual DEM Deer Survey Offers Glimpse into State Population</a></h2>
-<p class="byline"><small>By Bonnie Phillips</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://ecori.org/giving/">Donate</a></span></p>
-<p>The survey is just one of the many tools that the state uses to study deer in Rhode Island.</p>
-<p class="more"><a href="https://ecori.org/annual-dem-deer-survey-offers-glimpse-into-state-population/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Bonnie Phillips</p>
+<p>The survey is just one of the many tools that the state uses to study deer in Rhode Island. <a class="lozenge more" href="https://ecori.org/annual-dem-deer-survey-offers-glimpse-into-state-population/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T16:26:23+00:00" data-pub="12:26 PM EDT">Monday, August 24, 2026 at 12:26 PM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>RI / Providence / <a href="https://ecori.org/">ecoRI News</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://ecori.org/giving/">Donate</a></aside>
+<p class="source"><a href="https://ecori.org/"><strong>ecoRI News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T16:26:23+00:00" data-pub="12:26 PM EDT">Mon, Aug 24 @ 12PM EDT</time><a class="lozenge place" href="/search?state=RI">Rhode Island</a><a class="lozenge place" href="/search?place=Providence&state=RI">Providence</a></p>
 <h2><a href="https://ecori.org/waterfires-published-environmental-statement-doesnt-mention-the-river/">WaterFire’s Published Environmental Statement Doesn’t Mention the River</a></h2>
-<p class="byline"><small>By Bonnie Phillips</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://ecori.org/giving/">Donate</a></span></p>
-<p>None of this is an argument against WaterFire, which remains the best single thing this city makes. It is an argument that a river deserves to appear in the environmental statement of the organization that sets fires on it.</p>
-<p class="more"><a href="https://ecori.org/waterfires-published-environmental-statement-doesnt-mention-the-river/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Bonnie Phillips</p>
+<p>None of this is an argument against WaterFire, which remains the best single thing this city makes. It is an argument that a river deserves to appear in the environmental statement of the organization that sets fires on it. <a class="lozenge more" href="https://ecori.org/waterfires-published-environmental-statement-doesnt-mention-the-river/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T16:11:47+00:00" data-pub="12:11 PM EDT">Monday, August 24, 2026 at 12:11 PM EDT</time></small></p>
-<p><small>NY / Red Hook / <a href="https://www.thedailycatch.org/">The Red Hook Daily Catch</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://www.thedailycatch.org/donations/">Donate</a></aside>
+<p class="source"><a href="https://www.thedailycatch.org/"><strong>The Red Hook Daily Catch</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T16:11:47+00:00" data-pub="12:11 PM EDT">Mon, Aug 24 @ 12PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Red+Hook&state=NY">Red Hook</a></p>
 <h2><a href="https://www.thedailycatch.org/articles/constance-edith-rudd-teacher-singer-animal-lover-and-activist-dies-at-83/">Constance Edith Rudd, Teacher, Singer, Animal Lover and Activist, Dies at 83</a></h2>
-<p class="byline"><small>By Louise Dewhirst</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://www.thedailycatch.org/donations/">Donate</a></span></p>
-<p>Constance Edith Rudd of Kingston, N.Y., died July 2, 2026. She was born Sept. 26, 1942, in Arlington, Mass.</p>
-<p class="more"><a href="https://www.thedailycatch.org/articles/constance-edith-rudd-teacher-singer-animal-lover-and-activist-dies-at-83/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Louise Dewhirst</p>
+<p>Constance Edith Rudd of Kingston, N.Y., died July 2, 2026. She was born Sept. 26, 1942, in Arlington, Mass. <a class="lozenge more" href="https://www.thedailycatch.org/articles/constance-edith-rudd-teacher-singer-animal-lover-and-activist-dies-at-83/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T16:06:55+00:00" data-pub="12:06 PM EDT">Monday, August 24, 2026 at 12:06 PM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>RI / Providence / <a href="https://ecori.org/">ecoRI News</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://ecori.org/giving/">Donate</a></aside>
+<p class="source"><a href="https://ecori.org/"><strong>ecoRI News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T16:06:55+00:00" data-pub="12:06 PM EDT">Mon, Aug 24 @ 12PM EDT</time><a class="lozenge place" href="/search?state=RI">Rhode Island</a><a class="lozenge place" href="/search?place=Providence&state=RI">Providence</a></p>
 <h2><a href="https://ecori.org/hazard-mitigation-planning-in-rhode-island-turning-risk-into-action/">Hazard Mitigation Planning in Rhode Island: Turning Risk into Action</a></h2>
-<p class="byline"><small>By Bonnie Phillips</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://ecori.org/giving/">Donate</a></span></p>
-<p>The process of creating a hazard mitigation plan begins with identifying and evaluating risks and vulnerabilities across a given city or town.</p>
-<p class="more"><a href="https://ecori.org/hazard-mitigation-planning-in-rhode-island-turning-risk-into-action/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Bonnie Phillips</p>
+<p>The process of creating a hazard mitigation plan begins with identifying and evaluating risks and vulnerabilities across a given city or town. <a class="lozenge more" href="https://ecori.org/hazard-mitigation-planning-in-rhode-island-turning-risk-into-action/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T14:50:00+00:00" data-pub="10:50 AM EDT">Monday, August 24, 2026 at 10:50 AM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>MA / Worcester / <a href="https://theworcesterguardian.org/">Worcester Guardian</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://theworcesterguardian.org/donate">Donate</a></aside>
+<p class="source"><a href="https://theworcesterguardian.org/"><strong>Worcester Guardian</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T14:50:00+00:00" data-pub="10:50 AM EDT">Mon, Aug 24 @ 10AM EDT</time><a class="lozenge place" href="/search?state=MA">Massachusetts</a><a class="lozenge place" href="/search?place=Worcester&state=MA">Worcester</a></p>
 <h2><a href="https://theworcesterguardian.org/f/massport-names-matthew-elia-director-of-worcester-regional-airport/">Massport names Matthew Elia director of Worcester Regional Airport</a></h2>
-<p class="byline"><small>By Charlene Arsenault</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://theworcesterguardian.org/donate">Donate</a></span></p>
+<p class="byline">By Charlene Arsenault</p>
 <a class="shot" href="https://theworcesterguardian.org/f/massport-names-matthew-elia-director-of-worcester-regional-airport/" tabindex="-1" aria-hidden="true"><img src="../img/9dd6bbee048915c1405064f18636c771b2e97d1e.jpg" alt="" width="325" height="208" loading="lazy" decoding="async"></a>
-<p>The aviation industry veteran succeeds longtime airport director Andy Davis, who retired in July after nearly 18 years at the helm</p>
-<p class="more"><a href="https://theworcesterguardian.org/f/massport-names-matthew-elia-director-of-worcester-regional-airport/">Read more <span aria-hidden="true">→</span></a></p>
+<p>The aviation industry veteran succeeds longtime airport director Andy Davis, who retired in July after nearly 18 years at the helm <a class="lozenge more" href="https://theworcesterguardian.org/f/massport-names-matthew-elia-director-of-worcester-regional-airport/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T14:45:00+00:00" data-pub="7:45 AM PDT">Monday, August 24, 2026 at 7:45 AM PDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>CA / Alameda / <a href="https://alamedapost.com/">Alameda Post</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://alamedapost.com/donate">Donate</a></aside>
+<p class="source"><a href="https://alamedapost.com/"><strong>Alameda Post</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T14:45:00+00:00" data-pub="7:45 AM PDT">Mon, Aug 24 @ 7AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Alameda&state=CA">Alameda</a></p>
 <h2><a href="https://alamedapost.com/news/simon-lays-out-progressive-priorities-at-alameda-town-hall/">Simon Lays Out Progressive Priorities at Alameda Town Hall</a></h2>
-<p class="byline"><small>By Karin K. Jensen</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://alamedapost.com/donate">Donate</a></span></p>
+<p class="byline">By Karin K. Jensen</p>
 <a class="shot" href="https://alamedapost.com/news/simon-lays-out-progressive-priorities-at-alameda-town-hall/" tabindex="-1" aria-hidden="true"><img src="../img/435541410d7fa6f20d92c133f0293aa2cd19cf17.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>At her town hall meeting at Alameda High School, Congresswoman Lateefah Simon laid out a broad progressive agenda. Karin K. Jensen reports that Simon pledged to fight for disability rights, affordable housing, and healthcare. She also opposed war, cuts to social programs, and coal in Oakland.</p>
-<p class="more"><a href="https://alamedapost.com/news/simon-lays-out-progressive-priorities-at-alameda-town-hall/">Read more <span aria-hidden="true">→</span></a></p>
+<p>At her town hall meeting at Alameda High School, Congresswoman Lateefah Simon laid out a broad progressive agenda. Karin K. Jensen reports that Simon pledged to fight for disability rights, affordable housing, and healthcare. She also opposed war, cuts to social programs, and coal in Oakland. <a class="lozenge more" href="https://alamedapost.com/news/simon-lays-out-progressive-priorities-at-alameda-town-hall/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T14:43:00+00:00" data-pub="7:43 AM PDT">Monday, August 24, 2026 at 7:43 AM PDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>CA / Alameda / <a href="https://alamedapost.com/">Alameda Post</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://alamedapost.com/donate">Donate</a></aside>
+<p class="source"><a href="https://alamedapost.com/"><strong>Alameda Post</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T14:43:00+00:00" data-pub="7:43 AM PDT">Mon, Aug 24 @ 7AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Alameda&state=CA">Alameda</a></p>
 <h2><a href="https://alamedapost.com/news/community-news-act-clears-major-hurdle-heads-to-california-senate-floor/">Community NEWS Act Clears Major Hurdle, Heads to California Senate Floor</a></h2>
-<p class="byline"><small>By Post Staff Reporting</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://alamedapost.com/donate">Donate</a></span></p>
+<p class="byline">By Post Staff Reporting</p>
 <a class="shot" href="https://alamedapost.com/news/community-news-act-clears-major-hurdle-heads-to-california-senate-floor/" tabindex="-1" aria-hidden="true"><img src="../img/812ef7bbce5826aa32df69046b19cc0b41f04a72.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>The Community NEWS Act (AB 2222) advanced out of the California Senate Appropriations Committee and is set for a vote by the full Senate. It would create refundable journalist employment credits that would help local news organizations offer essential local news to their communities.</p>
-<p class="more"><a href="https://alamedapost.com/news/community-news-act-clears-major-hurdle-heads-to-california-senate-floor/">Read more <span aria-hidden="true">→</span></a></p>
+<p>The Community NEWS Act (AB 2222) advanced out of the California Senate Appropriations Committee and is set for a vote by the full Senate. It would create refundable journalist employment credits that would help local news organizations offer essential local news to their communities. <a class="lozenge more" href="https://alamedapost.com/news/community-news-act-clears-major-hurdle-heads-to-california-senate-floor/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T14:00:04+00:00" data-pub="10:00 AM EDT">Monday, August 24, 2026 at 10:00 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>NY / Peekskill / <a href="https://peekskillherald.com/">Peekskill Herald</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://peekskillherald.com/donation-form/">Donate</a></aside>
+<p class="source"><a href="https://peekskillherald.com/"><strong>Peekskill Herald</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T14:00:04+00:00" data-pub="10:00 AM EDT">Mon, Aug 24 @ 10AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Peekskill&state=NY">Peekskill</a></p>
 <h2><a href="https://peekskillherald.com/41637/news/newsworthy-notes-81/">Newsworthy Notes</a></h2>
-<p class="byline"><small>By By Eric Harvey, eric@peekskillherald.com</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://peekskillherald.com/donation-form/">Donate</a></span></p>
+<p class="byline">By By Eric Harvey, eric@peekskillherald.com</p>
 <a class="shot" href="https://peekskillherald.com/41637/news/newsworthy-notes-81/" tabindex="-1" aria-hidden="true"><img src="../img/6292d0847df6d5b3a6d16b53a73d0a6d8ec7bd68.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
-<p>Covering &gt; August 18 - August 24</p>
-<p class="more"><a href="https://peekskillherald.com/41637/news/newsworthy-notes-81/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Covering &gt; August 18 - August 24 <a class="lozenge more" href="https://peekskillherald.com/41637/news/newsworthy-notes-81/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T13:25:00+00:00" data-pub="8:25 AM CDT">Monday, August 24, 2026 at 8:25 AM CDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>TX / Austin / <a href="https://theaustinbulldog.org">The Austin Bulldog</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://theaustinbulldog.org">Support</a></aside>
+<p class="source"><a href="https://theaustinbulldog.org"><strong>The Austin Bulldog</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T13:25:00+00:00" data-pub="8:25 AM CDT">Mon, Aug 24 @ 8AM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=Austin&state=TX">Austin</a></p>
 <h2><a href="https://theaustinbulldog.org/four-candidates-running-for-tcad-board/">Four candidates running for TCAD board</a></h2>
-<p class="byline"><small>By Editor Ken Martin</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://theaustinbulldog.org">Support</a></span></p>
-<p>Three Democrats and one Republican filed applications to run for the three elected positions on the Board of Directors of the Travis Central Appraisal District (TCAD). Sure, sure, I know. Elections in Travis County for city councils, school boards, and even the TCAD board of directors of the are technically nonpartisan. In reality, in the</p>
-<p class="more"><a href="https://theaustinbulldog.org/four-candidates-running-for-tcad-board/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Editor Ken Martin</p>
+<p>Three Democrats and one Republican filed applications to run for the three elected positions on the Board of Directors of the Travis Central Appraisal District (TCAD). Sure, sure, I know. Elections in Travis County for city councils, school boards, and even the TCAD board of directors of the are technically nonpartisan. In reality, in the <a class="lozenge more" href="https://theaustinbulldog.org/four-candidates-running-for-tcad-board/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T12:04:05+00:00" data-pub="8:04 AM EDT">Monday, August 24, 2026 at 8:04 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>RI / Providence / <a href="https://ecori.org/">ecoRI News</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://ecori.org/giving/">Donate</a></aside>
+<p class="source"><a href="https://ecori.org/"><strong>ecoRI News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T12:04:05+00:00" data-pub="8:04 AM EDT">Mon, Aug 24 @ 8AM EDT</time><a class="lozenge place" href="/search?state=RI">Rhode Island</a><a class="lozenge place" href="/search?place=Providence&state=RI">Providence</a></p>
 <h2><a href="https://ecori.org/planning-board-to-consider-controversial-north-smithfield-subdivision/">Planning Board to Consider Controversial North Smithfield Subdivision</a></h2>
-<p class="byline"><small>By Bonnie Phillips</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://ecori.org/giving/">Donate</a></span></p>
-<p>The proposed development off Douglas Pike includes a 126-house subdivision that would be built in 10 phases.</p>
-<p class="more"><a href="https://ecori.org/planning-board-to-consider-controversial-north-smithfield-subdivision/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Bonnie Phillips</p>
+<p>The proposed development off Douglas Pike includes a 126-house subdivision that would be built in 10 phases. <a class="lozenge more" href="https://ecori.org/planning-board-to-consider-controversial-north-smithfield-subdivision/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T11:01:00+00:00" data-pub="6:01 AM CDT">Monday, August 24, 2026 at 6:01 AM CDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>LA / New Orleans / <a href="https://thelensnola.org">The Lens NOLA</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://thelensnola.org/donate">Donate</a></aside>
+<p class="source"><a href="https://thelensnola.org"><strong>The Lens NOLA</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T11:01:00+00:00" data-pub="6:01 AM CDT">Mon, Aug 24 @ 6AM CDT</time><a class="lozenge place" href="/search?state=LA">Louisiana</a><a class="lozenge place" href="/search?place=New+Orleans&state=LA">New Orleans</a></p>
 <h2><a href="https://thelensnola.org/2026/08/24/driving-district-6-what-the-supreme-court-missed/">Court deems Black cultural connections as race, not culture</a></h2>
-<p class="byline"><small>By Emmanuel Felton, with photographs by Gus Bennett</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://thelensnola.org/donate">Donate</a></span></p>
-<p>In every corner of the now-scuttled 6th District, Black residents tell of deep connections through Louisiana history, food, and today’s struggles. But this spring, the nation’s highest court concluded that those voters share only race, not a cohesive culture. [...] Read More... from Court deems Black cultural connections as race, not culture</p>
-<p class="more"><a href="https://thelensnola.org/2026/08/24/driving-district-6-what-the-supreme-court-missed/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Emmanuel Felton, with photographs by Gus Bennett</p>
+<p>In every corner of the now-scuttled 6th District, Black residents tell of deep connections through Louisiana history, food, and today’s struggles. But this spring, the nation’s highest court concluded that those voters share only race, not a cohesive culture. [...] Read More... from Court deems Black cultural connections as race, not culture <a class="lozenge more" href="https://thelensnola.org/2026/08/24/driving-district-6-what-the-supreme-court-missed/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T10:00:00+00:00" data-pub="6:00 AM EDT">Monday, August 24, 2026 at 6:00 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>MI / East Lansing / <a href="https://eastlansinginfo.news/">East Lansing Info</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://eastlansinginfo.news/donate/">Donate</a></aside>
+<p class="source"><a href="https://eastlansinginfo.news/"><strong>East Lansing Info</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T10:00:00+00:00" data-pub="6:00 AM EDT">Mon, Aug 24 @ 6AM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=East+Lansing&state=MI">East Lansing</a></p>
 <h2><a href="https://eastlansinginfo.news/east-lansing-insider-podcast-back-to-school-with-greater-lansing-area-moms/">East Lansing Insider Podcast: Back to School With Greater Lansing Area Moms</a></h2>
-<p class="byline"><small>By Anna Liz Nichols</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://eastlansinginfo.news/donate/">Donate</a></span></p>
-<p>It&#x27;s back to school for East Lansing Public Schools students.</p>
-<p class="more"><a href="https://eastlansinginfo.news/east-lansing-insider-podcast-back-to-school-with-greater-lansing-area-moms/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Anna Liz Nichols</p>
+<p>It&#x27;s back to school for East Lansing Public Schools students. <a class="lozenge more" href="https://eastlansinginfo.news/east-lansing-insider-podcast-back-to-school-with-greater-lansing-area-moms/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T09:45:00+00:00" data-pub="5:45 AM EDT">Monday, August 24, 2026 at 5:45 AM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>MI / Kalamazoo / <a href="https://nowkalamazoo.org/">NowKalamazoo</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://nowkalamazoo.org/support-us/">Donate</a></aside>
+<p class="source"><a href="https://nowkalamazoo.org/"><strong>NowKalamazoo</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T09:45:00+00:00" data-pub="5:45 AM EDT">Mon, Aug 24 @ 5AM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=Kalamazoo&state=MI">Kalamazoo</a></p>
 <h2><a href="https://nowkalamazoo.org/2026/08/kalamazoos-first-black-pride-a-space-for-us-to-be-ourselves/">Kalamazoo’s first Black Pride: ‘A space for us to be ourselves’</a></h2>
-<p class="byline"><small>By James Sanford</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://nowkalamazoo.org/support-us/">Donate</a></span></p>
+<p class="byline">By James Sanford</p>
 <a class="shot" href="https://nowkalamazoo.org/2026/08/kalamazoos-first-black-pride-a-space-for-us-to-be-ourselves/" tabindex="-1" aria-hidden="true"><img src="../img/a4390e706a1a88bc1b16b85404c3573fd6a45db0.jpg" alt="" width="480" height="251" loading="lazy" decoding="async"></a>
-<p>Black Pride organizers say Kalamazoo&#x27;s inaugural event isn’t about exclusivity, it’s about comfortability … and joy.</p>
-<p class="more"><a href="https://nowkalamazoo.org/2026/08/kalamazoos-first-black-pride-a-space-for-us-to-be-ourselves/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Black Pride organizers say Kalamazoo&#x27;s inaugural event isn’t about exclusivity, it’s about comfortability … and joy. <a class="lozenge more" href="https://nowkalamazoo.org/2026/08/kalamazoos-first-black-pride-a-space-for-us-to-be-ourselves/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T09:00:05+00:00" data-pub="4:00 AM CDT">Monday, August 24, 2026 at 4:00 AM CDT</time></small></p>
-<p><small>SD / Statewide / <a href="https://www.sdnewswatch.org/">South Dakota News Watch</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://www.sdnewswatch.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://www.sdnewswatch.org/"><strong>South Dakota News Watch</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T09:00:05+00:00" data-pub="4:00 AM CDT">Mon, Aug 24 @ 4AM CDT</time><a class="lozenge place" href="/search?state=SD">South Dakota</a></p>
 <h2><a href="https://www.sdnewswatch.org/south-dakota-migration-retirees-population-growth/">More workers than retirees drove South Dakota’s growth</a></h2>
-<p class="byline"><small>By Amina Aidarkhanova</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://www.sdnewswatch.org/donate/">Donate</a></span></p>
+<p class="byline">By Amina Aidarkhanova</p>
 <a class="shot" href="https://www.sdnewswatch.org/south-dakota-migration-retirees-population-growth/" tabindex="-1" aria-hidden="true"><img src="../img/0c16f0371693b7ddcc3b6d51765647c405dc2a5e.jpg" alt="" width="480" height="246" loading="lazy" decoding="async"></a>
-<p>The migration story is often associated with retirees moving to the state, but new analysis of Census data shows working-age adults made up the largest share of recent newcomers.</p>
-<p class="more"><a href="https://www.sdnewswatch.org/south-dakota-migration-retirees-population-growth/">Read more <span aria-hidden="true">→</span></a></p>
+<p>The migration story is often associated with retirees moving to the state, but new analysis of Census data shows working-age adults made up the largest share of recent newcomers. <a class="lozenge more" href="https://www.sdnewswatch.org/south-dakota-migration-retirees-population-growth/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T08:00:00+00:00" data-pub="3:00 AM CDT">Monday, August 24, 2026 at 3:00 AM CDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>SD / Statewide / <a href="https://www.sdnewswatch.org/">South Dakota News Watch</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://www.sdnewswatch.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://www.sdnewswatch.org/"><strong>South Dakota News Watch</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T08:00:00+00:00" data-pub="3:00 AM CDT">Mon, Aug 24 @ 3AM CDT</time><a class="lozenge place" href="/search?state=SD">South Dakota</a></p>
 <h2><a href="https://www.sdnewswatch.org/south-dakota-voter-guide-primary-general-election/">South Dakota voter guide</a></h2>
-<p class="byline"><small>By Molly Wetsch</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://www.sdnewswatch.org/donate/">Donate</a></span></p>
+<p class="byline">By Molly Wetsch</p>
 <a class="shot" href="https://www.sdnewswatch.org/south-dakota-voter-guide-primary-general-election/" tabindex="-1" aria-hidden="true"><img src="../img/0611abb00fe4c95621cf56550a9635d145f281be.jpg" alt="" width="480" height="290" loading="lazy" decoding="async"></a>
-<p>Everything to know about registering and voting in statewide elections, and who and what are on the ballot.</p>
-<p class="more"><a href="https://www.sdnewswatch.org/south-dakota-voter-guide-primary-general-election/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Everything to know about registering and voting in statewide elections, and who and what are on the ballot. <a class="lozenge more" href="https://www.sdnewswatch.org/south-dakota-voter-guide-primary-general-election/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T05:31:19+00:00" data-pub="1:31 AM EDT">Monday, August 24, 2026 at 1:31 AM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>RI / Statewide / <a href="https://rinewstoday.com">RINewsToday.com</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://www.paypal.com/donate/?hosted_button_id=KSP7BBGYVMTX8">Donate</a></aside>
+<p class="source"><a href="https://rinewstoday.com"><strong>RINewsToday.com</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T05:31:19+00:00" data-pub="1:31 AM EDT">Mon, Aug 24 @ 1AM EDT</time><a class="lozenge place" href="/search?state=RI">Rhode Island</a></p>
 <h2><a href="https://rinewstoday.com/woonsocket-education-center-new-nursing-lab-cna/">New Woonsocket Nursing Lab Opens, Training 33 Future CNAs</a></h2>
-<p class="byline"><small>By RINewsToday</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://www.paypal.com/donate/?hosted_button_id=KSP7BBGYVMTX8">Donate</a></span></p>
+<p class="byline">By RINewsToday</p>
 <a class="shot" href="https://rinewstoday.com/woonsocket-education-center-new-nursing-lab-cna/" tabindex="-1" aria-hidden="true"><img src="../img/bab7267b2d1d92404719e28b8fe8cbf84d84761f.jpg" alt="" width="480" height="324" loading="lazy" decoding="async"></a>
-<p>Woonsocket Education Center has opened a new nursing education lab where two CCRI cohorts are training 33 future Certified Nursing Assistants. The $200,377 expansion will help address Rhode Island’s healthcare workforce needs.</p>
-<p class="more"><a href="https://rinewstoday.com/woonsocket-education-center-new-nursing-lab-cna/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-24T05:18:21+00:00" data-pub="1:18 AM EDT">Monday, August 24, 2026 at 1:18 AM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>RI / Statewide / <a href="https://rinewstoday.com">RINewsToday.com</a></small></p>
-<h2><a href="https://rinewstoday.com/business-monday-communication-breakdown-bob-salvas/">Business Monday:  Communication Breakdown – Bob Salvas</a></h2>
-<p class="byline"><small>By RINewsToday News Team</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://www.paypal.com/donate/?hosted_button_id=KSP7BBGYVMTX8">Donate</a></span></p>
-<a class="shot" href="https://rinewstoday.com/business-monday-communication-breakdown-bob-salvas/" tabindex="-1" aria-hidden="true"><img src="../img/93fa6ded162645c647213ecb1ac9e1016adcc3db.jpg" alt="" width="200" height="300" loading="lazy" decoding="async"></a>
-<p>Business Monday: Communication Breakdown - Bob Salvas shares business tips every week</p>
-<p class="more"><a href="https://rinewstoday.com/business-monday-communication-breakdown-bob-salvas/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-24T05:17:33+00:00" data-pub="1:17 AM EDT">Monday, August 24, 2026 at 1:17 AM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>RI / Statewide / <a href="https://rinewstoday.com">RINewsToday.com</a></small></p>
-<h2><a href="https://rinewstoday.com/my-mama-joe-hope-and-help-by-herb-weiss/">“My Mama Joe: Hope &amp; Help” puts Spotlight on Alzheimer’s, Caregiving and Health Disparities – Herb Weiss</a></h2>
-<p class="byline"><small>By Herb Weiss</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://www.paypal.com/donate/?hosted_button_id=KSP7BBGYVMTX8">Donate</a></span></p>
-<a class="shot" href="https://rinewstoday.com/my-mama-joe-hope-and-help-by-herb-weiss/" tabindex="-1" aria-hidden="true"><img src="../img/0bd4df995cf14953e4cf525edf5f25b4fda1ed04.jpg" alt="" width="300" height="258" loading="lazy" decoding="async"></a>
-<p>My Mama Joe: Hope &amp; Help, a documentary on Alzheimer&#x27;s</p>
-<p class="more"><a href="https://rinewstoday.com/my-mama-joe-hope-and-help-by-herb-weiss/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-24T05:11:06+00:00" data-pub="1:11 AM EDT">Monday, August 24, 2026 at 1:11 AM EDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>RI / Statewide / <a href="https://rinewstoday.com">RINewsToday.com</a></small></p>
-<h2><a href="https://rinewstoday.com/rhode-islanders-take-control-of-energy-bills-no-cost-home-energy-assessments/">Rhode Islanders Take Control of Energy Bills with No Cost Home Energy Assessments</a></h2>
-<p class="byline"><small>By RINewsToday</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://www.paypal.com/donate/?hosted_button_id=KSP7BBGYVMTX8">Donate</a></span></p>
-<p>Rhode Islanders Take Control of Energy Bills with No Cost Home Energy Assessments</p>
-<p class="more"><a href="https://rinewstoday.com/rhode-islanders-take-control-of-energy-bills-no-cost-home-energy-assessments/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-23T23:00:22+00:00" data-pub="7:00 PM EDT">Sunday, August 23, 2026 at 7:00 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>MA / Berkshires / <a href="https://www.berkshireargus.com">Berkshire Argus</a></small></p>
-<h2><a href="https://www.reasongonemad.com/a-dry-cleaning-chemical-is-turning-up-on-railroad-street-in-great-barrington-where-did-it-come-from/">A Dry-Cleaning Chemical Is Turning Up on Railroad Street in Great Barrington. Where Did It Come From?</a></h2>
-<p class="byline"><small>By Bill Shein</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://www.berkshireargus.com/signup/">Subscribe</a></span></p>
-<a class="shot" href="https://www.reasongonemad.com/a-dry-cleaning-chemical-is-turning-up-on-railroad-street-in-great-barrington-where-did-it-come-from/" tabindex="-1" aria-hidden="true"><img src="../img/55afa858fb7a9d5d3654c401a7c25d7dfa40d3b9.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>PCE was detected above a state indoor-air threshold at two buildings near where dry cleaners operated for more than four decades. MassDEP is overseeing an investigation into the source and extent of the contamination.</p>
-<p class="more"><a href="https://www.reasongonemad.com/a-dry-cleaning-chemical-is-turning-up-on-railroad-street-in-great-barrington-where-did-it-come-from/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-23T21:10:58+00:00" data-pub="5:10 PM EDT">Sunday, August 23, 2026 at 5:10 PM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>RI / East Greenwich / <a href="https://eastgreenwichnews.com/">East Greenwich News</a></small></p>
-<h2><a href="https://eastgreenwichnews.com/eg-calendar-first-day-of-school-revolutionary-war-encampment/">EG Calendar: First Day of School, Revolutionary War Encampment</a></h2>
-<p class="byline"><small>By Elizabeth McNamara</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://eastgreenwichnews.com/">Support</a></span></p>
-<a class="shot" href="https://eastgreenwichnews.com/eg-calendar-first-day-of-school-revolutionary-war-encampment/" tabindex="-1" aria-hidden="true"><img src="../img/6f9f5de605abae3dae3abb62a1e8e9c08078c56c.jpg" alt="" width="300" height="225" loading="lazy" decoding="async"></a>
-<p>Above: The view last week from the ramp under construction that will connect Route 95N to Route 4S, part of the “Missing Move” project due for completion in October 2027. Read more about that project HERE. And the 3rd Annual ‘Suds &amp; Songs’ for the Academy Science Center Editor’s note: We share items here that</p>
-<p class="more"><a href="https://eastgreenwichnews.com/eg-calendar-first-day-of-school-revolutionary-war-encampment/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-23T20:52:00+00:00" data-pub="1:52 PM PDT">Sunday, August 23, 2026 at 1:52 PM PDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>NV / Reno / <a href="https://sierranevadaally.org/">The Sierra Nevada Ally</a></small></p>
-<h2><a href="https://sierranevadaally.org/2026/08/23/hawk-fire-where-to-find-evacuation-information-shelter-and-ways-you-can-help/">Hawk Fire: Where to Find Evacuation Information, Shelter, and Ways You Can Help.</a></h2>
-<p class="byline"><small>By Hannah Truby</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://sierranevadaally.org/support-us">Donate</a></span></p>
-<a class="shot" href="https://sierranevadaally.org/2026/08/23/hawk-fire-where-to-find-evacuation-information-shelter-and-ways-you-can-help/" tabindex="-1" aria-hidden="true"><img src="../img/e92a8eea604d6aae8a05e652475e2dcc9bef98dc.jpg" alt="" width="480" height="480" loading="lazy" decoding="async"></a>
-<p>Thousands have been evacuated by the Hawk Fire. Here’s where to find shelter, resources, and ways you can help.</p>
-<p class="more"><a href="https://sierranevadaally.org/2026/08/23/hawk-fire-where-to-find-evacuation-information-shelter-and-ways-you-can-help/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-23T19:52:08+00:00" data-pub="3:52 PM EDT">Sunday, August 23, 2026 at 3:52 PM EDT</time></small></p>
-<p><small>NY / Red Hook / <a href="https://www.thedailycatch.org/">The Red Hook Daily Catch</a></small></p>
-<h2><a href="https://www.thedailycatch.org/articles/zygmunt-dorozynski-dies-at-78/">Zygmunt Dorozynski Dies at 78</a></h2>
-<p class="byline"><small>By Louise Dewhirst</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://www.thedailycatch.org/donations/">Donate</a></span></p>
-<p>Zygmunt Doroszynski of Rhinebeck died at home on Aug. 17, 2026.</p>
-<p class="more"><a href="https://www.thedailycatch.org/articles/zygmunt-dorozynski-dies-at-78/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-23T18:44:00+00:00" data-pub="2:44 PM EDT">Sunday, August 23, 2026 at 2:44 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>MA / Worcester / <a href="https://theworcesterguardian.org/">Worcester Guardian</a></small></p>
-<h2><a href="https://theworcesterguardian.org/f/five-years-into-green-worcester-plan-city-touts-progress-but-major-climate-goals-face-headwinds/">Five years into Green Worcester plan, city touts progress—but major climate goals face headwinds</a></h2>
-<p class="byline"><small>By Charlene Arsenault</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://theworcesterguardian.org/donate">Donate</a></span></p>
-<a class="shot" href="https://theworcesterguardian.org/f/five-years-into-green-worcester-plan-city-touts-progress-but-major-climate-goals-face-headwinds/" tabindex="-1" aria-hidden="true"><img src="../img/7165dee0e83ff473e73ea0f8acd0a2819f031cae.jpg" alt="" width="325" height="152" loading="lazy" decoding="async"></a>
-<p>Worcester has cut greenhouse gas emissions while expanding waste, energy and green infrastructure programs, but a city advisory panel warns some ambitious renewable-energy targets are no longer achievable without federal help</p>
-<p class="more"><a href="https://theworcesterguardian.org/f/five-years-into-green-worcester-plan-city-touts-progress-but-major-climate-goals-face-headwinds/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-23T16:08:00+00:00" data-pub="12:08 PM EDT">Sunday, August 23, 2026 at 12:08 PM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>MA / Worcester / <a href="https://theworcesterguardian.org/">Worcester Guardian</a></small></p>
-<h2><a href="https://theworcesterguardian.org/f/worcester-tech-science-teacher-selected-for-national-stem-program/">Worcester Tech science teacher selected for national STEM program</a></h2>
-<p class="byline"><small>By Charlene Arsenault</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://theworcesterguardian.org/donate">Donate</a></span></p>
-<p>After more than two decades teaching science at Worcester Technical High School, Jocelyn Coughlin spends the coming school year working to get more of her students out of the textbook</p>
-<p class="more"><a href="https://theworcesterguardian.org/f/worcester-tech-science-teacher-selected-for-national-stem-program/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-23T15:47:32+00:00" data-pub="11:47 AM EDT">Sunday, August 23, 2026 at 11:47 AM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>RI / East Greenwich / <a href="https://eastgreenwichnews.com/">East Greenwich News</a></small></p>
-<h2><a href="https://eastgreenwichnews.com/police-log-9-dui-arrests-paycheck-switcheroo/">Police Log: 9 DUI Arrests, Paycheck Switcheroo</a></h2>
-<p class="byline"><small>By Brandy Muz</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://eastgreenwichnews.com/">Support</a></span></p>
-<a class="shot" href="https://eastgreenwichnews.com/police-log-9-dui-arrests-paycheck-switcheroo/" tabindex="-1" aria-hidden="true"><img src="../img/ff3af285551387d333b54d1052b73b5fd1c8857a.jpg" alt="" width="300" height="225" loading="lazy" decoding="async"></a>
-<p>From the East Greenwich police log and reports, Aug. 10-17, 2026. Monday, August 10 8:39 p.m. – A caller told police she was concerned her roommate was driving intoxicated after leaving a Water Street bar. Police were unable to locate the vehicle in the area. 10:41 p.m. – A caller told police his girlfriend was</p>
-<p class="more"><a href="https://eastgreenwichnews.com/police-log-9-dui-arrests-paycheck-switcheroo/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-22T19:09:51+00:00" data-pub="3:09 PM EDT">Saturday, August 22, 2026 at 3:09 PM EDT</time></small></p>
-<p><small>MA / Worcester / <a href="https://www.worcestersucks.email">Worcester Sucks and I Love It(MA)</a></small></p>
-<h2><a href="https://www.worcestersucks.email/p/episode-72-the-big-rock-townie-mountain">Episode 72: The Big Rock Townie Mountain</a></h2>
-<p class="byline"><small>By Bill Shaner</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://www.worcestersucks.email">Support</a></span></p>
-<a class="shot" href="https://www.worcestersucks.email/p/episode-72-the-big-rock-townie-mountain" tabindex="-1" aria-hidden="true"><img src="../img/1fad0562903d1ac472ab07507a5ad2a02b232855.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>A deep dive into this week&#x27;s #1 story</p>
-<p class="more"><a href="https://www.worcestersucks.email/p/episode-72-the-big-rock-townie-mountain">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-22T16:00:00+00:00" data-pub="9:00 AM PDT">Saturday, August 22, 2026 at 9:00 AM PDT</time></small></p>
-<p><small>CA / Alameda / <a href="https://alamedapost.com/">Alameda Post</a></small></p>
-<h2><a href="https://alamedapost.com/features/alameda-life/lexi-is-looking-for-love/">Lexi is Looking for Love</a></h2>
-<p class="byline"><small>By Friends of the Alameda Animal Shelter</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://alamedapost.com/donate">Donate</a></span></p>
-<a class="shot" href="https://alamedapost.com/features/alameda-life/lexi-is-looking-for-love/" tabindex="-1" aria-hidden="true"><img src="../img/85ba16b275272e70b34307e51ccc90432e84cff3.jpg" alt="" width="480" height="369" loading="lazy" decoding="async"></a>
-<p>&quot;Give her a sunny spot in the yard, and you’ll quickly discover Lexi’s favorite pastime—soaking up the sunshine. Once she’s had her chance to relax, don’t be surprised if she suddenly bursts into a case of joyful zoomies, racing around the yard with pure happiness.&quot;</p>
-<p class="more"><a href="https://alamedapost.com/features/alameda-life/lexi-is-looking-for-love/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-22T13:36:11+00:00" data-pub="9:36 AM EDT">Saturday, August 22, 2026 at 9:36 AM EDT</time></small></p>
-<p><small>NY / Cold Spring / <a href="https://highlandscurrent.org/">The Highlands Current</a></small></p>
-<h2><a href="https://highlandscurrent.org/2026/08/22/unclaimed-funds-new-york-2026/">Does the Man Owe You Money?</a></h2>
-<p class="byline"><small>By Chip Rowe</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://highlandscurrent.org/membership/short-form">Donate</a></span></p>
-<p>$9 million in unclaimed funds due Highlands residents</p>
-<p class="more"><a href="https://highlandscurrent.org/2026/08/22/unclaimed-funds-new-york-2026/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-22T13:09:57+00:00" data-pub="9:09 AM EDT">Saturday, August 22, 2026 at 9:09 AM EDT</time></small></p>
-<p><small>NY / Cold Spring / <a href="https://highlandscurrent.org/">The Highlands Current</a></small></p>
-<h2><a href="https://highlandscurrent.org/2026/08/22/philipstown-sets-hearing-on-str-law/">Philipstown Sets Hearing on STR Law</a></h2>
-<p class="byline"><small>By Leonard Sparks</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge" href="../tags/inn-member.html">INN member</a><a class="lozenge give" href="https://highlandscurrent.org/membership/short-form">Donate</a></span></p>
-<p>Regulations would require permits and inspections</p>
-<p class="more"><a href="https://highlandscurrent.org/2026/08/22/philipstown-sets-hearing-on-str-law/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Woonsocket Education Center has opened a new nursing education lab where two CCRI cohorts are training 33 future Certified Nursing Assistants. The $200,377 expansion will help address Rhode Island’s healthcare workforce needs. <a class="lozenge more" href="https://rinewstoday.com/woonsocket-education-center-new-nursing-lab-cna/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 </div>
 <p><a id="more" href="anno-member-3.html">More stories</a></p>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="../index.html">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -398,6 +447,47 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>

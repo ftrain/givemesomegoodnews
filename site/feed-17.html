@@ -13,12 +13,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -27,22 +40,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -50,19 +69,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -75,7 +126,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -93,7 +144,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -106,7 +157,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="subjects/news.html">News</a></li><li><a href="subjects/politics.html">Politics</a></li><li><a href="subjects/opinion.html">Opinion</a></li><li><a href="subjects/health.html">Health</a></li><li><a href="subjects/environment.html">Environment</a></li><li><a href="subjects/education.html">Education</a></li><li><a href="subjects/business.html">Business</a></li><li><a href="subjects/housing.html">Housing</a></li><li><a href="subjects/sports.html">Sports</a></li><li><a href="subjects/food.html">Food</a></li><li><a href="subjects/arts.html">Arts</a></li></ul></nav>
@@ -121,279 +172,283 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <main id="main">
 <div id="feed-items">
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:08:48+00:00" data-pub="12:08 AM EDT">Tuesday, August 25, 2026 at 12:08 AM EDT</time></small><a class="lozenge" href="subjects/health.html">Health</a></p>
-<p><small>NJ / Newark / <a href="https://www.njspotlightnews.org">NJ Spotlight News</a></small></p>
-<h2><a href="https://www.njspotlightnews.org/2026/08/childhood-vaccination-rates-at-lowest-levels-in-years/">Childhood vaccination rates at lowest levels in years</a></h2>
-<p class="byline"><small>By Codea</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.njspotlightnews.org">Support</a></span></p>
-<p>Religious exemptions increase</p>
-<p class="more"><a href="https://www.njspotlightnews.org/2026/08/childhood-vaccination-rates-at-lowest-levels-in-years/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/business.html">Business</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://sgfcitizen.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://sgfcitizen.org/"><strong>Springfield Daily Citizen</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:15:00+00:00" data-pub="6:15 AM CDT">Tue, Aug 25 @ 6AM CDT</time><a class="lozenge place" href="/search?state=MO">Missouri</a><a class="lozenge place" href="/search?place=Springfield&state=MO">Springfield</a></p>
+<h2><a href="https://sgfcitizen.org/economy-growth/business/sierra-to-open-springfield-location/">Off-price outdoor company, Sierra, plans first Springfield store at the Primrose Marketplace</a></h2>
+<p class="byline">By Ryan Collins</p>
+<a class="shot" href="https://sgfcitizen.org/economy-growth/business/sierra-to-open-springfield-location/" tabindex="-1" aria-hidden="true"><img src="img/67c005e1a3966e7e3bd4639f7bc35b554b13c872.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Off-price retailer Sierra has filed plans to open its first Springfield location in the Primrose Marketplace, taking over a former Jo-Ann Fabrics space with construction proposed to begin in October 2026. <a class="lozenge more" href="https://sgfcitizen.org/economy-growth/business/sierra-to-open-springfield-location/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:08:00+00:00" data-pub="12:08 AM EDT">Tuesday, August 25, 2026 at 12:08 AM EDT</time></small></p>
-<p><small>NY / New York City / <a href="https://nyc.streetsblog.org/">Streetsblog - NYC</a></small></p>
-<h2><a href="https://nyc.streetsblog.org/2026/08/25/mamdani-bqe-moses">Mamdani’s BQE Plan Doubles Down on the Failures of the Past</a></h2>
-<p class="byline"><small>By Kevin Duggan</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://nyc.streetsblog.org/2019/08/29/heres-how-to-donate">Donate</a></span></p>
-<a class="shot" href="https://nyc.streetsblog.org/2026/08/25/mamdani-bqe-moses" tabindex="-1" aria-hidden="true"><img src="img/815456bfd26d0b4e81ad0b737b0b66bffc0a8b0d.jpg" alt="" width="480" height="240" loading="lazy" decoding="async"></a>
-<p>The mayor&#x27;s $4 billion plan would effectively lock in the car and truck conveyor for generations, critics charged.</p>
-<p class="more"><a href="https://nyc.streetsblog.org/2026/08/25/mamdani-bqe-moses">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/news.html">News</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.gpb.org/support/planned">Donate</a></aside>
+<p class="source"><a href="https://www.gpb.org/news"><strong>Georgia News Lab</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:09:01+00:00" data-pub="7:09 AM EDT">Tue, Aug 25 @ 7AM EDT</time><a class="lozenge place" href="/search?state=GA">Georgia</a><a class="lozenge place" href="/search?place=Atlanta&state=GA">Atlanta</a></p>
+<h2><a href="https://www.gpb.org/news/2026/08/25/trump-calls-leaders-isolate-iran-and-scotus-backs-trump-for-now-on-mail-in-voting">Trump calls leaders to isolate Iran. And, SCOTUS backs Trump for now on mail-in voting</a></h2>
+<p class="byline">By Brittney Melton</p>
+<a class="shot" href="https://www.gpb.org/news/2026/08/25/trump-calls-leaders-isolate-iran-and-scotus-backs-trump-for-now-on-mail-in-voting" tabindex="-1" aria-hidden="true"><img src="img/796b27edb439650f13a4a023dac31bdf35ca749d.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>President Trump is calling on world leaders to join his economic war against Iran. And, the Supreme Court is backing the president for now on his order to restrict mail-in voting. <a class="lozenge more" href="https://www.gpb.org/news/2026/08/25/trump-calls-leaders-isolate-iran-and-scotus-backs-trump-for-now-on-mail-in-voting">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Echo: <a href="https://www.votebeat.org/national/2026/08/24/supreme-court-lifts-stay-trump-executive-order-on-elections-mail-ballot-restrictions/">Votebeat Arizona: Supreme Court lifts 1 of 2 blocks on Trump’s mail-voting executive order</a> &middot; <a href="https://www.deseret.com/politics/2026/08/24/supreme-court-reverses-lower-court-ruling-in-president-trump-mail-in-ballot-order/">Deseret News: Supreme Court pauses lower court ruling on Trump’s mail-in voting order</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:06:11+00:00" data-pub="9:06 PM PDT">Monday, August 24, 2026 at 9:06 PM PDT</time></small></p>
-<p><small>CA / Pleasanton / <a href="https://www.pleasantonweekly.com/">Pleasanton Weekly</a></small></p>
-<h2><a href="https://www.pleasantonweekly.com/ae/2026/08/24/livermore-on-the-itinerary-for-paula-poundstones-wide-ranging-travels/">Livermore on the itinerary for Paula Poundstone’s wide-ranging travels</a></h2>
-<p class="byline"><small>By Jeanita Lyman</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.pleasantonweekly.com/donate/">Donate</a></span></p>
-<a class="shot" href="https://www.pleasantonweekly.com/ae/2026/08/24/livermore-on-the-itinerary-for-paula-poundstones-wide-ranging-travels/" tabindex="-1" aria-hidden="true"><img src="img/9ef447334ce5982cd329595a8d5c8b2b003e22f6.webp" alt="" width="480" height="372" loading="lazy" decoding="async"></a>
-<p>A Livermore show is set to mark Santa Monica resident Paula Poundstone&#x27;s last scheduled appearance in her home state for months to come, with the longtime comedian booked for shows throughout the country through next spring in the latest stretch of her wide-ranging and prolific career.</p>
-<p class="more"><a href="https://www.pleasantonweekly.com/ae/2026/08/24/livermore-on-the-itinerary-for-paula-poundstones-wide-ranging-travels/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/news.html">News</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.gpb.org/support/planned">Donate</a></aside>
+<p class="source"><a href="https://www.gpb.org/news"><strong>Georgia News Lab</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:07:34+00:00" data-pub="7:07 AM EDT">Tue, Aug 25 @ 7AM EDT</time><a class="lozenge place" href="/search?state=GA">Georgia</a><a class="lozenge place" href="/search?place=Atlanta&state=GA">Atlanta</a></p>
+<h2><a href="https://www.gpb.org/news/2026/08/25/spokane-wildfire-evacuees-return-home-its-still-hazmat-situation">Spokane wildfire evacuees return home, but it&#x27;s &#x27;still a hazmat situation&#x27;</a></h2>
+<p class="byline">By Kirk Siegler</p>
+<a class="shot" href="https://www.gpb.org/news/2026/08/25/spokane-wildfire-evacuees-return-home-its-still-hazmat-situation" tabindex="-1" aria-hidden="true"><img src="img/e8fef5b2bbd390318f354d6fa42eb574b700fd7f.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Most evacuees have been allowed to return to their homes near burn zones in Spokane, despite concerns about lingering toxins. <a class="lozenge more" href="https://www.gpb.org/news/2026/08/25/spokane-wildfire-evacuees-return-home-its-still-hazmat-situation">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:05:00+00:00" data-pub="12:05 AM EDT">Tuesday, August 25, 2026 at 12:05 AM EDT</time></small><a class="lozenge" href="subjects/news.html">News</a></p>
-<p><small>OH / Akron / <a href="https://signalakron.org/">Signal Akron</a></small></p>
-<h2><a href="https://signalakron.org/akron-teens-turn-skateboards-into-art-arts-lift/">Akron teens turn skateboards into art through Arts LIFT</a></h2>
-<p class="byline"><small>By Shams Mustafa</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://signalnews.info/4fGEJIJ">Donate</a></span></p>
-<a class="shot" href="https://signalakron.org/akron-teens-turn-skateboards-into-art-arts-lift/" tabindex="-1" aria-hidden="true"><img src="img/c35cbdb785b1efd7c6746124f823bf51793585a4.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>On one skateboard, a wide-eyed smile stretches across the deck. Another features a woman whose elongated neck is adorned with necklaces made from costume jewelry, complementing her animal-print clothing. The designs were created by Nora Himmelright, a student at Firestone Community Learning Center. Before joining the University of Akron’s Arts LIFT program over the summer,</p>
-<p class="more"><a href="https://signalakron.org/akron-teens-turn-skateboards-into-art-arts-lift/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://epgn.com/support/">Donate</a></aside>
+<p class="source"><a href="https://epgn.com/"><strong>Philadelphia Gay News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:07:00+00:00" data-pub="7:07 AM EDT">Tue, Aug 25 @ 7AM EDT</time><a class="lozenge place" href="/search?state=PA">Pennsylvania</a><a class="lozenge place" href="/search?place=Philadelphia&state=PA">Philadelphia</a></p>
+<h2><a href="https://epgn.com/2026/08/25/the-growing-wall-of-love-carries-lgbtq-stories-worldwide/">‘The Growing Wall of Love’ carries LGBTQ+ stories worldwide</a></h2>
+<p class="byline">By Jason Villemez</p>
+<a class="shot" href="https://epgn.com/2026/08/25/the-growing-wall-of-love-carries-lgbtq-stories-worldwide/" tabindex="-1" aria-hidden="true"><img src="img/4d9e22fc8e155b33f9dbe817c5d16157cba84724.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>Walking around the recent World Pride Human Rights Conference, a global event featuring LGBTQ+ advocates from across continents and professions, you might have stumbled on a peculiar sight: Prime Minister Rob Jetten, the first openly gay PM in Netherlands history, sitting at a small table doing arts and crafts. Jetten was gluing photos of himself <a class="lozenge more" href="https://epgn.com/2026/08/25/the-growing-wall-of-love-carries-lgbtq-stories-worldwide/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:04:05+00:00" data-pub="11:04 PM CDT">Monday, August 24, 2026 at 11:04 PM CDT</time></small><a class="lozenge" href="subjects/news.html">News</a></p>
-<p><small>IL / River Forest / <a href="https://www.oakpark.com/">Wednesday Journal of Oak Park and River Forest</a></small></p>
-<h2><a href="https://www.oakpark.com/2026/08/24/la-shawn-ford-reflects-relationships-and-transitions/">La Shawn Ford reflects on relationships and transitions</a></h2>
-<p class="byline"><small>By Bill Dwyer</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://wednesday-journal.fundjournalism.org/donate/">Donate</a></span></p>
-<a class="shot" href="https://www.oakpark.com/2026/08/24/la-shawn-ford-reflects-relationships-and-transitions/" tabindex="-1" aria-hidden="true"><img src="img/0da905c47d0939d881475d0ca4054f1f7776066a.jpg" alt="" width="480" height="640" loading="lazy" decoding="async"></a>
-<p>Editor’s note: Wednesday Journal/Austin Weekly News is following Ford he prepares to move from Springfield to the national stage in Washington D.C. come January. This is the first installment of that coverage. La Shawn K. Ford is feeling the pull of both the past and the future as the Labor Day weekend heralds the final stretch of the election season.</p>
-<p class="more"><a href="https://www.oakpark.com/2026/08/24/la-shawn-ford-reflects-relationships-and-transitions/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/news.html">News</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://mosaic.nj.com/">Support</a></aside>
+<p class="source"><a href="https://mosaic.nj.com/"><strong>Mosaic</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:05:19+00:00" data-pub="7:05 AM EDT">Tue, Aug 25 @ 7AM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a></p>
+<h2><a href="https://www.nj.com/news/2026/08/states-vow-to-fight-trump-after-supreme-court-ruling-on-mail-in-voting.html">States vow to fight Trump after Supreme Court ruling on mail-in voting restrictions</a></h2>
+<p class="byline">By Geoff Herbert</p>
+<a class="shot" href="https://www.nj.com/news/2026/08/states-vow-to-fight-trump-after-supreme-court-ruling-on-mail-in-voting.html" tabindex="-1" aria-hidden="true"><img src="img/5009759acbb75be78f71717a8a457c4a79795eb0.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>“States control elections, not the president,&quot; one attorney general said. <a class="lozenge more" href="https://www.nj.com/news/2026/08/states-vow-to-fight-trump-after-supreme-court-ruling-on-mail-in-voting.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Echo: <a href="https://www.deseret.com/politics/2026/08/24/supreme-court-reverses-lower-court-ruling-in-president-trump-mail-in-ballot-order/">Deseret News: Supreme Court pauses lower court ruling on Trump’s mail-in voting order</a> &middot; <a href="https://marylandmatters.org/2026/08/24/repub/u-s-supreme-court-lifts-pause-on-trump-mail-ballot-order/">Maryland Matters: U.S. Supreme Court lifts pause on Trump mail-ballot order</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:03:00+00:00" data-pub="12:03 AM EDT">Tuesday, August 25, 2026 at 12:03 AM EDT</time></small><a class="lozenge" href="subjects/politics.html">Politics</a></p>
-<p><small>OH / Cleveland / <a href="https://signalcleveland.org/">Signal Cleveland</a></small></p>
-<h2><a href="https://signalcleveland.org/cleveland-clinic-defends-gunshot-wound-detention-policy-to-judge/">Cleveland Clinic updates, defends gunshot wound detention policy in new court filing</a></h2>
-<p class="byline"><small>By Celia Hack</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://signalcleveland.org/donor-faqs/">Donate</a></span></p>
-<a class="shot" href="https://signalcleveland.org/cleveland-clinic-defends-gunshot-wound-detention-policy-to-judge/" tabindex="-1" aria-hidden="true"><img src="img/4b604df217264ecd578b9b1e5eb3182a723bcaa7.jpg" alt="" width="480" height="298" loading="lazy" decoding="async"></a>
-<p>The Cleveland Clinic responded to a federal lawsuit seeking to halt the hospital&#x27;s policy of detaining people arriving with gunshot victims.</p>
-<p class="more"><a href="https://signalcleveland.org/cleveland-clinic-defends-gunshot-wound-detention-policy-to-judge/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/health.html">Health</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://nashville-public-media.fundjournalism.org/donate/?campaign=7014x000000B7yYAAS">Donate</a></aside>
+<p class="source"><a href="https://nashvillebanner.com/"><strong>Nashville Banner</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:05:00+00:00" data-pub="6:05 AM CDT">Tue, Aug 25 @ 6AM CDT</time><a class="lozenge place" href="/search?state=TN">Tennessee</a><a class="lozenge place" href="/search?place=Nashville&state=TN">Nashville</a></p>
+<h2><a href="https://nashvillebanner.com/2026/08/25/metro-nashville-homelessness-count-dhathri-chunduru/">Aug. 25: Nashville’s Homeless Count; Mayor Freddie O’Connell Appoints a Housing Advisor</a></h2>
+<p class="byline">By Banner Staff</p>
+<a class="shot" href="https://nashvillebanner.com/2026/08/25/metro-nashville-homelessness-count-dhathri-chunduru/" tabindex="-1" aria-hidden="true"><img src="img/a3ca1851022894b2d3a1524c7ed512bdee33d535.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Nashville&#x27;s Office of Homeless Services reported a 5.4 percent increase in the annual point-in-time homelessness count, Mayor Freddie O&#x27;Connell appointed Dhathri Chunduru as senior adviser for housing and local nonprofits prepared a resource drive for families in need. <a class="lozenge more" href="https://nashvillebanner.com/2026/08/25/metro-nashville-homelessness-count-dhathri-chunduru/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:03:00+00:00" data-pub="12:03 AM EDT">Tuesday, August 25, 2026 at 12:03 AM EDT</time></small><a class="lozenge" href="subjects/business.html">Business</a></p>
-<p><small>OH / Akron / <a href="https://signalakron.org/">Signal Akron</a></small></p>
-<h2><a href="https://signalakron.org/akron-best-of-the-city-food-chain-dining-swensons/">Best chain dining: Swensons’ beloved burgers remain an Akron favorite</a></h2>
-<p class="byline"><small>By Kristine Gill</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://signalnews.info/4fGEJIJ">Donate</a></span></p>
-<a class="shot" href="https://signalakron.org/akron-best-of-the-city-food-chain-dining-swensons/" tabindex="-1" aria-hidden="true"><img src="img/b020a7a87753ea7ba6d30d50574f4be5508b4d59.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Swensons may be nearly a century old, but the franchise keeps coming up with innovative menu items. No wonder Akronites voted the home of the Galley Boy burger the best chain dining in the 2026 Best of the City contest.</p>
-<p class="more"><a href="https://signalakron.org/akron-best-of-the-city-food-chain-dining-swensons/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://mosaic.nj.com/">Support</a></aside>
+<p class="source"><a href="https://mosaic.nj.com/"><strong>Mosaic</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:05:00+00:00" data-pub="7:05 AM EDT">Tue, Aug 25 @ 7AM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a></p>
+<h2><a href="https://www.nj.com/hudson/2026/08/smile-your-son-is-in-the-little-league-world-series-and-every-reaction-is-on-camera.html">Smile! Your son is in the Little League World Series. And every reaction is on camera.</a></h2>
+<p class="byline">By Kevin Armstrong</p>
+<a class="shot" href="https://www.nj.com/hudson/2026/08/smile-your-son-is-in-the-little-league-world-series-and-every-reaction-is-on-camera.html" tabindex="-1" aria-hidden="true"><img src="img/43c3ecaf54419f29077a8973091191ed8e55d046.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>ESPN pays over $18 million to broadcast the Little League World Series <a class="lozenge more" href="https://www.nj.com/hudson/2026/08/smile-your-son-is-in-the-little-league-world-series-and-every-reaction-is-on-camera.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Echo: <a href="https://www.gpb.org/news/2026/08/25/who-kinley-rasmus-meet-the-phenix-city-girl-starring-at-little-league-world-series">Georgia News Lab: Who is Kinley Rasmus? Meet the Phenix City girl starring at Little League World Series</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:03:00+00:00" data-pub="12:03 AM EDT">Tuesday, August 25, 2026 at 12:03 AM EDT</time></small><a class="lozenge" href="subjects/business.html">Business</a></p>
-<p><small>OH / Akron / <a href="https://signalakron.org/">Signal Akron</a></small></p>
-<h2><a href="https://signalakron.org/2026-best-of-the-city-outdoor-dining-mustard-seed-highland-square/">Best outdoor dining: Mustard Seed’s upstairs patio overlooks Highland Square</a></h2>
-<p class="byline"><small>By Jack Solon</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://signalnews.info/4fGEJIJ">Donate</a></span></p>
-<a class="shot" href="https://signalakron.org/2026-best-of-the-city-outdoor-dining-mustard-seed-highland-square/" tabindex="-1" aria-hidden="true"><img src="img/8e855c833e430ce2cd07e68b99d88e45950a16bf.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Much like its namesake, Mustard Seed Market &amp; Café’s has won the faith of its Akron customers with a commitment to locally sourced, non-artificial ingredients.</p>
-<p class="more"><a href="https://signalakron.org/2026-best-of-the-city-outdoor-dining-mustard-seed-highland-square/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/news.html">News</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.gpb.org/support/planned">Donate</a></aside>
+<p class="source"><a href="https://www.gpb.org/news"><strong>Georgia News Lab</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:02:07+00:00" data-pub="7:02 AM EDT">Tue, Aug 25 @ 7AM EDT</time><a class="lozenge place" href="/search?state=GA">Georgia</a><a class="lozenge place" href="/search?place=Atlanta&state=GA">Atlanta</a></p>
+<h2><a href="https://www.gpb.org/news/2026/08/25/uk-will-help-ukraine-make-long-range-missiles-by-sharing-classified-tech">U.K. will help Ukraine make long-range missiles by sharing classified tech information</a></h2>
+<p class="byline">By The Associated Press</p>
+<a class="shot" href="https://www.gpb.org/news/2026/08/25/uk-will-help-ukraine-make-long-range-missiles-by-sharing-classified-tech" tabindex="-1" aria-hidden="true"><img src="img/4f4786134d3837d5c4a4b735bcfbe702796cbe7b.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Burnham, who was in Kyiv for Ukraine&#x27;s Independence Day, said defense firm MBDA will release details on U.K.-made parts for the SCALP missile to Ukraine to help the country assemble the weapons. <a class="lozenge more" href="https://www.gpb.org/news/2026/08/25/uk-will-help-ukraine-make-long-range-missiles-by-sharing-classified-tech">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:01:00+00:00" data-pub="12:01 AM EDT">Tuesday, August 25, 2026 at 12:01 AM EDT</time></small><a class="lozenge" href="subjects/politics.html">Politics</a></p>
-<p><small>OH / Cleveland / <a href="https://signalcleveland.org/">Signal Cleveland</a></small></p>
-<h2><a href="https://signalcleveland.org/these-ohio-companies-expect-hundreds-of-millions-in-tariff-refunds/">These Ohio companies expect hundreds of millions in tariff refunds</a></h2>
-<p class="byline"><small>By Jake Zuckerman</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://signalcleveland.org/donor-faqs/">Donate</a></span></p>
-<a class="shot" href="https://signalcleveland.org/these-ohio-companies-expect-hundreds-of-millions-in-tariff-refunds/" tabindex="-1" aria-hidden="true"><img src="img/436277ce7a7d2b0b89acc3827ec396cca765f80a.jpg" alt="" width="480" height="333" loading="lazy" decoding="async"></a>
-<p>Several Ohio companies expect to receive as much as $200 million in refunds after SCOTUS overturned Trump&#x27;s tariffs. Most were quiet about refunding that money to customers.</p>
-<p class="more"><a href="https://signalcleveland.org/these-ohio-companies-expect-hundreds-of-millions-in-tariff-refunds/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/politics.html">Politics</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://thelensnola.org/donate">Donate</a></aside>
+<p class="source"><a href="https://thelensnola.org"><strong>The Lens NOLA</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:01:00+00:00" data-pub="6:01 AM CDT">Tue, Aug 25 @ 6AM CDT</time><a class="lozenge place" href="/search?state=LA">Louisiana</a><a class="lozenge place" href="/search?place=New+Orleans&state=LA">New Orleans</a></p>
+<h2><a href="https://thelensnola.org/2026/08/25/louisiana-6th-congressional-district-voting-rights/">Shaped by political payback and human geography</a></h2>
+<p class="byline">By Emmanuel Felton, with photographs by Gus Bennett</p>
+<p>Within the serpentine 6th District, Black voters face similar struggles with low wages, poor healthcare, and a fight for historic recognition [...] Read More... from Shaped by political payback and human geography <a class="lozenge more" href="https://thelensnola.org/2026/08/25/louisiana-6th-congressional-district-voting-rights/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:01:00+00:00" data-pub="12:01 AM EDT">Tuesday, August 25, 2026 at 12:01 AM EDT</time></small><a class="lozenge" href="subjects/politics.html">Politics</a></p>
-<p><small>OH / Cleveland / <a href="https://signalcleveland.org/">Signal Cleveland</a></small></p>
-<h2><a href="https://signalcleveland.org/feds-may-end-ohio-manufacturing-program-cleveland-magnet-after-audit-cites-20-9-million-in-misspending/">Feds may end Ohio manufacturing program that supported Cleveland-based MAGNET after audit raised spending questions</a></h2>
-<p class="byline"><small>By Andrew Tobias</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://signalcleveland.org/donor-faqs/">Donate</a></span></p>
-<a class="shot" href="https://signalcleveland.org/feds-may-end-ohio-manufacturing-program-cleveland-magnet-after-audit-cites-20-9-million-in-misspending/" tabindex="-1" aria-hidden="true"><img src="img/3bc95e4e65519b4a6300b6b058d17f282fc4644e.jpg" alt="" width="480" height="319" loading="lazy" decoding="async"></a>
-<p>The state’s Manufacturing Extension Partnership program has been suspended since late last year. MAGNET, which is no longer affiliated with the state network, was also cited for poor oversight and is disputing the findings.</p>
-<p class="more"><a href="https://signalcleveland.org/feds-may-end-ohio-manufacturing-program-cleveland-magnet-after-audit-cites-20-9-million-in-misspending/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/politics.html">Politics</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://nashville-public-media.fundjournalism.org/donate/?campaign=7014x000000B7yYAAS">Donate</a></aside>
+<p class="source"><a href="https://nashvillebanner.com/"><strong>Nashville Banner</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:01:00+00:00" data-pub="6:01 AM CDT">Tue, Aug 25 @ 6AM CDT</time><a class="lozenge place" href="/search?state=TN">Tennessee</a><a class="lozenge place" href="/search?place=Nashville&state=TN">Nashville</a></p>
+<h2><a href="https://nashvillebanner.com/2026/08/25/nashville-generative-artificial-intelligence-csam-arrests/">Recent Nashville Arrests Highlight AI’s Role in Online Child Sexual Exploitation</a></h2>
+<p class="byline">By Steven Hale</p>
+<a class="shot" href="https://nashvillebanner.com/2026/08/25/nashville-generative-artificial-intelligence-csam-arrests/" tabindex="-1" aria-hidden="true"><img src="img/73fb824fb77c6ebe371a73cb48f35d9de2fb6126.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Two recent arrests in Nashville underscore the rapid rise of the use of generative artificial intelligence to facilitate the sexual exploitation of children online. <a class="lozenge more" href="https://nashvillebanner.com/2026/08/25/nashville-generative-artificial-intelligence-csam-arrests/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:01:00+00:00" data-pub="12:01 AM EDT">Tuesday, August 25, 2026 at 12:01 AM EDT</time></small><a class="lozenge" href="subjects/politics.html">Politics</a></p>
-<p><small>OH / Akron / <a href="https://signalakron.org/">Signal Akron</a></small></p>
-<h2><a href="https://signalakron.org/feds-may-end-ohio-manufacturing-program-after-audit-cites-20-9-million-in-misspending/">Feds may end Ohio manufacturing program after audit cites $20.9 million in misspending</a></h2>
-<p class="byline"><small>By Andrew Tobias</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://signalnews.info/4fGEJIJ">Donate</a></span></p>
-<a class="shot" href="https://signalakron.org/feds-may-end-ohio-manufacturing-program-after-audit-cites-20-9-million-in-misspending/" tabindex="-1" aria-hidden="true"><img src="img/02bd9a58d346abaf3e614e83ec568b4b907a5b8f.jpg" alt="" width="480" height="319" loading="lazy" decoding="async"></a>
-<p>The state’s Manufacturing Extension Partnership program has been suspended since late last year. A regional affiliate in Cleveland, the Manufacturing Advocacy and Growth Network, which was also cited for poor oversight, is disputing the findings.</p>
-<p class="more"><a href="https://signalakron.org/feds-may-end-ohio-manufacturing-program-after-audit-cites-20-9-million-in-misspending/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/news.html">News</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://walthamtimes.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://walthamtimes.org/"><strong>Waltham Times</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:00:59+00:00" data-pub="7:00 AM EDT">Tue, Aug 25 @ 7AM EDT</time><a class="lozenge place" href="/search?state=MA">Massachusetts</a><a class="lozenge place" href="/search?place=Waltham&state=MA">Waltham</a></p>
+<h2><a href="https://walthamtimes.org/2026/08/25/waltham-home-sales-aug-14-20-2026/">Waltham home sales, Aug. 14-20, 2026</a></h2>
+<p class="byline">By Newsroom</p>
+<a class="shot" href="https://walthamtimes.org/2026/08/25/waltham-home-sales-aug-14-20-2026/" tabindex="-1" aria-hidden="true"><img src="img/2f41232538759f6bf2cf5d9d1ef9f9c1dc49b0ce.jpg" alt="" width="286" height="213" loading="lazy" decoding="async"></a>
+<p><a class="lozenge more" href="https://walthamtimes.org/2026/08/25/waltham-home-sales-aug-14-20-2026/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Echo: <a href="https://jerseybee.org/2026/08/20/irvington-daily-buzz-aug-20-2026/">Jersey Bee: Irvington Daily Buzz: Aug. 20, 2026</a> &middot; <a href="https://jerseybee.org/2026/08/20/nutley-daily-buzz-aug-20-2026/">Jersey Bee: Nutley Daily Buzz: Aug. 20, 2026</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:01:00+00:00" data-pub="12:01 AM EDT">Tuesday, August 25, 2026 at 12:01 AM EDT</time></small><a class="lozenge" href="subjects/politics.html">Politics</a></p>
-<p><small>OH / Akron / <a href="https://signalakron.org/">Signal Akron</a></small></p>
-<h2><a href="https://signalakron.org/ohio-companies-including-goodyear-expect-hundreds-of-millions-in-tariff-refunds/">Goodyear among several Ohio companies expecting hundreds of millions in tariff refunds</a></h2>
-<p class="byline"><small>By Jake Zuckerman</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://signalnews.info/4fGEJIJ">Donate</a></span></p>
-<a class="shot" href="https://signalakron.org/ohio-companies-including-goodyear-expect-hundreds-of-millions-in-tariff-refunds/" tabindex="-1" aria-hidden="true"><img src="img/268e4a8bb48b92fd77897c0396b90b5476dbf542.jpg" alt="" width="480" height="333" loading="lazy" decoding="async"></a>
-<p>Several Ohio companies expect to receive as much as $200 million in refunds after SCOTUS overturned Trump&#x27;s tariffs. Most were quiet about refunding that money to customers.</p>
-<p class="more"><a href="https://signalakron.org/ohio-companies-including-goodyear-expect-hundreds-of-millions-in-tariff-refunds/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/news.html">News</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://madison365.com/donate/">Donate</a></aside>
+<p class="source"><a href="https://madison365.com/"><strong>Madison365</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:00:49+00:00" data-pub="6:00 AM CDT">Tue, Aug 25 @ 6AM CDT</time><a class="lozenge place" href="/search?state=WI">Wisconsin</a><a class="lozenge place" href="/search?place=Madison&state=WI">Madison</a></p>
+<h2><a href="https://madison365.com/altar-for-corey-ruiz-rebuilt-on-steps-of-city-hall/">Altar for Corey Ruiz rebuilt on steps of City Hall</a></h2>
+<p class="byline">By Omar Waheed</p>
+<p>A new altar for Corey Ruiz was placed on the steps of City Hall as protesters sought to continue pressuring elected officials not to ignore their demands. On Aug. 23, Freedom Inc. and other protesters created the new altar for Ruiz after the previous memorial, located at the site where he was killed by Madison <a class="lozenge more" href="https://madison365.com/altar-for-corey-ruiz-rebuilt-on-steps-of-city-hall/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:01:00+00:00" data-pub="12:01 AM EDT">Tuesday, August 25, 2026 at 12:01 AM EDT</time></small><a class="lozenge" href="subjects/education.html">Education</a></p>
-<p><small>OH / Akron / <a href="https://signalakron.org/">Signal Akron</a></small></p>
-<h2><a href="https://signalakron.org/books-to-help-you-get-back-into-reading-words-on-the-street/">Books to help you get back into reading</a></h2>
-<p class="byline"><small>By Madison Helbig</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://signalnews.info/4fGEJIJ">Donate</a></span></p>
-<a class="shot" href="https://signalakron.org/books-to-help-you-get-back-into-reading-words-on-the-street/" tabindex="-1" aria-hidden="true"><img src="img/4a9035c0a0f8d8615d07ec1366421f63cd085d66.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>This month’s Words on the Street column includes a variety of genres, including science fiction, poetry and horror. Some of the books are funny, some are existential and some are just plain creepy. The common thread? They&#x27;re engaging from start to finish and will help build momentum to get you back into reading.</p>
-<p class="more"><a href="https://signalakron.org/books-to-help-you-get-back-into-reading-words-on-the-street/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/news.html">News</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://mosaic.nj.com/">Support</a></aside>
+<p class="source"><a href="https://mosaic.nj.com/"><strong>Mosaic</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:00:33+00:00" data-pub="7:00 AM EDT">Tue, Aug 25 @ 7AM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a></p>
+<h2><a href="https://www.nj.com/news/2026/08/target-pulls-halloween-clown-costume-after-backlash-evokes-racist-imagery-we-got-this-wrong.html">Target pulls ‘offensive’ Halloween costume after backlash</a></h2>
+<p class="byline">By Mark Heim</p>
+<a class="shot" href="https://www.nj.com/news/2026/08/target-pulls-halloween-clown-costume-after-backlash-evokes-racist-imagery-we-got-this-wrong.html" tabindex="-1" aria-hidden="true"><img src="img/d8bdbcfe7b26955ef77ee4152de7f22bd8c2e156.jpg" alt="" width="480" height="317" loading="lazy" decoding="async"></a>
+<p>The images were published on social media. <a class="lozenge more" href="https://www.nj.com/news/2026/08/target-pulls-halloween-clown-costume-after-backlash-evokes-racist-imagery-we-got-this-wrong.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Echo: <a href="https://atlantablackstar.com/2026/08/24/target-pulls-halloween-costume-over-racist-image/">Atlanta Black Star: ‘We Got This Wrong’: Target Pulls Halloween Costume After Viral Image Has Social Media Calling Out Racist Imagery Hiding in Plain Sight</a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:01:00+00:00" data-pub="12:01 AM EDT">Tuesday, August 25, 2026 at 12:01 AM EDT</time></small><a class="lozenge" href="subjects/opinion.html">Opinion</a></p>
-<p><small>CT / Hartford / <a href="https://ctmirror.org/">The Connecticut Mirror</a></small></p>
-<h2><a href="https://ctmirror.org/2026/08/25/we-should-measure-corrections-by-the-lives-we-change/">We should measure Corrections by the lives we change</a></h2>
-<p class="byline"><small>By Nick Menapace</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://ctmirror.donorsupport.co/page/FUNDVURKCRQ">Donate</a></span></p>
-<a class="shot" href="https://ctmirror.org/2026/08/25/we-should-measure-corrections-by-the-lives-we-change/" tabindex="-1" aria-hidden="true"><img src="img/f3675eb4c3a4f266ab7a5ddd5e81fb5f3a8aee32.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>What is the purpose of our correctional system?</p>
-<p class="more"><a href="https://ctmirror.org/2026/08/25/we-should-measure-corrections-by-the-lives-we-change/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/opinion.html">Opinion</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://michiganadvance.com/">Support</a></aside>
+<p class="source"><a href="https://michiganadvance.com/"><strong>Michigan Advance</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:00:33+00:00" data-pub="7:00 AM EDT">Tue, Aug 25 @ 7AM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a></p>
+<h2><a href="https://michiganadvance.com/2026/08/25/michigans-ai-moment-requires-schools-communities-and-policymakers-to-lead-together/">Michigan’s AI moment requires schools, communities and policymakers to lead together</a></h2>
+<p class="byline">By Mike Haynes</p>
+<a class="shot" href="https://michiganadvance.com/2026/08/25/michigans-ai-moment-requires-schools-communities-and-policymakers-to-lead-together/" tabindex="-1" aria-hidden="true"><img src="img/6a8447a79793f3ab295e3047f5bc96a47065caa4.jpg" alt="" width="480" height="274" loading="lazy" decoding="async"></a>
+<p>As Michigan heads into another school year, the debate over artificial intelligence is shifting. The question is no longer whether students will use AI. They already are. The question is what schools, families and communities are going to do about it. We can spend the next several years trying to keep AI out of classrooms, <a class="lozenge more" href="https://michiganadvance.com/2026/08/25/michigans-ai-moment-requires-schools-communities-and-policymakers-to-lead-together/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:01:00+00:00" data-pub="12:01 AM EDT">Tuesday, August 25, 2026 at 12:01 AM EDT</time></small><a class="lozenge" href="subjects/business.html">Business</a></p>
-<p><small>MA / Pittsfield / <a href="https://www.berkshireeagle.com/">The Berkshire Eagle</a></small></p>
-<h2><a href="https://www.berkshireeagle.com/history/eagle-archives-aug-25-1971-drafted-local-irs-office-ready-for-queries-sort-of/article_a5263cbd-520e-4cd9-aaae-df7fe0fb7edb.html">Eagle Archives, Aug. 25, 1971: Drafted local IRS office ready for queries, sort of</a></h2>
-<p class="byline"><small>By By Richard K. Weil</small><span class="aside"><a class="lozenge give" href="https://www.berkshireeagle.com/donate/">Donate</a></span></p>
-<p>Eagle Archives, Aug. 25, 1971: The local IRS office will handle questions and complaints about President Nixon’s wage-price freeze, though staff are still awaiting more detailed guidance and expert assistance.</p>
-<p class="more"><a href="https://www.berkshireeagle.com/history/eagle-archives-aug-25-1971-drafted-local-irs-office-ready-for-queries-sort-of/article_a5263cbd-520e-4cd9-aaae-df7fe0fb7edb.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/environment.html">Environment</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://north-dakota-news-cooperative.fundjournalism.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://www.newscoopnd.org/"><strong>North Dakota News Cooperative</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:00:21+00:00" data-pub="6:00 AM CDT">Tue, Aug 25 @ 6AM CDT</time><a class="lozenge place" href="/search?state=ND">North Dakota</a></p>
+<h2><a href="https://www.newscoopnd.org/real-life-greenland-odyssey-celebrated-in-documentary/">Real life Greenland &#x27;Odyssey&#x27; celebrated in documentary</a></h2>
+<p class="byline">By Michael Standaert</p>
+<a class="shot" href="https://www.newscoopnd.org/real-life-greenland-odyssey-celebrated-in-documentary/" tabindex="-1" aria-hidden="true"><img src="img/d091683b17eff1ea73f8bf05de0aa0c8f3bf42bd.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>ND’s own Dr. Jon Solberg served as team physician on 1,400 south-to-north crossing <a class="lozenge more" href="https://www.newscoopnd.org/real-life-greenland-odyssey-celebrated-in-documentary/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:00:00+00:00" data-pub="12:00 AM EDT">Tuesday, August 25, 2026 at 12:00 AM EDT</time></small></p>
-<p><small>MA / Waltham / <a href="https://walthamtimes.org/">Waltham Times</a></small></p>
-<h2><a href="https://walthamtimes.org/2026/08/25/tuesday-august-25-warm-and-cloudy/">Tuesday, August 25 – Warm and cloudy</a></h2>
-<p class="byline"><small>By Newsroom</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://walthamtimes.org/donate/">Donate</a></span></p>
-<a class="shot" href="https://walthamtimes.org/2026/08/25/tuesday-august-25-warm-and-cloudy/" tabindex="-1" aria-hidden="true"><img src="img/7ecf12587babeadcb0382020ec45f46d8f428de5.jpg" alt="" width="400" height="300" loading="lazy" decoding="async"></a>
-<p>Patchy fog before 7am, with increasing clouds and a high near 80. Mostly cloudy in the evening gradually becomes clear with a low near 58. | High: 80°F | Low: 58°F | Wind: W 5-9mph | Sky: Mostly cloudy | Precipitation: 15%</p>
-<p class="more"><a href="https://walthamtimes.org/2026/08/25/tuesday-august-25-warm-and-cloudy/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/business.html">Business</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://nevadacurrent.com/">Support</a></aside>
+<p class="source"><a href="https://nevadacurrent.com/"><strong>Nevada Current</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:00:19+00:00" data-pub="4:00 AM PDT">Tue, Aug 25 @ 4AM PDT</time><a class="lozenge place" href="/search?state=NV">Nevada</a></p>
+<h2><a href="https://nevadacurrent.com/2026/08/25/wave-of-anti-money-laundering-sanctions-has-strips-attention-says-venetians-attorney/">Wave of anti-money laundering sanctions has Strip’s attention, says Venetian’s attorney</a></h2>
+<p class="byline">By Dana Gentry</p>
+<a class="shot" href="https://nevadacurrent.com/2026/08/25/wave-of-anti-money-laundering-sanctions-has-strips-attention-says-venetians-attorney/" tabindex="-1" aria-hidden="true"><img src="img/c88f2b45868df0e16c6539bcc8936260ecee90c8.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>A spate of multi-million dollar sanctions levied against Las Vegas casino companies in the last year and a half has spurred a “sea change” on the Strip, former Nevada U.S. Attorney Greg Brower, who represents the Venetian, told the Nevada Gaming Commission Thursday, as they voted to approve a $7.2 million settlement with the resort. <a class="lozenge more" href="https://nevadacurrent.com/2026/08/25/wave-of-anti-money-laundering-sanctions-has-strips-attention-says-venetians-attorney/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:00:00+00:00" data-pub="12:00 AM EDT">Tuesday, August 25, 2026 at 12:00 AM EDT</time></small><a class="lozenge" href="subjects/business.html">Business</a></p>
-<p><small>PA / Philadelphia / <a href="https://www.phillytrib.com/">The Philadelphia Tribune</a></small></p>
-<h2><a href="https://www.phillytrib.com/business/u-s-debt-hits-40-trillion-as-americas-borrowing-binge-continues/article_0dde58af-e0ee-59d6-b818-8fca69f89f73.html">U.S. debt hits $40 trillion as America&#x27;s borrowing binge continues</a></h2>
-<p class="byline"><small>By Alan Rappeport</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://phillytrib.com/subscribe">Subscribe</a></span></p>
-<p>WASHINGTON — America’s gross national debt topped $40 trillion for the first time Wednesday, an ominous milestone for an economy that sits on a shaky fiscal foundation after decades of borrowing to pay for the rising costs of the military,</p>
-<p class="more"><a href="https://www.phillytrib.com/business/u-s-debt-hits-40-trillion-as-americas-borrowing-binge-continues/article_0dde58af-e0ee-59d6-b818-8fca69f89f73.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/politics.html">Politics</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://wisconsinwatch.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://wisconsinwatch.org/"><strong>Wisconsin Watch</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:00:00+00:00" data-pub="6:00 AM CDT">Tue, Aug 25 @ 6AM CDT</time><a class="lozenge place" href="/search?state=WI">Wisconsin</a><a class="lozenge place" href="/search?place=Madison&state=WI">Madison</a></p>
+<h2><a href="https://wisconsinwatch.org/2026/08/wisconsin-green-bay-tiktok-internet-campaign-more-expensive-than-nyc-influencers-user-generated-content/">$4K rent? $7 gas? Inside the internet campaign insisting Green Bay is ‘more expensive than NYC’</a></h2>
+<p class="byline">By Miranda Dunlap / Wisconsin Watch and Natalie Yahr / Wisconsin Watch</p>
+<a class="shot" href="https://wisconsinwatch.org/2026/08/wisconsin-green-bay-tiktok-internet-campaign-more-expensive-than-nyc-influencers-user-generated-content/" tabindex="-1" aria-hidden="true"><img src="img/01b2400d836bcf742a6e99d66972ca4e9e96fe7d.jpg" alt="" width="480" height="358" loading="lazy" decoding="async"></a>
+<p>The videos seem to be part of a growing trend of paying influencers to post on political topics, often without disclosures. $4K rent? $7 gas? Inside the internet campaign insisting Green Bay is ‘more expensive than NYC’ is a post from Wisconsin Watch, a non-profit investigative news site covering Wisconsin since 2009. Please consider making a contribution to support our journalism. <a class="lozenge more" href="https://wisconsinwatch.org/2026/08/wisconsin-green-bay-tiktok-internet-campaign-more-expensive-than-nyc-influencers-user-generated-content/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:00:00+00:00" data-pub="12:00 AM EDT">Tuesday, August 25, 2026 at 12:00 AM EDT</time></small><a class="lozenge" href="subjects/business.html">Business</a></p>
-<p><small>PA / Philadelphia / <a href="https://www.phillytrib.com/">The Philadelphia Tribune</a></small></p>
-<h2><a href="https://www.phillytrib.com/news/business/amazon-to-expand-drone-delivery-of-packages-to-500-u-s-cities/article_4ccbc798-c06d-4997-9590-52c208403f21.html">Amazon to expand drone delivery of packages to 500 U.S. cities</a></h2>
-<p class="byline"><small>By Josh Funk</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://phillytrib.com/subscribe">Subscribe</a></span></p>
-<a class="shot" href="https://www.phillytrib.com/news/business/amazon-to-expand-drone-delivery-of-packages-to-500-u-s-cities/article_4ccbc798-c06d-4997-9590-52c208403f21.html" tabindex="-1" aria-hidden="true"><img src="img/b482b76634288c86380ef140ddebd18432444bb7.jpg" alt="" width="300" height="189" loading="lazy" decoding="async"></a>
-<p>Millions more people may be able to get smaller, lightweight Amazon packages delivered by drones by the end of the year under a plan the company announced Wednesday to expand the airborne shipping to suburban areas in nearly 500 U.S.</p>
-<p class="more"><a href="https://www.phillytrib.com/news/business/amazon-to-expand-drone-delivery-of-packages-to-500-u-s-cities/article_4ccbc798-c06d-4997-9590-52c208403f21.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/news.html">News</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/latino.html">Latino</a><a class="lozenge give" href="https://donate.nebraskapublicmedia.org/alleg/WebModule/Donate.aspx?P=MAINREADER&amp;PAGETYPE=PLG&amp;CHECK=3%2foSwZzpJTyVqb%2bcC91T%2b71YhDw50SikSh2nq0qouhg%3d">Donate</a></aside>
+<p class="source"><a href="https://thereader.com"><strong>The Reader</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:00:00+00:00" data-pub="6:00 AM CDT">Tue, Aug 25 @ 6AM CDT</time><a class="lozenge place" href="/search?state=NE">Nebraska</a><a class="lozenge place" href="/search?place=Omaha&state=NE">Omaha</a></p>
+<h2><a href="https://thereader.com/2026/08/25/omahas-little-italy-sees-resurgence-amid-100-years-of-tradition/">Omaha’s Little Italy sees resurgence amid 100 years of tradition</a></h2>
+<p class="byline">By Jessica Wade</p>
+<a class="shot" href="https://thereader.com/2026/08/25/omahas-little-italy-sees-resurgence-amid-100-years-of-tradition/" tabindex="-1" aria-hidden="true"><img src="img/646711b42d60d879930881e24b82a691ea024f78.jpg" alt="" width="480" height="343" loading="lazy" decoding="async"></a>
+<p>Just south of Omaha’s downtown are remnants of the city’s historic Little Italy. There’s Orsi’s Bakery on the corner, Sons and Daughters of Italy on 10th Street, and St. Frances Cabrini Church down the block. The neighborhood has seen changes through the years. There are fewer descendants of the Sicilian immigrants who shaped the area <a class="lozenge more" href="https://thereader.com/2026/08/25/omahas-little-italy-sees-resurgence-amid-100-years-of-tradition/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:00:00+00:00" data-pub="12:00 AM EDT">Tuesday, August 25, 2026 at 12:00 AM EDT</time></small><a class="lozenge" href="subjects/health.html">Health</a></p>
-<p><small>PA / Philadelphia / <a href="https://www.phillytrib.com/">The Philadelphia Tribune</a></small></p>
-<h2><a href="https://www.phillytrib.com/news/health/science-backed-health-benefits-of-tea-from-longevity-to-brain-health/article_085c9988-0c0e-432e-9526-a90792e0898d.html">Science-backed health benefits of tea, from longevity to brain health</a></h2>
-<p class="byline"><small>By Anahad O’Connor</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://phillytrib.com/subscribe">Subscribe</a></span></p>
-<a class="shot" href="https://www.phillytrib.com/news/health/science-backed-health-benefits-of-tea-from-longevity-to-brain-health/article_085c9988-0c0e-432e-9526-a90792e0898d.html" tabindex="-1" aria-hidden="true"><img src="img/2beba4875e0324d4a4f0255f05ec199b1199634e.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
-<p>After water, tea is the world’s most popular beverage, consumed by nearly two-thirds of people across the globe.</p>
-<p class="more"><a href="https://www.phillytrib.com/news/health/science-backed-health-benefits-of-tea-from-longevity-to-brain-health/article_085c9988-0c0e-432e-9526-a90792e0898d.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/education.html">Education</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://sgfcitizen.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://sgfcitizen.org/"><strong>Springfield Daily Citizen</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:00:00+00:00" data-pub="6:00 AM CDT">Tue, Aug 25 @ 6AM CDT</time><a class="lozenge place" href="/search?state=MO">Missouri</a><a class="lozenge place" href="/search?place=Springfield&state=MO">Springfield</a></p>
+<h2><a href="https://sgfcitizen.org/springfield-culture/mike-smith-ksmu-bluegrass/">After 44 years behind the mic, Mike Smith is still introducing us to ‘Seldom Heard Music’</a></h2>
+<p class="byline">By Kathleen O&#x27;Dell</p>
+<a class="shot" href="https://sgfcitizen.org/springfield-culture/mike-smith-ksmu-bluegrass/" tabindex="-1" aria-hidden="true"><img src="img/20237e5a5fa0bfc4cd13b56d679c60345cbd0774.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Retired KSMU news director Mike Smith, known as the &quot;voice of bluegrass in the Ozarks,&quot; celebrates 44 years of hosting the long-running &quot;Seldom Heard Music&quot; program on Ozarks Public Radio. <a class="lozenge more" href="https://sgfcitizen.org/springfield-culture/mike-smith-ksmu-bluegrass/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:00:00+00:00" data-pub="12:00 AM EDT">Tuesday, August 25, 2026 at 12:00 AM EDT</time></small><a class="lozenge" href="subjects/health.html">Health</a></p>
-<p><small>PA / Philadelphia / <a href="https://www.phillytrib.com/">The Philadelphia Tribune</a></small></p>
-<h2><a href="https://www.phillytrib.com/news/health/how-to-gauge-when-to-make-eye-contact/article_b626fc6e-f4fc-48b3-95f1-45625f5f1d5c.html">How to gauge when to make eye contact</a></h2>
-<p class="byline"><small>By Terry Ward</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://phillytrib.com/subscribe">Subscribe</a></span></p>
-<a class="shot" href="https://www.phillytrib.com/news/health/how-to-gauge-when-to-make-eye-contact/article_b626fc6e-f4fc-48b3-95f1-45625f5f1d5c.html" tabindex="-1" aria-hidden="true"><img src="img/2ac0da3e9031f635e22d183687356b1a1ffafc70.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
-<p>“Look at me when I’m talking to you.”</p>
-<p class="more"><a href="https://www.phillytrib.com/news/health/how-to-gauge-when-to-make-eye-contact/article_b626fc6e-f4fc-48b3-95f1-45625f5f1d5c.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/business.html">Business</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://sahanjournal.fundjournalism.org/donate?&amp;org_id=sahanjournal&amp;campaign=701PM00000AuQV7YAN">Donate</a></aside>
+<p class="source"><a href="https://sahanjournal.com/"><strong>Sahan Journal</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:00:00+00:00" data-pub="6:00 AM CDT">Tue, Aug 25 @ 6AM CDT</time><a class="lozenge place" href="/search?state=MN">Minnesota</a><a class="lozenge place" href="/search?place=St.+Paul&state=MN">St. Paul</a></p>
+<h2><a href="https://sahanjournal.com/business-work/indigena-by-owamni-sean-sherman-minneapolis/">For Sean Sherman, Indígena by Owamni is ‘just the start of everything’</a></h2>
+<p class="byline">By Shubhanjana Das</p>
+<a class="shot" href="https://sahanjournal.com/business-work/indigena-by-owamni-sean-sherman-minneapolis/" tabindex="-1" aria-hidden="true"><img src="img/a228820316ad69fc198168499a7da92d3a05a100.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>The Sioux Chef’s growing Indigenous food network includes a new barbecue joint, Native meals for schools and community organizations, and plans to expand nationally. <a class="lozenge more" href="https://sahanjournal.com/business-work/indigena-by-owamni-sean-sherman-minneapolis/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:00:00+00:00" data-pub="12:00 AM EDT">Tuesday, August 25, 2026 at 12:00 AM EDT</time></small><a class="lozenge" href="subjects/health.html">Health</a></p>
-<p><small>PA / Philadelphia / <a href="https://www.phillytrib.com/">The Philadelphia Tribune</a></small></p>
-<h2><a href="https://www.phillytrib.com/news/health/tips-to-be-fit-protecting-vision-in-philadelphia-s-black-community/article_809289d6-1080-4e47-879b-700b4523062b.html">Tips To Be Fit: Protecting vision in Philadelphia’s Black community</a></h2>
-<p class="byline"><small>By Vince Faust</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://phillytrib.com/subscribe">Subscribe</a></span></p>
-<p>Glaucoma is one of those health conditions that does not make a lot of noise. It usually does not cause sudden pain, and it often develops without obvious warning signs. Yet it is one of the leading causes of blindness</p>
-<p class="more"><a href="https://www.phillytrib.com/news/health/tips-to-be-fit-protecting-vision-in-philadelphia-s-black-community/article_809289d6-1080-4e47-879b-700b4523062b.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/health.html">Health</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://oklahomawatch.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://oklahomawatch.org/"><strong>Oklahoma Watch</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:00:00+00:00" data-pub="6:00 AM CDT">Tue, Aug 25 @ 6AM CDT</time><a class="lozenge place" href="/search?state=OK">Oklahoma</a></p>
+<h2><a href="https://oklahomawatch.org/2026/08/25/oklahoma-state-auditor-flags-25-million-in-questionable-federal-spending-across-three-agencies/">Oklahoma State Auditor Flags $25 Million in Questionable Federal Spending Across Three Agencies</a></h2>
+<p class="byline">By Brenna Witchey</p>
+<a class="shot" href="https://oklahomawatch.org/2026/08/25/oklahoma-state-auditor-flags-25-million-in-questionable-federal-spending-across-three-agencies/" tabindex="-1" aria-hidden="true"><img src="img/e3be8c7a149766cb9ba53cd35285267343b2bae8.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>State Auditor Cyndi Byrd&#x27;s annual federal audit found nearly $25 million in questioned costs across three Oklahoma agencies for fiscal year 2024, down sharply from $93 million the prior year. The findings include a felony indictment tied to energy assistance fraud, daycare payment irregularities and $6 million spent on a mental health facility with no feasibility study. <a class="lozenge more" href="https://oklahomawatch.org/2026/08/25/oklahoma-state-auditor-flags-25-million-in-questionable-federal-spending-across-three-agencies/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:00:00+00:00" data-pub="12:00 AM EDT">Tuesday, August 25, 2026 at 12:00 AM EDT</time></small><a class="lozenge" href="subjects/health.html">Health</a></p>
-<p><small>PA / Philadelphia / <a href="https://www.phillytrib.com/">The Philadelphia Tribune</a></small></p>
-<h2><a href="https://www.phillytrib.com/news/health/false-claims-about-miscarriage-risk-from-covid-19-vaccines-are-spreading-online/article_b7730b45-d067-4cc6-9c8a-1a7e1ca77c5b.html">False claims about miscarriage risk from COVID-19 vaccines are spreading online</a></h2>
-<p class="byline"><small>By Deidre Mcphillips</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://phillytrib.com/subscribe">Subscribe</a></span></p>
-<a class="shot" href="https://www.phillytrib.com/news/health/false-claims-about-miscarriage-risk-from-covid-19-vaccines-are-spreading-online/article_b7730b45-d067-4cc6-9c8a-1a7e1ca77c5b.html" tabindex="-1" aria-hidden="true"><img src="img/c909bd3f17ebfa2f083a1b27f9a6d00fe6f732c9.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
-<p>Numerous studies have shown that COVID-19 vaccines are safe during pregnancy, but Republican senators have recently stirred up false and misleading claims that are now spreading on social media.</p>
-<p class="more"><a href="https://www.phillytrib.com/news/health/false-claims-about-miscarriage-risk-from-covid-19-vaccines-are-spreading-online/article_b7730b45-d067-4cc6-9c8a-1a7e1ca77c5b.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/environment.html">Environment</a><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/spanish.html">Spanish</a><a class="lozenge give" href="https://mosaic.nj.com/">Support</a></aside>
+<p class="source"><a href="https://mosaic.nj.com/"><strong>Mosaic</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:00:00+00:00" data-pub="7:00 AM EDT">Tue, Aug 25 @ 7AM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a></p>
+<h2><a href="https://www.nj.com/healthfit/2026/08/see-which-2-nj-hospitals-were-named-best-in-the-us.html">See which 2 N.J. hospitals were named best in the U.S.</a></h2>
+<p class="byline">By Jackie Roman</p>
+<a class="shot" href="https://www.nj.com/healthfit/2026/08/see-which-2-nj-hospitals-were-named-best-in-the-us.html" tabindex="-1" aria-hidden="true"><img src="img/dac2766a379ccd34d1cdaa56b3dd9f427a09fc67.jpg" alt="" width="480" height="277" loading="lazy" decoding="async"></a>
+<p>Two New Jersey medical centers were selected by Becker&#x27;s Hospital Review for show excellence &quot;at every level of care.&quot; <a class="lozenge more" href="https://www.nj.com/healthfit/2026/08/see-which-2-nj-hospitals-were-named-best-in-the-us.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:00:00+00:00" data-pub="12:00 AM EDT">Tuesday, August 25, 2026 at 12:00 AM EDT</time></small><a class="lozenge" href="subjects/business.html">Business</a></p>
-<p><small>PA / Philadelphia / <a href="https://www.phillytrib.com/">The Philadelphia Tribune</a></small></p>
-<h2><a href="https://www.phillytrib.com/nyt/i-tested-a-popular-ai-slop-detector-it-felt-empowering/article_855dd340-05e2-45ba-94fc-c738e272f8b0.html">I tested a popular AI slop detector. It felt empowering.</a></h2>
-<p class="byline"><small>By Brian X. Chen</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://phillytrib.com/subscribe">Subscribe</a></span></p>
-<a class="shot" href="https://www.phillytrib.com/nyt/i-tested-a-popular-ai-slop-detector-it-felt-empowering/article_855dd340-05e2-45ba-94fc-c738e272f8b0.html" tabindex="-1" aria-hidden="true"><img src="img/87d6d5873b6e89936df85e1f6e6d2fcaa88ece7f.jpg" alt="" width="300" height="450" loading="lazy" decoding="async"></a>
-<p>Recently, as I was scrolling through my phone, I realized I was suffering from a new kind of fatigue: slop-induced burnout. Almost all the posts I was reading on social media were riddled with bullet points, emoji and em dashes.</p>
-<p class="more"><a href="https://www.phillytrib.com/nyt/i-tested-a-popular-ai-slop-detector-it-felt-empowering/article_855dd340-05e2-45ba-94fc-c738e272f8b0.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/politics.html">Politics</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://donate.mississippitoday.org/?org_id=mississippitoday&amp;campaign=7010b000000ez8oAAA">Donate</a></aside>
+<p class="source"><a href="https://mississippitoday.org/"><strong>Mississippi Today</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:00:00+00:00" data-pub="6:00 AM CDT">Tue, Aug 25 @ 6AM CDT</time><a class="lozenge place" href="/search?state=MS">Mississippi</a><a class="lozenge place" href="/search?place=Jackson&state=MS">Jackson</a></p>
+<h2><a href="https://mississippitoday.org/2026/08/25/cliff-johnson-the-other-side-tktktk/">Why is Democrat Cliff Johnson challenging incumbent Republican Rep. Trent Kelly?</a></h2>
+<p class="byline">By Geoff Pender and Michael Goldberg</p>
+<a class="shot" href="https://mississippitoday.org/2026/08/25/cliff-johnson-the-other-side-tktktk/" tabindex="-1" aria-hidden="true"><img src="img/ccf278871c271ae2b264d289d1103bb4263fe28b.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>Democratic nominee for Mississippi’s U.S. House District 1 outlines why he is running against incumbent Republican Rep. Trent Kelly. Johnson, a longtime attorney, is director of the MacArthur Justice Center at the University of Mississippi where he pushed to shut down the state’s anachronistic debtor’s prisons. Johnson said his focus if elected to Congress would <a class="lozenge more" href="https://mississippitoday.org/2026/08/25/cliff-johnson-the-other-side-tktktk/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:00:00+00:00" data-pub="12:00 AM EDT">Tuesday, August 25, 2026 at 12:00 AM EDT</time></small><a class="lozenge" href="subjects/business.html">Business</a></p>
-<p><small>PA / Philadelphia / <a href="https://www.phillytrib.com/">The Philadelphia Tribune</a></small></p>
-<h2><a href="https://www.phillytrib.com/nyt/satellite-advances-are-changing-the-game-for-ukraine/article_6b7a830a-9710-43ee-b852-98a4555a6f3c.html">Satellite advances are changing the game for Ukraine</a></h2>
-<p class="byline"><small>By Michael Schwirtz</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/black-owned.html">Black-owned</a><a class="lozenge give" href="https://phillytrib.com/subscribe">Subscribe</a></span></p>
-<a class="shot" href="https://www.phillytrib.com/nyt/satellite-advances-are-changing-the-game-for-ukraine/article_6b7a830a-9710-43ee-b852-98a4555a6f3c.html" tabindex="-1" aria-hidden="true"><img src="img/0d4f6051c8323c2092431a89ba07184ecb388b97.jpg" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
-<p>The Russian drone pilots had bedded down for the night. Their white vehicle was parked in the driveway of a small house in occupied southern Ukraine.</p>
-<p class="more"><a href="https://www.phillytrib.com/nyt/satellite-advances-are-changing-the-game-for-ukraine/article_6b7a830a-9710-43ee-b852-98a4555a6f3c.html">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/politics.html">Politics</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://missionlocal.org/support-our-publication/">Donate</a></aside>
+<p class="source"><a href="https://missionlocal.org/"><strong>Mission Local</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:00:00+00:00" data-pub="4:00 AM PDT">Tue, Aug 25 @ 4AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=San+Francisco&state=CA">San Francisco</a></p>
+<h2><a href="https://missionlocal.org/2026/08/animal-connection-baran-pet-shop-moves/">‘Clean slate’: Pet shop at heart of Sunset political scandal starts over in the Richmond</a></h2>
+<p class="byline">By Nicholas David</p>
+<a class="shot" href="https://missionlocal.org/2026/08/animal-connection-baran-pet-shop-moves/" tabindex="-1" aria-hidden="true"><img src="img/9f850fa1db29234294209b38b75556da79d02177.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Julia Baran, owner of the Outer Sunset pet shop at the center of a major political scandal last year, is relocating to the Inner Richmond. ‘Clean slate’: Pet shop at heart of Sunset political scandal starts over in the Richmond <a class="lozenge more" href="https://missionlocal.org/2026/08/animal-connection-baran-pet-shop-moves/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:00:00+00:00" data-pub="11:00 PM CDT">Monday, August 24, 2026 at 11:00 PM CDT</time></small><a class="lozenge" href="subjects/housing.html">Housing</a></p>
-<p><small>OK / Indian Country / <a href="https://nativenewsonline.net/">Native News Online</a></small></p>
-<h2><a href="https://nativenewsonline.net/sovereignty/navajo-hopi-land-commission-reviews-relocation-housing-and-infrastructure-needs/">Navajo-Hopi Land Commission Reviews Relocation, Housing and Infrastructure Needs</a></h2>
-<p class="byline"><small>By Native News Online Staff</small><span class="aside"><a class="lozenge" href="tags/native-owned.html">Native-owned</a><a class="lozenge give" href="https://nativenewsonline.net/donate-today/">Donate</a></span></p>
-<a class="shot" href="https://nativenewsonline.net/sovereignty/navajo-hopi-land-commission-reviews-relocation-housing-and-infrastructure-needs/" tabindex="-1" aria-hidden="true"><img src="img/5481cbd068f9cb643e27e9dd7c99c91cac2840d7.jpg" alt="" width="480" height="276" loading="lazy" decoding="async"></a>
-<p>The Navajo-Hopi Land Commission received an update Thursday on ongoing efforts to address housing, infrastructure, grazing management and unresolved relocation matters affecting Navajo families impacted by the Navajo-Hopi Land Settlement Act. Commission Chair Otto Tso emphasized the need for continued federal accountability as discussions move forward over the future of the federal relocation prog</p>
-<p class="more"><a href="https://nativenewsonline.net/sovereignty/navajo-hopi-land-commission-reviews-relocation-housing-and-infrastructure-needs/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/politics.html">Politics</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://mirrorindy.org/donate">Donate</a></aside>
+<p class="source"><a href="https://mirrorindy.org/"><strong>Mirror Indy</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:00:00+00:00" data-pub="7:00 AM EDT">Tue, Aug 25 @ 7AM EDT</time><a class="lozenge place" href="/search?state=IN">Indiana</a><a class="lozenge place" href="/search?place=Indianapolis&state=IN">Indianapolis</a></p>
+<h2><a href="https://mirrorindy.org/meta-funding-pledge-lebanon-jeffersonville/">Lebanon, Jeffersonville expected to receive part of $1B Meta campaign</a></h2>
+<p class="byline">By Carson Gerber</p>
+<a class="shot" href="https://mirrorindy.org/meta-funding-pledge-lebanon-jeffersonville/" tabindex="-1" aria-hidden="true"><img src="img/d153009cca577d80a22eb35a2ecc2c57767d517d.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>‘Future is For Everyone Fund’ is for communities with Meta data centers. <a class="lozenge more" href="https://mirrorindy.org/meta-funding-pledge-lebanon-jeffersonville/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:00:00+00:00" data-pub="11:00 PM CDT">Monday, August 24, 2026 at 11:00 PM CDT</time></small><a class="lozenge" href="subjects/health.html">Health</a></p>
-<p><small>TN / Memphis / <a href="https://www.highgroundnews.com/">High Ground News</a></small></p>
-<h2><a href="https://fromcommonground.com/covid-kids-mental-health-how-are-the-pandemics-littles-doing-in-middle-and-high-school/">COVID kids and mental health: How are pandemic littles doing today?</a></h2>
-<p class="byline"><small>By Estelle Slootmaker</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://www.highgroundnews.com/support-us/">Donate</a></span></p>
-<a class="shot" href="https://fromcommonground.com/covid-kids-mental-health-how-are-the-pandemics-littles-doing-in-middle-and-high-school/" tabindex="-1" aria-hidden="true"><img src="img/ec6ca54b11ee5a623651fd693f940ef36fa43f8d.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Mental health challenges have surfaced but kids also benefited from increased family time and less hectic schedules.</p>
-<p class="more"><a href="https://fromcommonground.com/covid-kids-mental-health-how-are-the-pandemics-littles-doing-in-middle-and-high-school/">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Echo: <a href="https://secondwavemedia.com/mental-health-crisis-care-without-an-er-wait/">Second Wave: Mental health crisis care without an ER wait</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/politics.html">Politics</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.injusticewatch.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://www.injusticewatch.org/news/"><strong>Injustice Watch</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:00:00+00:00" data-pub="6:00 AM CDT">Tue, Aug 25 @ 6AM CDT</time><a class="lozenge place" href="/search?state=IL">Illinois</a><a class="lozenge place" href="/search?place=Chicago&state=IL">Chicago</a></p>
+<h2><a href="https://www.injusticewatch.org/project/ice-informants/2026/illinois-trust-act-violations-immigrants-deported/">Illinois promised to protect immigrants. Local officials helped deport them anyway.</a></h2>
+<p class="byline">By Aura Bogado</p>
+<a class="shot" href="https://www.injusticewatch.org/project/ice-informants/2026/illinois-trust-act-violations-immigrants-deported/" tabindex="-1" aria-hidden="true"><img src="img/20282966c6ae30e8a1149567e26635edecd57ebd.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>In over a third of Illinois counties, cops, sheriffs, and even prosecutors helped federal immigration agents route at least 150 people into the deportation system since Trump returned to office, despite a state law intended to prevent such collaboration. <a class="lozenge more" href="https://www.injusticewatch.org/project/ice-informants/2026/illinois-trust-act-violations-immigrants-deported/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:00:00+00:00" data-pub="11:00 PM CDT">Monday, August 24, 2026 at 11:00 PM CDT</time></small><a class="lozenge" href="subjects/business.html">Business</a></p>
-<p><small>TN / Memphis / <a href="https://www.highgroundnews.com/">High Ground News</a></small></p>
-<h2><a href="https://fromcommonground.com/small-business-social-hours-foster-success-through-face-to-face-connection/">Small Business Social Hours foster success through face-to-face connection</a></h2>
-<p class="byline"><small>By Estelle Slootmaker</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://www.highgroundnews.com/support-us/">Donate</a></span></p>
-<a class="shot" href="https://fromcommonground.com/small-business-social-hours-foster-success-through-face-to-face-connection/" tabindex="-1" aria-hidden="true"><img src="img/2e8368da16a10920bc6c1f67fa6ae09237a7802e.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Why face-to-face networking opportunities are even more important for small businesses and entrepreneurs.</p>
-<p class="more"><a href="https://fromcommonground.com/small-business-social-hours-foster-success-through-face-to-face-connection/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/politics.html">Politics</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.injusticewatch.org/donate/">Donate</a></aside>
+<p class="source"><a href="https://www.injusticewatch.org/news/"><strong>Injustice Watch</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:00:00+00:00" data-pub="6:00 AM CDT">Tue, Aug 25 @ 6AM CDT</time><a class="lozenge place" href="/search?state=IL">Illinois</a><a class="lozenge place" href="/search?place=Chicago&state=IL">Chicago</a></p>
+<h2><a href="https://www.injusticewatch.org/project/ice-informants/2026/illinois-prosecutors-helping-ice/">The county prosecutors who became ICE informants</a></h2>
+<p class="byline">By Aura Bogado</p>
+<a class="shot" href="https://www.injusticewatch.org/project/ice-informants/2026/illinois-prosecutors-helping-ice/" tabindex="-1" aria-hidden="true"><img src="img/9a4f0fbb5360ffbab256a35f1d118f220d74aed7.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
+<p>Illinois prosecutors shared defendants’ personal data with federal immigration agents without criminal warrants, public disclosure, or legislative oversight. <a class="lozenge more" href="https://www.injusticewatch.org/project/ice-informants/2026/illinois-prosecutors-helping-ice/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:00:00+00:00" data-pub="11:00 PM CDT">Monday, August 24, 2026 at 11:00 PM CDT</time></small><a class="lozenge" href="subjects/education.html">Education</a></p>
-<p><small>TN / Memphis / <a href="https://www.highgroundnews.com/">High Ground News</a></small></p>
-<h2><a href="https://fromcommonground.com/free-wonderschool-platform-will-help-michigan-families-find-childcare-faster/">Free Wonderschool platform will help Michigan families find childcare faster</a></h2>
-<p class="byline"><small>By Brianna Nargiso</small><span class="aside"><a class="lozenge" href="tags/independent.html">Independent</a><a class="lozenge" href="tags/solutions-journalism.html">Solutions journalism</a><a class="lozenge give" href="https://www.highgroundnews.com/support-us/">Donate</a></span></p>
-<a class="shot" href="https://fromcommonground.com/free-wonderschool-platform-will-help-michigan-families-find-childcare-faster/" tabindex="-1" aria-hidden="true"><img src="img/b95c5c0df558acc91c40edd642349557bdc8803a.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>Scheduled to launch early 2027, the platform will connect parents to available childcare and preschool spaces with one application.</p>
-<p class="more"><a href="https://fromcommonground.com/free-wonderschool-platform-will-help-michigan-families-find-childcare-faster/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/education.html">Education</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://flatheadbeacon.com/support/?utm_source=website&amp;utm_medium=button&amp;utm_campaign=menu">Donate</a></aside>
+<p class="source"><a href="https://flatheadbeacon.com/"><strong>Flathead Beacon</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:00:00+00:00" data-pub="5:00 AM MDT">Tue, Aug 25 @ 5AM MDT</time><a class="lozenge place" href="/search?state=MT">Montana</a><a class="lozenge place" href="/search?place=Flathead+County&state=MT">Flathead County</a></p>
+<h2><a href="https://flatheadbeacon.com/2026/08/25/kalispell-chamber-cites-risk-to-advocacy-work-as-reason-it-opposes-i-194/">Kalispell Chamber Cites Risk to Advocacy Work as Reason it Opposes I-194</a></h2>
+<p class="byline">By Mariah Thomas</p>
+<p>In 2025, Kalispell Public Schools passed its first high school levy in nearly two decades—in no small part, thanks to help from the Kalispell Chamber of Commerce, which backed the district’s funding ask and educated the community on the district’s needs. But this year, according to chamber president Lorraine Clarno, a ballot initiative puts <a class="lozenge more" href="https://flatheadbeacon.com/2026/08/25/kalispell-chamber-cites-risk-to-advocacy-work-as-reason-it-opposes-i-194/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:00:00+00:00" data-pub="12:00 AM EDT">Tuesday, August 25, 2026 at 12:00 AM EDT</time></small><a class="lozenge" href="subjects/environment.html">Environment</a></p>
-<p><small>NC / Newport / <a href="https://www.coastalreview.org">Coastal Review Online</a></small></p>
-<h2><a href="https://coastalreview.org/2026/08/five-barrier-islands-find-five-ways-to-keep-herds-wild-healthy/">Five barrier islands find five ways to keep herds wild, healthy</a></h2>
-<p class="byline"><small>By Jamie Haase</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.coastalreview.org/support/">Donate</a></span></p>
-<a class="shot" href="https://coastalreview.org/2026/08/five-barrier-islands-find-five-ways-to-keep-herds-wild-healthy/" tabindex="-1" aria-hidden="true"><img src="img/c590d45f1c943cb6d8117eb147ac404c7ca0eab8.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>On barrier islands from the Delmarva Peninsula to North Carolina&#x27;s Outer Banks, five horse herds share the same Colonial Spanish ancestry, but differ in how they&#x27;re managed.</p>
-<p class="more"><a href="https://coastalreview.org/2026/08/five-barrier-islands-find-five-ways-to-keep-herds-wild-healthy/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/news.html">News</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://concordbridge.org/index.php/2022/10/27/donate/">Donate</a></aside>
+<p class="source"><a href="https://theconcordbridge.org/"><strong>Concord Bridge</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:00:00+00:00" data-pub="7:00 AM EDT">Tue, Aug 25 @ 7AM EDT</time><a class="lozenge place" href="/search?state=MA">Massachusetts</a><a class="lozenge place" href="/search?place=Concord&state=MA">Concord</a></p>
+<h2><a href="https://concordbridge.org/index.php/2026/08/25/puppy-love-momo-capturing-hearts-on-weekly-visits-to-council-on-aging/">Puppy love: Momo capturing hearts on weekly visits to Council on Aging</a></h2>
+<p class="byline">By Kim Carpenter</p>
+<a class="shot" href="https://concordbridge.org/index.php/2026/08/25/puppy-love-momo-capturing-hearts-on-weekly-visits-to-council-on-aging/" tabindex="-1" aria-hidden="true"><img src="img/d371519270658dd4cfa7ea4b8a449f863a59ba0c.jpg" alt="" width="480" height="640" loading="lazy" decoding="async"></a>
+<p>“Once [you] pet her, you feel different. She takes all your heaviness away.” <a class="lozenge more" href="https://concordbridge.org/index.php/2026/08/25/puppy-love-momo-capturing-hearts-on-weekly-visits-to-council-on-aging/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T04:00:00+00:00" data-pub="12:00 AM EDT">Tuesday, August 25, 2026 at 12:00 AM EDT</time></small></p>
-<p><small>GA / Albany / <a href="https://www.albanyherald.com/">Albany Herald</a></small></p>
-<h2><a href="https://albanyherald.com/classifieds-ads/classifieds-august-25-2026/">Classifieds – August 25, 2026</a></h2>
-<p class="byline"><small>By Angela Miller</small><span class="aside"><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge give" href="https://www.albanyherald.com/">Support</a></span></p>
-<a class="shot" href="https://albanyherald.com/classifieds-ads/classifieds-august-25-2026/" tabindex="-1" aria-hidden="true"><img src="img/c9f4568e048c47c9a198f48804403255d480b843.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>Classifieds and Legal Notices:</p>
-<p class="more"><a href="https://albanyherald.com/classifieds-ads/classifieds-august-25-2026/">Read more <span aria-hidden="true">→</span></a></p>
-<p><small>Echo: <a href="https://rinewstoday.com/rhode-island-weather-august-25-2026/">RINewsToday.com: Rhode Island Weather for August 25, 2026</a> · <a href="https://sf.streetsblog.org/2026/08/25/headlines-august-25-3">Streetsblog - San Francisco: Headlines, August 25</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="subjects/news.html">News</a><a class="lozenge" href="tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="tags/inn-member.html">INN member</a><a class="lozenge give" href="https://www.columbiamissourian.com/news/local/church-donation-boosts-vac-opportunity-campus/article_ec8b756a-0baa-4a85-bb92-07a66ff5b1a4.html">Donate</a></aside>
+<p class="source"><a href="https://www.columbiamissourian.com/"><strong>Columbia Missourian</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T11:00:00+00:00" data-pub="6:00 AM CDT">Tue, Aug 25 @ 6AM CDT</time><a class="lozenge place" href="/search?state=MO">Missouri</a><a class="lozenge place" href="/search?place=Columbia&state=MO">Columbia</a></p>
+<h2><a href="https://www.columbiamissourian.com/news/students-wait-for-class-outside-middlebush-hall/image_42c6c96a-1ba8-4eb9-9636-e38abbe733a8.html">Students wait for class outside Middlebush Hall</a></h2>
+<p class="byline">By Noah Grabianski/Missourian</p>
+<a class="shot" href="https://www.columbiamissourian.com/news/students-wait-for-class-outside-middlebush-hall/image_42c6c96a-1ba8-4eb9-9636-e38abbe733a8.html" tabindex="-1" aria-hidden="true"><img src="img/e9535b476af103819566a578d9866813fa778e5e.jpg" alt="" width="300" height="195" loading="lazy" decoding="async"></a>
+<p>Students wait for class outside Middlebush Hall on Monday at the University of Missouri. Middlebush Auditorium hosts six separate class sections on Mondays. <a class="lozenge more" href="https://www.columbiamissourian.com/news/students-wait-for-class-outside-middlebush-hall/image_42c6c96a-1ba8-4eb9-9636-e38abbe733a8.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 </div>
 <p><a id="more" href="feed-18.html">More stories</a></p>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="index.html">Today&#x27;s news</a> · <a href="map.html">Map</a> · <a href="catalog.html">Newsrooms</a> · <a href="big-stories.html">Big Stories</a> · <a href="story-links.html">Story Links</a> · <a href="resources.html">Resources</a> · <a href="text/">Plain text edition</a> · <a href="feeds.html">RSS Feeds</a> · <a href="about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="map.html">Map</a> · <a href="catalog.html">Newsrooms</a> · <a href="big-stories.html">Big Stories</a> · <a href="story-links.html">Story Links</a> · <a href="resources.html">Resources</a> · <a href="text/">Plain text edition</a> · <a href="feeds.html">RSS Feeds</a> · <a href="about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -409,6 +464,47 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>

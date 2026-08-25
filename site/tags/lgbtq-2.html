@@ -13,12 +13,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(../fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -27,22 +40,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -50,19 +69,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -75,7 +126,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -93,7 +144,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="../index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="../masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -106,7 +157,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="../subjects/news.html">News</a></li><li><a href="../subjects/politics.html">Politics</a></li><li><a href="../subjects/opinion.html">Opinion</a></li><li><a href="../subjects/health.html">Health</a></li><li><a href="../subjects/environment.html">Environment</a></li><li><a href="../subjects/education.html">Education</a></li><li><a href="../subjects/business.html">Business</a></li><li><a href="../subjects/housing.html">Housing</a></li><li><a href="../subjects/sports.html">Sports</a></li><li><a href="../subjects/food.html">Food</a></li><li><a href="../subjects/arts.html">Arts</a></li></ul></nav>
@@ -121,276 +172,270 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <main id="main">
 <div id="feed-items">
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T17:22:24+00:00" data-pub="1:22 PM EDT">Friday, August 21, 2026 at 1:22 PM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>FL / Tampa Bay / <a href="https://watermarkoutnews.com/">Watermark Out News</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://watermarkoutnews.com/support">Donate</a></aside>
+<p class="source"><a href="https://watermarkoutnews.com/"><strong>Watermark Out News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T19:47:54+00:00" data-pub="3:47 PM EDT">Fri, Aug 21 @ 3PM EDT</time><a class="lozenge place" href="/search?state=FL">Florida</a><a class="lozenge place" href="/search?place=Tampa+Bay&state=FL">Tampa Bay</a></p>
+<h2><a href="https://watermarkoutnews.com/2026/08/21/log-cabin-republicans-remove-transgender-rights-from-mission/">Log Cabin Republicans remove transgender rights from mission</a></h2>
+<p class="byline">By Joe Reberkenny via The Washington Blade, Courtesy of The National LGBT Media Association</p>
+<p>(Logo via the Log Cabin Republicans Facebook page) The Log Cabin Republicans, an organization that formerly represented LGBTQ conservatives, has removed advocating for transgender and queer rights from its “renewed” national advocacy focus. In an opinion piece written by Log Cabin Republicans President Ross Hemminger for the conservative media outlet Town Hall, he announced that trans <a class="lozenge more" href="https://watermarkoutnews.com/2026/08/21/log-cabin-republicans-remove-transgender-rights-from-mission/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+<p class="meta">Also in <a href="https://www.losangelesblade.com/2026/08/21/log-cabin-republicans-remove-transgender-rights-from-mission/">Los Angeles Blade</a> &middot; <a href="https://www.washingtonblade.com/2026/08/21/log-cabin-republicans-remove-transgender-rights-from-mission/">Washington Blade</a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://watermarkoutnews.com/support">Donate</a></aside>
+<p class="source"><a href="https://watermarkoutnews.com/"><strong>Watermark Out News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T18:26:40+00:00" data-pub="2:26 PM EDT">Fri, Aug 21 @ 2PM EDT</time><a class="lozenge place" href="/search?state=FL">Florida</a><a class="lozenge place" href="/search?place=Tampa+Bay&state=FL">Tampa Bay</a></p>
+<h2><a href="https://watermarkoutnews.com/2026/08/21/one-lesbian-couples-winding-path-to-marriage-leads-to-a-historic-first-in-bolivia/">One lesbian couple’s winding path to marriage leads to a historic first in Bolivia</a></h2>
+<p class="byline">By Wire Report</p>
+<p>(Bigstock photo) SANTA CRUZ, Bolivia (AP) | Like many newlyweds, Fabiana Justiniano and Scarlett Rocha grow misty-eyed when they reminisce about their wedding day: racing from the civil registry to get their hair and makeup done, dancing in their white dresses late into the night with more than a hundred friends and relatives. “We didn’t <a class="lozenge more" href="https://watermarkoutnews.com/2026/08/21/one-lesbian-couples-winding-path-to-marriage-leads-to-a-historic-first-in-bolivia/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://watermarkoutnews.com/support">Donate</a></aside>
+<p class="source"><a href="https://watermarkoutnews.com/"><strong>Watermark Out News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T17:22:24+00:00" data-pub="1:22 PM EDT">Fri, Aug 21 @ 1PM EDT</time><a class="lozenge place" href="/search?state=FL">Florida</a><a class="lozenge place" href="/search?place=Tampa+Bay&state=FL">Tampa Bay</a></p>
 <h2><a href="https://watermarkoutnews.com/2026/08/21/democrat-maureen-mo-madden-takes-on-longtime-gop-stronghold-in-delawares-38th/">Democrat Maureen ‘Mo’ Madden takes on longtime GOP stronghold in Delaware’s 38th</a></h2>
-<p class="byline"><small>By Thomas Weaverling via The Washington Blade, Courtesy of The National LGBT Media Association</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://watermarkoutnews.com/support">Donate</a></span></p>
-<p>Maureen ‘Mo’ Madden (Photo courtesy of Madden) Democrat Maureen “Mo” Madden is running for the Delaware House of Representatives in the 38th District, seeking to win a seat that has been held by Republicans for more than two decades. The race opened up after Republican state Rep. Ron Gray announced in April that he would not seek reelection after seven</p>
-<p class="more"><a href="https://watermarkoutnews.com/2026/08/21/democrat-maureen-mo-madden-takes-on-longtime-gop-stronghold-in-delawares-38th/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Thomas Weaverling via The Washington Blade, Courtesy of The National LGBT Media Association</p>
+<p>Maureen ‘Mo’ Madden (Photo courtesy of Madden) Democrat Maureen “Mo” Madden is running for the Delaware House of Representatives in the 38th District, seeking to win a seat that has been held by Republicans for more than two decades. The race opened up after Republican state Rep. Ron Gray announced in April that he would not seek reelection after seven <a class="lozenge more" href="https://watermarkoutnews.com/2026/08/21/democrat-maureen-mo-madden-takes-on-longtime-gop-stronghold-in-delawares-38th/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T16:22:20+00:00" data-pub="9:22 AM PDT">Friday, August 21, 2026 at 9:22 AM PDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>CA / Los Angeles / <a href="https://www.losangelesblade.com/">Los Angeles Blade</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://www.losangelesblade.com/2026/06/19/im-dead-is-the-queer-stand-up-show-giving-us-life/">Donate</a></aside>
+<p class="source"><a href="https://www.losangelesblade.com/"><strong>Los Angeles Blade</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T16:22:20+00:00" data-pub="9:22 AM PDT">Fri, Aug 21 @ 9AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
 <h2><a href="https://www.losangelesblade.com/2026/08/21/not-all-trans-people-are-the-same/">Not all trans people are the same</a></h2>
-<p class="byline"><small>By Ayman Eckford</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://www.losangelesblade.com/2026/06/19/im-dead-is-the-queer-stand-up-show-giving-us-life/">Donate</a></span></p>
-<p>Media, activists need to do more to challenge stereotypes</p>
-<p class="more"><a href="https://www.losangelesblade.com/2026/08/21/not-all-trans-people-are-the-same/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Ayman Eckford</p>
+<p>Media, activists need to do more to challenge stereotypes <a class="lozenge more" href="https://www.losangelesblade.com/2026/08/21/not-all-trans-people-are-the-same/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T16:16:40+00:00" data-pub="12:16 PM EDT">Friday, August 21, 2026 at 12:16 PM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>DC / Washington / <a href="https://www.washingtonblade.com/category/news/local-news/">Washington Blade</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://blade.memberful.com/join">Become a member</a></aside>
+<p class="source"><a href="https://www.washingtonblade.com/category/news/local-news/"><strong>Washington Blade</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T16:16:40+00:00" data-pub="12:16 PM EDT">Fri, Aug 21 @ 12PM EDT</time><a class="lozenge place" href="/search?state=DC">Washington, D.C.</a><a class="lozenge place" href="/search?place=Washington&state=DC">Washington</a></p>
 <h2><a href="https://www.washingtonblade.com/2026/08/21/not-all-trans-people-are-the-same/">Not all trans people are the same</a></h2>
-<p class="byline"><small>By Ayman Eckford</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://blade.memberful.com/join">Become a member</a></span></p>
-<p>Media, activists need to do more to challenge stereotypes</p>
-<p class="more"><a href="https://www.washingtonblade.com/2026/08/21/not-all-trans-people-are-the-same/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Ayman Eckford</p>
+<p>Media, activists need to do more to challenge stereotypes <a class="lozenge more" href="https://www.washingtonblade.com/2026/08/21/not-all-trans-people-are-the-same/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T14:56:20+00:00" data-pub="10:56 AM EDT">Friday, August 21, 2026 at 10:56 AM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>FL / Tampa Bay / <a href="https://watermarkoutnews.com/">Watermark Out News</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://watermarkoutnews.com/support">Donate</a></aside>
+<p class="source"><a href="https://watermarkoutnews.com/"><strong>Watermark Out News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T14:56:20+00:00" data-pub="10:56 AM EDT">Fri, Aug 21 @ 10AM EDT</time><a class="lozenge place" href="/search?state=FL">Florida</a><a class="lozenge place" href="/search?place=Tampa+Bay&state=FL">Tampa Bay</a></p>
 <h2><a href="https://watermarkoutnews.com/2026/08/21/nyc-lawmakers-seek-to-repeal-bathhouse-ban/">NYC lawmakers seek to repeal bathhouse ban</a></h2>
-<p class="byline"><small>By Joe Reberkenny via The Washington Blade, Courtesy of The National LGBT Media Association</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://watermarkoutnews.com/support">Donate</a></span></p>
-<p>(Washington Blade photo by Michael K. Lavers) New York City lawmakers are pushing to repeal a decades-old prohibition on adult bathhouses, arguing the regulation was created during the height of the AIDS crisis and no longer reflects modern science or public health practices. Erik Bottcher, the openly gay New York state senator who represents the</p>
-<p class="more"><a href="https://watermarkoutnews.com/2026/08/21/nyc-lawmakers-seek-to-repeal-bathhouse-ban/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Joe Reberkenny via The Washington Blade, Courtesy of The National LGBT Media Association</p>
+<p>(Washington Blade photo by Michael K. Lavers) New York City lawmakers are pushing to repeal a decades-old prohibition on adult bathhouses, arguing the regulation was created during the height of the AIDS crisis and no longer reflects modern science or public health practices. Erik Bottcher, the openly gay New York state senator who represents the <a class="lozenge more" href="https://watermarkoutnews.com/2026/08/21/nyc-lawmakers-seek-to-repeal-bathhouse-ban/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T14:45:31+00:00" data-pub="9:45 AM CDT">Friday, August 21, 2026 at 9:45 AM CDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>IL / Chicago / <a href="https://windycitytimes.com/gaynewsarticles.php?k=Local">Windy City Times</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://windycitytimes.com/gaynewsarticles.php?k=Local">Support</a></aside>
+<p class="source"><a href="https://windycitytimes.com/gaynewsarticles.php?k=Local"><strong>Windy City Times</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T14:45:31+00:00" data-pub="9:45 AM CDT">Fri, Aug 21 @ 9AM CDT</time><a class="lozenge place" href="/search?state=IL">Illinois</a><a class="lozenge place" href="/search?place=Chicago&state=IL">Chicago</a></p>
 <h2><a href="https://windycitytimes.com/2026/08/21/higher-grades-and-belonging-trans-students-thrive-when-their-teachers-support-them/">Higher grades and belonging: Trans students thrive when their teachers support them</a></h2>
-<p class="byline"><small>By By Brooke Migdon, The 19th</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://windycitytimes.com/gaynewsarticles.php?k=Local">Support</a></span></p>
+<p class="byline">By By Brooke Migdon, The 19th</p>
 <a class="shot" href="https://windycitytimes.com/2026/08/21/higher-grades-and-belonging-trans-students-thrive-when-their-teachers-support-them/" tabindex="-1" aria-hidden="true"><img src="../img/fc5e997eeba9cc603eab8c9f887fa98419e4612f.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Actions as simple as asking for and affirming a student’s name and pronouns can make trans students feel substantially safer and more likely to succeed in the classroom, a new report shows.</p>
-<p class="more"><a href="https://windycitytimes.com/2026/08/21/higher-grades-and-belonging-trans-students-thrive-when-their-teachers-support-them/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Actions as simple as asking for and affirming a student’s name and pronouns can make trans students feel substantially safer and more likely to succeed in the classroom, a new report shows. <a class="lozenge more" href="https://windycitytimes.com/2026/08/21/higher-grades-and-belonging-trans-students-thrive-when-their-teachers-support-them/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T13:58:35+00:00" data-pub="9:58 AM EDT">Friday, August 21, 2026 at 9:58 AM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>FL / Tampa Bay / <a href="https://watermarkoutnews.com/">Watermark Out News</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://watermarkoutnews.com/support">Donate</a></aside>
+<p class="source"><a href="https://watermarkoutnews.com/"><strong>Watermark Out News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T13:58:35+00:00" data-pub="9:58 AM EDT">Fri, Aug 21 @ 9AM EDT</time><a class="lozenge place" href="/search?state=FL">Florida</a><a class="lozenge place" href="/search?place=Tampa+Bay&state=FL">Tampa Bay</a></p>
 <h2><a href="https://watermarkoutnews.com/2026/08/21/hegseth-uses-transphobic-slur-while-campaigning-for-iowa-congressman/">Hegseth uses transphobic slur while campaigning for Iowa congressman</a></h2>
-<p class="byline"><small>By Joe Reberkenny via The Washington Blade, Courtesy of The National LGBT Media Association</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://watermarkoutnews.com/support">Donate</a></span></p>
-<p>Defense Secretary Pete Hegseth (Washington Blade photo by Michael Key) Defense Secretary Pete Hegseth on Aug. 17 used an anti-transgender slur while campaigning for U.S. Rep. Zach Nunn (R-Iowa), drawing attention to the Trump-Vance administration’s ongoing efforts to restrict trans people from serving in the military. “At the Department of War, we do training, not</p>
-<p class="more"><a href="https://watermarkoutnews.com/2026/08/21/hegseth-uses-transphobic-slur-while-campaigning-for-iowa-congressman/">Read more <span aria-hidden="true">→</span></a></p>
+<p class="byline">By Joe Reberkenny via The Washington Blade, Courtesy of The National LGBT Media Association</p>
+<p>Defense Secretary Pete Hegseth (Washington Blade photo by Michael Key) Defense Secretary Pete Hegseth on Aug. 17 used an anti-transgender slur while campaigning for U.S. Rep. Zach Nunn (R-Iowa), drawing attention to the Trump-Vance administration’s ongoing efforts to restrict trans people from serving in the military. “At the Department of War, we do training, not <a class="lozenge more" href="https://watermarkoutnews.com/2026/08/21/hegseth-uses-transphobic-slur-while-campaigning-for-iowa-congressman/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T13:00:00+00:00" data-pub="8:00 AM CDT">Friday, August 21, 2026 at 8:00 AM CDT</time></small></p>
-<p><small>TX / Dallas / <a href="https://dallasvoice.com/">Dallas Voice</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://dallasvoice.com/support/">Donate</a></aside>
+<p class="source"><a href="https://dallasvoice.com/"><strong>Dallas Voice</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T13:00:00+00:00" data-pub="8:00 AM CDT">Fri, Aug 21 @ 8AM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=Dallas&state=TX">Dallas</a></p>
 <h2><a href="https://dallasvoice.com/drag-in-the-crosshairs/">Drag in the crosshairs</a></h2>
-<p class="byline"><small>By Kevin</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://dallasvoice.com/support/">Donate</a></span></p>
+<p class="byline">By Kevin</p>
 <a class="shot" href="https://dallasvoice.com/drag-in-the-crosshairs/" tabindex="-1" aria-hidden="true"><img src="../img/4b4f720e3ac06053533a54d8f46e5700b992275c.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>The Pride East Texas Longview 2026 celebration included a drag show that has drawn scrutiny from right-wing groups (Photo courtesy of Dusty White) CAROLINE SAVOIE | East Texas ReporterCaroSavo@StoryDustSearch.com LONGVIEW — Pride East Texas Longview is reminding folks that they’re “stronger together” after conservative voices and at least one advocacy publication alleged that a drag</p>
-<p class="more"><a href="https://dallasvoice.com/drag-in-the-crosshairs/">Read more <span aria-hidden="true">→</span></a></p>
+<p>The Pride East Texas Longview 2026 celebration included a drag show that has drawn scrutiny from right-wing groups (Photo courtesy of Dusty White) CAROLINE SAVOIE | East Texas ReporterCaroSavo@StoryDustSearch.com LONGVIEW—Pride East Texas Longview is reminding folks that they’re “stronger together” after conservative voices and at least one advocacy publication alleged that a drag <a class="lozenge more" href="https://dallasvoice.com/drag-in-the-crosshairs/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T12:50:00+00:00" data-pub="7:50 AM CDT">Friday, August 21, 2026 at 7:50 AM CDT</time></small></p>
-<p><small>TX / Dallas / <a href="https://dallasvoice.com/">Dallas Voice</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://dallasvoice.com/support/">Donate</a></aside>
+<p class="source"><a href="https://dallasvoice.com/"><strong>Dallas Voice</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T12:50:00+00:00" data-pub="7:50 AM CDT">Fri, Aug 21 @ 7AM CDT</time><a class="lozenge place" href="/search?state=TX">Texas</a><a class="lozenge place" href="/search?place=Dallas&state=TX">Dallas</a></p>
 <h2><a href="https://dallasvoice.com/ai-grindr-ing/">AI ‘Grindr’-ing?</a></h2>
-<p class="byline"><small>By Kevin</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://dallasvoice.com/support/">Donate</a></span></p>
+<p class="byline">By Kevin</p>
 <a class="shot" href="https://dallasvoice.com/ai-grindr-ing/" tabindex="-1" aria-hidden="true"><img src="../img/29245bbbfe8783d4d8e39c6f73f5c635b7e43046.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>OpenAI CEO Sam Altman CAROLINE SAVOIE | East Texas ReporterCaroSavo@StoryDustSearch.com A viral social media saga claiming OpenAI CEO Sam Altman solicited a hookup on Grindr from comedian and musician Jake Schroeder was entirely fabricated, OpenAI said this week, even as the tech executive separately fights a federal child sexual abuse lawsuit filed by his sister.</p>
-<p class="more"><a href="https://dallasvoice.com/ai-grindr-ing/">Read more <span aria-hidden="true">→</span></a></p>
+<p>OpenAI CEO Sam Altman CAROLINE SAVOIE | East Texas ReporterCaroSavo@StoryDustSearch.com A viral social media saga claiming OpenAI CEO Sam Altman solicited a hookup on Grindr from comedian and musician Jake Schroeder was entirely fabricated, OpenAI said this week, even as the tech executive separately fights a federal child sexual abuse lawsuit filed by his sister. <a class="lozenge more" href="https://dallasvoice.com/ai-grindr-ing/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T20:17:08+00:00" data-pub="4:17 PM EDT">Thursday, August 20, 2026 at 4:17 PM EDT</time></small></p>
-<p><small>PA / Philadelphia / <a href="https://epgn.com/">Philadelphia Gay News</a></small></p>
-<h2><a href="https://epgn.com/2026/08/20/fire-retirement-can-this-work-for-me/">FIRE Retirement — Can This Work for Me?</a></h2>
-<p class="byline"><small>By Jeremy Gussick</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://epgn.com/support/">Donate</a></span></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://epgn.com/support/">Donate</a></aside>
+<p class="source"><a href="https://epgn.com/"><strong>Philadelphia Gay News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T20:17:08+00:00" data-pub="4:17 PM EDT">Thu, Aug 20 @ 4PM EDT</time><a class="lozenge place" href="/search?state=PA">Pennsylvania</a><a class="lozenge place" href="/search?place=Philadelphia&state=PA">Philadelphia</a></p>
+<h2><a href="https://epgn.com/2026/08/20/fire-retirement-can-this-work-for-me/">FIRE Retirement—Can This Work for Me?</a></h2>
+<p class="byline">By Jeremy Gussick</p>
 <a class="shot" href="https://epgn.com/2026/08/20/fire-retirement-can-this-work-for-me/" tabindex="-1" aria-hidden="true"><img src="../img/3454688311b65eeca168dd178e7935fa0d2c0e33.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Q: I’ve heard friends talking about an approach to retire early by doing some extreme savings now if you have the cash flow to support it. Is this a new retirement trend? A: The Financial Independence, Retire Early (FIRE) movement has been around since 1992, but it has certainly picked up steam again more recently. Here’s</p>
-<p class="more"><a href="https://epgn.com/2026/08/20/fire-retirement-can-this-work-for-me/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Q: I’ve heard friends talking about an approach to retire early by doing some extreme savings now if you have the cash flow to support it. Is this a new retirement trend? A: The Financial Independence, Retire Early (FIRE) movement has been around since 1992, but it has certainly picked up steam again more recently. Here’s <a class="lozenge more" href="https://epgn.com/2026/08/20/fire-retirement-can-this-work-for-me/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T13:30:00+00:00" data-pub="9:30 AM EDT">Thursday, August 20, 2026 at 9:30 AM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>MI / Livonia / <a href="https://pridesource.com/">Pride Source</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://pridesource.com/donate">Donate</a></aside>
+<p class="source"><a href="https://pridesource.com/"><strong>Pride Source</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T13:30:00+00:00" data-pub="9:30 AM EDT">Thu, Aug 20 @ 9AM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=Livonia&state=MI">Livonia</a></p>
 <h2><a href="https://pridesource.com/article/mccmh-substance-use-recovery">Supporting the LGBTQ+ Community on the Journey to Recovery</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://pridesource.com/donate">Donate</a></span></p>
 <a class="shot" href="https://pridesource.com/article/mccmh-substance-use-recovery" tabindex="-1" aria-hidden="true"><img src="../img/1c24073df0869efe0ae02434ac680f7bb63835b6.jpg" alt="" width="480" height="269" loading="lazy" decoding="async"></a>
-<p>Choosing to seek help for a substance use disorder takes courage, and taking the first step toward recovery isn&#x27;t always easy. For members of the LGBTQ+ community, worries about being accepted or understood can make that decision even more difficult. At Macomb County Community Mental Health (MCCMH), we believe everyone deserves compassionate, affirming care. We offer person-centered care to help e</p>
-<p class="more"><a href="https://pridesource.com/article/mccmh-substance-use-recovery">Read more <span aria-hidden="true">→</span></a></p>
+<p>Choosing to seek help for a substance use disorder takes courage, and taking the first step toward recovery isn&#x27;t always easy. For members of the LGBTQ+ community, worries about being accepted or understood can make that decision even more difficult. At Macomb County Community Mental Health (MCCMH), we believe everyone deserves compassionate, affirming care. We offer person-centered care to help e <a class="lozenge more" href="https://pridesource.com/article/mccmh-substance-use-recovery">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T10:48:46+00:00" data-pub="6:48 AM EDT">Thursday, August 20, 2026 at 6:48 AM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>OH / Statewide / <a href="https://thebuckeyeflame.com/">Buckeye Flame</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://billing.stripe.com/p/login/28obJEfq1dCGgLeeUU">Donate</a></aside>
+<p class="source"><a href="https://thebuckeyeflame.com/"><strong>Buckeye Flame</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T10:48:46+00:00" data-pub="6:48 AM EDT">Thu, Aug 20 @ 6AM EDT</time><a class="lozenge place" href="/search?state=OH">Ohio</a></p>
 <h2><a href="https://thebuckeyeflame.com/2026/08/20/hate-group-co-authors-trump-administration-report/">Ohio anti-LGBTQ+ hate group co-authors Trump administration ‘report’ alleging gender-affirming healthcare fraud</a></h2>
-<p class="byline"><small>By H.L. Comeriato</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://billing.stripe.com/p/login/28obJEfq1dCGgLeeUU">Donate</a></span></p>
+<p class="byline">By H.L. Comeriato</p>
 <a class="shot" href="https://thebuckeyeflame.com/2026/08/20/hate-group-co-authors-trump-administration-report/" tabindex="-1" aria-hidden="true"><img src="../img/c3e4234cb0f144b1fe9819543dfb7fecdc508a79.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Human Rights Campaign called the report a &#x27;sham&#x27; and a &#x27;blatant attack&#x27; on transgender youth across the country</p>
-<p class="more"><a href="https://thebuckeyeflame.com/2026/08/20/hate-group-co-authors-trump-administration-report/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Human Rights Campaign called the report a &#x27;sham&#x27; and a &#x27;blatant attack&#x27; on transgender youth across the country <a class="lozenge more" href="https://thebuckeyeflame.com/2026/08/20/hate-group-co-authors-trump-administration-report/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-19T22:22:46+00:00" data-pub="6:22 PM EDT">Wednesday, August 19, 2026 at 6:22 PM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>PA / Philadelphia / <a href="https://epgn.com/">Philadelphia Gay News</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://epgn.com/support/">Donate</a></aside>
+<p class="source"><a href="https://epgn.com/"><strong>Philadelphia Gay News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-19T22:22:46+00:00" data-pub="6:22 PM EDT">Wed, Aug 19 @ 6PM EDT</time><a class="lozenge place" href="/search?state=PA">Pennsylvania</a><a class="lozenge place" href="/search?place=Philadelphia&state=PA">Philadelphia</a></p>
 <h2><a href="https://epgn.com/2026/08/19/el-sayed-rejects-the-politics-of-fear/">El-Sayed rejects the politics of fear</a></h2>
-<p class="byline"><small>By Richard J. Rosendall</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://epgn.com/support/">Donate</a></span></p>
+<p class="byline">By Richard J. Rosendall</p>
 <a class="shot" href="https://epgn.com/2026/08/19/el-sayed-rejects-the-politics-of-fear/" tabindex="-1" aria-hidden="true"><img src="../img/137f778f88f081ab981969bf777983d409c85439.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>We needed good news to calm our passions in the summer heat. It came from an unexpected source. It did not come from our mad president. His administration continues its attacks on vaccines. ICE is acquiring electric shock gloves. Trump doesn’t know how to get out of the war he started. He is increasing his</p>
-<p class="more"><a href="https://epgn.com/2026/08/19/el-sayed-rejects-the-politics-of-fear/">Read more <span aria-hidden="true">→</span></a></p>
+<p>We needed good news to calm our passions in the summer heat. It came from an unexpected source. It did not come from our mad president. His administration continues its attacks on vaccines. ICE is acquiring electric shock gloves. Trump doesn’t know how to get out of the war he started. He is increasing his <a class="lozenge more" href="https://epgn.com/2026/08/19/el-sayed-rejects-the-politics-of-fear/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-19T19:00:07+00:00" data-pub="2:00 PM CDT">Wednesday, August 19, 2026 at 2:00 PM CDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>IL / Chicago / <a href="https://windycitytimes.com/gaynewsarticles.php?k=Local">Windy City Times</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://windycitytimes.com/gaynewsarticles.php?k=Local">Support</a></aside>
+<p class="source"><a href="https://windycitytimes.com/gaynewsarticles.php?k=Local"><strong>Windy City Times</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-19T19:00:07+00:00" data-pub="2:00 PM CDT">Wed, Aug 19 @ 2PM CDT</time><a class="lozenge place" href="/search?state=IL">Illinois</a><a class="lozenge place" href="/search?place=Chicago&state=IL">Chicago</a></p>
 <h2><a href="https://windycitytimes.com/2026/08/19/meet-the-new-chair-of-chicagos-lgbtq-advisory-council/">Meet the new chair of Chicago’s LGBTQ+ Advisory Council</a></h2>
-<p class="byline"><small>By Jake Wittich</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://windycitytimes.com/gaynewsarticles.php?k=Local">Support</a></span></p>
+<p class="byline">By Jake Wittich</p>
 <a class="shot" href="https://windycitytimes.com/2026/08/19/meet-the-new-chair-of-chicagos-lgbtq-advisory-council/" tabindex="-1" aria-hidden="true"><img src="../img/2fc66b516f776821301781e37c7b9fb062f3958e.jpg" alt="" width="480" height="291" loading="lazy" decoding="async"></a>
-<p>Starr De Los Santos is stepping into leadership of Chicago’s LGBTQ+ Advisory Council with the goal of strengthening the body’s connections with the community. De Los Santos was appointed chair after outgoing chair Jin-Soo Huh stepped down in February. Her rise to leadership coincides with six new members joining the council and Antonio King recently taking</p>
-<p class="more"><a href="https://windycitytimes.com/2026/08/19/meet-the-new-chair-of-chicagos-lgbtq-advisory-council/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Starr De Los Santos is stepping into leadership of Chicago’s LGBTQ+ Advisory Council with the goal of strengthening the body’s connections with the community. De Los Santos was appointed chair after outgoing chair Jin-Soo Huh stepped down in February. Her rise to leadership coincides with six new members joining the council and Antonio King recently taking <a class="lozenge more" href="https://windycitytimes.com/2026/08/19/meet-the-new-chair-of-chicagos-lgbtq-advisory-council/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-19T15:19:26+00:00" data-pub="11:19 AM EDT">Wednesday, August 19, 2026 at 11:19 AM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>OH / Statewide / <a href="https://thebuckeyeflame.com/">Buckeye Flame</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://billing.stripe.com/p/login/28obJEfq1dCGgLeeUU">Donate</a></aside>
+<p class="source"><a href="https://thebuckeyeflame.com/"><strong>Buckeye Flame</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-19T15:19:26+00:00" data-pub="11:19 AM EDT">Wed, Aug 19 @ 11AM EDT</time><a class="lozenge place" href="/search?state=OH">Ohio</a></p>
 <h2><a href="https://thebuckeyeflame.com/2026/08/19/ohio-bmv-creates-new-obstacle-to-change-sex-marker-on-licenses/">Ohio BMV abruptly creates new obstacle to change a sex marker on driver’s licenses, IDs</a></h2>
-<p class="byline"><small>By Ken Schneck</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://billing.stripe.com/p/login/28obJEfq1dCGgLeeUU">Donate</a></span></p>
+<p class="byline">By Ken Schneck</p>
 <a class="shot" href="https://thebuckeyeflame.com/2026/08/19/ohio-bmv-creates-new-obstacle-to-change-sex-marker-on-licenses/" tabindex="-1" aria-hidden="true"><img src="../img/50e5a03497ecad37eb8e70e31c12abf6e67fb5e8.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>The new requirement was instituted to conform to Ohio and Trump-era policy &#x27;recognizing two sexes&#x27;</p>
-<p class="more"><a href="https://thebuckeyeflame.com/2026/08/19/ohio-bmv-creates-new-obstacle-to-change-sex-marker-on-licenses/">Read more <span aria-hidden="true">→</span></a></p>
+<p>The new requirement was instituted to conform to Ohio and Trump-era policy &#x27;recognizing two sexes&#x27; <a class="lozenge more" href="https://thebuckeyeflame.com/2026/08/19/ohio-bmv-creates-new-obstacle-to-change-sex-marker-on-licenses/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-19T14:55:18+00:00" data-pub="10:55 AM EDT">Wednesday, August 19, 2026 at 10:55 AM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>PA / Philadelphia / <a href="https://epgn.com/">Philadelphia Gay News</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://epgn.com/support/">Donate</a></aside>
+<p class="source"><a href="https://epgn.com/"><strong>Philadelphia Gay News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-19T14:55:18+00:00" data-pub="10:55 AM EDT">Wed, Aug 19 @ 10AM EDT</time><a class="lozenge place" href="/search?state=PA">Pennsylvania</a><a class="lozenge place" href="/search?place=Philadelphia&state=PA">Philadelphia</a></p>
 <h2><a href="https://epgn.com/2026/08/19/loved-ones-remember-judicial-trailblazer-barbara-mcdermott/">Loved ones remember judicial trailblazer Barbara McDermott</a></h2>
-<p class="byline"><small>By Lauren Rowello</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://epgn.com/support/">Donate</a></span></p>
+<p class="byline">By Lauren Rowello</p>
 <a class="shot" href="https://epgn.com/2026/08/19/loved-ones-remember-judicial-trailblazer-barbara-mcdermott/" tabindex="-1" aria-hidden="true"><img src="../img/eef876303aadca9525fe884310f952c391392181.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Judge Barbara McDermott, who retired in January, passed away on Aug. 11 at the age of 71. “Heaven will now be well-run and much more efficient,” jokes the opening lines of her obituary. “God finally has a peer to talk to,” friend and former colleague, Ann Butchart, added to PGN. Judges are often siloed, Butchart</p>
-<p class="more"><a href="https://epgn.com/2026/08/19/loved-ones-remember-judicial-trailblazer-barbara-mcdermott/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Judge Barbara McDermott, who retired in January, passed away on Aug. 11 at the age of 71. “Heaven will now be well-run and much more efficient,” jokes the opening lines of her obituary. “God finally has a peer to talk to,” friend and former colleague, Ann Butchart, added to PGN. Judges are often siloed, Butchart <a class="lozenge more" href="https://epgn.com/2026/08/19/loved-ones-remember-judicial-trailblazer-barbara-mcdermott/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-19T14:18:45+00:00" data-pub="10:18 AM EDT">Wednesday, August 19, 2026 at 10:18 AM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>PA / Philadelphia / <a href="https://epgn.com/">Philadelphia Gay News</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://epgn.com/support/">Donate</a></aside>
+<p class="source"><a href="https://epgn.com/"><strong>Philadelphia Gay News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-19T14:18:45+00:00" data-pub="10:18 AM EDT">Wed, Aug 19 @ 10AM EDT</time><a class="lozenge place" href="/search?state=PA">Pennsylvania</a><a class="lozenge place" href="/search?place=Philadelphia&state=PA">Philadelphia</a></p>
 <h2><a href="https://epgn.com/2026/08/19/kj-denhert-music-maven/">KJ Denhert: Music Maven</a></h2>
-<p class="byline"><small>By Suzi Nash</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://epgn.com/support/">Donate</a></span></p>
+<p class="byline">By Suzi Nash</p>
 <a class="shot" href="https://epgn.com/2026/08/19/kj-denhert-music-maven/" tabindex="-1" aria-hidden="true"><img src="../img/502f3171472bb9226de497bb9d769669a93491eb.jpg" alt="" width="480" height="321" loading="lazy" decoding="async"></a>
-<p>“All the months are crude experiments, out of which the perfect September is made.” —Virginia Woolf September is rapidly galloping toward us with a myriad of things to keep us busy as we prepare for the fall. Jersey Gay Pride’s OUT in the Park Pride Festival gets the month off to a good start as</p>
-<p class="more"><a href="https://epgn.com/2026/08/19/kj-denhert-music-maven/">Read more <span aria-hidden="true">→</span></a></p>
+<p>“All the months are crude experiments, out of which the perfect September is made.”—Virginia Woolf September is rapidly galloping toward us with a myriad of things to keep us busy as we prepare for the fall. Jersey Gay Pride’s OUT in the Park Pride Festival gets the month off to a good start as <a class="lozenge more" href="https://epgn.com/2026/08/19/kj-denhert-music-maven/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-19T12:23:00+00:00" data-pub="8:23 AM EDT">Wednesday, August 19, 2026 at 8:23 AM EDT</time></small></p>
-<p><small>MI / Livonia / <a href="https://pridesource.com/">Pride Source</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://pridesource.com/donate">Donate</a></aside>
+<p class="source"><a href="https://pridesource.com/"><strong>Pride Source</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-19T12:23:00+00:00" data-pub="8:23 AM EDT">Wed, Aug 19 @ 8AM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=Livonia&state=MI">Livonia</a></p>
 <h2><a href="https://pridesource.com/article/how-the-detroit-disco-daddies-turn-queer-joy-into-a-live-disco-spectacle">How the Detroit Disco Daddies Turn Queer Joy Into a Live Disco Spectacle</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://pridesource.com/donate">Donate</a></span></p>
 <a class="shot" href="https://pridesource.com/article/how-the-detroit-disco-daddies-turn-queer-joy-into-a-live-disco-spectacle" tabindex="-1" aria-hidden="true"><img src="../img/9a37f874b9e17fd883d2ea21e8b6f4086a62b81b.jpg" alt="" width="480" height="269" loading="lazy" decoding="async"></a>
-<p>If you’ve ever gone out clubbing around Detroit and stumbled across two men dressed to the nines in disco attire, singing their hearts out to covers of hit songs like “It’s Raining Men” or “I Feel Love,” then you’ve probably met AJ and Bookie, better known as the Detroit Disco Daddies. The Daddies, a staple at the cocktail bar Lowkey in Detroit, are couple Adam (AJ) and Jerome (Bookie) Bell-Bastie</p>
-<p class="more"><a href="https://pridesource.com/article/how-the-detroit-disco-daddies-turn-queer-joy-into-a-live-disco-spectacle">Read more <span aria-hidden="true">→</span></a></p>
+<p>If you’ve ever gone out clubbing around Detroit and stumbled across two men dressed to the nines in disco attire, singing their hearts out to covers of hit songs like “It’s Raining Men” or “I Feel Love,” then you’ve probably met AJ and Bookie, better known as the Detroit Disco Daddies. The Daddies, a staple at the cocktail bar Lowkey in Detroit, are couple Adam (AJ) and Jerome (Bookie) Bell-Bastie <a class="lozenge more" href="https://pridesource.com/article/how-the-detroit-disco-daddies-turn-queer-joy-into-a-live-disco-spectacle">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-19T12:00:00+00:00" data-pub="8:00 AM EDT">Wednesday, August 19, 2026 at 8:00 AM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>MI / Livonia / <a href="https://pridesource.com/">Pride Source</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://pridesource.com/donate">Donate</a></aside>
+<p class="source"><a href="https://pridesource.com/"><strong>Pride Source</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-19T12:00:00+00:00" data-pub="8:00 AM EDT">Wed, Aug 19 @ 8AM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=Livonia&state=MI">Livonia</a></p>
 <h2><a href="https://pridesource.com/article/creep-of-the-week-aug-20-2026">When Family Ties Start to Choke, Sometimes You Need to Get Out the Knife</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://pridesource.com/donate">Donate</a></span></p>
 <a class="shot" href="https://pridesource.com/article/creep-of-the-week-aug-20-2026" tabindex="-1" aria-hidden="true"><img src="../img/573d4927bc9865523a7f5c3102afed6a4534a26b.jpg" alt="" width="480" height="269" loading="lazy" decoding="async"></a>
-<p>A recent New York Times opinion piece titled “Cutting Your Parents Off Isn’t the Answer” has resulted in a lot of chatter by people I follow on Bluesky about whether or not queer people who aren’t accepted by their parents or other family members should cut ties with them. The author of the piece discusses her relationship with her father and how both of them worked to repair that relationship. Wh</p>
-<p class="more"><a href="https://pridesource.com/article/creep-of-the-week-aug-20-2026">Read more <span aria-hidden="true">→</span></a></p>
+<p>A recent New York Times opinion piece titled “Cutting Your Parents Off Isn’t the Answer” has resulted in a lot of chatter by people I follow on Bluesky about whether or not queer people who aren’t accepted by their parents or other family members should cut ties with them. The author of the piece discusses her relationship with her father and how both of them worked to repair that relationship. Wh <a class="lozenge more" href="https://pridesource.com/article/creep-of-the-week-aug-20-2026">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-19T09:59:00+00:00" data-pub="5:59 AM EDT">Wednesday, August 19, 2026 at 5:59 AM EDT</time></small></p>
-<p><small>OH / Statewide / <a href="https://thebuckeyeflame.com/">Buckeye Flame</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://billing.stripe.com/p/login/28obJEfq1dCGgLeeUU">Donate</a></aside>
+<p class="source"><a href="https://thebuckeyeflame.com/"><strong>Buckeye Flame</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-19T09:59:00+00:00" data-pub="5:59 AM EDT">Wed, Aug 19 @ 5AM EDT</time><a class="lozenge place" href="/search?state=OH">Ohio</a></p>
 <h2><a href="https://thebuckeyeflame.com/2026/08/19/this-news-is-so-gay-questioning-if-video-content-is-now-a-must/">This News is So Gay (8/19/26): Questioning Whether Video Content is Now a “Must” in Queer Journalism</a></h2>
-<p class="byline"><small>By Ken Schneck</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://billing.stripe.com/p/login/28obJEfq1dCGgLeeUU">Donate</a></span></p>
+<p class="byline">By Ken Schneck</p>
 <a class="shot" href="https://thebuckeyeflame.com/2026/08/19/this-news-is-so-gay-questioning-if-video-content-is-now-a-must/" tabindex="-1" aria-hidden="true"><img src="../img/b26f3464b8b29530532e85bfd69256f9f772dffb.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Featuring: Jake Wittich (The Windy City Times) and Jason Villemez (Philadelphia Gay News)</p>
-<p class="more"><a href="https://thebuckeyeflame.com/2026/08/19/this-news-is-so-gay-questioning-if-video-content-is-now-a-must/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Featuring: Jake Wittich (The Windy City Times) and Jason Villemez (Philadelphia Gay News) <a class="lozenge more" href="https://thebuckeyeflame.com/2026/08/19/this-news-is-so-gay-questioning-if-video-content-is-now-a-must/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-18T21:43:53+00:00" data-pub="5:43 PM EDT">Tuesday, August 18, 2026 at 5:43 PM EDT</time></small></p>
-<p><small>PA / Philadelphia / <a href="https://epgn.com/">Philadelphia Gay News</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://epgn.com/support/">Donate</a></aside>
+<p class="source"><a href="https://epgn.com/"><strong>Philadelphia Gay News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T21:43:53+00:00" data-pub="5:43 PM EDT">Tue, Aug 18 @ 5PM EDT</time><a class="lozenge place" href="/search?state=PA">Pennsylvania</a><a class="lozenge place" href="/search?place=Philadelphia&state=PA">Philadelphia</a></p>
 <h2><a href="https://epgn.com/2026/08/18/emily-mello-brings-queer-perspective-to-next-chapter-of-mural-arts-philadelphia/">Emily Mello brings queer perspective to next chapter of Mural Arts Philadelphia</a></h2>
-<p class="byline"><small>By Liz Declan</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://epgn.com/support/">Donate</a></span></p>
+<p class="byline">By Liz Declan</p>
 <a class="shot" href="https://epgn.com/2026/08/18/emily-mello-brings-queer-perspective-to-next-chapter-of-mural-arts-philadelphia/" tabindex="-1" aria-hidden="true"><img src="../img/92c60c14c254e0137f1c37b620db94ec8282a67e.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Mural Arts Philadelphia, the nation’s largest public art program, will soon welcome a new executive director on Sept. 1. Emily Mello will assume the role as Jane Golden — who has led the organization for 42 years — steps down. Mural Arts Philadelphia is the organization behind notable Gayborhood murals depicting LGBTQ+ leaders and ballroom</p>
-<p class="more"><a href="https://epgn.com/2026/08/18/emily-mello-brings-queer-perspective-to-next-chapter-of-mural-arts-philadelphia/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Mural Arts Philadelphia, the nation’s largest public art program, will soon welcome a new executive director on Sept. 1. Emily Mello will assume the role as Jane Golden—who has led the organization for 42 years—steps down. Mural Arts Philadelphia is the organization behind notable Gayborhood murals depicting LGBTQ+ leaders and ballroom <a class="lozenge more" href="https://epgn.com/2026/08/18/emily-mello-brings-queer-perspective-to-next-chapter-of-mural-arts-philadelphia/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-18T20:00:00+00:00" data-pub="4:00 PM EDT">Tuesday, August 18, 2026 at 4:00 PM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>MI / Livonia / <a href="https://pridesource.com/">Pride Source</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://pridesource.com/donate">Donate</a></aside>
+<p class="source"><a href="https://pridesource.com/"><strong>Pride Source</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T20:00:00+00:00" data-pub="4:00 PM EDT">Tue, Aug 18 @ 4PM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=Livonia&state=MI">Livonia</a></p>
 <h2><a href="https://pridesource.com/article/michigan-transgender-and-nonbinary-pride-month">Michigan Celebrates First Transgender and Nonbinary Pride Month</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://pridesource.com/donate">Donate</a></span></p>
 <a class="shot" href="https://pridesource.com/article/michigan-transgender-and-nonbinary-pride-month" tabindex="-1" aria-hidden="true"><img src="../img/1026d2a063452a2a5e35fdb5ef53067e934ebc62.jpg" alt="" width="480" height="269" loading="lazy" decoding="async"></a>
-<p>Michigan&#x27;s LGBTQ+ community is celebrating its first Transgender and Nonbinary Pride and History Month this August, an initiative born from one advocate&#x27;s decades of work and a rally that brought old friends together. Michelle Fox-Phillips, who serves on the boards of MiGen and the Gender Identity Network Alliance, says the idea had been on her mind for years. It took shape last year at a rally at</p>
-<p class="more"><a href="https://pridesource.com/article/michigan-transgender-and-nonbinary-pride-month">Read more <span aria-hidden="true">→</span></a></p>
+<p>Michigan&#x27;s LGBTQ+ community is celebrating its first Transgender and Nonbinary Pride and History Month this August, an initiative born from one advocate&#x27;s decades of work and a rally that brought old friends together. Michelle Fox-Phillips, who serves on the boards of MiGen and the Gender Identity Network Alliance, says the idea had been on her mind for years. It took shape last year at a rally at <a class="lozenge more" href="https://pridesource.com/article/michigan-transgender-and-nonbinary-pride-month">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-18T17:55:02+00:00" data-pub="1:55 PM EDT">Tuesday, August 18, 2026 at 1:55 PM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>PA / Philadelphia / <a href="https://epgn.com/">Philadelphia Gay News</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://epgn.com/support/">Donate</a></aside>
+<p class="source"><a href="https://epgn.com/"><strong>Philadelphia Gay News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T17:55:02+00:00" data-pub="1:55 PM EDT">Tue, Aug 18 @ 1PM EDT</time><a class="lozenge place" href="/search?state=PA">Pennsylvania</a><a class="lozenge place" href="/search?place=Philadelphia&state=PA">Philadelphia</a></p>
 <h2><a href="https://epgn.com/2026/08/18/ourfest-and-the-police/">OURfest and the Police</a></h2>
-<p class="byline"><small>By Mark Segal</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://epgn.com/support/">Donate</a></span></p>
+<p class="byline">By Mark Segal</p>
 <a class="shot" href="https://epgn.com/2026/08/18/ourfest-and-the-police/" tabindex="-1" aria-hidden="true"><img src="../img/8f48bc96d4e052e384c8772372b40eccd73f3ab5.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Listen up. OURfest will be taking over Philadelphia’s Gayborhood in a few weeks, bringing our community together for one of its largest annual celebrations around 13th and Locust Streets. The event has been held under various names for more than three decades, generally without many problems. One reason is that experienced LGBTQ+ leadership has worked</p>
-<p class="more"><a href="https://epgn.com/2026/08/18/ourfest-and-the-police/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Listen up. OURfest will be taking over Philadelphia’s Gayborhood in a few weeks, bringing our community together for one of its largest annual celebrations around 13th and Locust Streets. The event has been held under various names for more than three decades, generally without many problems. One reason is that experienced LGBTQ+ leadership has worked <a class="lozenge more" href="https://epgn.com/2026/08/18/ourfest-and-the-police/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-18T17:38:30+00:00" data-pub="1:38 PM EDT">Tuesday, August 18, 2026 at 1:38 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>PA / Philadelphia / <a href="https://epgn.com/">Philadelphia Gay News</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://epgn.com/support/">Donate</a></aside>
+<p class="source"><a href="https://epgn.com/"><strong>Philadelphia Gay News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T17:38:30+00:00" data-pub="1:38 PM EDT">Tue, Aug 18 @ 1PM EDT</time><a class="lozenge place" href="/search?state=PA">Pennsylvania</a><a class="lozenge place" href="/search?place=Philadelphia&state=PA">Philadelphia</a></p>
 <h2><a href="https://epgn.com/2026/08/18/showing-up-for-your-community/">Showing Up For Your Community</a></h2>
-<p class="byline"><small>By Jeremy Rodriguez</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://epgn.com/support/">Donate</a></span></p>
+<p class="byline">By Jeremy Rodriguez</p>
 <a class="shot" href="https://epgn.com/2026/08/18/showing-up-for-your-community/" tabindex="-1" aria-hidden="true"><img src="../img/ea5e692a0cda89e0a8bf232a9a1466bbfc256f79.jpg" alt="" width="480" height="253" loading="lazy" decoding="async"></a>
-<p>This month, two stories shared some surprising similarities. Last week, the Inquirer published a story about a lawsuit involving Bar X. A newly formed local group filed a lawsuit against the bar, located on Camac Street, alleging things such as disorderly conduct and criminal behavior from bartenders. The complaint says Bar X has “repeatedly generated</p>
-<p class="more"><a href="https://epgn.com/2026/08/18/showing-up-for-your-community/">Read more <span aria-hidden="true">→</span></a></p>
+<p>This month, two stories shared some surprising similarities. Last week, the Inquirer published a story about a lawsuit involving Bar X. A newly formed local group filed a lawsuit against the bar, located on Camac Street, alleging things such as disorderly conduct and criminal behavior from bartenders. The complaint says Bar X has “repeatedly generated <a class="lozenge more" href="https://epgn.com/2026/08/18/showing-up-for-your-community/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-18T13:30:56+00:00" data-pub="9:30 AM EDT">Tuesday, August 18, 2026 at 9:30 AM EDT</time></small></p>
-<p><small>OH / Statewide / <a href="https://thebuckeyeflame.com/">Buckeye Flame</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://billing.stripe.com/p/login/28obJEfq1dCGgLeeUU">Donate</a></aside>
+<p class="source"><a href="https://thebuckeyeflame.com/"><strong>Buckeye Flame</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T13:30:56+00:00" data-pub="9:30 AM EDT">Tue, Aug 18 @ 9AM EDT</time><a class="lozenge place" href="/search?state=OH">Ohio</a></p>
 <h2><a href="https://thebuckeyeflame.com/2026/08/18/queer-craft-society/">Queer Craft Society helps LGBTQ+ Columbus through loneliness epidemic via crafting kinship</a></h2>
-<p class="byline"><small>By Elizabeth Randolph-Montgomery</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://billing.stripe.com/p/login/28obJEfq1dCGgLeeUU">Donate</a></span></p>
+<p class="byline">By Elizabeth Randolph-Montgomery</p>
 <a class="shot" href="https://thebuckeyeflame.com/2026/08/18/queer-craft-society/" tabindex="-1" aria-hidden="true"><img src="../img/0f5511c8db6c8097acdc3f820023b88236b3b2c6.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>While crafting is far from a new hobby and is often passed down through generations in marginalized communities, a current wave of craft meetups is on the rise.</p>
-<p class="more"><a href="https://thebuckeyeflame.com/2026/08/18/queer-craft-society/">Read more <span aria-hidden="true">→</span></a></p>
+<p>While crafting is far from a new hobby and is often passed down through generations in marginalized communities, a current wave of craft meetups is on the rise. <a class="lozenge more" href="https://thebuckeyeflame.com/2026/08/18/queer-craft-society/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-18T12:32:00+00:00" data-pub="8:32 AM EDT">Tuesday, August 18, 2026 at 8:32 AM EDT</time></small></p>
-<p><small>MI / Livonia / <a href="https://pridesource.com/">Pride Source</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://pridesource.com/donate">Donate</a></aside>
+<p class="source"><a href="https://pridesource.com/"><strong>Pride Source</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T12:32:00+00:00" data-pub="8:32 AM EDT">Tue, Aug 18 @ 8AM EDT</time><a class="lozenge place" href="/search?state=MI">Michigan</a><a class="lozenge place" href="/search?place=Livonia&state=MI">Livonia</a></p>
 <h2><a href="https://pridesource.com/article/trans-candidates">Democrats Are Trying to Disqualify Trans Candidates. Here&#x27;s How.</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://pridesource.com/donate">Donate</a></span></p>
 <a class="shot" href="https://pridesource.com/article/trans-candidates" tabindex="-1" aria-hidden="true"><img src="../img/0936f53da9f956d1384b179d7877f6b3fd423bf3.jpg" alt="" width="480" height="269" loading="lazy" decoding="async"></a>
-<p>This article was originally published by Uncloseted Media. Editor&#x27;s note: Uncloseted Media is one of a growing number of independent, queer-led newsrooms doing the kind of sustained investigative work that national outlets often miss, and we like to spotlight that work when we can. This piece also hits close to home: Joanna Whaley and Toni Mua, two of the candidates featured here, ran in Michigan&#x27;</p>
-<p class="more"><a href="https://pridesource.com/article/trans-candidates">Read more <span aria-hidden="true">→</span></a></p>
+<p>This article was originally published by Uncloseted Media. Editor&#x27;s note: Uncloseted Media is one of a growing number of independent, queer-led newsrooms doing the kind of sustained investigative work that national outlets often miss, and we like to spotlight that work when we can. This piece also hits close to home: Joanna Whaley and Toni Mua, two of the candidates featured here, ran in Michigan&#x27; <a class="lozenge more" href="https://pridesource.com/article/trans-candidates">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-18T11:04:00+00:00" data-pub="7:04 AM EDT">Tuesday, August 18, 2026 at 7:04 AM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>PA / Philadelphia / <a href="https://epgn.com/">Philadelphia Gay News</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://epgn.com/support/">Donate</a></aside>
+<p class="source"><a href="https://epgn.com/"><strong>Philadelphia Gay News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T11:04:00+00:00" data-pub="7:04 AM EDT">Tue, Aug 18 @ 7AM EDT</time><a class="lozenge place" href="/search?state=PA">Pennsylvania</a><a class="lozenge place" href="/search?place=Philadelphia&state=PA">Philadelphia</a></p>
 <h2><a href="https://epgn.com/2026/08/18/bar-x-calls-for-community-support-following-lawsuit/">Bar X calls for community support following lawsuit</a></h2>
-<p class="byline"><small>By Jeremy Rodriguez</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://epgn.com/support/">Donate</a></span></p>
+<p class="byline">By Jeremy Rodriguez</p>
 <a class="shot" href="https://epgn.com/2026/08/18/bar-x-calls-for-community-support-following-lawsuit/" tabindex="-1" aria-hidden="true"><img src="../img/26f973be78b8bc709b52d199e8bb39575507961e.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>Bar X, located on Camac Street in Philadelphia’s Gayborhood, posted a call for help on Instagram after a local group filed a lawsuit asking a Philadelphia Common Pleas Court judge to order the bar to cease operations. “If you’ve read the story and don’t agree with what’s happening, don’t just scroll,”</p>
-<p class="more"><a href="https://epgn.com/2026/08/18/bar-x-calls-for-community-support-following-lawsuit/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Bar X, located on Camac Street in Philadelphia’s Gayborhood, posted a call for help on Instagram after a local group filed a lawsuit asking a Philadelphia Common Pleas Court judge to order the bar to cease operations. “If you’ve read the story and don’t agree with what’s happening, don’t just scroll,” <a class="lozenge more" href="https://epgn.com/2026/08/18/bar-x-calls-for-community-support-following-lawsuit/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-18T11:00:00+00:00" data-pub="7:00 AM EDT">Tuesday, August 18, 2026 at 7:00 AM EDT</time></small></p>
-<p><small>PA / Philadelphia / <a href="https://epgn.com/">Philadelphia Gay News</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://epgn.com/support/">Donate</a></aside>
+<p class="source"><a href="https://epgn.com/"><strong>Philadelphia Gay News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T11:00:00+00:00" data-pub="7:00 AM EDT">Tue, Aug 18 @ 7AM EDT</time><a class="lozenge place" href="/search?state=PA">Pennsylvania</a><a class="lozenge place" href="/search?place=Philadelphia&state=PA">Philadelphia</a></p>
 <h2><a href="https://epgn.com/2026/08/18/chantal-waldorf-ice/">Philadelphians rally around local drag performer detained by ICE</a></h2>
-<p class="byline"><small>By Jeremy Rodriguez</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://epgn.com/support/">Donate</a></span></p>
+<p class="byline">By Jeremy Rodriguez</p>
 <a class="shot" href="https://epgn.com/2026/08/18/chantal-waldorf-ice/" tabindex="-1" aria-hidden="true"><img src="../img/68c638e7641f61991d568fee0cc3cfa05e7115ea.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>The community has rallied around local drag performer and designer Chantal Waldorf, an immigrant from Nicaragua also known as Manuel, after she was detained by U.S. Immigration and Customs Enforcement (ICE). The message posted to the performer’s Instagram account stated the following: “As you know, since he arrived in this country, he has dedicated himself</p>
-<p class="more"><a href="https://epgn.com/2026/08/18/chantal-waldorf-ice/">Read more <span aria-hidden="true">→</span></a></p>
+<p>The community has rallied around local drag performer and designer Chantal Waldorf, an immigrant from Nicaragua also known as Manuel, after she was detained by U.S. Immigration and Customs Enforcement (ICE). The message posted to the performer’s Instagram account stated the following: “As you know, since he arrived in this country, he has dedicated himself <a class="lozenge more" href="https://epgn.com/2026/08/18/chantal-waldorf-ice/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-18T00:19:54+00:00" data-pub="7:19 PM CDT">Monday, August 17, 2026 at 7:19 PM CDT</time></small></p>
-<p><small>IL / Chicago / <a href="https://windycitytimes.com/gaynewsarticles.php?k=Local">Windy City Times</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://windycitytimes.com/gaynewsarticles.php?k=Local">Support</a></aside>
+<p class="source"><a href="https://windycitytimes.com/gaynewsarticles.php?k=Local"><strong>Windy City Times</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T00:19:54+00:00" data-pub="7:19 PM CDT">Mon, Aug 17 @ 7PM CDT</time><a class="lozenge place" href="/search?state=IL">Illinois</a><a class="lozenge place" href="/search?place=Chicago&state=IL">Chicago</a></p>
 <h2><a href="https://windycitytimes.com/2026/08/17/gay-man-fights-for-survival-after-stage-iv-melanoma-cancer-diagnosis/">Gay man fights for survival after Stage IV melanoma cancer diagnosis</a></h2>
-<p class="byline"><small>By Carrie Maxwell</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://windycitytimes.com/gaynewsarticles.php?k=Local">Support</a></span></p>
+<p class="byline">By Carrie Maxwell</p>
 <a class="shot" href="https://windycitytimes.com/2026/08/17/gay-man-fights-for-survival-after-stage-iv-melanoma-cancer-diagnosis/" tabindex="-1" aria-hidden="true"><img src="../img/b598896582f70d04ed0f87422ae1cd6cb5986517.jpg" alt="" width="480" height="297" loading="lazy" decoding="async"></a>
-<p>Jared Kearney, a gay man who lives in Southern Illinois, was diagnosed with Stage IV melanoma cancer Nov. 1, 2025. He was recently taken off all his cancer medications because his body can no longer tolerate them. Kearney’s doctors at Northwestern Memorial Hospital are looking for new medications for him. Kearney graduated from Marion High</p>
-<p class="more"><a href="https://windycitytimes.com/2026/08/17/gay-man-fights-for-survival-after-stage-iv-melanoma-cancer-diagnosis/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-17T20:21:13+00:00" data-pub="4:21 PM EDT">Monday, August 17, 2026 at 4:21 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>PA / Philadelphia / <a href="https://epgn.com/">Philadelphia Gay News</a></small></p>
-<h2><a href="https://epgn.com/2026/08/17/analysis-republican-with-anti-lgbtq-record-set-to-join-pa-human-relations-commission/">Analysis: Republican with anti-LGBTQ+ record set to join Pa. Human Relations Commission</a></h2>
-<p class="byline"><small>By Jason Villemez</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://epgn.com/support/">Donate</a></span></p>
-<a class="shot" href="https://epgn.com/2026/08/17/analysis-republican-with-anti-lgbtq-record-set-to-join-pa-human-relations-commission/" tabindex="-1" aria-hidden="true"><img src="../img/e07fa3ff5baf97482909758fe7e5dc97a85a504b.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Seven new commissioners have been appointed to the Pennsylvania Human Relations Commission (PHRC), the governmental body which promotes equal opportunity and enforces the state’s civil rights laws. Among the appointees is former state representative Seth Grove, a Republican with a long history of anti-LGBTQ+ actions. During his tenure in Harrisburg, Grove sponsored bills to strip</p>
-<p class="more"><a href="https://epgn.com/2026/08/17/analysis-republican-with-anti-lgbtq-record-set-to-join-pa-human-relations-commission/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-17T18:47:23+00:00" data-pub="2:47 PM EDT">Monday, August 17, 2026 at 2:47 PM EDT</time></small></p>
-<p><small>OH / Statewide / <a href="https://thebuckeyeflame.com/">Buckeye Flame</a></small></p>
-<h2><a href="https://thebuckeyeflame.com/2026/08/17/toledo-pride-draws-thousands/">Toledo Pride draws thousands despite cloudy skies</a></h2>
-<p class="byline"><small>By H.L. Comeriato</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/lgbtq.html">LGBTQ+</a><a class="lozenge give" href="https://billing.stripe.com/p/login/28obJEfq1dCGgLeeUU">Donate</a></span></p>
-<a class="shot" href="https://thebuckeyeflame.com/2026/08/17/toledo-pride-draws-thousands/" tabindex="-1" aria-hidden="true"><img src="../img/04abc83e832b52e7632ccfda8acb3dd4466a4990.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Thousands flooded downtown Toledo to celebrate Toledo Pride, despite rain and overcast skies.</p>
-<p class="more"><a href="https://thebuckeyeflame.com/2026/08/17/toledo-pride-draws-thousands/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Jared Kearney, a gay man who lives in Southern Illinois, was diagnosed with Stage IV melanoma cancer Nov. 1, 2025. He was recently taken off all his cancer medications because his body can no longer tolerate them. Kearney’s doctors at Northwestern Memorial Hospital are looking for new medications for him. Kearney graduated from Marion High <a class="lozenge more" href="https://windycitytimes.com/2026/08/17/gay-man-fights-for-survival-after-stage-iv-melanoma-cancer-diagnosis/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 </div>
 <p><a id="more" href="lgbtq-3.html">More stories</a></p>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="../index.html">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -406,6 +451,47 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>

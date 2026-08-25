@@ -13,12 +13,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(../fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -27,22 +40,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -50,19 +69,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -75,7 +126,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -93,7 +144,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="../index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="../masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -106,7 +157,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="../subjects/news.html">News</a></li><li><a href="../subjects/politics.html">Politics</a></li><li><a href="../subjects/opinion.html">Opinion</a></li><li><a href="../subjects/health.html">Health</a></li><li><a href="../subjects/environment.html">Environment</a></li><li><a href="../subjects/education.html">Education</a></li><li><a href="../subjects/business.html">Business</a></li><li><a href="../subjects/housing.html">Housing</a></li><li><a href="../subjects/sports.html">Sports</a></li><li><a href="../subjects/food.html">Food</a></li><li><a href="../subjects/arts.html">Arts</a></li></ul></nav>
@@ -123,281 +174,281 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <p class="meta">11 newsrooms tagged Worker-owned. <a href="../catalog.html">All tags</a></p>
 <div id="feed-items">
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T15:07:31+00:00" data-pub="10:07 AM CDT">Tuesday, August 25, 2026 at 10:07 AM CDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>MN / Minneapolis / <a href="https://racketmn.com/">Racket</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://51st.news/donate/">Donate</a></aside>
+<p class="source"><a href="https://51st.news/"><strong>The 51st</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T16:42:26+00:00" data-pub="12:42 PM EDT">Tue, Aug 25 @ 12PM EDT</time><a class="lozenge place" href="/search?state=DC">Washington, D.C.</a><a class="lozenge place" href="/search?place=Washington&state=DC">Washington</a></p>
+<h2><a href="https://51st.news/dc-library-resources-books-tools-sewing-machine/">What&#x27;s more punk than ... a sewing machine?</a></h2>
+<p class="byline">By Becky Little</p>
+<a class="shot" href="https://51st.news/dc-library-resources-books-tools-sewing-machine/" tabindex="-1" aria-hidden="true"><img src="../img/3532177819d29c1d497b3817a67e4a0cde2e028e.webp" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
+<p>From a 3D printer to a recording studio, your D.C. Public Library card gives you access to so much more than books. <a class="lozenge more" href="https://51st.news/dc-library-resources-books-tools-sewing-machine/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://51st.news/donate/">Donate</a></aside>
+<p class="source"><a href="https://51st.news/"><strong>The 51st</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:32:55+00:00" data-pub="11:32 AM EDT">Tue, Aug 25 @ 11AM EDT</time><a class="lozenge place" href="/search?state=DC">Washington, D.C.</a><a class="lozenge place" href="/search?place=Washington&state=DC">Washington</a></p>
+<h2><a href="https://51st.news/how-to-volunteer-washington-dc-get-involved-august-25/">20 ways to build a better D.C. this week</a></h2>
+<p class="byline">By Gracie McKenzie</p>
+<a class="shot" href="https://51st.news/how-to-volunteer-washington-dc-get-involved-august-25/" tabindex="-1" aria-hidden="true"><img src="../img/d66012c2faefcf3d0f37591785f983cbeb4eeb38.webp" alt="" width="480" height="321" loading="lazy" decoding="async"></a>
+<p>Fundraiser happy hours, collective bike rides, neighborhood cleanups, educational trainings, and more ways to get involved around the city. <a class="lozenge more" href="https://51st.news/how-to-volunteer-washington-dc-get-involved-august-25/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://racketmn.com/racket-tip-jar-pay-forward-a-subscription">Subscribe</a></aside>
+<p class="source"><a href="https://racketmn.com/"><strong>Racket</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T15:07:31+00:00" data-pub="10:07 AM CDT">Tue, Aug 25 @ 10AM CDT</time><a class="lozenge place" href="/search?state=MN">Minnesota</a><a class="lozenge place" href="/search?place=Minneapolis&state=MN">Minneapolis</a></p>
 <h2><a href="https://racketmn.com/i-took-the-e-line-from-southdale-to-st-anthony-main-and-watched-4-movies-in-less-than-12-hours">I Took the E Line From Southdale to St. Anthony Main and Watched 4 Movies in Less Than 12 Hours</a></h2>
-<p class="byline"><small>By Matt Clark</small><span class="aside"><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://racketmn.com/racket-tip-jar-pay-forward-a-subscription">Subscribe</a></span></p>
+<p class="byline">By Matt Clark</p>
 <a class="shot" href="https://racketmn.com/i-took-the-e-line-from-southdale-to-st-anthony-main-and-watched-4-movies-in-less-than-12-hours" tabindex="-1" aria-hidden="true"><img src="../img/fadd49611c6a4c0e0c70a93b1eccde64407f4e1f.webp" alt="" width="480" height="316" loading="lazy" decoding="async"></a>
-<p>Bus Rapid Transit is a gift to Minneapolis filmgoers.</p>
-<p class="more"><a href="https://racketmn.com/i-took-the-e-line-from-southdale-to-st-anthony-main-and-watched-4-movies-in-less-than-12-hours">Read more <span aria-hidden="true">→</span></a></p>
+<p>Bus Rapid Transit is a gift to Minneapolis filmgoers. <a class="lozenge more" href="https://racketmn.com/i-took-the-e-line-from-southdale-to-st-anthony-main-and-watched-4-movies-in-less-than-12-hours">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T13:35:34+00:00" data-pub="9:35 AM EDT">Tuesday, August 25, 2026 at 9:35 AM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>National / Sports &amp; culture / <a href="https://defector.com/">Defector</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://defector.com/products">Subscribe</a></aside>
+<p class="source"><a href="https://defector.com/"><strong>Defector</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T13:35:34+00:00" data-pub="9:35 AM EDT">Tue, Aug 25 @ 9AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Sports+%26+culture">Sports &amp; culture</a></p>
 <h2><a href="https://defector.com/red-dwarfs-are-super-stars">Red Dwarfs Are Super Stars</a></h2>
-<p class="byline"><small>By Barry Petchesky</small><span class="aside"><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://defector.com/products">Subscribe</a></span></p>
+<p class="byline">By Barry Petchesky</p>
 <a class="shot" href="https://defector.com/red-dwarfs-are-super-stars" tabindex="-1" aria-hidden="true"><img src="../img/dd08c5ea83305d7a4a068b61bc9d4c447a380520.webp" alt="" width="480" height="470" loading="lazy" decoding="async"></a>
-<p>The last real star in the universe will be a red dwarf. This will not be for some time yet. The conditions are ripe for stars to be formed, to live out their lives, to burn out or explode, in cycles for the next 100 trillion years. The universe is, then, unimaginably young, as far as things go, at just 13.8 billion years. If the lifespan of the so-called Stelliferous Era were a single 24-hour day,</p>
-<p class="more"><a href="https://defector.com/red-dwarfs-are-super-stars">Read more <span aria-hidden="true">→</span></a></p>
+<p>The last real star in the universe will be a red dwarf. This will not be for some time yet. The conditions are ripe for stars to be formed, to live out their lives, to burn out or explode, in cycles for the next 100 trillion years. The universe is, then, unimaginably young, as far as things go, at just 13.8 billion years. If the lifespan of the so-called Stelliferous Era were a single 24-hour day, <a class="lozenge more" href="https://defector.com/red-dwarfs-are-super-stars">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-25T13:29:50+00:00" data-pub="9:29 AM EDT">Tuesday, August 25, 2026 at 9:29 AM EDT</time></small></p>
-<p><small>NY / New York / <a href="https://hellgatenyc.com/">Hell Gate</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://hellgatenyc.com/membership/">Become a member</a></aside>
+<p class="source"><a href="https://hellgatenyc.com/"><strong>Hell Gate</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-25T13:29:50+00:00" data-pub="9:29 AM EDT">Tue, Aug 25 @ 9AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=New+York&state=NY">New York</a></p>
 <h2><a href="https://hellgatenyc.com/mamdanis-robert-moses-moment-bqe/">Mamdani’s Robert Moses Moment</a></h2>
-<p class="byline"><small>By Hell Gate</small><span class="aside"><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://hellgatenyc.com/membership/">Become a member</a></span></p>
+<p class="byline">By Hell Gate</p>
 <a class="shot" href="https://hellgatenyc.com/mamdanis-robert-moses-moment-bqe/" tabindex="-1" aria-hidden="true"><img src="../img/fdb5cf803e15b6d3991e08210bfb6593620d6ac3.webp" alt="" width="480" height="275" loading="lazy" decoding="async"></a>
-<p>On the BQE, the Mamdani administration is dreaming small. Plus, more news for your Tuesday.</p>
-<p class="more"><a href="https://hellgatenyc.com/mamdanis-robert-moses-moment-bqe/">Read more <span aria-hidden="true">→</span></a></p>
+<p>On the BQE, the Mamdani administration is dreaming small. Plus, more news for your Tuesday. <a class="lozenge more" href="https://hellgatenyc.com/mamdanis-robert-moses-moment-bqe/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T21:45:16+00:00" data-pub="4:45 PM CDT">Monday, August 24, 2026 at 4:45 PM CDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>MN / Minneapolis / <a href="https://racketmn.com/">Racket</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://racketmn.com/racket-tip-jar-pay-forward-a-subscription">Subscribe</a></aside>
+<p class="source"><a href="https://racketmn.com/"><strong>Racket</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T21:45:16+00:00" data-pub="4:45 PM CDT">Mon, Aug 24 @ 4PM CDT</time><a class="lozenge place" href="/search?state=MN">Minnesota</a><a class="lozenge place" href="/search?place=Minneapolis&state=MN">Minneapolis</a></p>
 <h2><a href="https://racketmn.com/anti-ice-networks-pivot-to-protecting-voters">Anti-ICE Networks Pivot to Protecting Voters</a></h2>
-<p class="byline"><small>By Keith Harris</small><span class="aside"><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://racketmn.com/racket-tip-jar-pay-forward-a-subscription">Subscribe</a></span></p>
+<p class="byline">By Keith Harris</p>
 <a class="shot" href="https://racketmn.com/anti-ice-networks-pivot-to-protecting-voters" tabindex="-1" aria-hidden="true"><img src="../img/06f786623b936546b837c228d646aeb31e78933e.jpg" alt="" width="480" height="323" loading="lazy" decoding="async"></a>
-<p>Plus Modern Times returns, RIP Chaz Millionaire, and depression is the real serial killer in today&#x27;s Flyover news roundup.</p>
-<p class="more"><a href="https://racketmn.com/anti-ice-networks-pivot-to-protecting-voters">Read more <span aria-hidden="true">→</span></a></p>
+<p>Plus Modern Times returns, RIP Chaz Millionaire, and depression is the real serial killer in today&#x27;s Flyover news roundup. <a class="lozenge more" href="https://racketmn.com/anti-ice-networks-pivot-to-protecting-voters">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T21:28:39+00:00" data-pub="5:28 PM EDT">Monday, August 24, 2026 at 5:28 PM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>DC / Washington / <a href="https://51st.news/">The 51st</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://51st.news/donate/">Donate</a></aside>
+<p class="source"><a href="https://51st.news/"><strong>The 51st</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T21:28:39+00:00" data-pub="5:28 PM EDT">Mon, Aug 24 @ 5PM EDT</time><a class="lozenge place" href="/search?state=DC">Washington, D.C.</a><a class="lozenge place" href="/search?place=Washington&state=DC">Washington</a></p>
 <h2><a href="https://51st.news/defend-dc-midterm-elections-robert-white-democrats/">Eyeing the midterm elections, D.C. is taking the fight for statehood to the states</a></h2>
-<p class="byline"><small>By Sam Delgado</small><span class="aside"><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://51st.news/donate/">Donate</a></span></p>
+<p class="byline">By Sam Delgado</p>
 <a class="shot" href="https://51st.news/defend-dc-midterm-elections-robert-white-democrats/" tabindex="-1" aria-hidden="true"><img src="../img/00c5206f20ace03af23ce571186a5cb871f3275a.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Robert White, Free DC, and other partners are deploying residents to campaign for Democrats in key House races as part of a new political initiative.</p>
-<p class="more"><a href="https://51st.news/defend-dc-midterm-elections-robert-white-democrats/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Robert White, Free DC, and other partners are deploying residents to campaign for Democrats in key House races as part of a new political initiative. <a class="lozenge more" href="https://51st.news/defend-dc-midterm-elections-robert-white-democrats/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T20:51:37+00:00" data-pub="1:51 PM PDT">Monday, August 24, 2026 at 1:51 PM PDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>CA / Solano County / <a href="https://www.vallejosun.com">Vallejo Sun</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://www.vallejosun.com/membership/">Become a member</a></aside>
+<p class="source"><a href="https://www.vallejosun.com"><strong>Vallejo Sun</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T20:51:37+00:00" data-pub="1:51 PM PDT">Mon, Aug 24 @ 1PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Solano+County&state=CA">Solano County</a></p>
 <h2><a href="https://www.vallejosun.com/vallejos-sunshine-smoothies-and-coffee-to-give-away-3-000-free-smoothies/">Vallejo’s Sunshine Smoothies and Coffee to give away 3,000 free smoothies</a></h2>
-<p class="byline"><small>By Isidra Mencos</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://www.vallejosun.com/membership/">Become a member</a></span></p>
+<p class="byline">By Isidra Mencos</p>
 <a class="shot" href="https://www.vallejosun.com/vallejos-sunshine-smoothies-and-coffee-to-give-away-3-000-free-smoothies/" tabindex="-1" aria-hidden="true"><img src="../img/9a20848570653736afce31f197630cc784000ef7.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>To celebrate its 11th anniversary, Sunshine Smoothies and Coffee will give away 3,000 smoothies on Saturday, Aug. 29.</p>
-<p class="more"><a href="https://www.vallejosun.com/vallejos-sunshine-smoothies-and-coffee-to-give-away-3-000-free-smoothies/">Read more <span aria-hidden="true">→</span></a></p>
+<p>To celebrate its 11th anniversary, Sunshine Smoothies and Coffee will give away 3,000 smoothies on Saturday, Aug. 29. <a class="lozenge more" href="https://www.vallejosun.com/vallejos-sunshine-smoothies-and-coffee-to-give-away-3-000-free-smoothies/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T17:42:27+00:00" data-pub="12:42 PM CDT">Monday, August 24, 2026 at 12:42 PM CDT</time></small><a class="lozenge" href="../subjects/housing.html">Housing</a></p>
-<p><small>MN / Minneapolis / <a href="https://racketmn.com/">Racket</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/housing.html">Housing</a><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://racketmn.com/racket-tip-jar-pay-forward-a-subscription">Subscribe</a></aside>
+<p class="source"><a href="https://racketmn.com/"><strong>Racket</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T17:42:27+00:00" data-pub="12:42 PM CDT">Mon, Aug 24 @ 12PM CDT</time><a class="lozenge place" href="/search?state=MN">Minnesota</a><a class="lozenge place" href="/search?place=Minneapolis&state=MN">Minneapolis</a></p>
 <h2><a href="https://racketmn.com/mn-state-fair-racket-turns-5-karmel-mall-cash-mob-this-weeks-best-events">MN State Fair, Racket Turns 5, Karmel Mall Cash Mob: This Week’s Best Events</a></h2>
-<p class="byline"><small>By Racket Staff</small><span class="aside"><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://racketmn.com/racket-tip-jar-pay-forward-a-subscription">Subscribe</a></span></p>
+<p class="byline">By Racket Staff</p>
 <a class="shot" href="https://racketmn.com/mn-state-fair-racket-turns-5-karmel-mall-cash-mob-this-weeks-best-events" tabindex="-1" aria-hidden="true"><img src="../img/92e2a114b8c050560762874115577c8969c91998.jpg" alt="" width="480" height="321" loading="lazy" decoding="async"></a>
-<p>Plus Ren Fest, Mizna at Baba&#x27;s, and a Turf tribute to Shania Twain.</p>
-<p class="more"><a href="https://racketmn.com/mn-state-fair-racket-turns-5-karmel-mall-cash-mob-this-weeks-best-events">Read more <span aria-hidden="true">→</span></a></p>
+<p>Plus Ren Fest, Mizna at Baba&#x27;s, and a Turf tribute to Shania Twain. <a class="lozenge more" href="https://racketmn.com/mn-state-fair-racket-turns-5-karmel-mall-cash-mob-this-weeks-best-events">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T17:10:43+00:00" data-pub="1:10 PM EDT">Monday, August 24, 2026 at 1:10 PM EDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>NY / New York / <a href="https://hellgatenyc.com/">Hell Gate</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://hellgatenyc.com/membership/">Become a member</a></aside>
+<p class="source"><a href="https://hellgatenyc.com/"><strong>Hell Gate</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T17:10:43+00:00" data-pub="1:10 PM EDT">Mon, Aug 24 @ 1PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=New+York&state=NY">New York</a></p>
 <h2><a href="https://hellgatenyc.com/reformers-sue-to-stop-rodneyse-bichotte-hermelyns-brooklyn-dems-power-grab/">Reformers Sue to Stop Rodneyse Bichotte Hermelyn&#x27;s Brooklyn Dems Power Grab</a></h2>
-<p class="byline"><small>By Jessy Edwards</small><span class="aside"><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://hellgatenyc.com/membership/">Become a member</a></span></p>
+<p class="byline">By Jessy Edwards</p>
 <a class="shot" href="https://hellgatenyc.com/reformers-sue-to-stop-rodneyse-bichotte-hermelyns-brooklyn-dems-power-grab/" tabindex="-1" aria-hidden="true"><img src="../img/cf79bf2550ed661edcbd21e48c528f6b09088dbf.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>The Brooklyn Dems are set to vote Tuesday on new rules aimed at keeping the chairwoman in power—even though she was poised to lose reelection.</p>
-<p class="more"><a href="https://hellgatenyc.com/reformers-sue-to-stop-rodneyse-bichotte-hermelyns-brooklyn-dems-power-grab/">Read more <span aria-hidden="true">→</span></a></p>
+<p>The Brooklyn Dems are set to vote Tuesday on new rules aimed at keeping the chairwoman in power—even though she was poised to lose reelection. <a class="lozenge more" href="https://hellgatenyc.com/reformers-sue-to-stop-rodneyse-bichotte-hermelyns-brooklyn-dems-power-grab/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T15:44:06+00:00" data-pub="11:44 AM EDT">Monday, August 24, 2026 at 11:44 AM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>NY / New York / <a href="https://hellgatenyc.com/">Hell Gate</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://hellgatenyc.com/membership/">Become a member</a></aside>
+<p class="source"><a href="https://hellgatenyc.com/"><strong>Hell Gate</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T15:44:06+00:00" data-pub="11:44 AM EDT">Mon, Aug 24 @ 11AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=New+York&state=NY">New York</a></p>
 <h2><a href="https://hellgatenyc.com/the-us-open-ticket-problems/">The US Open US Closes Up, Then US Opens Again</a></h2>
-<p class="byline"><small>By Max Rivlin-Nadler</small><span class="aside"><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://hellgatenyc.com/membership/">Become a member</a></span></p>
+<p class="byline">By Max Rivlin-Nadler</p>
 <a class="shot" href="https://hellgatenyc.com/the-us-open-ticket-problems/" tabindex="-1" aria-hidden="true"><img src="../img/b2680605b9ed097df71266082f9abbd052ee0ca3.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>What used to be free is now ticketed, and ticket prices are sky-rocketing.</p>
-<p class="more"><a href="https://hellgatenyc.com/the-us-open-ticket-problems/">Read more <span aria-hidden="true">→</span></a></p>
+<p>What used to be free is now ticketed, and ticket prices are sky-rocketing. <a class="lozenge more" href="https://hellgatenyc.com/the-us-open-ticket-problems/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T15:29:30+00:00" data-pub="11:29 AM EDT">Monday, August 24, 2026 at 11:29 AM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>National / Sports &amp; culture / <a href="https://defector.com/">Defector</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://defector.com/products">Subscribe</a></aside>
+<p class="source"><a href="https://defector.com/"><strong>Defector</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T15:29:30+00:00" data-pub="11:29 AM EDT">Mon, Aug 24 @ 11AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Sports+%26+culture">Sports &amp; culture</a></p>
 <h2><a href="https://defector.com/some-spiders-savor-sacrificial-somersault-sex">Some Spiders Savor Sacrificial Somersault Sex</a></h2>
-<p class="byline"><small>By Sabrina Imbler</small><span class="aside"><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://defector.com/products">Subscribe</a></span></p>
+<p class="byline">By Sabrina Imbler</p>
 <a class="shot" href="https://defector.com/some-spiders-savor-sacrificial-somersault-sex" tabindex="-1" aria-hidden="true"><img src="../img/56bcf3ab48e3535e6ccc0133532dd12ec693a66a.jpg" alt="" width="480" height="317" loading="lazy" decoding="async"></a>
-<p>Imagine you are a horny male redback spider. You might be a small guy—a fraction of her size—but unlike some, you don&#x27;t have a complex about it. You&#x27;re just happy to be there, &quot;there&quot; meaning the haphazard snarl of a web of a female redback spider. Only 20 percent of male redback spiders ever mate, so you&#x27;re already feeling lucky. You know that the climax of your life has arrived, meaning your cli</p>
-<p class="more"><a href="https://defector.com/some-spiders-savor-sacrificial-somersault-sex">Read more <span aria-hidden="true">→</span></a></p>
+<p>Imagine you are a horny male redback spider. You might be a small guy—a fraction of her size—but unlike some, you don&#x27;t have a complex about it. You&#x27;re just happy to be there, &quot;there&quot; meaning the haphazard snarl of a web of a female redback spider. Only 20 percent of male redback spiders ever mate, so you&#x27;re already feeling lucky. You know that the climax of your life has arrived, meaning your cli <a class="lozenge more" href="https://defector.com/some-spiders-savor-sacrificial-somersault-sex">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T13:54:25+00:00" data-pub="9:54 AM EDT">Monday, August 24, 2026 at 9:54 AM EDT</time></small></p>
-<p><small>National / Sports &amp; culture / <a href="https://defector.com/">Defector</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://defector.com/products">Subscribe</a></aside>
+<p class="source"><a href="https://defector.com/"><strong>Defector</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T13:54:25+00:00" data-pub="9:54 AM EDT">Mon, Aug 24 @ 9AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Sports+%26+culture">Sports &amp; culture</a></p>
 <h2><a href="https://defector.com/is-my-hair-red-a-defector-slack-investigation">Is My Hair Red? A Defector Slack Investigation</a></h2>
-<p class="byline"><small>By Lauren Theisen</small><span class="aside"><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://defector.com/products">Subscribe</a></span></p>
+<p class="byline">By Lauren Theisen</p>
 <a class="shot" href="https://defector.com/is-my-hair-red-a-defector-slack-investigation" tabindex="-1" aria-hidden="true"><img src="../img/09c17e777fe654a3dd58650bc0b65b9fa4e8cace.jpg" alt="" width="480" height="640" loading="lazy" decoding="async"></a>
-<p>I won&#x27;t dispute that I once had red hair. Back in 2019, just for kicks, I went with a bright Hayley Williams–esque red that petered out for obvious reasons the following year. Then in 2025, with a 30th birthday and a big trip on the horizon, I decided to freshen up my look with a new color that my stylist tells me is as light as I can go without using bleach. For full transparency purposes, here i</p>
-<p class="more"><a href="https://defector.com/is-my-hair-red-a-defector-slack-investigation">Read more <span aria-hidden="true">→</span></a></p>
+<p>I won&#x27;t dispute that I once had red hair. Back in 2019, just for kicks, I went with a bright Hayley Williams–esque red that petered out for obvious reasons the following year. Then in 2025, with a 30th birthday and a big trip on the horizon, I decided to freshen up my look with a new color that my stylist tells me is as light as I can go without using bleach. For full transparency purposes, here i <a class="lozenge more" href="https://defector.com/is-my-hair-red-a-defector-slack-investigation">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T04:45:29+00:00" data-pub="9:45 PM PDT">Sunday, August 23, 2026 at 9:45 PM PDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>CA / Long Beach / <a href="https://lbwatchdog.com/">Long Beach Watchdog</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://lbwatchdog.com/long-beach-couple-rallies-community-in-donation-drive-for-colombian-earthquake-survivors/">Donate</a></aside>
+<p class="source"><a href="https://lbwatchdog.com/"><strong>Long Beach Watchdog</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T04:45:29+00:00" data-pub="9:45 PM PDT">Sun, Aug 23 @ 9PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Long+Beach&state=CA">Long Beach</a></p>
 <h2><a href="https://lbwatchdog.com/vault-fire-knocks-out-power-for-more-than-25-000-long-beach-residents/">Vault fire knocks out power for more than 25,000 Long Beach residents</a></h2>
-<p class="byline"><small>By Brandon Richardson</small><span class="aside"><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://lbwatchdog.com/long-beach-couple-rallies-community-in-donation-drive-for-colombian-earthquake-survivors/">Donate</a></span></p>
+<p class="byline">By Brandon Richardson</p>
 <a class="shot" href="https://lbwatchdog.com/vault-fire-knocks-out-power-for-more-than-25-000-long-beach-residents/" tabindex="-1" aria-hidden="true"><img src="../img/681b3b3ec37958fd36df7b13a835dd4172521d76.jpg" alt="" width="480" height="384" loading="lazy" decoding="async"></a>
-<p>As of 9:21 p.m., there was no estimated restoration time, according to SoCal Edison.</p>
-<p class="more"><a href="https://lbwatchdog.com/vault-fire-knocks-out-power-for-more-than-25-000-long-beach-residents/">Read more <span aria-hidden="true">→</span></a></p>
+<p>As of 9:21 p.m., there was no estimated restoration time, according to SoCal Edison. <a class="lozenge more" href="https://lbwatchdog.com/vault-fire-knocks-out-power-for-more-than-25-000-long-beach-residents/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-24T00:19:25+00:00" data-pub="5:19 PM PDT">Sunday, August 23, 2026 at 5:19 PM PDT</time></small></p>
-<p><small>CA / Long Beach / <a href="https://lbwatchdog.com/">Long Beach Watchdog</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://lbwatchdog.com/long-beach-couple-rallies-community-in-donation-drive-for-colombian-earthquake-survivors/">Donate</a></aside>
+<p class="source"><a href="https://lbwatchdog.com/"><strong>Long Beach Watchdog</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-24T00:19:25+00:00" data-pub="5:19 PM PDT">Sun, Aug 23 @ 5PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Long+Beach&state=CA">Long Beach</a></p>
 <h2><a href="https://lbwatchdog.com/man-dies-in-crash-near-csulb-police-say-2/">Suspected DUI driver dies in crash near CSULB, police say</a></h2>
-<p class="byline"><small>By Anthony Pignataro</small><span class="aside"><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://lbwatchdog.com/long-beach-couple-rallies-community-in-donation-drive-for-colombian-earthquake-survivors/">Donate</a></span></p>
+<p class="byline">By Anthony Pignataro</p>
 <a class="shot" href="https://lbwatchdog.com/man-dies-in-crash-near-csulb-police-say-2/" tabindex="-1" aria-hidden="true"><img src="../img/f61a08303ca7329a87ead212068e5e1ac07256e3.jpg" alt="" width="480" height="307" loading="lazy" decoding="async"></a>
-<p>The man was driving a Tesla on PCH when he hit a car exiting a shopping center Saturday night, authorities said.</p>
-<p class="more"><a href="https://lbwatchdog.com/man-dies-in-crash-near-csulb-police-say-2/">Read more <span aria-hidden="true">→</span></a></p>
+<p>The man was driving a Tesla on PCH when he hit a car exiting a shopping center Saturday night, authorities said. <a class="lozenge more" href="https://lbwatchdog.com/man-dies-in-crash-near-csulb-police-say-2/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-23T23:05:35+00:00" data-pub="4:05 PM PDT">Sunday, August 23, 2026 at 4:05 PM PDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>CA / Long Beach / <a href="https://lbwatchdog.com/">Long Beach Watchdog</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://lbwatchdog.com/long-beach-couple-rallies-community-in-donation-drive-for-colombian-earthquake-survivors/">Donate</a></aside>
+<p class="source"><a href="https://lbwatchdog.com/"><strong>Long Beach Watchdog</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-23T23:05:35+00:00" data-pub="4:05 PM PDT">Sun, Aug 23 @ 4PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Long+Beach&state=CA">Long Beach</a></p>
 <h2><a href="https://lbwatchdog.com/compton-man-arrested-in-suspected-dui-crash-that-killed-a-woman-north-long-beach/">Compton man arrested in suspected DUI crash that killed a woman in North Long Beach</a></h2>
-<p class="byline"><small>By Anthony Pignataro</small><span class="aside"><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://lbwatchdog.com/long-beach-couple-rallies-community-in-donation-drive-for-colombian-earthquake-survivors/">Donate</a></span></p>
+<p class="byline">By Anthony Pignataro</p>
 <a class="shot" href="https://lbwatchdog.com/compton-man-arrested-in-suspected-dui-crash-that-killed-a-woman-north-long-beach/" tabindex="-1" aria-hidden="true"><img src="../img/468e8757c8187e28af8dd1e580edac42cb777293.jpg" alt="" width="480" height="332" loading="lazy" decoding="async"></a>
-<p>Adalberto Delgado-Perez, 38, allegedly left the scene for a short time after the crash Saturday, according to authorities.</p>
-<p class="more"><a href="https://lbwatchdog.com/compton-man-arrested-in-suspected-dui-crash-that-killed-a-woman-north-long-beach/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Adalberto Delgado-Perez, 38, allegedly left the scene for a short time after the crash Saturday, according to authorities. <a class="lozenge more" href="https://lbwatchdog.com/compton-man-arrested-in-suspected-dui-crash-that-killed-a-woman-north-long-beach/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T23:50:28+00:00" data-pub="7:50 PM EDT">Friday, August 21, 2026 at 7:50 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>NY / New York / <a href="https://hellgatenyc.com/">Hell Gate</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://hellgatenyc.com/membership/">Become a member</a></aside>
+<p class="source"><a href="https://hellgatenyc.com/"><strong>Hell Gate</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T23:50:28+00:00" data-pub="7:50 PM EDT">Fri, Aug 21 @ 7PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=New+York&state=NY">New York</a></p>
 <h2><a href="https://hellgatenyc.com/president-aoc-senator-chi-osse/">President AOC, Senator Chi Ossé ?</a></h2>
-<p class="byline"><small>By Hell Gate</small><span class="aside"><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://hellgatenyc.com/membership/">Become a member</a></span></p>
+<p class="byline">By Hell Gate</p>
 <a class="shot" href="https://hellgatenyc.com/president-aoc-senator-chi-osse/" tabindex="-1" aria-hidden="true"><img src="../img/373546c5698f163890e48cea9af65a4f3ac78522.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Rumblings of a 2028 where charismatic DSA members might try their hand at higher office. A gambling update. ICE getting sued by the septuagenarian they maced. And our intern looks back on the summer she turned Hell Gate.</p>
-<p class="more"><a href="https://hellgatenyc.com/president-aoc-senator-chi-osse/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Rumblings of a 2028 where charismatic DSA members might try their hand at higher office. A gambling update. ICE getting sued by the septuagenarian they maced. And our intern looks back on the summer she turned Hell Gate. <a class="lozenge more" href="https://hellgatenyc.com/president-aoc-senator-chi-osse/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T23:00:06+00:00" data-pub="4:00 PM PDT">Friday, August 21, 2026 at 4:00 PM PDT</time></small></p>
-<p><small>CA / Long Beach / <a href="https://lbwatchdog.com/">Long Beach Watchdog</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://lbwatchdog.com/long-beach-couple-rallies-community-in-donation-drive-for-colombian-earthquake-survivors/">Donate</a></aside>
+<p class="source"><a href="https://lbwatchdog.com/"><strong>Long Beach Watchdog</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T23:00:06+00:00" data-pub="4:00 PM PDT">Fri, Aug 21 @ 4PM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Long+Beach&state=CA">Long Beach</a></p>
 <h2><a href="https://lbwatchdog.com/its-t/">It&#x27;s Clear the Shelters month!</a></h2>
-<p class="byline"><small>By Kate Karp</small><span class="aside"><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://lbwatchdog.com/long-beach-couple-rallies-community-in-donation-drive-for-colombian-earthquake-survivors/">Donate</a></span></p>
+<p class="byline">By Kate Karp</p>
 <a class="shot" href="https://lbwatchdog.com/its-t/" tabindex="-1" aria-hidden="true"><img src="../img/721439307914bfb0507b33ad7bbd7f0ca14e36c0.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>Long Beach Animal Care Services will participate in the 12th annual event, which is sponsored by NBC4 and Telemundo 52.</p>
-<p class="more"><a href="https://lbwatchdog.com/its-t/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Long Beach Animal Care Services will participate in the 12th annual event, which is sponsored by NBC4 and Telemundo 52. <a class="lozenge more" href="https://lbwatchdog.com/its-t/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T21:50:32+00:00" data-pub="5:50 PM EDT">Friday, August 21, 2026 at 5:50 PM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>National / Video games / <a href="https://aftermath.site/">Aftermath</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://aftermath.site/signup/">Subscribe</a></aside>
+<p class="source"><a href="https://aftermath.site/"><strong>Aftermath</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T21:50:32+00:00" data-pub="5:50 PM EDT">Fri, Aug 21 @ 5PM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Video+games">Video games</a></p>
 <h2><a href="https://aftermath.site/double-fine-independent-game-jam-union/">Psychonauts Developer Double Fine Gets Rights To Games Back, But Union Future Uncertain</a></h2>
-<p class="byline"><small>By Nathan Grayson</small><span class="aside"><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://aftermath.site/signup/">Subscribe</a></span></p>
+<p class="byline">By Nathan Grayson</p>
 <a class="shot" href="https://aftermath.site/double-fine-independent-game-jam-union/" tabindex="-1" aria-hidden="true"><img src="../img/d49c931b191c561770d840364b349313a85576fb.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Good news and bad news</p>
-<p class="more"><a href="https://aftermath.site/double-fine-independent-game-jam-union/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Good news and bad news <a class="lozenge more" href="https://aftermath.site/double-fine-independent-game-jam-union/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T21:49:39+00:00" data-pub="4:49 PM CDT">Friday, August 21, 2026 at 4:49 PM CDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>MN / Minneapolis / <a href="https://racketmn.com/">Racket</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://racketmn.com/racket-tip-jar-pay-forward-a-subscription">Subscribe</a></aside>
+<p class="source"><a href="https://racketmn.com/"><strong>Racket</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T21:49:39+00:00" data-pub="4:49 PM CDT">Fri, Aug 21 @ 4PM CDT</time><a class="lozenge place" href="/search?state=MN">Minnesota</a><a class="lozenge place" href="/search?place=Minneapolis&state=MN">Minneapolis</a></p>
 <h2><a href="https://racketmn.com/guess-what-percentage-of-minneapolis-households-are-carless-wrong-guess-again">Guess What Percentage of Minneapolis Households Are Carless. Wrong! Guess Again.</a></h2>
-<p class="byline"><small>By Racket Staff</small><span class="aside"><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://racketmn.com/racket-tip-jar-pay-forward-a-subscription">Subscribe</a></span></p>
+<p class="byline">By Racket Staff</p>
 <a class="shot" href="https://racketmn.com/guess-what-percentage-of-minneapolis-households-are-carless-wrong-guess-again" tabindex="-1" aria-hidden="true"><img src="../img/700e867da85f293c9937f6ca5882b023442a0ae8.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Plus two restaurants bid adieu, a big b-ball shakeup, and an influencer finagles a way to the MN State Fair in today&#x27;s Flyover news roundup.</p>
-<p class="more"><a href="https://racketmn.com/guess-what-percentage-of-minneapolis-households-are-carless-wrong-guess-again">Read more <span aria-hidden="true">→</span></a></p>
+<p>Plus two restaurants bid adieu, a big b-ball shakeup, and an influencer finagles a way to the MN State Fair in today&#x27;s Flyover news roundup. <a class="lozenge more" href="https://racketmn.com/guess-what-percentage-of-minneapolis-households-are-carless-wrong-guess-again">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T20:42:29+00:00" data-pub="4:42 PM EDT">Friday, August 21, 2026 at 4:42 PM EDT</time></small></p>
-<p><small>NY / New York / <a href="https://hellgatenyc.com/">Hell Gate</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://hellgatenyc.com/membership/">Become a member</a></aside>
+<p class="source"><a href="https://hellgatenyc.com/"><strong>Hell Gate</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T20:42:29+00:00" data-pub="4:42 PM EDT">Fri, Aug 21 @ 4PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=New+York&state=NY">New York</a></p>
 <h2><a href="https://hellgatenyc.com/ai-anthropic-books-project-panama-new-york-devour/">The AI Book Devourer Is Feasting on New York&#x27;s Bookstores</a></h2>
-<p class="byline"><small>By Jessy Edwards</small><span class="aside"><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://hellgatenyc.com/membership/">Become a member</a></span></p>
+<p class="byline">By Jessy Edwards</p>
 <a class="shot" href="https://hellgatenyc.com/ai-anthropic-books-project-panama-new-york-devour/" tabindex="-1" aria-hidden="true"><img src="../img/a0abf35adfcc62df6765b9c8f3be1ff6cb85ed86.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>&quot;This personally for me was a windfall that allowed me to keep my two assistants and helped me stay in business,&quot; said one New York bookseller.</p>
-<p class="more"><a href="https://hellgatenyc.com/ai-anthropic-books-project-panama-new-york-devour/">Read more <span aria-hidden="true">→</span></a></p>
+<p>&quot;This personally for me was a windfall that allowed me to keep my two assistants and helped me stay in business,&quot; said one New York bookseller. <a class="lozenge more" href="https://hellgatenyc.com/ai-anthropic-books-project-panama-new-york-devour/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T18:01:32+00:00" data-pub="2:01 PM EDT">Friday, August 21, 2026 at 2:01 PM EDT</time></small></p>
-<p><small>NY / New York / <a href="https://hellgatenyc.com/">Hell Gate</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://hellgatenyc.com/membership/">Become a member</a></aside>
+<p class="source"><a href="https://hellgatenyc.com/"><strong>Hell Gate</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T18:01:32+00:00" data-pub="2:01 PM EDT">Fri, Aug 21 @ 2PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=New+York&state=NY">New York</a></p>
 <h2><a href="https://hellgatenyc.com/hot-dog-investigation/">In Search of the Elusive $3 Midtown Hot Dog</a></h2>
-<p class="byline"><small>By Alisha Allison</small><span class="aside"><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://hellgatenyc.com/membership/">Become a member</a></span></p>
+<p class="byline">By Alisha Allison</p>
 <a class="shot" href="https://hellgatenyc.com/hot-dog-investigation/" tabindex="-1" aria-hidden="true"><img src="../img/89913dd633731fc6b22660abc4cdb0b932e91a64.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Sometimes you just have to ask.</p>
-<p class="more"><a href="https://hellgatenyc.com/hot-dog-investigation/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Sometimes you just have to ask. <a class="lozenge more" href="https://hellgatenyc.com/hot-dog-investigation/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T17:52:54+00:00" data-pub="10:52 AM PDT">Friday, August 21, 2026 at 10:52 AM PDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>CA / Solano County / <a href="https://www.vallejosun.com">Vallejo Sun</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://www.vallejosun.com/membership/">Become a member</a></aside>
+<p class="source"><a href="https://www.vallejosun.com"><strong>Vallejo Sun</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T17:52:54+00:00" data-pub="10:52 AM PDT">Fri, Aug 21 @ 10AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Solano+County&state=CA">Solano County</a></p>
 <h2><a href="https://www.vallejosun.com/vallejo-police-promised-fewer-pursuits-but-dangers-of-car-chases-remain/">Vallejo police promised fewer pursuits, but dangers of car chases remain</a></h2>
-<p class="byline"><small>By Zack Haber</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://www.vallejosun.com/membership/">Become a member</a></span></p>
+<p class="byline">By Zack Haber</p>
 <a class="shot" href="https://www.vallejosun.com/vallejo-police-promised-fewer-pursuits-but-dangers-of-car-chases-remain/" tabindex="-1" aria-hidden="true"><img src="../img/69e83faf398214133fd04e4dc759e7ca9f81d2c1.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>Three years of data show Vallejo police regularly chased people for nonviolent crimes. The pursuits regularly ended in injuries, and occasionally deaths to bystanders and suspects.</p>
-<p class="more"><a href="https://www.vallejosun.com/vallejo-police-promised-fewer-pursuits-but-dangers-of-car-chases-remain/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Three years of data show Vallejo police regularly chased people for nonviolent crimes. The pursuits regularly ended in injuries, and occasionally deaths to bystanders and suspects. <a class="lozenge more" href="https://www.vallejosun.com/vallejo-police-promised-fewer-pursuits-but-dangers-of-car-chases-remain/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T15:00:41+00:00" data-pub="11:00 AM EDT">Friday, August 21, 2026 at 11:00 AM EDT</time></small></p>
-<p><small>National / Video games / <a href="https://aftermath.site/">Aftermath</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://aftermath.site/signup/">Subscribe</a></aside>
+<p class="source"><a href="https://aftermath.site/"><strong>Aftermath</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T15:00:41+00:00" data-pub="11:00 AM EDT">Fri, Aug 21 @ 11AM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Video+games">Video games</a></p>
 <h2><a href="https://aftermath.site/podcasts/aftermath-hours-podcast-grand-theft-auto-vi-leaks/">Nothing About GTA VI’s Launch Can Be Normal</a></h2>
-<p class="byline"><small>By Nathan Grayson</small><span class="aside"><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://aftermath.site/signup/">Subscribe</a></span></p>
+<p class="byline">By Nathan Grayson</p>
 <a class="shot" href="https://aftermath.site/podcasts/aftermath-hours-podcast-grand-theft-auto-vi-leaks/" tabindex="-1" aria-hidden="true"><img src="../img/b14d1d692c91a8a05cf369b2d2a3c2c141570f23.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>&quot;Can you imagine another video game getting this treatment? This level of brand recognition and obnoxious Netflix specials and Sephiroth-adjacent coin-selling hacker kids sending manifestos?&quot;</p>
-<p class="more"><a href="https://aftermath.site/podcasts/aftermath-hours-podcast-grand-theft-auto-vi-leaks/">Read more <span aria-hidden="true">→</span></a></p>
+<p>&quot;Can you imagine another video game getting this treatment? This level of brand recognition and obnoxious Netflix specials and Sephiroth-adjacent coin-selling hacker kids sending manifestos?&quot; <a class="lozenge more" href="https://aftermath.site/podcasts/aftermath-hours-podcast-grand-theft-auto-vi-leaks/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T14:31:37+00:00" data-pub="9:31 AM CDT">Friday, August 21, 2026 at 9:31 AM CDT</time></small><a class="lozenge" href="../subjects/opinion.html">Opinion</a></p>
-<p><small>MN / Minneapolis / <a href="https://racketmn.com/">Racket</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/opinion.html">Opinion</a><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://racketmn.com/racket-tip-jar-pay-forward-a-subscription">Subscribe</a></aside>
+<p class="source"><a href="https://racketmn.com/"><strong>Racket</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T14:31:37+00:00" data-pub="9:31 AM CDT">Fri, Aug 21 @ 9AM CDT</time><a class="lozenge place" href="/search?state=MN">Minnesota</a><a class="lozenge place" href="/search?place=Minneapolis&state=MN">Minneapolis</a></p>
 <h2><a href="https://racketmn.com/lets-talk-wfh-in-this-weeks-open-thread">Let’s Talk WFH in This Week’s Open Thread</a></h2>
-<p class="byline"><small>By Keith Harris</small><span class="aside"><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://racketmn.com/racket-tip-jar-pay-forward-a-subscription">Subscribe</a></span></p>
+<p class="byline">By Keith Harris</p>
 <a class="shot" href="https://racketmn.com/lets-talk-wfh-in-this-weeks-open-thread" tabindex="-1" aria-hidden="true"><img src="../img/304eff58a883909cfd157a542ebb63ae2004a1b0.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>As we do every Friday, we&#x27;re turning Racket over to you, the readers.</p>
-<p class="more"><a href="https://racketmn.com/lets-talk-wfh-in-this-weeks-open-thread">Read more <span aria-hidden="true">→</span></a></p>
+<p>As we do every Friday, we&#x27;re turning Racket over to you, the readers. <a class="lozenge more" href="https://racketmn.com/lets-talk-wfh-in-this-weeks-open-thread">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-21T13:39:55+00:00" data-pub="9:39 AM EDT">Friday, August 21, 2026 at 9:39 AM EDT</time></small></p>
-<p><small>NY / New York / <a href="https://hellgatenyc.com/">Hell Gate</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://hellgatenyc.com/membership/">Become a member</a></aside>
+<p class="source"><a href="https://hellgatenyc.com/"><strong>Hell Gate</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-21T13:39:55+00:00" data-pub="9:39 AM EDT">Fri, Aug 21 @ 9AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=New+York&state=NY">New York</a></p>
 <h2><a href="https://hellgatenyc.com/governor-hochul-mayor-mamdani-election/">Hochul Heads Into Nail-Biter Reelection With...Criticism of Mamdani?</a></h2>
-<p class="byline"><small>By Hell Gate</small><span class="aside"><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://hellgatenyc.com/membership/">Become a member</a></span></p>
+<p class="byline">By Hell Gate</p>
 <a class="shot" href="https://hellgatenyc.com/governor-hochul-mayor-mamdani-election/" tabindex="-1" aria-hidden="true"><img src="../img/81c479bb263e25e1282913692fdbfba1d8599037.jpg" alt="" width="480" height="319" loading="lazy" decoding="async"></a>
-<p>And more news to usher in the weekend.</p>
-<p class="more"><a href="https://hellgatenyc.com/governor-hochul-mayor-mamdani-election/">Read more <span aria-hidden="true">→</span></a></p>
+<p>And more news to usher in the weekend. <a class="lozenge more" href="https://hellgatenyc.com/governor-hochul-mayor-mamdani-election/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T22:48:54+00:00" data-pub="5:48 PM CDT">Thursday, August 20, 2026 at 5:48 PM CDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>MN / Minneapolis / <a href="https://racketmn.com/">Racket</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://racketmn.com/racket-tip-jar-pay-forward-a-subscription">Subscribe</a></aside>
+<p class="source"><a href="https://racketmn.com/"><strong>Racket</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T22:48:54+00:00" data-pub="5:48 PM CDT">Thu, Aug 20 @ 5PM CDT</time><a class="lozenge place" href="/search?state=MN">Minnesota</a><a class="lozenge place" href="/search?place=Minneapolis&state=MN">Minneapolis</a></p>
 <h2><a href="https://racketmn.com/if-the-strib-loves-ryan-winkler-so-much-why-doesnt-it-marry-him">If the Strib Loves Ryan Winkler So Much Why Doesn’t It Marry Him?</a></h2>
-<p class="byline"><small>By Keith Harris</small><span class="aside"><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://racketmn.com/racket-tip-jar-pay-forward-a-subscription">Subscribe</a></span></p>
+<p class="byline">By Keith Harris</p>
 <a class="shot" href="https://racketmn.com/if-the-strib-loves-ryan-winkler-so-much-why-doesnt-it-marry-him" tabindex="-1" aria-hidden="true"><img src="../img/9fcbd0bc36f87b5c52131e6ec1f1a10f0c5d149c.jpg" alt="" width="480" height="325" loading="lazy" decoding="async"></a>
-<p>Plus vaccinations decline in MN, a win for the MVA, and all the latest data center news in today&#x27;s Flyover news roundup.</p>
-<p class="more"><a href="https://racketmn.com/if-the-strib-loves-ryan-winkler-so-much-why-doesnt-it-marry-him">Read more <span aria-hidden="true">→</span></a></p>
+<p>Plus vaccinations decline in MN, a win for the MVA, and all the latest data center news in today&#x27;s Flyover news roundup. <a class="lozenge more" href="https://racketmn.com/if-the-strib-loves-ryan-winkler-so-much-why-doesnt-it-marry-him">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T22:01:08+00:00" data-pub="6:01 PM EDT">Thursday, August 20, 2026 at 6:01 PM EDT</time></small></p>
-<p><small>NY / New York / <a href="https://hellgatenyc.com/">Hell Gate</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://hellgatenyc.com/membership/">Become a member</a></aside>
+<p class="source"><a href="https://hellgatenyc.com/"><strong>Hell Gate</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T22:01:08+00:00" data-pub="6:01 PM EDT">Thu, Aug 20 @ 6PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=New+York&state=NY">New York</a></p>
 <h2><a href="https://hellgatenyc.com/rodneyse-bichotte-hermelyn-chaos/">Rodneyse Bichotte Hermelyn Almost Lost Control of the Brooklyn Dems. So She&#x27;s Changing the Rules</a></h2>
-<p class="byline"><small>By Max Rivlin-Nadler</small><span class="aside"><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://hellgatenyc.com/membership/">Become a member</a></span></p>
+<p class="byline">By Max Rivlin-Nadler</p>
 <a class="shot" href="https://hellgatenyc.com/rodneyse-bichotte-hermelyn-chaos/" tabindex="-1" aria-hidden="true"><img src="../img/05e6ba22ddb82efbce6348cde1475b063c988133.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>The scandal-ridden Brooklyn Democratic Party is trying to make June&#x27;s regime-changing elections meaningless.</p>
-<p class="more"><a href="https://hellgatenyc.com/rodneyse-bichotte-hermelyn-chaos/">Read more <span aria-hidden="true">→</span></a></p>
+<p>The scandal-ridden Brooklyn Democratic Party is trying to make June&#x27;s regime-changing elections meaningless. <a class="lozenge more" href="https://hellgatenyc.com/rodneyse-bichotte-hermelyn-chaos/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T21:36:09+00:00" data-pub="5:36 PM EDT">Thursday, August 20, 2026 at 5:36 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>National / Video games / <a href="https://aftermath.site/">Aftermath</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://aftermath.site/signup/">Subscribe</a></aside>
+<p class="source"><a href="https://aftermath.site/"><strong>Aftermath</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T21:36:09+00:00" data-pub="5:36 PM EDT">Thu, Aug 20 @ 5PM EDT</time><a class="lozenge place" href="/search?national=1">National</a><a class="lozenge place" href="/search?place=Video+games">Video games</a></p>
 <h2><a href="https://aftermath.site/google-docs-grammar-suggestions-suck-ass/">Google Docs&#x27; Grammar Suggestions Suck Ass</a></h2>
-<p class="byline"><small>By Gita Jackson</small><span class="aside"><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://aftermath.site/signup/">Subscribe</a></span></p>
+<p class="byline">By Gita Jackson</p>
 <a class="shot" href="https://aftermath.site/google-docs-grammar-suggestions-suck-ass/" tabindex="-1" aria-hidden="true"><img src="../img/ac73501b22b862143f37b2c233be9465e87bf8e8.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>&quot;Cramms&quot; is not a word</p>
-<p class="more"><a href="https://aftermath.site/google-docs-grammar-suggestions-suck-ass/">Read more <span aria-hidden="true">→</span></a></p>
+<p>&quot;Cramms&quot; is not a word <a class="lozenge more" href="https://aftermath.site/google-docs-grammar-suggestions-suck-ass/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-20T20:47:05+00:00" data-pub="4:47 PM EDT">Thursday, August 20, 2026 at 4:47 PM EDT</time></small></p>
-<p><small>NY / New York / <a href="https://hellgatenyc.com/">Hell Gate</a></small></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://hellgatenyc.com/membership/">Become a member</a></aside>
+<p class="source"><a href="https://hellgatenyc.com/"><strong>Hell Gate</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-20T20:47:05+00:00" data-pub="4:47 PM EDT">Thu, Aug 20 @ 4PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=New+York&state=NY">New York</a></p>
 <h2><a href="https://hellgatenyc.com/youll-literally-never-guess-the-brooklyn-conservatory-of-musics-centennial-baby/">You&#x27;ll Literally Never Guess the Brooklyn Conservatory of Music&#x27;s Centennial Baby</a></h2>
-<p class="byline"><small>By Hell Gate</small><span class="aside"><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://hellgatenyc.com/membership/">Become a member</a></span></p>
+<p class="byline">By Hell Gate</p>
 <a class="shot" href="https://hellgatenyc.com/youll-literally-never-guess-the-brooklyn-conservatory-of-musics-centennial-baby/" tabindex="-1" aria-hidden="true"><img src="../img/88d8b761d2fbf2271b7dc0742d99b8645b96c00b.jpg" alt="" width="480" height="270" loading="lazy" decoding="async"></a>
-<p>Hint: He lived in Gracie Mansion.</p>
-<p class="more"><a href="https://hellgatenyc.com/youll-literally-never-guess-the-brooklyn-conservatory-of-musics-centennial-baby/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-20T16:43:45+00:00" data-pub="12:43 PM EDT">Thursday, August 20, 2026 at 12:43 PM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>DC / Washington / <a href="https://51st.news/">The 51st</a></small></p>
-<h2><a href="https://51st.news/dc-commission-on-poverty-defunded/">The broken promise of D.C.’s Commission on Poverty</a></h2>
-<p class="byline"><small>By Natalie Note</small><span class="aside"><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://51st.news/donate/">Donate</a></span></p>
-<a class="shot" href="https://51st.news/dc-commission-on-poverty-defunded/" tabindex="-1" aria-hidden="true"><img src="../img/85e49ab3b7295d98fc08540c1a9d7f59572edf4c.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Over 17% of the city&#x27;s residents live in poverty. Without funds or staff, the government body tasked with helping them is unlikely to make a difference.</p>
-<p class="more"><a href="https://51st.news/dc-commission-on-poverty-defunded/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-20T16:21:37+00:00" data-pub="12:21 PM EDT">Thursday, August 20, 2026 at 12:21 PM EDT</time></small></p>
-<p><small>NY / New York / <a href="https://hellgatenyc.com/">Hell Gate</a></small></p>
-<h2><a href="https://hellgatenyc.com/sam-pings-20-dinner-fidi-char-siu/">Feast on Cantonese Roast Meats at &#x27;Chinatown Prices&#x27; in the Financial District</a></h2>
-<p class="byline"><small>By Scott Lynch</small><span class="aside"><a class="lozenge" href="../tags/co-op.html">Co-op</a><a class="lozenge" href="../tags/worker-owned.html">Worker-owned</a><a class="lozenge give" href="https://hellgatenyc.com/membership/">Become a member</a></span></p>
-<a class="shot" href="https://hellgatenyc.com/sam-pings-20-dinner-fidi-char-siu/" tabindex="-1" aria-hidden="true"><img src="../img/ea4009c3a3f13cc35809f9269ef7fb81c23b3708.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Char siu, roast duck, BBQ ribs...everything&#x27;s under $10 at Sam Ping&#x27;s.</p>
-<p class="more"><a href="https://hellgatenyc.com/sam-pings-20-dinner-fidi-char-siu/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Hint: He lived in Gracie Mansion. <a class="lozenge more" href="https://hellgatenyc.com/youll-literally-never-guess-the-brooklyn-conservatory-of-musics-centennial-baby/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 </div>
 <p><a id="more" href="worker-owned-2.html">More stories</a></p>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="../index.html">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -413,6 +464,47 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>

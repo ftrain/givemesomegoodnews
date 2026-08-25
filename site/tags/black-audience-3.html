@@ -13,12 +13,25 @@
 font-weight:100 700;font-display:swap}
 @font-face{font-family:PlexMono;src:url(../fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}
-:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-400.woff2) format('woff2');
+font-weight:400;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-600.woff2) format('woff2');
+font-weight:600;font-display:swap}
+@font-face{font-family:Text;src:url(../fonts/ibm-plex-serif-700.woff2) format('woff2');
+font-weight:700;font-display:swap}
+:root{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
+--band:#f6f6f4}
 @media(prefers-color-scheme:dark){
-:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f}}
+:root{--fg:#e8e8e8;--bg:#111;--dim:#a6a6a6;--rule:#333;--link:#ff6b6b;--seen:#cf8f8f;
+--band:#181818}}
 html{-webkit-text-size-adjust:100%}
-body{font:400 1.125rem/1.55 Plex,system-ui,sans-serif;color:var(--fg);background:var(--bg);
-max-width:38rem;margin:0 auto;padding:1rem 1rem 4rem;overflow-wrap:break-word}
+body{font:400 1.0625rem/1.62 Text,Georgia,serif;color:var(--fg);background:var(--bg);
+max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}
+header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
+main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
+{padding-left:1rem;padding-right:1rem}
+h1,h2,h3{font-family:Text,Georgia,serif;letter-spacing:-.004em}
+.sans{font-family:Plex,system-ui,sans-serif}
 a{color:var(--link);text-decoration:none}
 a:visited{color:var(--seen)}
 a:hover,a:focus{text-decoration:underline}
@@ -27,22 +40,28 @@ a:hover,a:focus{text-decoration:underline}
 .skip:focus{position:static;display:block;padding:.5rem 0}
 h1{font-size:1.5rem;line-height:1.2;margin:1rem 0}
 h2{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}
-article h2{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}
-.stamp{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}
-.stamp .lozenge{margin:0;flex:none}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}
+@media(max-width:34rem){article h2{max-width:100%;font-size:1.4rem}}
 h3{font-size:1rem;margin:1.2rem 0 .4rem}
 p{margin:0 0 .7rem}
 ul{padding-left:1.1rem}
 li{margin-bottom:.4rem}
 .meta{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim)}
 .meta a{color:var(--link)}
-article{padding:1.75rem 0;border-bottom:1px solid var(--rule)}
+article{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}
+/* Alternate a very light tint so the eye can find where one story
+   ends and the next begins while scanning. */
+#feed-items>article:nth-child(even){background:var(--band)}
+@media(max-width:34rem){article{padding:1.5rem .75rem}}
 article::after{content:"";display:block;clear:both}
 img{max-width:100%;height:auto;display:block}
-.shot{float:left;width:50%;margin:.3rem 1rem .4rem 0}
+.shot{float:left;width:33%;margin:.35rem 1rem .3rem 0}
 .shot img{width:100%}
-@media(max-width:34rem){.shot{float:none;width:100%;margin:0 0 .7rem}}
-time[data-pub]{cursor:pointer;border-bottom:1px dotted var(--rule)}
+@media(max-width:34rem){.shot{width:40%}}
+time[data-pub]{cursor:pointer}
 .yours{color:var(--dim)}
 .lozenge{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -50,19 +69,51 @@ color:var(--dim);text-decoration:none}
 .lozenge:hover,.lozenge:focus{border-color:var(--link);color:var(--link);text-decoration:none}
 .lozenge[aria-current=page],.lozenge.on{border-color:var(--link);color:var(--bg);background:var(--link)}
 .chips{margin:.75rem 0 1.25rem}
+.mapwrap{position:relative;margin:0 0 1rem}
+.mapwrap a[data-slug]{cursor:pointer}
+/* Half the width of the map, centred over it, sitting low so the dots
+   stay visible above the panel. */
+.preview{position:absolute;left:50%;transform:translateX(-50%);
+width:50%;min-width:min(17rem,88%);bottom:1.6rem;background:var(--bg);
+border:2px solid var(--fg);padding:.85rem 1rem;max-height:82%;overflow:auto}
+.preview ul{list-style:none;padding:0;margin:.4rem 0}
+.preview li{margin:0 0 .55rem}
+.preview-close{float:right;border:0;background:none;font-size:1.4rem;line-height:1;
+padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}
+/* Section, then what kind of newsroom this is, then the ask — a column
+   down the right of each story. */
+.tagcol{float:right;width:32%;max-width:10rem;margin:.15rem 0 .6rem .9rem;
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.tagcol .lozenge{margin:0}
+.tagcol .section{border-color:var(--fg);color:var(--fg);font-weight:600}
+.lozenge.place{margin:0}
+.lozenge.give{border-color:var(--link);color:var(--link);font-weight:600}
+.lozenge.give:hover,.lozenge.give:focus{background:var(--link);color:var(--bg)}
+a.lozenge.more{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}
+a.lozenge.more:hover,a.lozenge.more:focus{background:var(--fg);color:var(--bg)}
+.source{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}
+.whenwhere{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.byline{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}
+@media(max-width:34rem){.tagcol{width:38%;max-width:8.5rem}}
 svg{max-width:100%;height:auto}
 blockquote{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}
 hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 input,button{font:inherit;font-size:1rem;padding:.4rem .6rem;color:var(--fg);
 background:var(--bg);border:1px solid var(--rule)}
 input[type=search]{width:min(20rem,68%)}
-button{cursor:pointer;color:var(--link)}
+button{cursor:pointer;color:var(--link);font-size:1.15rem;line-height:1;padding:.42rem .7rem}
 /* The menu is the whole navigation: sections, subjects, feeds, search.
    Pinned to the top so it is reachable anywhere down an endless feed. */
-header{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
-align-items:center;justify-content:space-between;gap:.75rem;
+header{position:sticky;top:0;z-index:10;background:var(--bg);display:grid;
+grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}
-.home{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}
+.home{grid-column:2;justify-self:center;display:block;padding:.5rem 0;min-width:0;
+max-width:22rem;width:100%}
+.menu{grid-column:1;grid-row:1;justify-self:start}
+/* keeps the masthead optically centred against the burger on the left */
+header::after{content:"";grid-column:3;width:28px}
 .menu>summary{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}
 .menu>summary::-webkit-details-marker{display:none}
@@ -75,7 +126,7 @@ display:flex;gap:.6rem;align-items:center}
 .menu[open] .burger .bars{display:none}
 .menu[open] .burger .cross{display:inline}
 .masthead{width:100%;height:auto;display:block}
-.panel{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
+.panel{position:absolute;top:100%;left:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}
 .panel hr{border:0;border-top:1px solid var(--rule);margin:.85rem 0}
@@ -93,7 +144,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <body>
 <a class="skip" href="#main">Skip to the stories</a>
 <header>
-<a class="home" href="../index.html"><img class="masthead"
+<a class="home" href="/"><img class="masthead"
  src="../masthead.svg" alt="Give Me Some Good News" width="440" height="44"></a>
 <details class="menu">
 <summary title="Menu"><svg class="burger" viewBox="0 0 24 24" role="img" aria-label="Menu"
@@ -106,7 +157,7 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <form role="search" action="/search" method="get">
 <p><label class="skip" for="q">Search</label>
 <input type="search" id="q" name="q" placeholder="Search headlines and summaries">
-<button type="submit">Search</button></p>
+<button type="submit" aria-label="Search">&rarr;</button></p>
 </form>
 <hr>
 <nav aria-label="Subjects"><ul class="cols"><li><a href="../subjects/news.html">News</a></li><li><a href="../subjects/politics.html">Politics</a></li><li><a href="../subjects/opinion.html">Opinion</a></li><li><a href="../subjects/health.html">Health</a></li><li><a href="../subjects/environment.html">Environment</a></li><li><a href="../subjects/education.html">Education</a></li><li><a href="../subjects/business.html">Business</a></li><li><a href="../subjects/housing.html">Housing</a></li><li><a href="../subjects/sports.html">Sports</a></li><li><a href="../subjects/food.html">Food</a></li><li><a href="../subjects/arts.html">Arts</a></li></ul></nav>
@@ -121,276 +172,267 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
 <main id="main">
 <div id="feed-items">
 <article>
-<p class="stamp"><small><time datetime="2026-08-18T08:08:21+00:00" data-pub="1:08 AM PDT">Tuesday, August 18, 2026 at 1:08 AM PDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>CA / Los Angeles / <a href="https://www.lafocusnews.com">LA Focus</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/education.html">Education</a><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://blackbygod.org/support-us/">Donate</a></aside>
+<p class="source"><a href="https://blackbygod.org/"><strong>Black by God</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T16:01:25+00:00" data-pub="12:01 PM EDT">Tue, Aug 18 @ 12PM EDT</time><a class="lozenge place" href="/search?state=WV">West Virginia</a></p>
+<h2><a href="https://blackbygod.org/articles/news/bluefield-state-students-nasa-wv-space-grant-ambassadors-2026/">Two Bluefield State University students selected as NASA WV Space Grant Ambassadors</a></h2>
+<p class="byline">By BBG</p>
+<a class="shot" href="https://blackbygod.org/articles/news/bluefield-state-students-nasa-wv-space-grant-ambassadors-2026/" tabindex="-1" aria-hidden="true"><img src="../img/ce84fe157d7895857899cf939d66f56c13344f5a.jpg" alt="" width="480" height="354" loading="lazy" decoding="async"></a>
+<p>Bluefield State University students Gabrielle Justice and Danaye Walters have been selected as NASA West Virginia Space Grant Ambassadors for 2026–2027. <a class="lozenge more" href="https://blackbygod.org/articles/news/bluefield-state-students-nasa-wv-space-grant-ambassadors-2026/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://blackbygod.org/support-us/">Donate</a></aside>
+<p class="source"><a href="https://blackbygod.org/"><strong>Black by God</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T14:30:47+00:00" data-pub="10:30 AM EDT">Tue, Aug 18 @ 10AM EDT</time><a class="lozenge place" href="/search?state=WV">West Virginia</a></p>
+<h2><a href="https://blackbygod.org/articles/community/kshawn-foye-charleston-autism-community-support-wwe/">Community members, WWE, step up to assist autistic man after bullying incident at North Charleston Community Center</a></h2>
+<p class="byline">By Matthew Young</p>
+<a class="shot" href="https://blackbygod.org/articles/community/kshawn-foye-charleston-autism-community-support-wwe/" tabindex="-1" aria-hidden="true"><img src="../img/b3652cf114498d8203e0b0aa8826542fe8be1fda.jpg" alt="" width="480" height="354" loading="lazy" decoding="async"></a>
+<p>After a public assault broke his noise-canceling Beats, Kshawn Foye received community support, replacement headphones, and a special invitation from WWE. <a class="lozenge more" href="https://blackbygod.org/articles/community/kshawn-foye-charleston-autism-community-support-wwe/">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.lafocusnews.com">Support</a></aside>
+<p class="source"><a href="https://www.lafocusnews.com"><strong>LA Focus</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T08:38:31+00:00" data-pub="1:38 AM PDT">Tue, Aug 18 @ 1AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://www.lafocusnews.com/news/defense-accuses-hochman-of-trying-lapd-whistleblower-case-in-the-media-bbd28af3">Defense Accuses Hochman of Trying LAPD Whistleblower Case in the Media</a></h2>
+<p class="byline">By Stephen Oduntan</p>
+<a class="shot" href="https://www.lafocusnews.com/news/defense-accuses-hochman-of-trying-lapd-whistleblower-case-in-the-media-bbd28af3" tabindex="-1" aria-hidden="true"><img src="../img/dfd01898328f3c8367b74e7e90da8186ed05e20e.jpg" alt="" width="480" height="224" loading="lazy" decoding="async"></a>
+<p>LAPD Officer Daniel Flores faces 16 felony recording charges, while his lawyer says DA Nathan Hochman is publicly smearing a whistleblower who reported alleged racist and sexist remarks. <a class="lozenge more" href="https://www.lafocusnews.com/news/defense-accuses-hochman-of-trying-lapd-whistleblower-case-in-the-media-bbd28af3">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.lafocusnews.com">Support</a></aside>
+<p class="source"><a href="https://www.lafocusnews.com"><strong>LA Focus</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T08:34:32+00:00" data-pub="1:34 AM PDT">Tue, Aug 18 @ 1AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://www.lafocusnews.com/government/olympic-opportunity-harris-dawson-presses-for-spending-commitment-from-la28-b7c38b0a">Olympic Opportunity? Harris-Dawson Presses for Spending Commitment from LA28</a></h2>
+<p class="byline">By D.T. Carson</p>
+<a class="shot" href="https://www.lafocusnews.com/government/olympic-opportunity-harris-dawson-presses-for-spending-commitment-from-la28-b7c38b0a" tabindex="-1" aria-hidden="true"><img src="../img/c6cd264ce015505dd63a79bd3c4e5a57a57ee483.jpg" alt="" width="480" height="333" loading="lazy" decoding="async"></a>
+<p>L.A. Council President Marqueece Harris-Dawson wants LA28 to guarantee a share of Olympic contracts for city businesses, rather than counting firms across five counties as “local.” <a class="lozenge more" href="https://www.lafocusnews.com/government/olympic-opportunity-harris-dawson-presses-for-spending-commitment-from-la28-b7c38b0a">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.lafocusnews.com">Support</a></aside>
+<p class="source"><a href="https://www.lafocusnews.com"><strong>LA Focus</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T08:30:31+00:00" data-pub="1:30 AM PDT">Tue, Aug 18 @ 1AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://www.lafocusnews.com/finance/got-a-new-baby-uncle-sam-may-owe-them-1000-1ccf767f">Got a New Baby? Uncle Sam May Owe Them $1,000</a></h2>
+<a class="shot" href="https://www.lafocusnews.com/finance/got-a-new-baby-uncle-sam-may-owe-them-1000-1ccf767f" tabindex="-1" aria-hidden="true"><img src="../img/9bedd751e510b7e346e240e67ca68b0c9da2a11c.jpg" alt="" width="480" height="356" loading="lazy" decoding="async"></a>
+<p>Families with children born since 2025 may qualify for a $1,000 federal contribution to a new tax-advantaged investment account. Here’s who is eligible and how to apply. <a class="lozenge more" href="https://www.lafocusnews.com/finance/got-a-new-baby-uncle-sam-may-owe-them-1000-1ccf767f">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.lafocusnews.com">Support</a></aside>
+<p class="source"><a href="https://www.lafocusnews.com"><strong>LA Focus</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T08:26:26+00:00" data-pub="1:26 AM PDT">Tue, Aug 18 @ 1AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://www.lafocusnews.com/church/reginald-payne-elected-president-of-western-baptist-state-convention-83cae943">Reginald Payne Elected President of Western Baptist State Convention</a></h2>
+<a class="shot" href="https://www.lafocusnews.com/church/reginald-payne-elected-president-of-western-baptist-state-convention-83cae943" tabindex="-1" aria-hidden="true"><img src="../img/1b2af97bbd2393866b2671a71b0dfd4839b0ab5e.jpg" alt="" width="479" height="324" loading="lazy" decoding="async"></a>
+<p>Rev. Reginald Payne will lead California’s Western Baptist State Convention with plans to engage younger pastors, restructure operations and expand community partnerships. <a class="lozenge more" href="https://www.lafocusnews.com/church/reginald-payne-elected-president-of-western-baptist-state-convention-83cae943">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.lafocusnews.com">Support</a></aside>
+<p class="source"><a href="https://www.lafocusnews.com"><strong>LA Focus</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T08:17:51+00:00" data-pub="1:17 AM PDT">Tue, Aug 18 @ 1AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://www.lafocusnews.com/people/malcolm-jamal-warners-daughter-poised-to-receive-bulk-of-remaining-estate-f1eb522c">Malcolm-Jamal Warner’s Daughter Poised to Receive Bulk of Remaining Estate</a></h2>
+<p class="byline">By Staff Report</p>
+<a class="shot" href="https://www.lafocusnews.com/people/malcolm-jamal-warners-daughter-poised-to-receive-bulk-of-remaining-estate-f1eb522c" tabindex="-1" aria-hidden="true"><img src="../img/8d3cf57cdb8cf09b378813baf214708a413f2acd.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
+<p>Malcolm-Jamal Warner’s 9-year-old daughter could receive most of his remaining estate under a proposed settlement that still requires court approval. <a class="lozenge more" href="https://www.lafocusnews.com/people/malcolm-jamal-warners-daughter-poised-to-receive-bulk-of-remaining-estate-f1eb522c">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.lafocusnews.com">Support</a></aside>
+<p class="source"><a href="https://www.lafocusnews.com"><strong>LA Focus</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T08:15:31+00:00" data-pub="1:15 AM PDT">Tue, Aug 18 @ 1AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://www.lafocusnews.com/politics/california-legislative-black-caucus-elects-new-leaders-de531399">California Legislative Black Caucus Elects New Leaders</a></h2>
+<p class="byline">By Bo Tefu &amp; Antonio Ray Harvey | CA Black Media</p>
+<a class="shot" href="https://www.lafocusnews.com/politics/california-legislative-black-caucus-elects-new-leaders-de531399" tabindex="-1" aria-hidden="true"><img src="../img/0be2bd66228a352f819cfea580d0fec663df35fe.jpg" alt="" width="480" height="344" loading="lazy" decoding="async"></a>
+<p>Assemblymember Corey Jackson will lead the California Legislative Black Caucus in 2027-28, with Sen. Laura Richardson as vice chair, succeeding Sen. Akilah Weber Pierson and Assemblymember Isaac Bryan. <a class="lozenge more" href="https://www.lafocusnews.com/politics/california-legislative-black-caucus-elects-new-leaders-de531399">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.lafocusnews.com">Support</a></aside>
+<p class="source"><a href="https://www.lafocusnews.com"><strong>LA Focus</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T08:13:31+00:00" data-pub="1:13 AM PDT">Tue, Aug 18 @ 1AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://www.lafocusnews.com/government/california-is-encouraging-young-changemakers-to-apply-for-2026-john-lewis-leadership-award-71fd118e">California Is Encouraging Young Changemakers to Apply for 2026 John Lewis Leadership Award</a></h2>
+<p class="byline">By Bo Tefu &amp; Antonio Ray Harvey | CA Black Media</p>
+<a class="shot" href="https://www.lafocusnews.com/government/california-is-encouraging-young-changemakers-to-apply-for-2026-john-lewis-leadership-award-71fd118e" tabindex="-1" aria-hidden="true"><img src="../img/fae277776d44b3b8e1246f2eb0229bc7adb36f74.jpg" alt="" width="480" height="315" loading="lazy" decoding="async"></a>
+<p>California is seeking civic-minded residents ages 18 to 25 for the 2026 John Lewis Youth Leadership Award. Applications recognizing civil rights and community impact are due Sept. 14. <a class="lozenge more" href="https://www.lafocusnews.com/government/california-is-encouraging-young-changemakers-to-apply-for-2026-john-lewis-leadership-award-71fd118e">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.lafocusnews.com">Support</a></aside>
+<p class="source"><a href="https://www.lafocusnews.com"><strong>LA Focus</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T08:11:44+00:00" data-pub="1:11 AM PDT">Tue, Aug 18 @ 1AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
+<h2><a href="https://www.lafocusnews.com/government/assemblymember-tina-mckinnor-blasts-grow-california-for-billboards-in-her-district-6e272c7f">Assemblymember Tina McKinnor Blasts Grow California for Billboards in Her District</a></h2>
+<p class="byline">By Bo Tefu &amp; Antonio Ray Harvey | CA Black Media</p>
+<a class="shot" href="https://www.lafocusnews.com/government/assemblymember-tina-mckinnor-blasts-grow-california-for-billboards-in-her-district-6e272c7f" tabindex="-1" aria-hidden="true"><img src="../img/7a01b680e079df3bc4b3d73868421ff3601a87f1.jpg" alt="" width="480" height="342" loading="lazy" decoding="async"></a>
+<p>Assemblymember Tina McKinnor says Grow California’s billboards promoting bipartisan lawmakers are meant to confuse voters in her Inglewood district. The nonprofit says the campaign recognizes pragmatic leadership. <a class="lozenge more" href="https://www.lafocusnews.com/government/assemblymember-tina-mckinnor-blasts-grow-california-for-billboards-in-her-district-6e272c7f">Read more <span aria-hidden="true">&rarr;</span></a></p>
+</article>
+<article>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.lafocusnews.com">Support</a></aside>
+<p class="source"><a href="https://www.lafocusnews.com"><strong>LA Focus</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-18T08:08:21+00:00" data-pub="1:08 AM PDT">Tue, Aug 18 @ 1AM PDT</time><a class="lozenge place" href="/search?state=CA">California</a><a class="lozenge place" href="/search?place=Los+Angeles&state=CA">Los Angeles</a></p>
 <h2><a href="https://www.lafocusnews.com/politics/berkeley-igs-poll-becerra-holds-18-point-lead-over-hilton-in-california-governors-race-bb75494c">Berkeley IGS Poll: Becerra Holds 18-Point Lead Over Hilton in California Governor’s Race</a></h2>
-<p class="byline"><small>By Bo Tefu &amp; Antonio Ray Harvey | CA Black Media</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.lafocusnews.com">Support</a></span></p>
+<p class="byline">By Bo Tefu &amp; Antonio Ray Harvey | CA Black Media</p>
 <a class="shot" href="https://www.lafocusnews.com/politics/berkeley-igs-poll-becerra-holds-18-point-lead-over-hilton-in-california-governors-race-bb75494c" tabindex="-1" aria-hidden="true"><img src="../img/a74d78d19b532f253a8ac539e1a59ec720b6f447.jpg" alt="" width="480" height="323" loading="lazy" decoding="async"></a>
-<p>Xavier Becerra leads Steve Hilton 55% to 37% in California’s governor’s race, a Berkeley IGS Poll finds, with sharp partisan and regional divides shaping the November contest.</p>
-<p class="more"><a href="https://www.lafocusnews.com/politics/berkeley-igs-poll-becerra-holds-18-point-lead-over-hilton-in-california-governors-race-bb75494c">Read more <span aria-hidden="true">→</span></a></p>
+<p>Xavier Becerra leads Steve Hilton 55% to 37% in California’s governor’s race, a Berkeley IGS Poll finds, with sharp partisan and regional divides shaping the November contest. <a class="lozenge more" href="https://www.lafocusnews.com/politics/berkeley-igs-poll-becerra-holds-18-point-lead-over-hilton-in-california-governors-race-bb75494c">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-17T19:39:28+00:00" data-pub="3:39 PM EDT">Monday, August 17, 2026 at 3:39 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>NJ / Trenton / <a href="https://www.trentonjournal.com/">Trenton Journal</a></small></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/politics.html">Politics</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://trentonjournal.com/support-us/">Donate</a></aside>
+<p class="source"><a href="https://www.trentonjournal.com/"><strong>Trenton Journal</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-17T19:39:28+00:00" data-pub="3:39 PM EDT">Mon, Aug 17 @ 3PM EDT</time><a class="lozenge place" href="/search?state=NJ">New Jersey</a><a class="lozenge place" href="/search?place=Trenton&state=NJ">Trenton</a></p>
 <h2><a href="https://trentonjournal.com/trentons-government-runs-on-paper-it-doesnt-have-to/">Trenton’s government runs on paper. It doesn’t have to.</a></h2>
-<p class="byline"><small>By Trenton Journal</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://trentonjournal.com/support-us/">Donate</a></span></p>
+<p class="byline">By Trenton Journal</p>
 <a class="shot" href="https://trentonjournal.com/trentons-government-runs-on-paper-it-doesnt-have-to/" tabindex="-1" aria-hidden="true"><img src="../img/403daecb307210116604ec0a61f9bcc03e5b20ff.jpg" alt="" width="323" height="181" loading="lazy" decoding="async"></a>
-<p>Last week’s investigation at City Hall is a reminder of something Trenton residents already know from experience: too much of how this city runs still depends on paper, phone calls, and someone remembering to follow up. A permit application, a property purchase request, a basic map- all of it should be something a resident can</p>
-<p class="more"><a href="https://trentonjournal.com/trentons-government-runs-on-paper-it-doesnt-have-to/">Read more <span aria-hidden="true">→</span></a></p>
+<p>Last week’s investigation at City Hall is a reminder of something Trenton residents already know from experience: too much of how this city runs still depends on paper, phone calls, and someone remembering to follow up. A permit application, a property purchase request, a basic map- all of it should be something a resident can <a class="lozenge more" href="https://trentonjournal.com/trentons-government-runs-on-paper-it-doesnt-have-to/">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-14T12:39:29+00:00" data-pub="8:39 AM EDT">Friday, August 14, 2026 at 8:39 AM EDT</time></small></p>
-<p><small>NJ / Trenton / <a href="https://www.trentonjournal.com/">Trenton Journal</a></small></p>
-<h2><a href="https://trentonjournal.com/trenton-makes-connects-youth-activism-to-local-issues/">Trenton Makes connects youth activism to local issues</a></h2>
-<p class="byline"><small>By Cienago Eastman</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://trentonjournal.com/support-us/">Donate</a></span></p>
-<a class="shot" href="https://trentonjournal.com/trenton-makes-connects-youth-activism-to-local-issues/" tabindex="-1" aria-hidden="true"><img src="../img/6f6b5b1e7364b18277ecc150db8dbbea9f9fe0ef.jpg" alt="" width="480" height="362" loading="lazy" decoding="async"></a>
-<p>Recently at Mill Hill Park, a group of young people gathered as part of Trenton Makes, a youth-led grassroots organization focused on building community power and connecting young people to fight against issues such as historical redlining, gentrification, and homelessness. Composed primarily of college-aged young adults, the group meets weekly, holding tablings and discussions with</p>
-<p class="more"><a href="https://trentonjournal.com/trenton-makes-connects-youth-activism-to-local-issues/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.buffchallnews.com/site/forms/subscription_services/">Subscribe</a></aside>
+<p class="source"><a href="https://www.buffchallnews.com/"><strong>Challenger Community News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-17T14:43:00+00:00" data-pub="10:43 AM EDT">Mon, Aug 17 @ 10AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Buffalo&state=NY">Buffalo</a></p>
+<h2><a href="https://www.buffchallnews.com/news/local/cao-reopens-rafi-greene-community-action-center/article_8aff2670-8301-4210-84a9-9dd4b7282fa3.html">CAO Reopens Rafi Greene Community Action Center</a></h2>
+<a class="shot" href="https://www.buffchallnews.com/news/local/cao-reopens-rafi-greene-community-action-center/article_8aff2670-8301-4210-84a9-9dd4b7282fa3.html" tabindex="-1" aria-hidden="true"><img src="../img/3212d8009ba96c486788908ba9b08aea42d9a978.webp" alt="" width="300" height="169" loading="lazy" decoding="async"></a>
+<p>The Community Action Organization (CAO) of Western New York celebrated the grand reopening of the Rafi Greene Community Action Center on August 4, following extensive improvements to the property at 1423 Fillmore Avenue. <a class="lozenge more" href="https://www.buffchallnews.com/news/local/cao-reopens-rafi-greene-community-action-center/article_8aff2670-8301-4210-84a9-9dd4b7282fa3.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-13T16:26:48+00:00" data-pub="12:26 PM EDT">Thursday, August 13, 2026 at 12:26 PM EDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>NJ / Newark / <a href="https://www.fivewardsmedia.com">Five Wards Media</a></small></p>
-<h2><a href="https://www.fivewardsmedia.com/join-the-airport-city-newark-public-meeting-today/">Join the Airport City Newark Public Meeting | TODAY!</a></h2>
-<p class="byline"><small>By Devonne Campbell</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.fivewardsmedia.com/donate/">Donate</a></span></p>
-<p>RSVP for the Airport City Newark Public Meeting today, August 13, at 6:00 PM. We appreciate your continued engagement. Your voice remains essential as we work to ensure Newark residents and stakeholders are centered in this once-in-a-generation development effort. Meeting Details Airport City</p>
-<p class="more"><a href="https://www.fivewardsmedia.com/join-the-airport-city-newark-public-meeting-today/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.buffchallnews.com/site/forms/subscription_services/">Subscribe</a></aside>
+<p class="source"><a href="https://www.buffchallnews.com/"><strong>Challenger Community News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-17T14:04:00+00:00" data-pub="10:04 AM EDT">Mon, Aug 17 @ 10AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Buffalo&state=NY">Buffalo</a></p>
+<h2><a href="https://www.buffchallnews.com/news/local/build-of-buffalo-to-host-20th-issues-convention/article_945a7fd4-5f1c-44da-8bc3-677da842e55d.html">BUILD Of Buffalo to Host 20th Issues  Convention !</a></h2>
+<a class="shot" href="https://www.buffchallnews.com/news/local/build-of-buffalo-to-host-20th-issues-convention/article_945a7fd4-5f1c-44da-8bc3-677da842e55d.html" tabindex="-1" aria-hidden="true"><img src="../img/8923006e954a93713de807cfbf0d9800f026a6cd.webp" alt="" width="300" height="168" loading="lazy" decoding="async"></a>
+<p>BUILD of Buffalo Inc. will host its 20th Issues Convention Saturday, September 12 from 10:30a.m. to 1:30 p.m. at the Frank E. Merriweather Library, 1324 Jefferson Avenue. <a class="lozenge more" href="https://www.buffchallnews.com/news/local/build-of-buffalo-to-host-20th-issues-convention/article_945a7fd4-5f1c-44da-8bc3-677da842e55d.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-13T14:21:57+00:00" data-pub="10:21 AM EDT">Thursday, August 13, 2026 at 10:21 AM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>NJ / Trenton / <a href="https://www.trentonjournal.com/">Trenton Journal</a></small></p>
-<h2><a href="https://trentonjournal.com/trenton-awarded-1-7-million-to-support-business-growth-and-investment-in-the-capital-city/">Trenton Awarded $1.7 Million to Support Business Growth and Investment in the Capital City</a></h2>
-<p class="byline"><small>By Trenton Journal</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://trentonjournal.com/support-us/">Donate</a></span></p>
-<a class="shot" href="https://trentonjournal.com/trenton-awarded-1-7-million-to-support-business-growth-and-investment-in-the-capital-city/" tabindex="-1" aria-hidden="true"><img src="../img/954a70755d2a3171ee3d634cc32369553d0cf14e.jpg" alt="" width="480" height="371" loading="lazy" decoding="async"></a>
-<p>The City of Trenton has been awarded $1.7 million from the New Jersey Urban Enterprise Zone Authority (UEZA) to establish a new loan fund aimed at attracting significant business investment, creating economic activity, and strengthening commercial areas within Trenton’s Urban Enterprise Zone. The funding will support the Trenton UEZ Anchor Loan Fund, which will provide</p>
-<p class="more"><a href="https://trentonjournal.com/trenton-awarded-1-7-million-to-support-business-growth-and-investment-in-the-capital-city/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.buffchallnews.com/site/forms/subscription_services/">Subscribe</a></aside>
+<p class="source"><a href="https://www.buffchallnews.com/"><strong>Challenger Community News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-17T12:35:00+00:00" data-pub="8:35 AM EDT">Mon, Aug 17 @ 8AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Buffalo&state=NY">Buffalo</a></p>
+<h2><a href="https://www.buffchallnews.com/news/local/wny-graduates-receive-black-achievers-scholarships/article_d46eed77-0959-45eb-bc7c-e1b9fe1dd267.html">WNY Graduates Receive Black Achievers Scholarships</a></h2>
+<a class="shot" href="https://www.buffchallnews.com/news/local/wny-graduates-receive-black-achievers-scholarships/article_d46eed77-0959-45eb-bc7c-e1b9fe1dd267.html" tabindex="-1" aria-hidden="true"><img src="../img/2dacc750fa7e5eb1b3d347cad6af1b54564b284a.webp" alt="" width="300" height="169" loading="lazy" decoding="async"></a>
+<p>Black Achievers, Inc., along with Dion’s Dreamers, The official foundation of NFL Buffalo Bill’s star Dion Dawkins, recently awarded $10,000 in scholarships to ten WNY graduates during a Black Achiever Scholarship ceremony, located in the Buffalo Black Achievers Museum on <a class="lozenge more" href="https://www.buffchallnews.com/news/local/wny-graduates-receive-black-achievers-scholarships/article_d46eed77-0959-45eb-bc7c-e1b9fe1dd267.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-11T22:37:59+00:00" data-pub="3:37 PM PDT">Tuesday, August 11, 2026 at 3:37 PM PDT</time></small><a class="lozenge" href="../subjects/news.html">News</a></p>
-<p><small>CA / Los Angeles / <a href="https://www.lafocusnews.com">LA Focus</a></small></p>
-<h2><a href="https://www.lafocusnews.com/news/la-jazz-festival-abruptly-postponed-heres-what-happened-whats-next-acb392a1">L.A. Jazz Festival Abruptly Postponed: Here’s What Happened &amp; What’s Next</a></h2>
-<p class="byline"><small>By Lisa Collins</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.lafocusnews.com">Support</a></span></p>
-<a class="shot" href="https://www.lafocusnews.com/news/la-jazz-festival-abruptly-postponed-heres-what-happened-whats-next-acb392a1" tabindex="-1" aria-hidden="true"><img src="../img/9e9a774170c7fc03eebd3c982dc3300cd043ef80.jpg" alt="" width="480" height="384" loading="lazy" decoding="async"></a>
-<p>Last-minute cancellation leaves artists, vendors and organizers facing losses as founder Martin Ludlow vows the ambitious citywide celebration will return in 2027</p>
-<p class="more"><a href="https://www.lafocusnews.com/news/la-jazz-festival-abruptly-postponed-heres-what-happened-whats-next-acb392a1">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.buffchallnews.com/site/forms/subscription_services/">Subscribe</a></aside>
+<p class="source"><a href="https://www.buffchallnews.com/"><strong>Challenger Community News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-17T01:33:00+00:00" data-pub="9:33 PM EDT">Sun, Aug 16 @ 9PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Buffalo&state=NY">Buffalo</a></p>
+<h2><a href="https://www.buffchallnews.com/voices/readings-in-honor-of-marcus-garvey/article_2bb4407a-4440-48b4-a6d6-d9d29d8ff0d4.html">Readings In Honor of  Marcus Garvey...</a></h2>
+<a class="shot" href="https://www.buffchallnews.com/voices/readings-in-honor-of-marcus-garvey/article_2bb4407a-4440-48b4-a6d6-d9d29d8ff0d4.html" tabindex="-1" aria-hidden="true"><img src="../img/1206673804dc347761d84475303f0cac54bb5bba.webp" alt="" width="300" height="169" loading="lazy" decoding="async"></a>
+<p><a class="lozenge more" href="https://www.buffchallnews.com/voices/readings-in-honor-of-marcus-garvey/article_2bb4407a-4440-48b4-a6d6-d9d29d8ff0d4.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-11T18:44:56+00:00" data-pub="1:44 PM CDT">Tuesday, August 11, 2026 at 1:44 PM CDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>MO / Kansas City / <a href="https://kansascitydefender.com/">Kansas City Defender</a></small></p>
-<h2><a href="https://kansascitydefender.com/world/argentina-racism-world-cup-maga-milei-2/">‘All They Got to Do is Stop Talking Honky’: How Argentina’s Racist Display at the World Cup Mirrors the MAGA Backlash in the US</a></h2>
-<p class="byline"><small>By Mili Mansaray and Jon Jeter</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://kansascitydefender.com/support-us">Donate</a></span></p>
-<a class="shot" href="https://kansascitydefender.com/world/argentina-racism-world-cup-maga-milei-2/" tabindex="-1" aria-hidden="true"><img src="../img/b5cafe5f66f9b163a4196040f12a0d7f7b7fb3ad.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>A month after the World Cup ended, the spectacle is gone. The racial and political tensions it exposed are not, as Argentina’s President Javier Milei, much like Trump, stokes racial tensions to cover for a sick economy and its savage inequalities.</p>
-<p class="more"><a href="https://kansascitydefender.com/world/argentina-racism-world-cup-maga-milei-2/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.buffchallnews.com/site/forms/subscription_services/">Subscribe</a></aside>
+<p class="source"><a href="https://www.buffchallnews.com/"><strong>Challenger Community News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-17T01:18:00+00:00" data-pub="9:18 PM EDT">Sun, Aug 16 @ 9PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Buffalo&state=NY">Buffalo</a></p>
+<h2><a href="https://www.buffchallnews.com/voices/emancipation-is-not-liberation-what-buffalo-taught-me-about-dignity-grief-and-the-power-of/article_7be41aa3-b174-45b8-8594-b8cbb5dd1396.html">Emancipation Is Not Liberation: What  Buffalo Taught Me About Dignity, Grief, and the Power of Narrative</a></h2>
+<p class="byline">By Luxorae</p>
+<a class="shot" href="https://www.buffchallnews.com/voices/emancipation-is-not-liberation-what-buffalo-taught-me-about-dignity-grief-and-the-power-of/article_7be41aa3-b174-45b8-8594-b8cbb5dd1396.html" tabindex="-1" aria-hidden="true"><img src="../img/62e7f408ea4d02663826017c61ebfd8c744b5c06.webp" alt="" width="300" height="169" loading="lazy" decoding="async"></a>
+<p><a class="lozenge more" href="https://www.buffchallnews.com/voices/emancipation-is-not-liberation-what-buffalo-taught-me-about-dignity-grief-and-the-power-of/article_7be41aa3-b174-45b8-8594-b8cbb5dd1396.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-11T16:20:30+00:00" data-pub="12:20 PM EDT">Tuesday, August 11, 2026 at 12:20 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>NJ / Trenton / <a href="https://www.trentonjournal.com/">Trenton Journal</a></small></p>
-<h2><a href="https://trentonjournal.com/statement-on-state-police-activity-at-city-hall/">Statement On State Police Activity at City Hall</a></h2>
-<p class="byline"><small>By Trenton Journal</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://trentonjournal.com/support-us/">Donate</a></span></p>
-<a class="shot" href="https://trentonjournal.com/statement-on-state-police-activity-at-city-hall/" tabindex="-1" aria-hidden="true"><img src="../img/a4827772e9622f23a0305d03659f50ab5a9ede91.jpg" alt="" width="480" height="640" loading="lazy" decoding="async"></a>
-<p>The City of Trenton became aware this morning that members of the New Jersey State Police were at City Hall in connection with an investigation involving alleged misconduct by a former City employee. The investigation concerns a matter that the City itself identified, investigated, and referred to the New Jersey Attorney General’s Office approximately two</p>
-<p class="more"><a href="https://trentonjournal.com/statement-on-state-police-activity-at-city-hall/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.buffchallnews.com/site/forms/subscription_services/">Subscribe</a></aside>
+<p class="source"><a href="https://www.buffchallnews.com/"><strong>Challenger Community News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-16T15:43:00+00:00" data-pub="11:43 AM EDT">Sun, Aug 16 @ 11AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Buffalo&state=NY">Buffalo</a></p>
+<h2><a href="https://www.buffchallnews.com/news/local/it-s-erie-county-fair-time/article_e19f3ca6-e0f0-4d07-b11b-0fedd8bdd490.html">It’s Erie County Fair Time!</a></h2>
+<a class="shot" href="https://www.buffchallnews.com/news/local/it-s-erie-county-fair-time/article_e19f3ca6-e0f0-4d07-b11b-0fedd8bdd490.html" tabindex="-1" aria-hidden="true"><img src="../img/38de7fbd910108fb91b832ee072299b0eab64395.webp" alt="" width="300" height="169" loading="lazy" decoding="async"></a>
+<p><a class="lozenge more" href="https://www.buffchallnews.com/news/local/it-s-erie-county-fair-time/article_e19f3ca6-e0f0-4d07-b11b-0fedd8bdd490.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-11T06:50:53+00:00" data-pub="11:50 PM PDT">Monday, August 10, 2026 at 11:50 PM PDT</time></small><a class="lozenge" href="../subjects/environment.html">Environment</a></p>
-<p><small>CA / Los Angeles / <a href="https://www.lafocusnews.com">LA Focus</a></small></p>
-<h2><a href="https://www.lafocusnews.com/community/can-destination-crenshaw-still-deliver-on-its-promise-ee68587f">Can Destination Crenshaw Still Deliver on Its Promise?</a></h2>
-<p class="byline"><small></small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.lafocusnews.com">Support</a></span></p>
-<a class="shot" href="https://www.lafocusnews.com/community/can-destination-crenshaw-still-deliver-on-its-promise-ee68587f" tabindex="-1" aria-hidden="true"><img src="../img/e4343049d61030fbac8f272e8ba722844592b499.jpg" alt="" width="480" height="363" loading="lazy" decoding="async"></a>
-<p>Crenshaw Corridor leaders are demanding a one-year completion plan for Destination Crenshaw after years of construction disrupted churches, schools and businesses.</p>
-<p class="more"><a href="https://www.lafocusnews.com/community/can-destination-crenshaw-still-deliver-on-its-promise-ee68587f">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.buffchallnews.com/site/forms/subscription_services/">Subscribe</a></aside>
+<p class="source"><a href="https://www.buffchallnews.com/"><strong>Challenger Community News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-16T14:54:00+00:00" data-pub="10:54 AM EDT">Sun, Aug 16 @ 10AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Buffalo&state=NY">Buffalo</a></p>
+<h2><a href="https://www.buffchallnews.com/senator-baskin-launches-breaking-bread-dinner-series-for-formerly-incarcerated-community-members/article_5e5fa874-94ff-4991-b497-632c85073f81.html">Senator Baskin Launches &quot;Breaking Bread&quot; Dinner Series for Formerly  Incarcerated Community Members</a></h2>
+<a class="shot" href="https://www.buffchallnews.com/senator-baskin-launches-breaking-bread-dinner-series-for-formerly-incarcerated-community-members/article_5e5fa874-94ff-4991-b497-632c85073f81.html" tabindex="-1" aria-hidden="true"><img src="../img/779aa1fc2d17db57132c14a8b533c7586c3cefab.webp" alt="" width="300" height="168" loading="lazy" decoding="async"></a>
+<p><a class="lozenge more" href="https://www.buffchallnews.com/senator-baskin-launches-breaking-bread-dinner-series-for-formerly-incarcerated-community-members/article_5e5fa874-94ff-4991-b497-632c85073f81.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-11T06:47:25+00:00" data-pub="11:47 PM PDT">Monday, August 10, 2026 at 11:47 PM PDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>CA / Los Angeles / <a href="https://www.lafocusnews.com">LA Focus</a></small></p>
-<h2><a href="https://www.lafocusnews.com/crime/nearly-30-years-later-tupac-shakur-murder-trial-takes-center-stage-in-a-las-vegas-court-0a498121">Nearly 30 Years Later, Tupac Shakur Murder Trial Takes Center Stage in a Las Vegas Court</a></h2>
-<p class="byline"><small>By D.T. Carson</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.lafocusnews.com">Support</a></span></p>
-<a class="shot" href="https://www.lafocusnews.com/crime/nearly-30-years-later-tupac-shakur-murder-trial-takes-center-stage-in-a-las-vegas-court-0a498121" tabindex="-1" aria-hidden="true"><img src="../img/5d254679906aa2ca8c7edbe97cb08260943eaac1.jpg" alt="" width="480" height="359" loading="lazy" decoding="async"></a>
-<p>Jury selection has begun in Las Vegas for Duane “Keffe D” Davis, accused of orchestrating Tupac Shakur’s 1996 killing nearly 30 years after the rapper’s death.</p>
-<p class="more"><a href="https://www.lafocusnews.com/crime/nearly-30-years-later-tupac-shakur-murder-trial-takes-center-stage-in-a-las-vegas-court-0a498121">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.buffchallnews.com/site/forms/subscription_services/">Subscribe</a></aside>
+<p class="source"><a href="https://www.buffchallnews.com/"><strong>Challenger Community News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-16T12:00:00+00:00" data-pub="8:00 AM EDT">Sun, Aug 16 @ 8AM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Buffalo&state=NY">Buffalo</a></p>
+<h2><a href="https://www.buffchallnews.com/news/local/back-pack-back-to-school-giveaways/article_6b946462-d753-4cb3-8aa2-ff99b86110e9.html">Back Pack &amp; Back To School Giveaways!</a></h2>
+<a class="shot" href="https://www.buffchallnews.com/news/local/back-pack-back-to-school-giveaways/article_6b946462-d753-4cb3-8aa2-ff99b86110e9.html" tabindex="-1" aria-hidden="true"><img src="../img/e31788463b55d7d7fbcd230c2760423b7eb56e35.webp" alt="" width="300" height="169" loading="lazy" decoding="async"></a>
+<p>Sun Aug. 16 Bills Damar Hamlin hosting A Backpack Giveaway Today! Buffalo Bills safety Damar Hamlin and the Buffalo PAL are hosting a back-to-school backpack giveaway 11a.m to 4p.m. at the Johnnie B. Wiley Sports Pavilion at 1100 Jefferson. <a class="lozenge more" href="https://www.buffchallnews.com/news/local/back-pack-back-to-school-giveaways/article_6b946462-d753-4cb3-8aa2-ff99b86110e9.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-11T06:43:06+00:00" data-pub="11:43 PM PDT">Monday, August 10, 2026 at 11:43 PM PDT</time></small></p>
-<p><small>CA / Los Angeles / <a href="https://www.lafocusnews.com">LA Focus</a></small></p>
-<h2><a href="https://www.lafocusnews.com/community/price-launches-push-to-clear-abandoned-cars-from-south-la-streets-cbc526e2">Price Launches Push to Clear Abandoned Cars from South L.A. Streets</a></h2>
-<p class="byline"><small>By Staff Report</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.lafocusnews.com">Support</a></span></p>
-<a class="shot" href="https://www.lafocusnews.com/community/price-launches-push-to-clear-abandoned-cars-from-south-la-streets-cbc526e2" tabindex="-1" aria-hidden="true"><img src="../img/55e3f3258c4a098bc605ac72d1498714201c0b76.jpg" alt="" width="480" height="358" loading="lazy" decoding="async"></a>
-<p>New “Clear the Streets” initiative aims to tackle blight, illegal dumping and neighborhood safety</p>
-<p class="more"><a href="https://www.lafocusnews.com/community/price-launches-push-to-clear-abandoned-cars-from-south-la-streets-cbc526e2">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.buffchallnews.com/site/forms/subscription_services/">Subscribe</a></aside>
+<p class="source"><a href="https://www.buffchallnews.com/"><strong>Challenger Community News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-14T19:13:00+00:00" data-pub="3:13 PM EDT">Fri, Aug 14 @ 3PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Buffalo&state=NY">Buffalo</a></p>
+<h2><a href="https://www.buffchallnews.com/business/beau-fleuve-set-to-open-dance-studio-and-movement-center-this-fall/article_8c2baf69-05f3-46a2-a189-8a8d2a2ce479.html">Beau Fleuve Set to Open Dance Studio and Movement Center This Fall</a></h2>
+<a class="shot" href="https://www.buffchallnews.com/business/beau-fleuve-set-to-open-dance-studio-and-movement-center-this-fall/article_8c2baf69-05f3-46a2-a189-8a8d2a2ce479.html" tabindex="-1" aria-hidden="true"><img src="../img/96ddc0b3b304eaabd5305d55111a966c584f2688.webp" alt="" width="300" height="113" loading="lazy" decoding="async"></a>
+<p><a class="lozenge more" href="https://www.buffchallnews.com/business/beau-fleuve-set-to-open-dance-studio-and-movement-center-this-fall/article_8c2baf69-05f3-46a2-a189-8a8d2a2ce479.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-11T06:32:56+00:00" data-pub="11:32 PM PDT">Monday, August 10, 2026 at 11:32 PM PDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>CA / Los Angeles / <a href="https://www.lafocusnews.com">LA Focus</a></small></p>
-<h2><a href="https://www.lafocusnews.com/healthcare/national-blood-crisis-hits-close-to-home-for-black-community-30922b09">National Blood Crisis Hits Close to Home for Black Community</a></h2>
-<p class="byline"><small>By D.T. Carson</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.lafocusnews.com">Support</a></span></p>
-<a class="shot" href="https://www.lafocusnews.com/healthcare/national-blood-crisis-hits-close-to-home-for-black-community-30922b09" tabindex="-1" aria-hidden="true"><img src="../img/e9f4970316c15f322d376768d22c6ac7509d031b.jpg" alt="" width="480" height="341" loading="lazy" decoding="async"></a>
-<p>The Red Cross says a national blood crisis is straining hospitals, with Type O supplies especially low. Black donors are crucial for sickle cell patients who often need closely matched blood.</p>
-<p class="more"><a href="https://www.lafocusnews.com/healthcare/national-blood-crisis-hits-close-to-home-for-black-community-30922b09">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.buffchallnews.com/site/forms/subscription_services/">Subscribe</a></aside>
+<p class="source"><a href="https://www.buffchallnews.com/"><strong>Challenger Community News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-14T19:09:00+00:00" data-pub="3:09 PM EDT">Fri, Aug 14 @ 3PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Buffalo&state=NY">Buffalo</a></p>
+<h2><a href="https://www.buffchallnews.com/voices/doing-the-right-thing-at-the-right-time-to-the-right-people/article_91674861-c2a6-4cd0-bca1-7f2e2c567005.html">Doing the Right Thing At The Right Time To The Right People</a></h2>
+<p class="byline">By bettyjeangrant100@gmail.com (Betty Jean Grant)</p>
+<p>Courage does not come in a box or bottle nor is it scratched off a lottery ticket. It cannot be traded for a government grant or a patronage job. <a class="lozenge more" href="https://www.buffchallnews.com/voices/doing-the-right-thing-at-the-right-time-to-the-right-people/article_91674861-c2a6-4cd0-bca1-7f2e2c567005.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-11T06:17:32+00:00" data-pub="11:17 PM PDT">Monday, August 10, 2026 at 11:17 PM PDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>CA / Los Angeles / <a href="https://www.lafocusnews.com">LA Focus</a></small></p>
-<h2><a href="https://www.lafocusnews.com/business/beyonc-takes-full-ownership-of-sirdavis-whiskey-brand-43e70d33">Beyoncé Takes Full Ownership of SirDavis Whiskey Brand</a></h2>
-<p class="byline"><small>By Staff Report</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.lafocusnews.com">Support</a></span></p>
-<a class="shot" href="https://www.lafocusnews.com/business/beyonc-takes-full-ownership-of-sirdavis-whiskey-brand-43e70d33" tabindex="-1" aria-hidden="true"><img src="../img/fc22ee93b094a646bdefaa17c95d8c72f7ef1298.jpg" alt="" width="480" height="346" loading="lazy" decoding="async"></a>
-<p>Beyoncé has bought full ownership of SirDavis from LVMH’s Moët Hennessy, taking sole control of the Houston-finished whiskey brand named for her great-grandfather.</p>
-<p class="more"><a href="https://www.lafocusnews.com/business/beyonc-takes-full-ownership-of-sirdavis-whiskey-brand-43e70d33">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.buffchallnews.com/site/forms/subscription_services/">Subscribe</a></aside>
+<p class="source"><a href="https://www.buffchallnews.com/"><strong>Challenger Community News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-14T18:51:00+00:00" data-pub="2:51 PM EDT">Fri, Aug 14 @ 2PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Buffalo&state=NY">Buffalo</a></p>
+<h2><a href="https://www.buffchallnews.com/news/local/101-year-old-physician-veteran-dr-james-mcdaniel-community-set-to-honor-a-living-chapter/article_a1dde89a-5e93-4229-ac42-e62f0288171c.html">101 Year Old Physician, Veteran Dr. James McDaniel : Community Set to Honor A Living Chapter of American History</a></h2>
+<p class="byline">By By Debbera Ransom</p>
+<a class="shot" href="https://www.buffchallnews.com/news/local/101-year-old-physician-veteran-dr-james-mcdaniel-community-set-to-honor-a-living-chapter/article_a1dde89a-5e93-4229-ac42-e62f0288171c.html" tabindex="-1" aria-hidden="true"><img src="../img/42474683a7e2206955b21a641daf0419da11e369.webp" alt="" width="300" height="169" loading="lazy" decoding="async"></a>
+<p><a class="lozenge more" href="https://www.buffchallnews.com/news/local/101-year-old-physician-veteran-dr-james-mcdaniel-community-set-to-honor-a-living-chapter/article_a1dde89a-5e93-4229-ac42-e62f0288171c.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-11T06:08:54+00:00" data-pub="11:08 PM PDT">Monday, August 10, 2026 at 11:08 PM PDT</time></small></p>
-<p><small>CA / Los Angeles / <a href="https://www.lafocusnews.com">LA Focus</a></small></p>
-<h2><a href="https://www.lafocusnews.com/california/three-black-women-among-gov-newsoms-recent-judicial-appointments-614ab217">Three Black Women Among Gov. Newsom’s Recent Judicial Appointments</a></h2>
-<p class="byline"><small>By Bo Tefu | CA Black Media</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.lafocusnews.com">Support</a></span></p>
-<a class="shot" href="https://www.lafocusnews.com/california/three-black-women-among-gov-newsoms-recent-judicial-appointments-614ab217" tabindex="-1" aria-hidden="true"><img src="../img/2367b295207309e54efab7245dfb7ee8ef797532.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>Gov. Gavin Newsom nominated three Black women to California appellate courts as part of eight new appellate selections, alongside nine Superior Court appointments across five counties.</p>
-<p class="more"><a href="https://www.lafocusnews.com/california/three-black-women-among-gov-newsoms-recent-judicial-appointments-614ab217">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/health.html">Health</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.buffchallnews.com/site/forms/subscription_services/">Subscribe</a></aside>
+<p class="source"><a href="https://www.buffchallnews.com/"><strong>Challenger Community News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-14T18:47:00+00:00" data-pub="2:47 PM EDT">Fri, Aug 14 @ 2PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Buffalo&state=NY">Buffalo</a></p>
+<h2><a href="https://www.buffchallnews.com/health/american-medical-association-president-criticizes-trump-executive-order-on-childhood-vaccines/article_756da816-97b6-4532-8032-bd95aa832b21.html">American Medical Association President Criticizes Trump Executive Order on Childhood Vaccines</a></h2>
+<a class="shot" href="https://www.buffchallnews.com/health/american-medical-association-president-criticizes-trump-executive-order-on-childhood-vaccines/article_756da816-97b6-4532-8032-bd95aa832b21.html" tabindex="-1" aria-hidden="true"><img src="../img/03cfe73ca0aac6d425ba29767373e0d1f6e92d84.webp" alt="" width="286" height="163" loading="lazy" decoding="async"></a>
+<p><a class="lozenge more" href="https://www.buffchallnews.com/health/american-medical-association-president-criticizes-trump-executive-order-on-childhood-vaccines/article_756da816-97b6-4532-8032-bd95aa832b21.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-11T06:04:07+00:00" data-pub="11:04 PM PDT">Monday, August 10, 2026 at 11:04 PM PDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>CA / Los Angeles / <a href="https://www.lafocusnews.com">LA Focus</a></small></p>
-<h2><a href="https://www.lafocusnews.com/government/elhawary-bill-would-make-it-illegal-for-police-to-block-emergency-medical-care-e4671d10">Elhawary Bill Would Make It Illegal for Police to Block Emergency Medical Care</a></h2>
-<p class="byline"><small>By Antonio Ray Harvey</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.lafocusnews.com">Support</a></span></p>
-<a class="shot" href="https://www.lafocusnews.com/government/elhawary-bill-would-make-it-illegal-for-police-to-block-emergency-medical-care-e4671d10" tabindex="-1" aria-hidden="true"><img src="../img/30c90198a22a0cd5f4dd63ec3974dc4d55ee614f.jpg" alt="" width="480" height="328" loading="lazy" decoding="async"></a>
-<p>A California bill would bar officers from delaying emergency medical care when it is safe to provide it. AB 2318 faces a key Senate Appropriations hearing after cost concerns.</p>
-<p class="more"><a href="https://www.lafocusnews.com/government/elhawary-bill-would-make-it-illegal-for-police-to-block-emergency-medical-care-e4671d10">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.buffchallnews.com/site/forms/subscription_services/">Subscribe</a></aside>
+<p class="source"><a href="https://www.buffchallnews.com/"><strong>Challenger Community News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-14T18:29:00+00:00" data-pub="2:29 PM EDT">Fri, Aug 14 @ 2PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Buffalo&state=NY">Buffalo</a></p>
+<h2><a href="https://www.buffchallnews.com/news/local/black-buffalo-convention-2026-it-s-time-to-come-together/article_2d4848d6-61b8-464b-b13e-b344d83d5e14.html">Black Buffalo Convention 2026  It’s Time to Come Together!</a></h2>
+<p class="byline">By By Malik Lion Blyden</p>
+<a class="shot" href="https://www.buffchallnews.com/news/local/black-buffalo-convention-2026-it-s-time-to-come-together/article_2d4848d6-61b8-464b-b13e-b344d83d5e14.html" tabindex="-1" aria-hidden="true"><img src="../img/7d69218d9225a415d33d379183db4c3536b3444a.webp" alt="" width="300" height="169" loading="lazy" decoding="async"></a>
+<p><a class="lozenge more" href="https://www.buffchallnews.com/news/local/black-buffalo-convention-2026-it-s-time-to-come-together/article_2d4848d6-61b8-464b-b13e-b344d83d5e14.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-11T05:58:26+00:00" data-pub="10:58 PM PDT">Monday, August 10, 2026 at 10:58 PM PDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>CA / Los Angeles / <a href="https://www.lafocusnews.com">LA Focus</a></small></p>
-<h2><a href="https://www.lafocusnews.com/politics/on-your-november-ballot-prop-42-would-ban-new-taxes-on-retirement-savings-and-personal-assets-dc118c68">On Your November Ballot: Prop 42 Would Ban New Taxes on Retirement Savings and Personal Assets</a></h2>
-<p class="byline"><small>By Edward Henderson</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.lafocusnews.com">Support</a></span></p>
-<a class="shot" href="https://www.lafocusnews.com/politics/on-your-november-ballot-prop-42-would-ban-new-taxes-on-retirement-savings-and-personal-assets-dc118c68" tabindex="-1" aria-hidden="true"><img src="../img/bd9c0f2c65b09886e17c4da0bbccafc40e29875b.jpg" alt="" width="480" height="320" loading="lazy" decoding="async"></a>
-<p>California voters will decide Nov. 3 whether Prop 42 should constitutionally bar new taxes on retirement savings and personal assets, or preserve lawmakers’ future tax options.</p>
-<p class="more"><a href="https://www.lafocusnews.com/politics/on-your-november-ballot-prop-42-would-ban-new-taxes-on-retirement-savings-and-personal-assets-dc118c68">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.buffchallnews.com/site/forms/subscription_services/">Subscribe</a></aside>
+<p class="source"><a href="https://www.buffchallnews.com/"><strong>Challenger Community News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-14T17:41:00+00:00" data-pub="1:41 PM EDT">Fri, Aug 14 @ 1PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Buffalo&state=NY">Buffalo</a></p>
+<h2><a href="https://www.buffchallnews.com/arts-entertainment/beau-fleuve-music-arts-holds-their-final-celebration-after-a-decade/article_acda93a9-4f91-4073-b978-25d671c27e4f.html">BEAU FLEUVE MUSIC &amp; ARTS HOLDS THEIR FINAL CELEBRATION AFTER A DECADE</a></h2>
+<p class="byline">By L.H.</p>
+<a class="shot" href="https://www.buffchallnews.com/arts-entertainment/beau-fleuve-music-arts-holds-their-final-celebration-after-a-decade/article_acda93a9-4f91-4073-b978-25d671c27e4f.html" tabindex="-1" aria-hidden="true"><img src="../img/2fdea92389bd11ceddda08c56c15b218404e867f.webp" alt="" width="300" height="169" loading="lazy" decoding="async"></a>
+<p><a class="lozenge more" href="https://www.buffchallnews.com/arts-entertainment/beau-fleuve-music-arts-holds-their-final-celebration-after-a-decade/article_acda93a9-4f91-4073-b978-25d671c27e4f.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-11T01:42:07+00:00" data-pub="8:42 PM CDT">Monday, August 10, 2026 at 8:42 PM CDT</time></small></p>
-<p><small>MO / Kansas City / <a href="https://kansascitydefender.com/">Kansas City Defender</a></small></p>
-<h2><a href="https://kansascitydefender.com/aboltion/abolition/missouri-forced-detransition-trans-prisoners/">Missouri Begins the Medical Torture of Trans People in Its Prisons. The People It Caged Are Fighting Back</a></h2>
-<p class="byline"><small>By Ryan S.</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://kansascitydefender.com/support-us">Donate</a></span></p>
-<a class="shot" href="https://kansascitydefender.com/aboltion/abolition/missouri-forced-detransition-trans-prisoners/" tabindex="-1" aria-hidden="true"><img src="../img/ed55f7ac1fcf885aaeb79136061ca5d585fe1032.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>Da&#x27;Shae Breeze learned to write at Maya Angelou&#x27;s desk. Now she writes to The Defender from a solitary confinement cell as Missouri strips away her medical care. She spoke to us from inside state prison, alongside Jessica Hicklin, who spent 26 years in maximum security and won the federal ruling the state just defied.</p>
-<p class="more"><a href="https://kansascitydefender.com/aboltion/abolition/missouri-forced-detransition-trans-prisoners/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/business.html">Business</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.buffchallnews.com/site/forms/subscription_services/">Subscribe</a></aside>
+<p class="source"><a href="https://www.buffchallnews.com/"><strong>Challenger Community News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-14T17:26:00+00:00" data-pub="1:26 PM EDT">Fri, Aug 14 @ 1PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Buffalo&state=NY">Buffalo</a></p>
+<h2><a href="https://www.buffchallnews.com/business/from-resilience-to-entrepreneurship-brite-white-solutions-celebrates-10-years-of-black-business-excellence/article_113d463e-fa0f-4d1c-b958-4cbfe0906d29.html">From Resilience To Entrepreneurship:   Brite White Solutions Celebrates 10 Years Of Black Business Excellence</a></h2>
+<p class="byline">By by Shola Clark</p>
+<a class="shot" href="https://www.buffchallnews.com/business/from-resilience-to-entrepreneurship-brite-white-solutions-celebrates-10-years-of-black-business-excellence/article_113d463e-fa0f-4d1c-b958-4cbfe0906d29.html" tabindex="-1" aria-hidden="true"><img src="../img/2fc84c0ef12391f3d916a4694d4f6d307df06ec1.webp" alt="" width="257" height="145" loading="lazy" decoding="async"></a>
+<p><a class="lozenge more" href="https://www.buffchallnews.com/business/from-resilience-to-entrepreneurship-brite-white-solutions-celebrates-10-years-of-black-business-excellence/article_113d463e-fa0f-4d1c-b958-4cbfe0906d29.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-10T15:54:01+00:00" data-pub="11:54 AM EDT">Monday, August 10, 2026 at 11:54 AM EDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>NJ / Trenton / <a href="https://www.trentonjournal.com/">Trenton Journal</a></small></p>
-<h2><a href="https://trentonjournal.com/quick-thinking-nursing-students-help-bring-wandering-dementia-patient-home/">Quick-thinking nursing students help bring wandering dementia patient home</a></h2>
-<p class="byline"><small>By Maryanne Christiano-Mistretta</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://trentonjournal.com/support-us/">Donate</a></span></p>
-<a class="shot" href="https://trentonjournal.com/quick-thinking-nursing-students-help-bring-wandering-dementia-patient-home/" tabindex="-1" aria-hidden="true"><img src="../img/82035c417c373ad0fea25e05a3bf202f69270c37.jpg" alt="" width="480" height="600" loading="lazy" decoding="async"></a>
-<p>Earlier this summer, Melissa Matamoros was driving to class at Jersey College School of Nursing in Ewing when an unexpected encounter put her healthcare training into practice. Matamoros, a practical nursing student, arrived at the campus parking lot around 6:40 a.m. for her 7 a.m. class when an older man approached her holding a wallet.</p>
-<p class="more"><a href="https://trentonjournal.com/quick-thinking-nursing-students-help-bring-wandering-dementia-patient-home/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.buffchallnews.com/site/forms/subscription_services/">Subscribe</a></aside>
+<p class="source"><a href="https://www.buffchallnews.com/"><strong>Challenger Community News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-14T17:03:00+00:00" data-pub="1:03 PM EDT">Fri, Aug 14 @ 1PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Buffalo&state=NY">Buffalo</a></p>
+<h2><a href="https://www.buffchallnews.com/news/local/dr-ebony-e-prophet-bullock-takes-oath-of-office/article_8c3877cb-a5d2-4dd1-a095-d797bf3d33c6.html">DR. EBONY E. PROPHET-BULLOCK TAKES OATH OF OFFICE</a></h2>
+<a class="shot" href="https://www.buffchallnews.com/news/local/dr-ebony-e-prophet-bullock-takes-oath-of-office/article_8c3877cb-a5d2-4dd1-a095-d797bf3d33c6.html" tabindex="-1" aria-hidden="true"><img src="../img/1854516c4837083e32a197ddf35cef1c92989c19.webp" alt="" width="300" height="169" loading="lazy" decoding="async"></a>
+<p><a class="lozenge more" href="https://www.buffchallnews.com/news/local/dr-ebony-e-prophet-bullock-takes-oath-of-office/article_8c3877cb-a5d2-4dd1-a095-d797bf3d33c6.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-06T17:41:49+00:00" data-pub="12:41 PM CDT">Thursday, August 6, 2026 at 12:41 PM CDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>MO / Kansas City / <a href="https://kansascitydefender.com/">Kansas City Defender</a></small></p>
-<h2><a href="https://kansascitydefender.com/technology-ai/kansas-city-data-center-tax-scheme/">Kansas City Killed the Data Center. The Tax Scheme It Was Feeding Is Still Alive</a></h2>
-<p class="byline"><small>By Ryan S.</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://kansascitydefender.com/support-us">Donate</a></span></p>
-<a class="shot" href="https://kansascitydefender.com/technology-ai/kansas-city-data-center-tax-scheme/" tabindex="-1" aria-hidden="true"><img src="../img/df1f39cd1c1647f5209c2b5a7570ac982932c338.jpg" alt="" width="480" height="410" loading="lazy" decoding="async"></a>
-<p>A Miami fund bought a 126-year-old downtown building, quietly signed away the right to demolish it, then asked Kansas City for permission to demolish it anyway and build a 20-story data center. A leading legal scholar reviewed the paperwork The Defender obtained and called it by its name. This week, Kansas City said no.</p>
-<p class="more"><a href="https://kansascitydefender.com/technology-ai/kansas-city-data-center-tax-scheme/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.buffchallnews.com/site/forms/subscription_services/">Subscribe</a></aside>
+<p class="source"><a href="https://www.buffchallnews.com/"><strong>Challenger Community News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-14T16:48:00+00:00" data-pub="12:48 PM EDT">Fri, Aug 14 @ 12PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Buffalo&state=NY">Buffalo</a></p>
+<h2><a href="https://www.buffchallnews.com/news/local/passing-of-sports-writer-gregory-l-brown-confirmed/article_cd43564a-402c-414f-b6d1-de23439f262f.html">Passing Of Sports Writer Gregory L. Brown Confirmed</a></h2>
+<a class="shot" href="https://www.buffchallnews.com/news/local/passing-of-sports-writer-gregory-l-brown-confirmed/article_cd43564a-402c-414f-b6d1-de23439f262f.html" tabindex="-1" aria-hidden="true"><img src="../img/15d60a887a454e02c592f3a7d698c3300591a7b0.webp" alt="" width="300" height="169" loading="lazy" decoding="async"></a>
+<p><a class="lozenge more" href="https://www.buffchallnews.com/news/local/passing-of-sports-writer-gregory-l-brown-confirmed/article_cd43564a-402c-414f-b6d1-de23439f262f.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 <article>
-<p class="stamp"><small><time datetime="2026-08-03T17:28:06+00:00" data-pub="12:28 PM CDT">Monday, August 3, 2026 at 12:28 PM CDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>MO / Kansas City / <a href="https://kansascitydefender.com/">Kansas City Defender</a></small></p>
-<h2><a href="https://kansascitydefender.com/revolutionary-politics/if-we-must-die-a-black-august-tribute-from-the-heart-of-the-country/">If We Must Die: A Black August Tribute from the Heart of the Country</a></h2>
-<p class="byline"><small>By Ryan S.</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://kansascitydefender.com/support-us">Donate</a></span></p>
-<a class="shot" href="https://kansascitydefender.com/revolutionary-politics/if-we-must-die-a-black-august-tribute-from-the-heart-of-the-country/" tabindex="-1" aria-hidden="true"><img src="../img/17c9cc8bcfe4cc1620e203557c3cff67e0f82ca1.jpg" alt="" width="480" height="303" loading="lazy" decoding="async"></a>
-<p>Born behind prison walls, carried across the diaspora, Black August is the month we count our martyrs and sharpen ourselves. McKay gave us the vow. Missouri and Kansas gave us the battleground.</p>
-<p class="more"><a href="https://kansascitydefender.com/revolutionary-politics/if-we-must-die-a-black-august-tribute-from-the-heart-of-the-country/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-03T13:47:11+00:00" data-pub="9:47 AM EDT">Monday, August 3, 2026 at 9:47 AM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>NY / New York City / <a href="https://newyorkparrot.com/">New York Parrot</a></small></p>
-<h2><a href="https://newyorkparrot.com/2026/08/us-based-diaspora-group-donates-vehicles-to-support-oyo-state-gubernatorial-candidate/">US-based diaspora group donates vehicles to support Oyo State gubernatorial candidate</a></h2>
-<p class="byline"><small>By Mutiu Olawuyi</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://wordpress.org/support/forums/">Donate</a></span></p>
-<a class="shot" href="https://newyorkparrot.com/2026/08/us-based-diaspora-group-donates-vehicles-to-support-oyo-state-gubernatorial-candidate/" tabindex="-1" aria-hidden="true"><img src="../img/99fd74991d7c013c3a330406b3e3b1cccdc4d4f2.jpg" alt="" width="300" height="270" loading="lazy" decoding="async"></a>
-<p>The Oriyomi Support Group USA has donated three branded campaign vehicles to Oriyomi Hamzat’s gubernatorial</p>
-<p class="more"><a href="https://newyorkparrot.com/2026/08/us-based-diaspora-group-donates-vehicles-to-support-oyo-state-gubernatorial-candidate/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-02T07:02:48+00:00" data-pub="12:02 AM PDT">Sunday, August 2, 2026 at 12:02 AM PDT</time></small><a class="lozenge" href="../subjects/education.html">Education</a></p>
-<p><small>CA / Los Angeles / <a href="https://afrolanews.org/">Afro-LA</a></small></p>
-<h2><a href="https://afrolanews.org/2026/08/impact-of-incarceration-on-families/">The day I took my students to prison, my past walked in with me</a></h2>
-<p class="byline"><small>By Dr. Vanda Seward</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://afrolanews.org/donate">Donate</a></span></p>
-<p>A personal account of how a prison visit reveals the broader impact of incarceration on families, and why it should be viewed as a public health crisis.</p>
-<p class="more"><a href="https://afrolanews.org/2026/08/impact-of-incarceration-on-families/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-08-01T16:35:22+00:00" data-pub="11:35 AM CDT">Saturday, August 1, 2026 at 11:35 AM CDT</time></small></p>
-<p><small>MO / Kansas City / <a href="https://kansascitydefender.com/">Kansas City Defender</a></small></p>
-<h2><a href="https://kansascitydefender.com/propagandaobserver/816-day-founder-bizzy-benton-plaza/">Put Some Respek on Bizzy’s Name: The Plaza, White Media, and the “Inaugural” Theft of 816 Day</a></h2>
-<p class="byline"><small>By Ryan S.</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://kansascitydefender.com/support-us">Donate</a></span></p>
-<a class="shot" href="https://kansascitydefender.com/propagandaobserver/816-day-founder-bizzy-benton-plaza/" tabindex="-1" aria-hidden="true"><img src="../img/4a89f588902c15e1c26341247ebc5c0048535b14.jpg" alt="" width="480" height="470" loading="lazy" decoding="async"></a>
-<p>Black entrepreneur and widely beloved Promoter Brian &quot;Bizzy&quot; Benton founded 816 Day in 2017. Now in 2026 KCTV5 calls the event &quot;inaugural.&quot; Black Kansas City has a lot to say.</p>
-<p class="more"><a href="https://kansascitydefender.com/propagandaobserver/816-day-founder-bizzy-benton-plaza/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-07-31T22:16:40+00:00" data-pub="5:16 PM CDT">Friday, July 31, 2026 at 5:16 PM CDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>MO / Kansas City / <a href="https://kansascitydefender.com/">Kansas City Defender</a></small></p>
-<h2><a href="https://kansascitydefender.com/politics/americas-most-important-election-the-peoples-ballot-is-here/">📰 America’s Most Important Election? The People’s Ballot Is Here.</a></h2>
-<p class="byline"><small>By KC Defender Staff</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://kansascitydefender.com/support-us">Donate</a></span></p>
-<a class="shot" href="https://kansascitydefender.com/politics/americas-most-important-election-the-peoples-ballot-is-here/" tabindex="-1" aria-hidden="true"><img src="../img/052f62f2c22c74724f90e24635aa2fec41154475.jpg" alt="" width="480" height="480" loading="lazy" decoding="async"></a>
-<p>The Defender&#x27;s 2026 election guide covers every amendment, every race, and every dollar, in plain language, before Tuesday.</p>
-<p class="more"><a href="https://kansascitydefender.com/politics/americas-most-important-election-the-peoples-ballot-is-here/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-07-31T17:46:51+00:00" data-pub="12:46 PM CDT">Friday, July 31, 2026 at 12:46 PM CDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>MO / Kansas City / <a href="https://kansascitydefender.com/">Kansas City Defender</a></small></p>
-<h2><a href="https://kansascitydefender.com/politics/wyandotte-county-ballots-returned-undeliverable-primary/">Major Voter Disenfranchisement in Kansas? Black and Latino Majority County Mailed Ballots With a Return Address the Post Office Won’t Deliver To</a></h2>
-<p class="byline"><small>By Ryan S.</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://kansascitydefender.com/support-us">Donate</a></span></p>
-<a class="shot" href="https://kansascitydefender.com/politics/wyandotte-county-ballots-returned-undeliverable-primary/" tabindex="-1" aria-hidden="true"><img src="../img/38dfcbcd993a3ed815124416430f348b4003ae1f.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"></a>
-<p>Voters in a Black and brown majority county are finding their completed ballots back in their own mailboxes, sealed and uncounted, four days before the Kansas primary. The county printed a retired post office box on the return envelope and the Postal Service stopped delivering to it. Nobody will say how many votes it hit.</p>
-<p class="more"><a href="https://kansascitydefender.com/politics/wyandotte-county-ballots-returned-undeliverable-primary/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-07-30T18:35:35+00:00" data-pub="2:35 PM EDT">Thursday, July 30, 2026 at 2:35 PM EDT</time></small><a class="lozenge" href="../subjects/health.html">Health</a></p>
-<p><small>MA / Springfield / <a href="https://www.afampointofview.com/">An African-American Point of View (Point of View)</a></small></p>
-<h2><a href="https://afampointofview.com/dr-yolanda-marrow-dnp-rn-joins-cooley-dickinson-hospital-as-nursing-director-for-the-emergency-department/">Dr. Yolanda Marrow, DNP, RN Joins Cooley Dickinson Hospital as Nursing Director for the Emergency Department</a></h2>
-<p class="byline"><small>By Af-Am Point of View</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.afampointofview.com/">Support</a></span></p>
-<p>Dr. Marrow brings more than 25 years of progressive nursing leadership experience with expertise in emergency and trauma care, quality and safety, regulatory excellence, and clinical operations.</p>
-<p class="more"><a href="https://afampointofview.com/dr-yolanda-marrow-dnp-rn-joins-cooley-dickinson-hospital-as-nursing-director-for-the-emergency-department/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-07-30T18:32:58+00:00" data-pub="2:32 PM EDT">Thursday, July 30, 2026 at 2:32 PM EDT</time></small><a class="lozenge" href="../subjects/politics.html">Politics</a></p>
-<p><small>MA / Springfield / <a href="https://www.afampointofview.com/">An African-American Point of View (Point of View)</a></small></p>
-<h2><a href="https://afampointofview.com/it-will-take-bold-leadership-and-a-united-community/">IT WILL TAKE BOLD LEADERSHIP AND A UNITED COMMUNITY</a></h2>
-<p class="byline"><small>By Af-Am Point of View</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.afampointofview.com/">Support</a></span></p>
-<p>At a meeting between myself, State Representative Bud Williams and Springfield City Councilor Justin Hurst, I raised the topic of gun violence that I had recently discussed with Charles Stokes, who has become a dominant voice in Springfield’s Black community.</p>
-<p class="more"><a href="https://afampointofview.com/it-will-take-bold-leadership-and-a-united-community/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-07-29T19:46:20+00:00" data-pub="12:46 PM PDT">Wednesday, July 29, 2026 at 12:46 PM PDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>CA / Los Angeles / <a href="https://afrolanews.org/">Afro-LA</a></small></p>
-<h2><a href="https://afrolanews.org/2026/07/black-owned-businesses-westside-los-angeles/">Looking for Black-owned businesses on L.A.’s Westside? Start with these</a></h2>
-<p class="byline"><small>By Marina Peña</small><span class="aside"><a class="lozenge" href="../tags/nonprofit.html">Nonprofit</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge" href="../tags/anno-member.html">ANNO member</a><a class="lozenge give" href="https://afrolanews.org/donate">Donate</a></span></p>
-<p>Meet five Black-owned businesses on L.A.’s Westside, from Culver City to Santa Monica, offering books, coffee, cookies, skincare and more.</p>
-<p class="more"><a href="https://afrolanews.org/2026/07/black-owned-businesses-westside-los-angeles/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-07-16T02:22:00+00:00" data-pub="10:22 PM EDT">Wednesday, July 15, 2026 at 10:22 PM EDT</time></small></p>
-<p><small>DC / Washington / <a href="https://hunewsservice.com/about-us/">Howard University News Service</a></small></p>
-<h2><a href="https://hunewsservice.com/race/true-reformer-celebrates-123-years-of-community-and-collective-progress/">True Reformer Celebrates 123 Years of Community and Collective Progress</a></h2>
-<p class="byline"><small>By Nailah Williams</small><span class="aside"><a class="lozenge" href="../tags/college.html">College</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://subscribepage.io/IvgmqZ">Subscribe</a></span></p>
-<a class="shot" href="https://hunewsservice.com/race/true-reformer-celebrates-123-years-of-community-and-collective-progress/" tabindex="-1" aria-hidden="true"><img src="../img/d89cfbae3dd2cebf82f5228841af63b129561411.jpg" alt="" width="480" height="480" loading="lazy" decoding="async"></a>
-<p>The grand, five-story True Reformer Building is one of the most significant structures on the U Street Heritage Trail. It stands out among nearby historic landmarks like Lee’s Flower Shop, Ben’s Chili Bowl and the Lincoln Theatre. Celebrating its 123rd anniversary this week, the building represents more than a century of history, resilience and community leadership “All of these historic, Black-ow</p>
-<p class="more"><a href="https://hunewsservice.com/race/true-reformer-celebrates-123-years-of-community-and-collective-progress/">Read more <span aria-hidden="true">→</span></a></p>
-</article>
-<article>
-<p class="stamp"><small><time datetime="2026-07-10T13:19:26+00:00" data-pub="9:19 AM EDT">Friday, July 10, 2026 at 9:19 AM EDT</time></small><a class="lozenge" href="../subjects/business.html">Business</a></p>
-<p><small>NY / New York City / <a href="https://newyorkparrot.com/">New York Parrot</a></small></p>
-<h2><a href="https://newyorkparrot.com/2026/07/anti-bds-coalition-launches-unbreakable-bond-investment-elects-soraya-deen-president/">Anti-BDS coalition launches Unbreakable Bond Investment, elects Soraya Deen President</a></h2>
-<p class="byline"><small>By Sheikh Musa Drammeh</small><span class="aside"><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://wordpress.org/support/forums/">Donate</a></span></p>
-<a class="shot" href="https://newyorkparrot.com/2026/07/anti-bds-coalition-launches-unbreakable-bond-investment-elects-soraya-deen-president/" tabindex="-1" aria-hidden="true"><img src="../img/e1d8092d3000d08338219da8b47254d0fa0f2ba8.jpg" alt="" width="480" height="720" loading="lazy" decoding="async"></a>
-<p>Anti-BDS activists launch the Unbreakable Bond Investment Initiative in New York, electing Soraya Deen as president to promote investment, dialogue and Israeli-Palestinian cooperation.</p>
-<p class="more"><a href="https://newyorkparrot.com/2026/07/anti-bds-coalition-launches-unbreakable-bond-investment-elects-soraya-deen-president/">Read more <span aria-hidden="true">→</span></a></p>
+<aside class="tagcol"><a class="lozenge section" href="../subjects/news.html">News</a><a class="lozenge" href="../tags/independent.html">Independent</a><a class="lozenge" href="../tags/black-audience.html">Black audience</a><a class="lozenge give" href="https://www.buffchallnews.com/site/forms/subscription_services/">Subscribe</a></aside>
+<p class="source"><a href="https://www.buffchallnews.com/"><strong>Challenger Community News</strong></a></p>
+<p class="whenwhere"><time datetime="2026-08-14T16:21:00+00:00" data-pub="12:21 PM EDT">Fri, Aug 14 @ 12PM EDT</time><a class="lozenge place" href="/search?state=NY">New York</a><a class="lozenge place" href="/search?place=Buffalo&state=NY">Buffalo</a></p>
+<h2><a href="https://www.buffchallnews.com/news/rochester/the-rochester-red-wings-induct-danny-clyburn-leo-gomez-into-the-hall-of-fame/article_26fdf4d2-5739-476e-bcb4-ed8ebb409c9d.html">The Rochester Red Wings Induct Danny  Clyburn &amp; Leo Gomez into The Hall of Fame</a></h2>
+<p class="byline">By radneygeorge@hotmail.com (George Radney)</p>
+<a class="shot" href="https://www.buffchallnews.com/news/rochester/the-rochester-red-wings-induct-danny-clyburn-leo-gomez-into-the-hall-of-fame/article_26fdf4d2-5739-476e-bcb4-ed8ebb409c9d.html" tabindex="-1" aria-hidden="true"><img src="../img/a8cf65b852fa91725148dcc2ae604cc990cd0ca8.webp" alt="" width="300" height="169" loading="lazy" decoding="async"></a>
+<p><a class="lozenge more" href="https://www.buffchallnews.com/news/rochester/the-rochester-red-wings-induct-danny-clyburn-leo-gomez-into-the-hall-of-fame/article_26fdf4d2-5739-476e-bcb4-ed8ebb409c9d.html">Read more <span aria-hidden="true">&rarr;</span></a></p>
 </article>
 </div>
 <p><a id="more" href="black-audience-4.html">More stories</a></p>
 </main>
 <footer>
 <hr>
-<nav aria-label="Site"><p class="meta"><a href="../index.html">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
+<nav aria-label="Site"><p class="meta"><a href="/">Today&#x27;s news</a> · <a href="../map.html">Map</a> · <a href="../catalog.html">Newsrooms</a> · <a href="../big-stories.html">Big Stories</a> · <a href="../story-links.html">Story Links</a> · <a href="../resources.html">Resources</a> · <a href="../text/">Plain text edition</a> · <a href="../feeds.html">RSS Feeds</a> · <a href="../about.html">About This Site</a></p></nav>
 </footer>
 <script>
 /* A disclosure stays open until it is told otherwise; a menu should not. */
@@ -406,6 +448,47 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>
+<script>
+/* Clicking a dot opens that newsroom's matching stories over the map.
+   With JavaScript off the dot stays an ordinary link to the newsroom. */
+(function () {
+  var wrap = document.querySelector(".mapwrap");
+  if (!wrap) return;
+  var data = document.getElementById("map-stories");
+  if (!data) return;
+  var stories;
+  try { stories = JSON.parse(data.textContent); } catch (e) { return; }
+  var panel = wrap.querySelector(".preview");
+  var body = wrap.querySelector(".preview-body");
+
+  wrap.addEventListener("click", function (e) {
+    if (e.target.closest(".preview-close")) { panel.hidden = true; return; }
+    var dot = e.target.closest("a[data-slug]");
+    if (!dot) return;
+    var found = stories[dot.getAttribute("data-slug")];
+    if (!found) return;
+    e.preventDefault();
+    var html = "<p class='source'><strong>" + found.name + "</strong></p><ul>";
+    for (var i = 0; i < found.items.length; i++) {
+      var it = found.items[i];
+      html += "<li><a href='" + it.url + "'>" + it.title + "</a>" +
+              "<br><span class='meta'>" + it.when + "</span></li>";
+    }
+    html += "</ul><p><a class='lozenge' href='" + found.site + "'>Visit " +
+            found.name + "</a>";
+    if (found.support) {
+      html += "<a class='lozenge give' href='" + found.support + "'>" +
+              found.supportLabel + "</a>";
+    }
+    html += "</p>";
+    body.innerHTML = html;
+    panel.hidden = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") panel.hidden = true;
+  });
 })();
 </script>
 <script>
