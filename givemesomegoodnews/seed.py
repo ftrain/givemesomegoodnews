@@ -10,7 +10,7 @@ from .db import connect
 FIELDS = [
     "slug", "name", "url", "about_url", "feed_url", "city", "state", "lat",
     "lon", "coverage", "coverage_type", "model", "affiliations", "founded",
-    "support_url", "support_label", "beat", "timezone",
+    "support_url", "support_label", "beat", "timezone", "tagline",
 ]
 
 
@@ -31,11 +31,11 @@ def main():
                 """
                 INSERT INTO orgs (slug, name, url, about_url, feed_url, city, state,
                                   lat, lon, coverage, coverage_type, model, affiliations, founded,
-                                  support_url, support_label, beat, timezone)
+                                  support_url, support_label, beat, timezone, tagline)
                 VALUES (%(slug)s, %(name)s, %(url)s, %(about_url)s, %(feed_url)s, %(city)s,
                         %(state)s, %(lat)s, %(lon)s, %(coverage)s, %(coverage_type)s,
                         %(model)s, %(affiliations)s, %(founded)s,
-                        %(support_url)s, %(support_label)s, %(beat)s, %(timezone)s)
+                        %(support_url)s, %(support_label)s, %(beat)s, %(timezone)s, %(tagline)s)
                 ON CONFLICT (slug) DO UPDATE SET
                     name = EXCLUDED.name, url = EXCLUDED.url,
                     about_url = EXCLUDED.about_url,
@@ -51,7 +51,9 @@ def main():
                     support_url = COALESCE(EXCLUDED.support_url, orgs.support_url),
                     support_label = COALESCE(EXCLUDED.support_label, orgs.support_label),
                     beat = EXCLUDED.beat,
-                    timezone = EXCLUDED.timezone
+                    timezone = EXCLUDED.timezone,
+                    -- a hand-written tagline in yaml wins; else keep what we extracted
+                    tagline = COALESCE(EXCLUDED.tagline, orgs.tagline)
                 """,
                 row,
             )

@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS orgs (
     coverage_type   TEXT,            -- city | metro | state | regional | national | network
     model           TEXT,            -- ownership/funding model, short label
     beat            TEXT,            -- short topic label for topic-driven outlets
+    tagline         TEXT,            -- one sentence from their About page
     timezone        TEXT,            -- IANA zone override; else derived from state
     affiliations    TEXT[] DEFAULT '{}',  -- e.g. {American Journalism Project, Lenfest Beyond Print}
     founded         INT,
@@ -80,6 +81,7 @@ ALTER TABLE articles ADD COLUMN IF NOT EXISTS subject        TEXT;
 ALTER TABLE articles ADD COLUMN IF NOT EXISTS subject_source TEXT;
 
 ALTER TABLE orgs ADD COLUMN IF NOT EXISTS beat               TEXT;
+ALTER TABLE orgs ADD COLUMN IF NOT EXISTS tagline            TEXT;
 ALTER TABLE orgs ADD COLUMN IF NOT EXISTS timezone           TEXT;
 ALTER TABLE orgs ADD COLUMN IF NOT EXISTS support_url        TEXT;
 ALTER TABLE orgs ADD COLUMN IF NOT EXISTS support_label      TEXT;

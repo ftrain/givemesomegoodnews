@@ -4,7 +4,7 @@
 DB_NAME ?= givemesomegoodnews
 PY ?= python3
 
-all: db seed about support feeds classify build
+all: db seed about taglines support feeds classify build
 
 db:
 	createdb $(DB_NAME) 2>/dev/null || true
@@ -15,6 +15,9 @@ seed:
 
 about:
 	$(PY) -m givemesomegoodnews.fetch_about
+
+taglines:
+	$(PY) -m givemesomegoodnews.taglines
 
 support:
 	$(PY) -m givemesomegoodnews.fetch_support
@@ -37,4 +40,4 @@ refresh: feeds classify build
 serve:
 	$(PY) -m http.server 8000 --directory site
 
-.PHONY: all db seed about support feeds classify embed build refresh serve
+.PHONY: all db seed about taglines support feeds classify embed build refresh serve
