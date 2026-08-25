@@ -51,8 +51,8 @@ NAV = [
 ]
 
 
-def page(title, body, prefix=""):
-    nav = " ·\n".join(f'<a href="{prefix}{href}">{esc(label)}</a>' for href, label in NAV)
+def page(title, body, prefix="", nav_html=None):
+    nav = nav_html or " ·\n".join(f'<a href="{prefix}{href}">{esc(label)}</a>' for href, label in NAV)
     generated = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -507,10 +507,10 @@ def main():
             ]
         )
         onepage_nav = (
-            '<p><a href="#catalog">Catalog</a> · <a href="#map">Map</a> · '
+            '<p><strong>Localpaper</strong> · <a href="#catalog">Catalog</a> · <a href="#map">Map</a> · '
             '<a href="#feed">Feed</a> · <a href="#connections">Connections</a></p>'
         )
-        (site / "onepage.html").write_text(page("Localpaper", onepage_nav + onepage))
+        (site / "onepage.html").write_text(page("Localpaper", onepage, nav_html=onepage_nav))
 
         path = export_catalog_json(orgs)
         print(f"built site/ ({len(orgs)} orgs, {len(articles)} feed items) and {path.relative_to(config.ROOT)}")
