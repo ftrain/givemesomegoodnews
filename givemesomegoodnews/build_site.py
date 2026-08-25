@@ -1550,8 +1550,14 @@ def main():
     if fonts_src.is_dir():
         fonts_dst = site / "fonts"
         fonts_dst.mkdir(parents=True, exist_ok=True)
+        wanted = {f.name for f in fonts_src.glob("*.woff2")}
         for font in fonts_src.glob("*.woff2"):
             shutil.copyfile(font, fonts_dst / font.name)
+        # Drop faces that are no longer part of the design, so a typeface
+        # change does not leave the old files being served forever.
+        for stale in fonts_dst.glob("*.woff2"):
+            if stale.name not in wanted:
+                stale.unlink()
     masthead = config.ASSETS_DIR / "masthead.svg"
     if masthead.is_file():
         shutil.copyfile(masthead, site / "masthead.svg")
