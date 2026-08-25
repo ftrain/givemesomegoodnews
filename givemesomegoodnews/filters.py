@@ -32,6 +32,14 @@ DEFAULTS = [
     ("title", r"\y(certification|training) course\y|\yevent announcement\y|"
               r"\yregistration (is )?open\y", "event announcements"),
     ("url", r"/events?/|/calendar/|/classifieds?/|/recipes?/", "events and classifieds"),
+    # Not civic reporting. Each still has its own subject page and feed.
+    ("subject", r"^(Food|Sports|Arts)$", "lifestyle subjects"),
+    ("title", r"\ycomics?\y|\ycartoons?\y|\ycomic strip\y", "comics"),
+    ("title", r"^\w+day.?s headlines\y|\ymorning (roundup|briefing)\y|"
+              r"\ywhat to know (today|this week)\y", "roundups"),
+    ("title", r"\blive\b.*\b(webcam|cam|aurora|borealis|stream)\b", "livestreams"),
+    ("title", r"\yphotos? of the (day|week)\y|\yphoto gallery\y", "photo galleries"),
+    ("title", r"\yon a (roll|bun)\y|\yin a bowl\y", "recipe columns"),
 ]
 
 
