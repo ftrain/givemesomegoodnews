@@ -39,6 +39,8 @@ CREATE TABLE IF NOT EXISTS articles (
     fetched_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
     image_url       TEXT,            -- where the feed image came from
     image_file      TEXT,            -- our downscaled copy in site/img/; we never hotlink
+    image_w         INT,             -- so pages can reserve the space before it loads
+    image_h         INT,
     categories      TEXT[] DEFAULT '{}',  -- the publisher's own RSS categories, verbatim
     subject         TEXT,            -- our taxonomy; see givemesomegoodnews/subjects.py
     subject_source  TEXT,            -- declared | url | vector

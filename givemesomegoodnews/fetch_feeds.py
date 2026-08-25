@@ -11,7 +11,7 @@ import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlsplit
 
 import feedparser
 
@@ -130,6 +130,10 @@ def crawl_one(org):
             continue
         if any(pat in link for pat in config.EXCLUDE_URL_SUBSTRINGS):
             continue
+        # Some feeds emit a bare homepage with the headline stuffed into the
+        # query string. That is not a story link.
+        if not urlsplit(link).path.strip("/"):
+            continue
         published = _entry_time(entry)
         if published and published < cutoff:
             continue
@@ -190,21 +194,22 @@ def main():
                 # Pull every image onto our own disk before we store the row;
                 # nothing on this site hotlinks a publisher's server.
                 with ThreadPoolExecutor(max_workers=8) as img_pool:
-                    files = list(img_pool.map(cache_image, [i["image_url"] for i in new_items]))
-                for item, image_file in zip(new_items, files):
-                    item["image_file"] = image_file
+                    cached = list(img_pool.map(cache_image, [i["image_url"] for i in new_items]))
+                for item, (image_file, image_w, image_h) in zip(new_items, cached):
+                    item["image_file"], item["image_w"], item["image_h"] = image_file, image_w, image_h
 
                 vecs = embedder.embed([f"{i['title']} {i['summary']}" for i in new_items])
                 for item, vec in zip(new_items, vecs):
                     cur.execute(
                         """INSERT INTO articles (org_id, url, title, summary, author, published_at,
-                                                 image_url, image_file, categories, subject,
-                                                 subject_source, embedding)
-                           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                                 image_url, image_file, image_w, image_h,
+                                                 categories, subject, subject_source, embedding)
+                           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                            ON CONFLICT (url) DO NOTHING""",
                         (org["id"], item["url"], item["title"], item["summary"],
                          item["author"], item["published_at"], item["image_url"],
-                         item["image_file"], item["categories"], item["subject"],
+                         item["image_file"], item["image_w"], item["image_h"],
+                         item["categories"], item["subject"],
                          item["subject_source"], vec_literal(vec)),
                     )
             log_fetch(cur, org["slug"], "feed", feed_url, True, f"{len(new_items)} new / {len(items)} in feed")

@@ -34,32 +34,44 @@ def cached_name(url):
     return hashlib.sha1(url.encode("utf-8")).hexdigest() + ".jpg"
 
 
-def cache_image(url):
-    """Fetch, downscale, and store one image. Returns its filename, or None.
+def dimensions(name):
+    """(width, height) of an already-cached file, or (None, None)."""
+    try:
+        with Image.open(cache_dir() / name) as img:
+            return img.width, img.height
+    except Exception:
+        return None, None
 
-    Never raises: a broken image is a missing image, not a failed crawl.
+
+def cache_image(url):
+    """Fetch, downscale, and store one image.
+
+    Returns (filename, width, height), or (None, None, None). Never raises:
+    a broken image is a missing image, not a failed crawl. An image already
+    on disk is never re-fetched — the filename is the hash of its source.
     """
     if not url or not url.lower().startswith(("http://", "https://")):
-        return None
+        return None, None, None
     name = cached_name(url)
     path = cache_dir() / name
     if path.exists():
-        return name
+        w, h = dimensions(name)
+        return name, w, h
 
     try:
         resp = get(url, retries=0)
         if resp.status_code != 200:
-            return None
+            return None, None, None
         ctype = resp.headers.get("content-type", "")
         if ctype and not ctype.lower().startswith("image/"):
-            return None
+            return None, None, None
         data = resp.content
         if not data or len(data) > MAX_BYTES:
-            return None
+            return None, None, None
 
         img = Image.open(BytesIO(data))
         if img.width < MIN_SOURCE_WIDTH:
-            return None
+            return None, None, None
         img.load()
         # Flatten transparency and drop any animation onto a white card.
         if img.mode in ("RGBA", "LA", "P"):
@@ -73,7 +85,7 @@ def cache_image(url):
             height = round(img.height * THUMB_WIDTH / img.width)
             img = img.resize((THUMB_WIDTH, height), Image.LANCZOS)
         img.save(path, "JPEG", quality=JPEG_QUALITY, optimize=True, progressive=True)
-        return name
+        return name, img.width, img.height
     except Exception:
         # Bad bytes, refused connection, decompression bomb — one bad
         # image must never stop a crawl.
@@ -82,4 +94,4 @@ def cache_image(url):
                 path.unlink()
         except OSError:
             pass
-        return None
+        return None, None, None

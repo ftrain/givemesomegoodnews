@@ -29,7 +29,9 @@ MIN_RELATED_SIM = float(os.environ.get("MIN_RELATED_SIM", "0.30"))
 # articles are the same story running in multiple outlets (syndication or a
 # co-publish), not two newsrooms independently circling one topic.
 SAME_STORY_SIM = float(os.environ.get("SAME_STORY_SIM", "0.80"))
-FEED_PAGE_ARTICLES = 250
+FEED_PAGE_ARTICLES = 600
+# Items per feed page — the rest arrive as you scroll.
+FEED_PAGE_SIZE = 30
 # An image on this many articles is house art, not story art.
 HOUSE_IMAGE_USES = 4
 ONEPAGE_ARTICLES = 80
@@ -116,7 +118,7 @@ hr {{ border: 0; border-top: 1px solid var(--rule); margin: 2.5rem 0; }}
 </style>"""
 
 
-def page(title, body, prefix="", nav_html=None):
+def page(title, body, prefix="", nav_html=None, scripts=""):
     nav = nav_html or " ·\n".join(f'<a href="{prefix}{href}">{esc(label)}</a>' for href, label in NAV)
     generated = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     return f"""<!DOCTYPE html>
@@ -136,6 +138,7 @@ def page(title, body, prefix="", nav_html=None):
 <p><small>Generated {generated}. About text quoted from each newsroom's own
 About page; headlines, summaries and images from their public feeds, linking to
 the original. <a href="{config.REPO_URL}">{config.REPO_LABEL}</a></small></p>
+{scripts}
 </body>
 </html>
 """
@@ -356,6 +359,88 @@ def related_to(cur, article_id, limit=4):
     return [r for r in cur.fetchall() if r[5] >= 0.28]
 
 
+def collapse_duplicates(articles):
+    """Fold reprints of one story into a single feed entry.
+
+    Syndication and co-publishing mean the same headline arrives from
+    several newsrooms; showing it four times makes the feed look broken.
+    The first copy (newest, since the list is already ordered) is kept and
+    the rest are listed under it as "Also in". Headline-token overlap
+    decides — the same measure classify_pair() uses for reprints.
+    """
+    kept = []
+    for a in articles:
+        tokens = title_tokens(a["title"])
+        match = None
+        if len(tokens) >= 4:
+            for candidate in kept:
+                other = candidate["_tokens"]
+                union = tokens | other
+                if not union or len(other) < 4:
+                    continue
+                if len(tokens & other) / len(union) >= 0.75:
+                    match = candidate
+                    break
+        if match:
+            match["_also"].append(a)
+        else:
+            entry = dict(a)
+            entry["_tokens"] = tokens
+            entry["_also"] = []
+            kept.append(entry)
+    return kept
+
+
+FEED_SCRIPT = """<script>
+/* Progressive enhancement only: without JS the More link is an ordinary
+   link to the next page, and every page stands on its own. */
+(function () {
+  var link = document.getElementById("more");
+  var items = document.getElementById("feed-items");
+  if (!link || !items || !window.IntersectionObserver || !window.fetch) return;
+  var busy = false;
+  var io = new IntersectionObserver(function (entries) {
+    if (!entries[0].isIntersecting || busy) return;
+    busy = true;
+    fetch(link.href).then(function (r) { return r.text(); }).then(function (html) {
+      var doc = new DOMParser().parseFromString(html, "text/html");
+      var incoming = doc.getElementById("feed-items");
+      if (incoming) {
+        while (incoming.firstChild) items.appendChild(incoming.firstChild);
+      }
+      var next = doc.getElementById("more");
+      if (next) { link.href = next.getAttribute("href"); busy = false; }
+      else { io.disconnect(); link.parentNode.remove(); }
+    }).catch(function () { busy = false; });
+  }, { rootMargin: "600px" });
+  io.observe(link);
+})();
+</script>"""
+
+
+def feed_page_name(stem, index):
+    """feed.html, feed-2.html, feed-3.html ..."""
+    return f"{stem}.html" if index == 0 else f"{stem}-{index + 1}.html"
+
+
+def write_feed_pages(site, cur, articles, stem, title, heading, prefix="",
+                     subject_nav=None, skip_images=(), subdir=None):
+    """Split a feed into pages so no single page carries the whole crawl."""
+    target = (site / subdir) if subdir else site
+    target.mkdir(parents=True, exist_ok=True)
+    chunks = [articles[i:i + FEED_PAGE_SIZE] for i in range(0, len(articles), FEED_PAGE_SIZE)] or [[]]
+    for index, chunk in enumerate(chunks):
+        nav = subject_nav if index == 0 else None
+        body = render_feed(cur, chunk, prefix=prefix, heading=heading,
+                           subject_nav=nav, skip_images=skip_images,
+                           page_index=index, page_count=len(chunks), stem=stem)
+        head = title if index == 0 else f"{title} — page {index + 1}"
+        target.joinpath(feed_page_name(stem, index)).write_text(
+            page(head, body, prefix=prefix, scripts=FEED_SCRIPT)
+        )
+    return len(chunks)
+
+
 def subject_href(subject, prefix=""):
     return f"{prefix}subjects/{subject.lower().replace(' ', '-')}.html"
 
@@ -387,13 +472,25 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
 
     out = ["<article>", f"<p><small>{' · '.join(meta)}</small></p>"]
     if a.get("image_file") and a["image_file"] not in skip_images:
+        # Explicit dimensions let the browser reserve the box, so lazy
+        # loading doesn't shove the page around as images arrive.
+        size = ""
+        if a.get("image_w") and a.get("image_h"):
+            size = f' width="{a["image_w"]}" height="{a["image_h"]}"'
         out.append(
             f'<p><a href="{esc(a["url"])}">'
-            f'<img src="{prefix}img/{esc(a["image_file"])}" alt="" width="480" loading="lazy"></a></p>'
+            f'<img src="{prefix}img/{esc(a["image_file"])}" alt=""{size} '
+            f'loading="lazy" decoding="async"></a></p>'
         )
     out.append(f'<p><a href="{esc(a["url"])}"><strong>{esc(a["title"])}</strong></a></p>')
     if a.get("summary"):
         out.append(f"<p>{esc(a['summary'][:400])}</p>")
+
+    if a.get("_also"):
+        others = " · ".join(
+            f'<a href="{esc(d["url"])}">{esc(d["org_name"])}</a>' for d in a["_also"]
+        )
+        out.append(f"<p><small>Also in {others}</small></p>")
 
     if with_related:
         same_copies, echoes = [], []
@@ -412,10 +509,13 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
 
 
 def render_feed(cur, articles, mode="site", prefix="", with_related=True, heading="Feed",
-                subject_nav=None, skip_images=()):
-    parts = [f"<h1>{esc(heading)}</h1>"]
-    if subject_nav:
-        parts.append(subject_nav)
+                subject_nav=None, skip_images=(), page_index=0, page_count=1, stem=None):
+    parts = []
+    if page_index == 0:
+        parts.append(f"<h1>{esc(heading)}</h1>")
+        if subject_nav:
+            parts.append(subject_nav)
+    parts.append('<div id="feed-items">')
     current_day = None
     for a in articles:
         day = day_of(a)
@@ -423,6 +523,12 @@ def render_feed(cur, articles, mode="site", prefix="", with_related=True, headin
             parts.append(f"<h2>{esc(day)}</h2>")
             current_day = day
         parts.append(render_feed_item(cur, a, mode, prefix, with_related, skip_images))
+    parts.append("</div>")
+    if stem and page_index + 1 < page_count:
+        parts.append(
+            f'<p><a id="more" href="{feed_page_name(stem, page_index + 1)}">'
+            f'More stories</a></p>'
+        )
     return "\n".join(parts)
 
 
@@ -629,7 +735,7 @@ def load_articles(cur, limit, subject=None):
     cur.execute(
         """
         SELECT a.id, a.url, a.title, a.summary, a.author, a.published_at, a.fetched_at,
-               a.image_file, a.subject,
+               a.image_file, a.image_w, a.image_h, a.subject,
                o.name AS org_name, o.slug, o.url AS org_url,
                o.support_url, o.support_label
         FROM articles a JOIN orgs o ON o.id = a.org_id
@@ -640,7 +746,7 @@ def load_articles(cur, limit, subject=None):
         (subject, subject, limit),
     )
     cols = ("id", "url", "title", "summary", "author", "published_at", "fetched_at",
-            "image_file", "subject", "org_name", "slug", "org_url",
+            "image_file", "image_w", "image_h", "subject", "org_name", "slug", "org_url",
             "support_url", "support_label")
     return [dict(zip(cols, row)) for row in cur.fetchall()]
 
@@ -670,7 +776,7 @@ def main():
 
     with connect() as conn, conn.cursor() as cur:
         orgs = load_orgs(cur)
-        articles = load_articles(cur, FEED_PAGE_ARTICLES)
+        articles = collapse_duplicates(load_articles(cur, FEED_PAGE_ARTICLES))
 
         # An image reused across many stories is the newsroom's house art or
         # a category placeholder, not this story's picture. Don't repeat it.
@@ -699,19 +805,20 @@ def main():
             all_link = "All" if current is None else f'<a href="{prefix}feed.html">All</a>'
             return f"<p>{all_link} · " + " · ".join(links) + "</p>"
 
-        (site / "feed.html").write_text(
-            page(f"{config.SITE_NAME} — Feed",
-                 render_feed(cur, articles, subject_nav=subject_nav(), skip_images=house_images))
+        n_feed_pages = write_feed_pages(
+            site, cur, articles, "feed", f"{config.SITE_NAME} — Feed", "Feed",
+            subject_nav=subject_nav(), skip_images=house_images,
         )
 
-        (site / "subjects").mkdir(parents=True, exist_ok=True)
         for name, _n in subject_counts:
-            subject_articles = load_articles(cur, FEED_PAGE_ARTICLES, subject=name)
-            (site / "subjects" / f"{name.lower().replace(' ', '-')}.html").write_text(
-                page(f"{config.SITE_NAME} — {name}",
-                     render_feed(cur, subject_articles, prefix="../", heading=name,
-                                 subject_nav=subject_nav(prefix="../", current=name)),
-                     prefix="../")
+            subject_articles = collapse_duplicates(
+                load_articles(cur, FEED_PAGE_ARTICLES, subject=name)
+            )
+            write_feed_pages(
+                site, cur, subject_articles, name.lower().replace(" ", "-"),
+                f"{config.SITE_NAME} — {name}", name, prefix="../",
+                subject_nav=subject_nav(prefix="../", current=name),
+                skip_images=house_images, subdir="subjects",
             )
         (site / "connections.html").write_text(page(f"{config.SITE_NAME} — Connections", render_connections(cur)))
 
@@ -740,7 +847,9 @@ def main():
 
         path = export_catalog_json(orgs)
         n_img = sum(1 for a in articles if a.get("image_file"))
-        print(f"built site/ ({len(orgs)} orgs, {len(articles)} feed items, {n_img} with images, "
+        n_folded = sum(len(a.get("_also", [])) for a in articles)
+        print(f"built site/ ({len(orgs)} orgs, {len(articles)} feed items over {n_feed_pages} pages, "
+              f"{n_img} with images, {n_folded} reprints folded in, "
               f"{len(subject_counts)} subjects) and {path.relative_to(config.ROOT)}")
 
 
