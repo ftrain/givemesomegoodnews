@@ -152,7 +152,7 @@ display:flex;gap:.6rem;align-items:center}}
 .menu[open] .burger .bars{{display:none}}
 .menu[open] .burger .cross{{display:inline}}
 .masthead{{width:100%;height:auto;display:block}}
-.panel{{position:absolute;top:100%;right:0;width:50%;min-width:min(20rem,100%);
+.panel{{position:absolute;top:100%;right:0;width:50%;min-width:min(16rem,88%);
 background:var(--bg);border:2px solid var(--fg);border-top:0;
 padding:.75rem 1rem 1rem;max-height:78vh;overflow-y:auto;z-index:20}}
 .panel hr{{border:0;border-top:1px solid var(--rule);margin:.85rem 0}}
