@@ -22,6 +22,7 @@ from html import escape as esc
 
 from . import config
 from .albers import MapProjection
+from .timezones import local_time
 from .db import connect
 
 MIN_RELATED_SIM = float(os.environ.get("MIN_RELATED_SIM", "0.30"))
@@ -115,6 +116,17 @@ article {{
   border-bottom: 1px solid var(--rule);
 }}
 article p:last-child {{ margin-bottom: 0; }}
+/* Contain the floated image so it can't spill into the next post. */
+article::after {{ content: ""; display: block; clear: both; }}
+article h2 {{ font-size: 1.25rem; line-height: 1.25; margin: 0.2rem 0 0.4rem; }}
+a.shot {{ float: left; width: 50%; margin: 0.3rem 1rem 0.4rem 0; }}
+a.shot img {{ width: 100%; height: auto; }}
+p.more {{ margin-top: 0.75rem; }}
+p.footer-line {{ clear: both; padding-top: 0.75rem; }}
+/* A 50% float on a phone leaves ~170px of text per line; stack instead. */
+@media (max-width: 34rem) {{
+  a.shot {{ float: none; width: 100%; margin: 0 0 0.75rem; }}
+}}
 img {{ max-width: 100%; height: auto; display: block; }}
 svg {{ max-width: 100%; height: auto; }}
 blockquote {{ margin: 0 0 1rem; padding-left: 1rem; border-left: 3px solid var(--rule); }}
@@ -481,53 +493,87 @@ def support_link(article):
     return f'<a href="{esc(url)}"><strong>{esc(label)}</strong></a>'
 
 
-def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_images=()):
+def place_line(a, mode="site", prefix=""):
+    """State / region / publication — or National / beat / publication for
+    the outlets organised around a subject rather than a place."""
+    if (a.get("coverage_type") or "") == "national":
+        first = "National"
+    else:
+        first = a.get("state") or "National"
+    # Topic-driven outlets name their beat where a local paper names its city.
+    middle = a.get("beat") or a.get("city")
+    if not middle:
+        middle = "Statewide" if (a.get("coverage_type") or "") == "state" else None
     org_page = a["org_url"] if mode == "onepage" else f"{prefix}orgs/{a['slug']}.html"
-    when = (a["published_at"] or a["fetched_at"]).astimezone(timezone.utc).strftime("%H:%M UTC")
+    pub = f'<a href="{esc(org_page)}">{esc(a["org_name"])}</a>'
+    return " / ".join(esc(part) for part in (first, middle) if part) + " / " + pub
 
-    meta = [f'<a href="{esc(org_page)}">{esc(a["org_name"])}</a>']
+
+def about_excerpt(text, limit=170):
+    """One clause of the newsroom describing itself, trimmed on a word."""
+    text = " ".join((text or "").split())
+    if not text:
+        return ""
+    if len(text) <= limit:
+        return text
+    return text[:limit].rsplit(" ", 1)[0].rstrip(",;:.") + "\u2026"
+
+
+def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_images=()):
+    when = local_time(a["published_at"] or a["fetched_at"], a.get("state"), a.get("timezone"))
+    stamp = [when] if when else []
     if a.get("subject"):
         label = esc(a["subject"])
-        meta.append(label if mode == "onepage" else f'<a href="{subject_href(a["subject"], prefix)}">{label}</a>')
-    meta.append(when)
-    if a.get("author"):
-        meta.append(esc(a["author"]))
-    meta.append(support_link(a))
+        stamp.append(label if mode == "onepage" else
+                     f'<a href="{subject_href(a["subject"], prefix)}">{label}</a>')
 
-    out = ["<article>", f"<p><small>{' · '.join(meta)}</small></p>"]
+    out = ["<article>"]
+    if stamp:
+        out.append(f"<p><small>{' \u00b7 '.join(stamp)}</small></p>")
+    out.append(f"<p><small>{place_line(a, mode, prefix)}</small></p>")
+    out.append(f'<h2><a href="{esc(a["url"])}">{esc(a["title"])}</a></h2>')
+    if a.get("author"):
+        out.append(f'<p><small>By {esc(a["author"])}</small></p>')
+
     if a.get("image_file") and a["image_file"] not in skip_images:
-        # Explicit dimensions let the browser reserve the box, so lazy
-        # loading doesn't shove the page around as images arrive.
         size = ""
         if a.get("image_w") and a.get("image_h"):
             size = f' width="{a["image_w"]}" height="{a["image_h"]}"'
         out.append(
-            f'<p><a href="{esc(a["url"])}">'
+            f'<a class="shot" href="{esc(a["url"])}">'
             f'<img src="{prefix}img/{esc(a["image_file"])}" alt=""{size} '
-            f'loading="lazy" decoding="async"></a></p>'
+            f'loading="lazy" decoding="async"></a>'
         )
-    out.append(f'<p><a href="{esc(a["url"])}"><strong>{esc(a["title"])}</strong></a></p>')
     if a.get("summary"):
         out.append(f"<p>{esc(a['summary'][:400])}</p>")
 
+    out.append(
+        f'<p class="more"><a href="{esc(a["url"])}">Read more '
+        f'<span aria-hidden="true">\u2192</span></a></p>'
+    )
+
     if a.get("_also"):
-        others = " · ".join(
+        others = " \u00b7 ".join(
             f'<a href="{esc(d["url"])}">{esc(d["org_name"])}</a>' for d in a["_also"]
         )
         out.append(f"<p><small>Also in {others}</small></p>")
 
     if with_related:
-        same_copies, echoes = [], []
+        echoes = []
         for r_title, r_url, r_org, r_slug, r_org_url, r_sim in related_to(cur, a["id"]):
-            cls = classify_pair(r_sim, a["title"], r_title)
-            if cls == "same":
-                same_copies.append(f'<a href="{esc(r_url)}">{esc(r_org)}</a>')
-            elif cls == "kindred" and len(echoes) < 2:
+            if classify_pair(r_sim, a["title"], r_title) == "kindred" and len(echoes) < 2:
                 echoes.append(f'<a href="{esc(r_url)}">{esc(r_org)}: {esc(r_title)}</a>')
-        if same_copies:
-            out.append(f"<p><small>Also in {' · '.join(same_copies)}</small></p>")
         if echoes:
-            out.append(f"<p><small>Echo: {' · '.join(echoes)}</small></p>")
+            out.append(f"<p><small>Echo: {' \u00b7 '.join(echoes)}</small></p>")
+
+    # The newsroom in its own words, then the ask.
+    about = about_excerpt(a.get("about_text"))
+    org_page = a["org_url"] if mode == "onepage" else f"{prefix}orgs/{a['slug']}.html"
+    tail = []
+    if about:
+        tail.append(f'<a href="{esc(org_page)}">{esc(about)}</a>')
+    tail.append(support_link(a))
+    out.append(f'<p class="footer-line"><small>{" | ".join(tail)}</small></p>')
     out.append("</article>")
     return "\n".join(out)
 
@@ -763,7 +809,9 @@ def load_articles(cur, limit, subject=None):
         SELECT a.id, a.url, a.title, a.summary, a.author, a.published_at, a.fetched_at,
                a.image_file, a.image_w, a.image_h, a.subject,
                o.name AS org_name, o.slug, o.url AS org_url,
-               o.support_url, o.support_label
+               o.support_url, o.support_label,
+               o.state, o.city, o.beat, o.coverage, o.coverage_type,
+               o.timezone, o.about_text
         FROM articles a JOIN orgs o ON o.id = a.org_id
         WHERE (%s::text IS NULL OR a.subject = %s)
         ORDER BY coalesce(a.published_at, a.fetched_at) DESC, a.id DESC
@@ -773,7 +821,8 @@ def load_articles(cur, limit, subject=None):
     )
     cols = ("id", "url", "title", "summary", "author", "published_at", "fetched_at",
             "image_file", "image_w", "image_h", "subject", "org_name", "slug", "org_url",
-            "support_url", "support_label")
+            "support_url", "support_label", "state", "city", "beat", "coverage",
+            "coverage_type", "timezone", "about_text")
     return [dict(zip(cols, row)) for row in cur.fetchall()]
 
 
