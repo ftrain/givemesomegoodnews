@@ -11,6 +11,24 @@ import re
 
 _WORD = re.compile(r"[a-záéíóúñüàèìòùâêîôûçãõ']+", re.IGNORECASE)
 
+# Scripts that settle the question on sight, before any word counting.
+SCRIPTS = [
+    ("Chinese", re.compile(r"[\u4e00-\u9fff]")),
+    ("Korean", re.compile(r"[\uac00-\ud7af\u1100-\u11ff]")),
+    ("Japanese", re.compile(r"[\u3040-\u30ff]")),
+    ("Arabic", re.compile(r"[\u0600-\u06ff]")),
+    ("Russian", re.compile(r"[\u0400-\u04ff]")),
+    ("Greek", re.compile(r"[\u0370-\u03ff]")),
+]
+
+# Vietnamese is Latin-scripted, so it needs its own test: the stacked tone
+# marks below are used by essentially nothing else in this catalog.
+_VIETNAMESE_MARKS = re.compile(
+    r"[ạảấầẩẫậắằẳẵặẹẻẽếềểễệịỉĩọỏốồổỗộớờởỡợụủứừửữựỳỵỷỹđ]", re.IGNORECASE
+)
+_VIETNAMESE_WORDS = {"của", "và", "các", "người", "trong", "không", "được",
+                     "một", "những", "cho", "với", "này", "đã", "là", "có"}
+
 STOPWORDS = {
     "English": {"the", "of", "and", "to", "in", "for", "on", "with", "that", "is",
                 "at", "by", "from", "as", "it", "was", "are", "this", "his", "has",
@@ -34,6 +52,15 @@ MIN_SHARE = 0.12
 
 def detect(*texts, default="English"):
     """Best guess at the language of some headline/summary text."""
+    joined = " ".join(t for t in texts if t)
+    for name, pattern in SCRIPTS:
+        if len(pattern.findall(joined)) >= 2:
+            return name
+    if len(_VIETNAMESE_MARKS.findall(joined)) >= 3 or sum(
+        1 for w in joined.lower().split() if w.strip(".,:;!?") in _VIETNAMESE_WORDS
+    ) >= 2:
+        return "Vietnamese"
+
     words = []
     for text in texts:
         if text:
