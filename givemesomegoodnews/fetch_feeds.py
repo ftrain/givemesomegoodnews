@@ -20,7 +20,7 @@ from .db import connect, log_fetch, vec_literal
 from .embedder import get_embedder
 from .images import cache_image
 from .subjects import classify
-from .extract import text_from_html_fragment
+from .extract import clean_summary, text_from_html_fragment
 from .fetchutil import FEED_CANDIDATE_PATHS, canonical_url, feed_links_in_html, get, looks_like_feed
 
 
@@ -133,7 +133,7 @@ def crawl_one(org):
         published = _entry_time(entry)
         if published and published < cutoff:
             continue
-        summary = text_from_html_fragment(entry.get("summary", "") or "")[:1500]
+        summary = clean_summary(text_from_html_fragment(entry.get("summary", "") or ""))[:1500]
         author = (entry.get("author") or "").strip()[:200] or None
         categories = _entry_categories(entry)
         url = canonical_url(link)

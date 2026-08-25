@@ -141,3 +141,30 @@ def text_from_html_fragment(html):
     pieces = []
     _walk_text(builder.root, pieces)
     return re.sub(r"\s+", " ", unescape("".join(pieces))).strip()
+
+
+# Feed summaries arrive with the CMS's own furniture attached. WordPress
+# appends "The post <headline> appeared first on <outlet>."; several themes
+# leave a truncation marker behind. None of it is the story.
+_BOILERPLATE = [
+    re.compile(r"\s*The post\s+.*?\s+appeared first on\s+[^.]*\.?\s*$", re.IGNORECASE | re.DOTALL),
+    re.compile(r"\s*Continue reading\s*[\u2192>\u00bb]*\s*$", re.IGNORECASE),
+    re.compile(r"\s*(\[\s*(\u2026|\.\.\.)\s*\]|\u2026|\.\.\.)\s*$"),
+    re.compile(r"\s*Read more\s*$", re.IGNORECASE),
+    # Publishers often truncate mid-footer, leaving "[\u2026] The post Akron teens"
+    # with no "appeared first on" to anchor on. Drop from "The post" to the
+    # end, but only once there is real summary text ahead of it.
+    re.compile(r"(?<=.{40})\s*The post\s+\S.*$", re.IGNORECASE | re.DOTALL),
+]
+
+
+def clean_summary(text):
+    """Strip CMS furniture from a feed summary. Returns '' if nothing is left."""
+    out = (text or "").strip()
+    for _ in range(3):  # boilerplate often stacks: "... [\u2026] The post ..."
+        before = out
+        for pattern in _BOILERPLATE:
+            out = pattern.sub("", out).strip()
+        if out == before:
+            break
+    return out
