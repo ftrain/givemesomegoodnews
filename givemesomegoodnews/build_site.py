@@ -135,7 +135,7 @@ button{{cursor:pointer;color:var(--link)}}
 header{{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;
 align-items:center;justify-content:space-between;gap:.75rem;
 border-bottom:2px solid var(--fg);margin-bottom:1.25rem}}
-.home{{display:block;padding:.5rem 0;min-width:0}}
+.home{{display:block;padding:.5rem 0;flex:0 1 22rem;min-width:0}}
 .menu>summary{{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}}
 .menu>summary::-webkit-details-marker{{display:none}}
@@ -148,7 +148,7 @@ text-transform:uppercase;letter-spacing:.08em}}
 .burger .cross{{display:none}}
 .menu[open] .burger .bars{{display:none}}
 .menu[open] .burger .cross{{display:inline}}
-.masthead{{width:min(22rem,100%);height:auto;display:block}}
+.masthead{{width:100%;height:auto;display:block}}
 .panel{{position:absolute;left:0;right:0;top:100%;background:var(--bg);
 border-bottom:2px solid var(--fg);padding:.5rem 1rem 1.25rem;max-height:75vh;
 overflow-y:auto;z-index:20}}
