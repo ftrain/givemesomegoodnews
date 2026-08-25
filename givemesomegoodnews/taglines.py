@@ -24,7 +24,8 @@ _ABBREV = r"(?<!\bMr)(?<!\bMrs)(?<!\bMs)(?<!\bDr)(?<!\bSt)(?<!\bInc)(?<!\bCo)(?<
 _SPLIT = re.compile(_ABBREV + r"(?<=[.!?])\s+(?=[A-Z0-9\"'])")
 
 DEFINITIONAL = re.compile(r"\b(is|are|was|remains)\s+(a|an|the)\b", re.IGNORECASE)
-FIRST_PERSON = re.compile(r"\bwe\s+(are|cover|report|publish|believe|serve)\b", re.IGNORECASE)
+FIRST_PERSON = re.compile(r"^\s*(we|our mission)\b", re.IGNORECASE)
+WE_ARE = re.compile(r"^\s*we(\s+are|'re)\s+(a|an|the)\b", re.IGNORECASE)
 
 # Vocabulary of the thing itself.
 GOOD_TERMS = [
@@ -36,6 +37,28 @@ GOOD_TERMS = [
     (r"\bdedicated to\b", 2), (r"\bmission\b", 1), (r"\bpublishe(s|d|r)\b", 1),
     (r"\b(local|community|statewide|neighborhood)\b", 1),
     (r"\baccountability\b", 1), (r"\binvestigat(e|ive|ions?)\b", 1),
+]
+
+# Page furniture, contact details, policies, staff lists, and — twice in the
+# real catalog — an actual news story or a 404 page. All of these look
+# plausible to a keyword scorer, so they are named explicitly.
+CHROME = [
+    (r"\bshare to\b", 12), (r"\bposted in\b", 12), (r"\bpublished:", 12),
+    (r"\blast updated\b", 12), (r"\bclick here\b", 12), (r"\bread more\b", 8),
+    (r"\bour address is\b", 12), (r"\bsuite \d+\b", 10), (r"\b\d{5}(-\d{4})?\b", 6),
+    (r"\bpage you requested\b|\bcould not locate\b|\bdoesn'?t exist\b", 20),
+    (r"\boriginally appeared in\b", 15),
+    (r"\bis a member of\b", 8), (r"\bowner of\b", 8), (r"\bco-published\b", 6),
+    (r"\bcommittee\b", 6), (r"\bcommitment to (inclusion|diversity)\b", 8),
+    (r"\bfund\b[^.]*\bmanaged by\b", 8), (r"\bpolicy\b|\bpolicies\b", 5),
+    (r"\bendorse(s|ment|ments)?\b", 6), (r"\bstandards set by\b", 6),
+    (r"\b(managing editor|executive director|operations manager|"
+     r"audience engagement|data reporter|editor-in-chief)\b", 8),
+    (r"\b(his|her|their) (brother|sister|father|mother|husband|wife)\b", 8),
+    (r"\bremembering\b", 10), (r"\bobituary\b", 10),
+    (r"\btweets?\b", 8), (r"\bcrowdfunding\b", 5),
+    # Past-tense news narration, as opposed to describing an organisation.
+    (r"\b(voted|marooned|arrested|testified|announced yesterday)\b", 8),
 ]
 
 # Boilerplate: the sentence is about the website, not the newsroom.
@@ -51,6 +74,8 @@ BAD_TERMS = [
 ]
 
 MIN_LEN, MAX_LEN, IDEAL_LO, IDEAL_HI = 40, 300, 70, 220
+# Below this, no sentence is trustworthy enough to print as the pub's tag.
+MIN_SCORE = 7
 
 
 def sentences(text):
@@ -64,19 +89,29 @@ def score(sentence, org_name="", position=0):
     for pattern, weight in GOOD_TERMS:
         if re.search(pattern, s, re.IGNORECASE):
             total += weight
-    for pattern, weight in BAD_TERMS:
+    for pattern, weight in BAD_TERMS + CHROME:
         if re.search(pattern, s, re.IGNORECASE):
             total -= weight
     if DEFINITIONAL.search(s):
         total += 3
     if FIRST_PERSON.search(s):
         total += 2
-    # Naming itself is the strongest signal that this is the definition.
-    first_word = (org_name or "").split()
-    if org_name and org_name.lower() in s.lower():
+    # "<Outlet> is a nonprofit newsroom covering X" — the canonical shape.
+    # Requiring it near the start is what separates a definition from a
+    # sentence that merely mentions the outlet somewhere in a news story.
+    if org_name:
+        opener = re.escape(org_name)
+        if re.match(rf"\s*(the\s+)?{opener}\b.{{0,60}}?\b(is|are)\s+(a|an|the)\b",
+                    s, re.IGNORECASE):
+            total += 10
+        elif re.match(rf"\s*(the\s+)?{opener}\b", s, re.IGNORECASE):
+            total += 4
+        elif org_name.lower() in s[:80].lower():
+            total += 2
+    if WE_ARE.match(s):
+        total += 8
+    elif FIRST_PERSON.match(s):
         total += 4
-    elif first_word and len(first_word[0]) > 3 and first_word[0].lower() in s.lower():
-        total += 2
     if IDEAL_LO <= len(s) <= IDEAL_HI:
         total += 2
     # Leads define; footers disclaim.
@@ -94,7 +129,8 @@ def best_sentence(about_text, org_name=""):
         reverse=True,
     )
     best_score, _, best = ranked[0]
-    return best if best_score > 0 else None
+    # Better no tag than a wrong one — the feed falls back to the beat.
+    return best if best_score >= MIN_SCORE else None
 
 
 def main():
