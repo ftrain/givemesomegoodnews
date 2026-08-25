@@ -28,6 +28,7 @@ support:
 feeds:
 	$(PY) -m givemesomegoodnews.fetch_feeds
 
+# Garbage-collects unreferenced cached images. Never deletes a story.
 prune:
 	$(PY) -m givemesomegoodnews.prune
 

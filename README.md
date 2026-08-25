@@ -91,6 +91,19 @@ itself: **Nonprofit**, **Co-op**, **Worker-owned**, **Family-owned**,
 tags are matched from each newsroom's free-text `model`; community tags
 come from the directory. Every tag gets its own page.
 
+### The archive
+
+Stories are never deleted. A piece that has aged out of its publisher's own
+feed may not be easy to find anywhere else, so `prune` only garbage-collects
+cached image files that no article points at any more.
+
+At the observed rate — around 1,500 stories a day across roughly a thousand
+live feeds, about two thirds carrying a picture — the database grows about
+3GB a year and the image cache about 11GB. On a 50GB disk that is a few
+years of headroom. If it ever gets tight, `prune --images-older-than N`
+releases the local *copy* of old pictures while keeping the story, its link,
+its text and its `image_url`; a block-storage volume is the other answer.
+
 ### Images
 
 Feed images are downloaded, downscaled to 480px wide, and served from this
