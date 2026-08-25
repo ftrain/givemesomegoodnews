@@ -164,6 +164,7 @@ padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}}
 display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}}
 .tagcol .lozenge{{margin:0}}
 .tagcol .section{{border-color:var(--fg);color:var(--fg);font-weight:600}}
+.places{{display:flex;flex-wrap:wrap;gap:.35rem;margin:0 0 .4rem}}
 .lozenge.place{{margin:0}}
 .lozenge.give{{border-color:var(--link);color:var(--link);font-weight:600}}
 .lozenge.give:hover,.lozenge.give:focus{{background:var(--link);color:var(--bg)}}
@@ -819,8 +820,7 @@ def place_line(a, mode="site", prefix=""):
 
 
 def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_images=()):
-    """Source and section, then how to support them, then when and where,
-    then the story."""
+    """Where it is, who published it, when, and then the story."""
     out = ["<article>"]
 
     # 1. a column down the right: section first, then what kind of newsroom
@@ -835,11 +835,7 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
     column.append(support_link(a))
     out.append(f'<aside class="tagcol">{"".join(column)}</aside>')
 
-    # 2. source, bold and linked
-    source = f'<a href="{esc(a["org_url"])}"><strong>{esc(a["org_name"])}</strong></a>'
-    out.append(f'<p class="source">{source}</p>')
-
-    # 3. when and where
+    # 2. where it is, then who published it
     moment = a["published_at"] or a["fetched_at"]
     dateline = local_dateline(moment, a.get("state"), a.get("timezone"))
     pub_time = local_time(moment, a.get("state"), a.get("timezone"))
@@ -847,7 +843,6 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
     state_name = STATE_NAMES.get((a.get("state") or "").upper())
     national = (a.get("coverage_type") or "") == "national"
 
-    # Both halves lead to a feed of everything from that state or that beat.
     # Place is a pair of tags: the state gives you everything from that
     # state, the region narrows it to that city or beat.
     bits = []
@@ -859,10 +854,19 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
     if where:
         query = urlencode({"place": where, **({"state": a["state"]} if a.get("state") else {})})
         bits.append(f'<a class="lozenge place" href="/search?{query}">{esc(where)}</a>')
+    if bits:
+        out.append(f'<p class="places">{"".join(bits)}</p>')
 
-    when = (f'<time datetime="{moment.astimezone(timezone.utc).isoformat()}" '
-            f'data-pub="{esc(pub_time)}">{esc(dateline)}</time>') if dateline else ""
-    out.append(f'<p class="whenwhere">{when}{"".join(bits)}</p>')
+    source = f'<a href="{esc(a["org_url"])}"><strong>{esc(a["org_name"])}</strong></a>'
+    out.append(f'<p class="source">{source}</p>')
+
+    # 3. when
+    if dateline:
+        out.append(
+            f'<p class="whenwhere"><time '
+            f'datetime="{moment.astimezone(timezone.utc).isoformat()}" '
+            f'data-pub="{esc(pub_time)}">{esc(dateline)}</time></p>'
+        )
 
     # 4. headline, 5. byline
     out.append(f'<h2><a href="{esc(a["url"])}">{esc(tighten(a["title"]))}</a></h2>')
