@@ -12,6 +12,7 @@ and `support_label` in data/orgs.yaml override whatever is found here.
 
 import re
 import sys
+from html import unescape
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from urllib.parse import urljoin, urlparse
@@ -57,7 +58,9 @@ def _anchors(base_url, html):
         m = _HREF_RE.search(attrs)
         if not m:
             continue
-        href = (m.group(2) or m.group(3) or m.group(4) or "").strip()
+        # Hrefs in the wild arrive entity-encoded (&#038; for &); decode or
+        # the query string breaks when a reader clicks it.
+        href = unescape((m.group(2) or m.group(3) or m.group(4) or "").strip())
         if not href or href.startswith(("#", "javascript:", "mailto:", "tel:")):
             continue
         text = _TAG_RE.sub(" ", inner)
@@ -116,6 +119,10 @@ def discover(org):
         # unrelated domain with no processor signature is probably an ad.
         if host != home_host and not PROCESSORS.search(url):
             points -= 3
+        # A bare homepage with a tracking query is a redirect at best; a real
+        # /donate path should win whenever the site has one.
+        if urlparse(url).path.strip("/") == "":
+            points -= 4
         if points > best[0]:
             best = (points, url, label)
 
