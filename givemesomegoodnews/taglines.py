@@ -116,6 +116,10 @@ def score(sentence, org_name="", position=0):
         total += 8
     elif FIRST_PERSON.match(s):
         total += 4
+    # "bySahan JournalOctober 21" — words fused where markup was stripped.
+    # Two or more of these means we are reading page furniture, not prose.
+    if len(re.findall(r"[a-z][A-Z]", s)) >= 2:
+        total -= 12
     if IDEAL_LO <= len(s) <= IDEAL_HI:
         total += 2
     # Leads define; footers disclaim.
