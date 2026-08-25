@@ -125,6 +125,7 @@ a.shot img {{ width: 100%; height: auto; }}
 p.more {{ margin-top: 0.75rem; }}
 p.footer-line {{ clear: both; padding-top: 0.75rem; }}
 .yours {{ color: var(--muted); }}
+time[data-pub] {{ cursor: pointer; border-bottom: 1px dotted var(--rule); }}
 /* A 50% float on a phone leaves ~170px of text per line; stack instead. */
 @media (max-width: 34rem) {{
   a.shot {{ float: none; width: 100%; margin: 0 0 0.75rem; }}
@@ -464,29 +465,27 @@ def collapse_duplicates(articles):
 
 
 LOCAL_TIME_SCRIPT = """<script>
-/* Each dateline is the newsroom's own local time. Where the reader sits in
-   a different zone, append theirs. Nothing here is required to read the
-   page — with JS off you still get the publication's time. */
-window.localizeTimes = function (root) {
-  var nodes = (root || document).querySelectorAll("time[data-pub]:not([data-done])");
-  for (var i = 0; i < nodes.length; i++) {
-    var el = nodes[i];
-    el.setAttribute("data-done", "1");
-    var when = new Date(el.getAttribute("datetime"));
-    if (isNaN(when.getTime())) continue;
-    try {
-      var mine = new Intl.DateTimeFormat(undefined, {
-        hour: "numeric", minute: "2-digit", timeZoneName: "short"
-      }).format(when);
-      if (!mine || mine === el.getAttribute("data-pub")) continue;
-      var span = document.createElement("span");
-      span.className = "yours";
-      span.textContent = " \u00b7 " + mine + " your time";
-      el.parentNode.insertBefore(span, el.nextSibling);
-    } catch (e) { /* no Intl: the publication's time stands on its own */ }
-  }
-};
-window.localizeTimes(document);
+/* Datelines are the newsroom's own local time. Tap one to see that moment
+   in your time zone; tap again to put it away. Delegated from the document
+   so items added by infinite scroll work without rebinding. */
+document.addEventListener("click", function (event) {
+  var el = event.target.closest && event.target.closest("time[data-pub]");
+  if (!el) return;
+  var open = el.nextElementSibling;
+  if (open && open.className === "yours") { open.remove(); return; }
+  var when = new Date(el.getAttribute("datetime"));
+  if (isNaN(when.getTime())) return;
+  var mine;
+  try {
+    mine = new Intl.DateTimeFormat(undefined, {
+      hour: "numeric", minute: "2-digit", timeZoneName: "short"
+    }).format(when);
+  } catch (e) { return; }
+  var span = document.createElement("span");
+  span.className = "yours";
+  span.textContent = " \u00b7 " + mine + " your time";
+  el.parentNode.insertBefore(span, el.nextSibling);
+});
 </script>"""
 
 FEED_SCRIPT = """<script>
@@ -505,7 +504,6 @@ FEED_SCRIPT = """<script>
       var incoming = doc.getElementById("feed-items");
       if (incoming) {
         while (incoming.firstChild) items.appendChild(incoming.firstChild);
-        if (window.localizeTimes) window.localizeTimes(items);
       }
       var next = doc.getElementById("more");
       if (next) { link.href = next.getAttribute("href"); busy = false; }
@@ -629,13 +627,11 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
         if echoes:
             out.append(f"<p><small>Echo: {' \u00b7 '.join(echoes)}</small></p>")
 
-    # The newsroom in its own words — one sentence chosen from their About
-    # page — then the ask.
-    about = a.get("tagline") or ""
-    org_page = a["org_url"] if mode == "onepage" else f"{prefix}orgs/{a['slug']}.html"
+    # What kind of newsroom this is, then the ask.
     tail = []
-    if about:
-        tail.append(f'<a href="{esc(org_page)}">{esc(about)}</a>')
+    tags = tag_links(a, prefix if mode != "onepage" else "")
+    if tags:
+        tail.append(tags)
     tail.append(support_link(a))
     out.append(f'<p class="footer-line"><small>{" | ".join(tail)}</small></p>')
     out.append("</article>")
@@ -793,6 +789,50 @@ def render_connections(cur, mode="site", prefix="", limit=20):
     return "\n".join(parts)
 
 
+# What a reader actually wants to know about a newsroom: who owns it and
+# who it serves. The `model` field is free text written per newsroom, so it
+# is matched to a small canonical set rather than printed raw.
+MODEL_TAGS = [
+    (r"co-?operative|\bco-?op\b", "Co-op"),
+    (r"worker-owned|worker-led|employee-owned", "Worker-owned"),
+    (r"journalist-owned|journalist-founded|writer-owned", "Journalist-owned"),
+    (r"non-?profit|501\(c\)", "Nonprofit"),
+    (r"public media|public radio|public broadcast", "Public media"),
+    (r"public benefit corp", "Public benefit corp"),
+    (r"\bfamily\b", "Family-owned"),
+    (r"native-owned|tribal", "Native-owned"),
+    (r"college-based|student", "College"),
+    (r"newsletter", "Newsletter"),
+    (r"reader-funded|member-supported|reader-supported", "Reader-funded"),
+    (r"independent", "Independent"),
+]
+
+
+def ownership_tags(org):
+    """Canonical tags for one newsroom: ownership first, then community."""
+    tags = []
+    model = (org.get("model") or "").lower()
+    for pattern, label in MODEL_TAGS:
+        if re.search(pattern, model) and label not in tags:
+            tags.append(label)
+    for feature in (org.get("features") or []):
+        if feature not in tags:
+            tags.append(feature)
+    return tags
+
+
+def tag_links(org, prefix=""):
+    """Tags, linked where a page exists for them."""
+    known = set(org.get("features") or [])
+    out = []
+    for tag in ownership_tags(org):
+        if tag in known:
+            out.append(f'<a href="{feature_href(tag, prefix)}">{esc(tag)}</a>')
+        else:
+            out.append(esc(tag))
+    return " · ".join(out)
+
+
 def feature_href(feature, prefix=""):
     return f"{prefix}features/{re.sub(r'[^a-z0-9]+', '-', feature.lower()).strip('-')}.html"
 
@@ -835,14 +875,10 @@ def render_org_list(group, prefix="", mode="site"):
     rows = []
     for org in group:
         line = f'<a href="{esc(org_href(org, mode, prefix))}">{esc(org["name"])}</a>'
-        bits = [esc(org["coverage"] or place_label(org))]
-        if org.get("model"):
-            bits.append(esc(org["model"]))
-        feats = feature_links(org, prefix)
-        tail = f" — {' · '.join(b for b in bits if b)}"
-        rows.append(f"<li>{line}{tail}"
-                    + (f"<br><small>{feats}</small>" if feats else "")
-                    + (f"<br><small>{esc(org['tagline'])}</small>" if org.get("tagline") else "")
+        tags = tag_links(org, prefix)
+        where = esc(org["coverage"] or place_label(org))
+        rows.append(f"<li>{line} — {where}"
+                    + (f"<br><small>{tags}</small>" if tags else "")
                     + "</li>")
     return "<ul>" + "".join(rows) + "</ul>"
 
@@ -920,17 +956,33 @@ def render_institutions(cur, orgs, mode="site", prefix=""):
     return "\n".join(parts)
 
 
+# Plenty of About pages scrape down to a cookie notice or "we have turned
+# off comments". Show the quotation only when there is really something there.
+_ABOUT_JUNK = re.compile(
+    r"turned off comments|comment(ing)? (is|has been) (disabled|closed)|"
+    r"cookies?|privacy policy|javascript|subscribe to (our|the) newsletter|"
+    r"page not found|404", re.IGNORECASE)
+
+
+def usable_about(text):
+    text = (text or "").strip()
+    if len(text) < 240:
+        return False
+    head = text[:400]
+    return not _ABOUT_JUNK.search(head)
+
+
 def render_org_page(cur, org):
     parts = [f'<h1><a href="{esc(org["url"])}">{esc(org["name"])}</a></h1>', f"<p>{meta_line(org)}</p>"]
-    feats = feature_links(org)
-    if feats:
-        parts.append(f"<p><small>{feats}</small></p>")
+    tags = tag_links(org)
+    if tags:
+        parts.append(f"<p><small>{tags}</small></p>")
     if org.get("support_url"):
         label = org.get("support_label") or "Support"
         parts.append(f'<p><a href="{esc(org["support_url"])}"><strong>{esc(label)}</strong></a></p>')
     if org["feed_url"]:
         parts.append(f'<p><a href="{esc(org["feed_url"])}">RSS feed</a></p>')
-    if org["about_text"]:
+    if usable_about(org["about_text"]):
         paras = [p for p in org["about_text"].split("\n\n") if p.strip()]
         inner = "\n".join(f"<p>{esc(p)}</p>" for p in paras)
         src = org["about_source_url"] or org["url"]
@@ -974,7 +1026,7 @@ def load_articles(cur, limit, subject=None):
                o.name AS org_name, o.slug, o.url AS org_url,
                o.support_url, o.support_label,
                o.state, o.city, o.beat, o.coverage, o.coverage_type,
-               o.timezone, o.tagline
+               o.timezone, o.model, o.features
         FROM articles a JOIN orgs o ON o.id = a.org_id
         WHERE (%s::text IS NULL OR a.subject = %s)
         ORDER BY coalesce(a.published_at, a.fetched_at) DESC, a.id DESC
@@ -985,7 +1037,7 @@ def load_articles(cur, limit, subject=None):
     cols = ("id", "url", "title", "summary", "author", "published_at", "fetched_at",
             "image_file", "image_w", "image_h", "subject", "org_name", "slug", "org_url",
             "support_url", "support_label", "state", "city", "beat", "coverage",
-            "coverage_type", "timezone", "tagline")
+            "coverage_type", "timezone", "model", "features")
     return [dict(zip(cols, row)) for row in cur.fetchall()]
 
 
