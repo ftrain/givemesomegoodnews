@@ -65,9 +65,11 @@ def build_query(query, tags, region, language, subject, limit=PAGE_SIZE, offset=
     if region and region in REGIONS:
         where.append("o.state = ANY(%s)")
         params.append(REGIONS[region])
-    if language:
-        where.append("o.language = %s")
-        params.append(language)
+    # English by default. Other languages are still in the archive and still
+    # reachable — ?lang=Spanish returns them — but they are not surfaced
+    # unless asked for.
+    where.append("coalesce(a.language, 'English') = %s")
+    params.append(language or "English")
     if subject:
         where.append("a.subject = %s")
         params.append(subject)

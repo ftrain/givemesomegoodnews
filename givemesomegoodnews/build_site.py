@@ -1503,7 +1503,7 @@ def load_orgs(cur):
 
 
 def load_articles(cur, limit, subject=None, feature=None, default_only=False,
-                  apply_filters=True):
+                  apply_filters=True, language="English"):
     filter_sql, filter_params = filters.where_clause(cur) if apply_filters else ("", [])
     cur.execute(
         """
@@ -1516,12 +1516,14 @@ def load_articles(cur, limit, subject=None, feature=None, default_only=False,
         FROM articles a JOIN orgs o ON o.id = a.org_id
         WHERE (%s::text IS NULL OR a.subject = %s)
           AND (%s::text IS NULL OR %s = ANY(o.features))
-          AND (NOT %s OR (o.in_default AND coalesce(a.language, 'English') = 'English'))
+          AND (NOT %s OR o.in_default)
+          AND (%s::text IS NULL OR coalesce(a.language, 'English') = %s)
           {extra}
         ORDER BY coalesce(a.published_at, a.fetched_at) DESC, a.id DESC
         LIMIT %s
         """.format(extra=("AND " + filter_sql) if filter_sql else ""),
-        [subject, subject, feature, feature, default_only, *filter_params, limit],
+        [subject, subject, feature, feature, default_only, language, language,
+         *filter_params, limit],
     )
     cols = ("id", "url", "title", "summary", "author", "published_at", "fetched_at",
             "image_file", "image_w", "image_h", "image_alt", "subject", "org_name", "slug", "org_url",

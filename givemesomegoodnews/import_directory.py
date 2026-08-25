@@ -36,6 +36,28 @@ DROP_HOSTS = {
     "thecentersquare.com", "publicnewsservice.org", "app.publicnewsservice.org",
     "facebook.com", "www.facebook.com", "issuu.com", "m.facebook.com",
 }
+EXCLUDED_FILE = "excluded.yaml"
+
+
+def load_excluded():
+    """Hosts to refuse however a directory classifies them."""
+    path = config.DATA_DIR / EXCLUDED_FILE
+    if not path.exists():
+        return {}
+    with open(path) as f:
+        rows = yaml.safe_load(f) or []
+    return {r["host"].lower(): r.get("why", "") for r in rows if r.get("host")}
+
+
+def is_excluded(host, excluded):
+    """Match the host or any parent domain, so subdomains are covered too."""
+    host = (host or "").lower()
+    parts = host.split(".")
+    for i in range(len(parts) - 1):
+        candidate = ".".join(parts[i:])
+        if candidate in excluded:
+            return excluded[candidate]
+    return None
 MODEL = {
     "Nonprofit": "nonprofit",
     "Native": "Native-owned",
@@ -121,6 +143,7 @@ def main():
     with open(path, encoding="utf-8-sig") as f:
         rows = list(csv.DictReader(f))
 
+    excluded = load_excluded()
     curated = yaml.safe_load(open(config.ORGS_FILE))
     curated_hosts = {host_of(o["url"]) for o in curated}
     curated_slugs = {o["slug"] for o in curated}
@@ -136,6 +159,10 @@ def main():
             continue
         if not host or host in DROP_HOSTS:
             stats["skip:no usable website"] += 1
+            continue
+        why = is_excluded(host, excluded)
+        if why:
+            stats[f"skip:excluded ({why})"] += 1
             continue
         if host in curated_hosts:
             stats["skip:already curated"] += 1
