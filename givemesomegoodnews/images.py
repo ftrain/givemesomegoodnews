@@ -13,6 +13,10 @@ from io import BytesIO
 
 from PIL import Image
 
+# A feed pointed us at a 134-megapixel JPEG. Decoding one of those costs
+# hundreds of megabytes of RAM on a box that is also running Postgres.
+Image.MAX_IMAGE_PIXELS = 40_000_000
+
 from . import config
 from .fetchutil import get
 
