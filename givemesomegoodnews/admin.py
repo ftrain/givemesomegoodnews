@@ -266,10 +266,19 @@ def save(email, form):
 
 
 def reset(email, form):
+    """Drop the override and put back the fields seeding won't restore itself.
+
+    Most columns are overwritten from the yaml on the next seed, but tagline
+    is COALESCEd (so a null in yaml won't clear it) and crawl_feed is not a
+    seeded field at all. Both are reset here explicitly.
+    """
     slug = (form.get("slug") or [""])[0]
     with connect() as conn, conn.cursor() as cur:
         cur.execute("DELETE FROM org_overrides WHERE slug = %s", (slug,))
-    return "Override cleared. Run seed to restore the catalog values."
+        cur.execute(
+            "UPDATE orgs SET crawl_feed = true, tagline = NULL WHERE slug = %s", (slug,)
+        )
+    return "Reset. The next seed restores the catalog values."
 
 
 # ------------------------------------------------------------------ handler
