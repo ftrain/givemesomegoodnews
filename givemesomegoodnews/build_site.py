@@ -132,8 +132,11 @@ header{{position:sticky;top:0;z-index:10;background:var(--bg)}}
 .menu>summary{{cursor:pointer;list-style:none;padding:.55rem 0;
 display:flex;gap:.6rem;align-items:center}}
 .menu>summary::-webkit-details-marker{{display:none}}
-.menu>summary::before{{content:"\2630";color:var(--dim);font-size:1.3rem;line-height:1}}
-.menu[open]>summary::before{{content:"\00d7"}}
+.burger{{flex:none;fill:var(--dim)}}
+.menu>summary:hover .burger,.menu>summary:focus .burger{{fill:var(--link)}}
+.burger .cross{{display:none}}
+.menu[open] .burger .bars{{display:none}}
+.menu[open] .burger .cross{{display:inline}}
 .masthead{{width:min(24rem,72%);height:auto}}
 .menu[open]>.panel{{max-height:70vh;overflow-y:auto}}
 .panel{{padding:.4rem 0 1rem}}
@@ -160,8 +163,13 @@ def menu(prefix="", site_name=""):
         for name, slug in MENU_SUBJECTS
     )
     return f"""<details class="menu">
-<summary><img class="masthead" src="{prefix}masthead.svg" alt="{esc(site_name)}"
- width="440" height="44"></summary>
+<summary><svg class="burger" viewBox="0 0 24 24" width="24" height="24"
+ aria-hidden="true" focusable="false"><g class="bars"><rect x="1" y="4" width="22" height="2.5"
+ rx="1.25"/><rect x="1" y="10.75" width="22" height="2.5" rx="1.25"/><rect x="1" y="17.5"
+ width="22" height="2.5" rx="1.25"/></g><g class="cross"><rect x="1" y="10.75" width="22"
+ height="2.5" rx="1.25" transform="rotate(45 12 12)"/><rect x="1" y="10.75" width="22"
+ height="2.5" rx="1.25" transform="rotate(-45 12 12)"/></g></svg><img class="masthead"
+ src="{prefix}masthead.svg" alt="{esc(site_name)}" width="440" height="44"></summary>
 <div class="panel">
 <nav aria-label="Sections"><ul>{sections}</ul></nav>
 <h3>Subjects</h3><nav aria-label="Subjects"><ul>{subjects}</ul></nav>
