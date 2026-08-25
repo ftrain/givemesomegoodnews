@@ -217,6 +217,17 @@ def menu(prefix="", site_name=""):
 </details>"""
 
 
+def footer_links(prefix=""):
+    """The same routes the menu offers, laid flat at the foot of the page."""
+    def href(target):
+        return target if target.startswith("/") else prefix + target
+    items = [(prefix + "index.html", "Today's news")] + NAV_BROWSE + NAV_META
+    return " \u00b7 ".join(
+        f'<a href="{href(t) if not t.startswith(prefix) else t}">{esc(label)}</a>'
+        for t, label in items
+    )
+
+
 def page(title, body, prefix="", nav_html=None, scripts="", description="",
          feed_href="feed.xml", feed_title=None):
     meta_desc = (
@@ -244,11 +255,7 @@ def page(title, body, prefix="", nav_html=None, scripts="", description="",
 </main>
 <footer>
 <hr>
-<p class="meta">Every story here belongs to the newsroom that reported it —
-follow the links, read them there, and pay them if you can. Catalog entries are
-quoted from each newsroom's own About page. Newsroom directory compiled by the
-<a href="https://www.mediaanddemocracyproject.org/journalism-directory">Media and
-Democracy Project</a>; coordinates from the U.S. Census Bureau gazetteer.</p>
+<nav aria-label="Site"><p class="meta">{footer_links(prefix)}</p></nav>
 </footer>
 {MENU_SCRIPT}
 {LOCAL_TIME_SCRIPT}
