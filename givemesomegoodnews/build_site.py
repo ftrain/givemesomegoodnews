@@ -1,10 +1,10 @@
 """Generate the static site from the database: plain HTML, no CSS, no JS.
 
 Pages:
-    site/index.html         intro, stats, latest headlines
+    site/index.html         the feed itself, newest first (page 1)
     site/catalog.html       every org, in their own words, grouped by state
     site/map.html           inline-SVG coverage map (Albers projection)
-    site/feed.html          combined feed, newest first, with cross-region matches
+    site/feed-2.html ...     the rest of the feed
     site/connections.html   strongest story pairs across regions (pgvector)
     site/orgs/<slug>.html   one page per org
     site/onepage.html       everything on one self-contained page
@@ -54,12 +54,12 @@ STATE_NAMES = {
 }
 
 NAV = [
-    ("index.html", config.SITE_NAME),
+    ("index.html", "Feed"),
     ("catalog.html", "Catalog"),
     ("map.html", "Map"),
-    ("feed.html", "Feed"),
     ("connections.html", "Connections"),
     ("/search", "Search"),
+    ("onepage.html", "Everything on one page"),
 ]
 
 
@@ -132,6 +132,18 @@ img {{ max-width: 100%; height: auto; display: block; }}
 svg {{ max-width: 100%; height: auto; }}
 blockquote {{ margin: 0 0 1rem; padding-left: 1rem; border-left: 3px solid var(--rule); }}
 hr {{ border: 0; border-top: 1px solid var(--rule); margin: 2.5rem 0; }}
+details.menu {{ margin: 0 0 0.5rem; }}
+details.menu > summary {{
+  list-style: none; cursor: pointer; padding: 0.4rem 0;
+  font-weight: 600; font-size: 1.05rem;
+}}
+details.menu > summary::-webkit-details-marker {{ display: none; }}
+details.menu .bars {{ color: var(--muted); margin-right: 0.35rem; }}
+details.menu .wordmark a {{ color: var(--fg); text-decoration: none; }}
+details.menu nav {{
+  display: flex; flex-direction: column; gap: 0.5rem;
+  padding: 0.6rem 0 0.4rem 1.6rem; border-top: 1px solid var(--rule); margin-top: 0.4rem;
+}}
 input, button {{
   font: inherit; font-size: 1rem; padding: 0.4rem 0.6rem;
   border: 1px solid var(--rule); border-radius: 3px;
@@ -143,9 +155,16 @@ button {{ cursor: pointer; color: var(--link); }}
 
 
 def page(title, body, prefix="", nav_html=None, scripts=""):
-    nav = nav_html or " ·\n".join(
+    links = nav_html or "\n".join(
         f'<a href="{href if href.startswith("/") else prefix + href}">{esc(label)}</a>'
         for href, label in NAV
+    )
+    # <details> gives a hamburger that works with JavaScript switched off.
+    home = prefix + "index.html"
+    nav = (
+        f'<details class="menu"><summary><span class="bars" aria-hidden="true">\u2630</span> '
+        f'<span class="wordmark"><a href="{home}">{esc(config.SITE_NAME)}</a></span></summary>'
+        f'<nav>{links}</nav></details>'
     )
     generated = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     return f"""<!DOCTYPE html>
@@ -158,7 +177,7 @@ def page(title, body, prefix="", nav_html=None, scripts=""):
 {stylesheet(prefix)}
 </head>
 <body>
-<p>{nav}</p>
+{nav}
 <hr>
 {body}
 <hr>
@@ -267,19 +286,19 @@ def render_catalog(orgs, mode="site", prefix=""):
     return "\n".join(parts)
 
 
-def render_map(orgs, mode="site", prefix=""):
+def render_map(orgs, mode="site", prefix="", recent=()):
     proj = MapProjection(config.STATES_GEOJSON)
-    mappable = [o for o in orgs if o["lat"] and o["lon"] and o["state"] not in (None, "AK", "HI")]
-    elsewhere = [o for o in orgs if o not in mappable]
+    mappable = [o for o in orgs if o["lat"] and o["lon"] and o["state"]]
+    placed = {o["slug"] for o in mappable}
 
     # Orgs in the same city share coordinates; fan them out in a small ring.
     clusters = collections.defaultdict(list)
     for org in mappable:
-        clusters[(round(org["lat"], 1), round(org["lon"], 1))].append(org)
+        clusters[(org["state"], round(org["lat"], 1), round(org["lon"], 1))].append(org)
 
     dots = []
-    for cluster in clusters.values():
-        cx, cy = proj.to_svg_coords(cluster[0]["lon"], cluster[0]["lat"])
+    for (state, _lat, _lon), cluster in clusters.items():
+        cx, cy = proj.to_svg_coords(cluster[0]["lon"], cluster[0]["lat"], state)
         n = len(cluster)
         for i, org in enumerate(cluster):
             if n == 1:
@@ -287,21 +306,34 @@ def render_map(orgs, mode="site", prefix=""):
             else:
                 angle = 2 * math.pi * i / n
                 x, y = cx + 9 * math.cos(angle), cy + 9 * math.sin(angle)
-            label = f"{org['name']} — {org['coverage'] or place_label(org)}"
+            fresh = org["slug"] in recent
+            fill = "#c8102e" if fresh else "currentColor"
+            opacity = "0.95" if fresh else "0.55"
+            note = " — published today" if fresh else ""
+            label = f"{org['name']} — {org['coverage'] or place_label(org)}{note}"
             dots.append(
                 f'<a href="{esc(org_href(org, mode, prefix))}">'
-                f'<circle cx="{x:.1f}" cy="{y:.1f}" r="4.5" fill="currentColor" fill-opacity="0.75">'
+                f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{5.5 if fresh else 4.5}" '
+                f'fill="{fill}" fill-opacity="{opacity}">'
                 f"<title>{esc(label)}</title></circle></a>"
             )
 
     states = "".join(
-        f'<path d="{d}" fill="none" stroke="currentColor" stroke-opacity="0.35" stroke-width="1"><title>{esc(name)}</title></path>'
+        f'<path d="{d}" fill="none" stroke="currentColor" stroke-opacity="0.35" '
+        f'stroke-width="1"><title>{esc(name)}</title></path>'
         for name, d in proj.state_paths()
+    )
+    # Territories with no outline in the geojson get a labelled marker.
+    marks = "".join(
+        f'<circle cx="{x:.1f}" cy="{y:.1f}" r="3" fill="currentColor" fill-opacity="0.3"></circle>'
+        f'<text x="{x + 6:.1f}" y="{y + 4:.1f}" font-size="11" fill="currentColor" '
+        f'fill-opacity="0.55">{esc(label)}</text>'
+        for _code, label, x, y in proj.territory_labels()
     )
     svg = (
         f'<svg viewBox="0 0 {proj.width} {proj.height}" width="100%" role="img" '
-        f'aria-label="Map of the United States with a dot for each newsroom">\n'
-        f"{states}\n{''.join(dots)}\n</svg>"
+        f'aria-label="Map of the United States, its territories, and a dot for each newsroom">\n'
+        f"{states}\n{marks}\n{''.join(dots)}\n</svg>"
     )
 
     groups, national = group_orgs_by_state(orgs)
@@ -314,19 +346,25 @@ def render_map(orgs, mode="site", prefix=""):
         )
         listing.append(f"<p><strong>{esc(state_name)}</strong>: {items}</p>")
     if national:
-        items = ", ".join(f'<a href="{esc(org_href(o, mode, prefix))}">{esc(o["name"])}</a>' for o in national)
+        items = ", ".join(
+            f'<a href="{esc(org_href(o, mode, prefix))}">{esc(o["name"])}</a>' for o in national
+        )
         listing.append(f"<p><strong>Everywhere</strong>: {items}</p>")
 
-    off_map = [o for o in elsewhere if o["state"] in ("AK", "HI")]
-    off_note = ""
-    if off_map:
-        names = ", ".join(f'<a href="{esc(org_href(o, mode, prefix))}">{esc(o["name"])}</a> ({place_label(o)})' for o in off_map)
-        off_note = f"<p>Beyond the lower 48: {names}.</p>"
+    unplaced = [o for o in orgs if o["slug"] not in placed and o["state"]]
+    note = ""
+    if unplaced:
+        names = ", ".join(
+            f'<a href="{esc(org_href(o, mode, prefix))}">{esc(o["name"])}</a>' for o in unplaced
+        )
+        note = f"<p><small>No coordinates yet: {names}.</small></p>"
 
     return (
         "<h1>Coverage map</h1>"
-        "<p>One dot per newsroom; statewide outlets plotted at their home city.</p>"
-        f"{svg}\n{off_note}\n<h2>By state</h2>\n" + "\n".join(listing)
+        "<p>One dot per newsroom; statewide outlets plotted at their home city. "
+        '<span style="color:#c8102e">Red</span> means they published in the last 24 hours. '
+        "Alaska, Hawaii and Puerto Rico are drawn as insets.</p>"
+        f"{svg}\n{note}\n<h2>By state</h2>\n" + "\n".join(listing)
     )
 
 
@@ -484,7 +522,8 @@ def feed_page_name(stem, index):
 
 
 def write_feed_pages(site, cur, articles, stem, title, heading, prefix="",
-                     subject_nav=None, skip_images=(), subdir=None):
+                     subject_nav=None, skip_images=(), subdir=None,
+                     first_name=None, intro=""):
     """Split a feed into pages so no single page carries the whole crawl."""
     target = (site / subdir) if subdir else site
     target.mkdir(parents=True, exist_ok=True)
@@ -493,9 +532,11 @@ def write_feed_pages(site, cur, articles, stem, title, heading, prefix="",
         nav = subject_nav if index == 0 else None
         body = render_feed(cur, chunk, prefix=prefix, heading=heading,
                            subject_nav=nav, skip_images=skip_images,
-                           page_index=index, page_count=len(chunks), stem=stem)
+                           page_index=index, page_count=len(chunks), stem=stem,
+                           intro=intro)
         head = title if index == 0 else f"{title} — page {index + 1}"
-        target.joinpath(feed_page_name(stem, index)).write_text(
+        name = first_name if (index == 0 and first_name) else feed_page_name(stem, index)
+        target.joinpath(name).write_text(
             page(head, body, prefix=prefix, scripts=FEED_SCRIPT)
         )
     return len(chunks)
@@ -531,16 +572,6 @@ def place_line(a, mode="site", prefix=""):
     org_page = a["org_url"] if mode == "onepage" else f"{prefix}orgs/{a['slug']}.html"
     pub = f'<a href="{esc(org_page)}">{esc(a["org_name"])}</a>'
     return " / ".join(esc(part) for part in (first, middle) if part) + " / " + pub
-
-
-def about_excerpt(text, limit=170):
-    """One clause of the newsroom describing itself, trimmed on a word."""
-    text = " ".join((text or "").split())
-    if not text:
-        return ""
-    if len(text) <= limit:
-        return text
-    return text[:limit].rsplit(" ", 1)[0].rstrip(",;:.") + "\u2026"
 
 
 def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_images=()):
@@ -597,8 +628,9 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
         if echoes:
             out.append(f"<p><small>Echo: {' \u00b7 '.join(echoes)}</small></p>")
 
-    # The newsroom in its own words, then the ask.
-    about = about_excerpt(a.get("about_text"))
+    # The newsroom in its own words — one sentence chosen from their About
+    # page — then the ask.
+    about = a.get("tagline") or ""
     org_page = a["org_url"] if mode == "onepage" else f"{prefix}orgs/{a['slug']}.html"
     tail = []
     if about:
@@ -610,10 +642,13 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
 
 
 def render_feed(cur, articles, mode="site", prefix="", with_related=True, heading="Feed",
-                subject_nav=None, skip_images=(), page_index=0, page_count=1, stem=None):
+                subject_nav=None, skip_images=(), page_index=0, page_count=1, stem=None,
+                intro=""):
     parts = []
     if page_index == 0:
         parts.append(f"<h1>{esc(heading)}</h1>")
+        if intro:
+            parts.append(intro)
         parts.append(search_form())
         if subject_nav:
             parts.append(subject_nav)
@@ -757,35 +792,6 @@ def render_connections(cur, mode="site", prefix="", limit=20):
     return "\n".join(parts)
 
 
-def render_index(cur, orgs, articles, mode="site"):
-    one = mode == "onepage"
-    n_states = len({o["state"] for o in orgs if o["state"]})
-    cur.execute("SELECT count(*) FROM articles")
-    n_articles = cur.fetchone()[0]
-    parts = [
-        f"<h1>{esc(config.SITE_NAME)}</h1>",
-        f"<p>{len(orgs)} newsrooms · {n_states} states and D.C. · {n_articles} stories</p>",
-        search_form(),
-        f'<ul><li><a href="{"#feed" if one else "feed.html"}">Feed</a></li>'
-        f'<li><a href="{"#catalog" if one else "catalog.html"}">Catalog</a></li>'
-        f'<li><a href="{"#map" if one else "map.html"}">Map</a></li>'
-        f'<li><a href="{"#connections" if one else "connections.html"}">Connections</a></li></ul>',
-        "<h2>Latest</h2>",
-        "<ul>",
-    ]
-    for a in articles[:15]:
-        org_page = a["org_url"] if one else f'orgs/{a["slug"]}.html'
-        subject = f' <small>{esc(a["subject"])}</small>' if a.get("subject") else ""
-        parts.append(
-            f'<li><a href="{esc(org_page)}">{esc(a["org_name"])}</a>: '
-            f'<a href="{esc(a["url"])}">{esc(a["title"])}</a>{subject} '
-            f'{support_link(a)}</li>'
-        )
-    parts.append("</ul>")
-    parts.append(f'<p><a href="{"#feed" if one else "feed.html"}">Whole feed</a></p>')
-    return "\n".join(parts)
-
-
 def render_org_page(cur, org):
     parts = [f'<h1><a href="{esc(org["url"])}">{esc(org["name"])}</a></h1>', f"<p>{meta_line(org)}</p>"]
     if org.get("support_url"):
@@ -837,7 +843,7 @@ def load_articles(cur, limit, subject=None):
                o.name AS org_name, o.slug, o.url AS org_url,
                o.support_url, o.support_label,
                o.state, o.city, o.beat, o.coverage, o.coverage_type,
-               o.timezone, o.about_text
+               o.timezone, o.tagline
         FROM articles a JOIN orgs o ON o.id = a.org_id
         WHERE (%s::text IS NULL OR a.subject = %s)
         ORDER BY coalesce(a.published_at, a.fetched_at) DESC, a.id DESC
@@ -848,7 +854,7 @@ def load_articles(cur, limit, subject=None):
     cols = ("id", "url", "title", "summary", "author", "published_at", "fetched_at",
             "image_file", "image_w", "image_h", "subject", "org_name", "slug", "org_url",
             "support_url", "support_label", "state", "city", "beat", "coverage",
-            "coverage_type", "timezone", "about_text")
+            "coverage_type", "timezone", "tagline")
     return [dict(zip(cols, row)) for row in cur.fetchall()]
 
 
@@ -888,9 +894,24 @@ def main():
         )
         house_images = {r[0] for r in cur.fetchall()}
 
-        (site / "index.html").write_text(page(config.SITE_NAME, render_index(cur, orgs, articles)))
+        cur.execute("SELECT count(*) FROM articles")
+        n_articles = cur.fetchone()[0]
+        n_states = len({o["state"] for o in orgs if o["state"]})
+        intro = (f"<p><small>{len(orgs)} newsrooms · {n_states} states and D.C. · "
+                 f"{n_articles} stories</small></p>")
+
+        # Which newsrooms published in the last day — the map lights those red.
+        cur.execute(
+            "SELECT o.slug FROM articles a JOIN orgs o ON o.id = a.org_id "
+            "WHERE coalesce(a.published_at, a.fetched_at) > now() - interval '24 hours' "
+            "GROUP BY o.slug"
+        )
+        recent = {r[0] for r in cur.fetchall()}
+
         (site / "catalog.html").write_text(page(f"{config.SITE_NAME} — Catalog", render_catalog(orgs)))
-        (site / "map.html").write_text(page(f"{config.SITE_NAME} — Coverage map", render_map(orgs)))
+        (site / "map.html").write_text(
+            page(f"{config.SITE_NAME} — Coverage map", render_map(orgs, recent=recent))
+        )
         cur.execute(
             "SELECT subject, count(*) FROM articles WHERE subject IS NOT NULL "
             "GROUP BY subject ORDER BY subject"
@@ -903,12 +924,13 @@ def main():
                  else f'<a href="{subject_href(name, prefix)}">{esc(name)}</a> ({n})')
                 for name, n in subject_counts
             ]
-            all_link = "All" if current is None else f'<a href="{prefix}feed.html">All</a>'
+            all_link = "All" if current is None else f'<a href="{prefix}index.html">All</a>'
             return f"<p>{all_link} · " + " · ".join(links) + "</p>"
 
         n_feed_pages = write_feed_pages(
-            site, cur, articles, "feed", f"{config.SITE_NAME} — Feed", "Feed",
+            site, cur, articles, "feed", config.SITE_NAME, "Feed",
             subject_nav=subject_nav(), skip_images=house_images,
+            first_name="index.html", intro=intro,
         )
 
         for name, _n in subject_counts:
@@ -932,17 +954,17 @@ def main():
         onepage_articles = articles[:ONEPAGE_ARTICLES]
         onepage = "\n<hr>\n".join(
             [
-                render_index(cur, orgs, onepage_articles, mode="onepage"),
+                f"<h1>{esc(config.SITE_NAME)}</h1>\n{intro}",
                 '<div id="catalog">' + render_catalog(orgs, mode="onepage") + "</div>",
-                '<div id="map">' + render_map(orgs, mode="onepage") + "</div>",
+                '<div id="map">' + render_map(orgs, mode="onepage", recent=recent) + "</div>",
                 '<div id="feed">' + render_feed(cur, onepage_articles, mode="onepage",
                                                  skip_images=house_images) + "</div>",
                 '<div id="connections">' + render_connections(cur, mode="onepage") + "</div>",
             ]
         )
         onepage_nav = (
-            f'<p><strong>{esc(config.SITE_NAME)}</strong> · <a href="#catalog">Catalog</a> · <a href="#map">Map</a> · '
-            '<a href="#feed">Feed</a> · <a href="#connections">Connections</a></p>'
+            f'<a href="#feed">Feed</a>\n<a href="#catalog">Catalog</a>\n'
+            f'<a href="#map">Map</a>\n<a href="#connections">Connections</a>'
         )
         (site / "onepage.html").write_text(page(config.SITE_NAME, onepage, nav_html=onepage_nav))
 
