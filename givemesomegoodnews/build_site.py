@@ -91,13 +91,11 @@ def stylesheet(prefix=""):
 font-weight:100 700;font-display:swap}}
 @font-face{{font-family:PlexMono;src:url({prefix}fonts/ibm-plex-mono.woff2) format('woff2');
 font-weight:400;font-display:swap}}
-@font-face{{font-family:Text;src:url({prefix}fonts/source-serif-400.woff2) format('woff2');
+@font-face{{font-family:Text;src:url({prefix}fonts/ibm-plex-serif-400.woff2) format('woff2');
 font-weight:400;font-display:swap}}
-@font-face{{font-family:Text;src:url({prefix}fonts/source-serif-600.woff2) format('woff2');
+@font-face{{font-family:Text;src:url({prefix}fonts/ibm-plex-serif-600.woff2) format('woff2');
 font-weight:600;font-display:swap}}
-@font-face{{font-family:Display;src:url({prefix}fonts/zilla-slab-400.woff2) format('woff2');
-font-weight:400;font-display:swap}}
-@font-face{{font-family:Display;src:url({prefix}fonts/zilla-slab-700.woff2) format('woff2');
+@font-face{{font-family:Text;src:url({prefix}fonts/ibm-plex-serif-700.woff2) format('woff2');
 font-weight:700;font-display:swap}}
 :root{{--fg:#111;--bg:#fff;--dim:#555;--rule:#ddd;--link:#c8102e;--seen:#8c0b20;
 --band:#f6f6f4}}
@@ -110,7 +108,7 @@ max-width:40rem;margin:0 auto;padding:1rem 0 4rem;overflow-wrap:break-word}}
 header,main>h1,main>p,main>ul,main>h2,main>h3,main>figure,footer,#feed-items>p,
 main>form,main>table,main>blockquote,main>hr,main>nav,main>div>h1,main>div>h2
 {{padding-left:1rem;padding-right:1rem}}
-h1,h2,h3{{font-family:Display,Georgia,serif;letter-spacing:-.005em}}
+h1,h2,h3{{font-family:Text,Georgia,serif;letter-spacing:-.004em}}
 .sans{{font-family:Plex,system-ui,sans-serif}}
 a{{color:var(--link);text-decoration:none}}
 a:visited{{color:var(--seen)}}
@@ -120,9 +118,11 @@ a:hover,a:focus{{text-decoration:underline}}
 .skip:focus{{position:static;display:block;padding:.5rem 0}}
 h1{{font-size:1.5rem;line-height:1.2;margin:1rem 0}}
 h2{{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}}
-article h2{{font-family:Display,Georgia,serif;font-size:1.62rem;font-weight:700;
-line-height:1.2;margin:.35rem 0 .4rem;max-width:75%}}
-@media(max-width:34rem){{article h2{{max-width:100%;font-size:1.5rem}}}}
+/* The headline owns the space around it: the rows above and below sit
+   flush so the gap is always exactly this, on every item. */
+article h2{{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
+line-height:1.25;margin:1rem 0 .9rem;max-width:75%}}
+@media(max-width:34rem){{article h2{{max-width:100%;font-size:1.4rem}}}}
 h3{{font-size:1rem;margin:1.2rem 0 .4rem}}
 p{{margin:0 0 .7rem}}
 ul{{padding-left:1.1rem}}
@@ -139,7 +139,7 @@ img{{max-width:100%;height:auto;display:block}}
 .shot{{float:left;width:33%;margin:.35rem 1rem .3rem 0}}
 .shot img{{width:100%}}
 @media(max-width:34rem){{.shot{{width:40%}}}}
-time[data-pub]{{cursor:pointer;border-bottom:1px dotted var(--rule)}}
+time[data-pub]{{cursor:pointer}}
 .yours{{color:var(--dim)}}
 .lozenge{{display:inline-block;font:400 .72rem/1 PlexMono,ui-monospace,monospace;
 padding:.25rem .5rem;margin:0 .3rem .3rem 0;border:1px solid var(--rule);border-radius:1rem;
@@ -164,13 +164,16 @@ padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}}
 display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}}
 .tagcol .lozenge{{margin:0}}
 .tagcol .section{{border-color:var(--fg);color:var(--fg);font-weight:600}}
+.lozenge.place{{margin:0}}
 .lozenge.give{{border-color:var(--link);color:var(--link);font-weight:600}}
 .lozenge.give:hover,.lozenge.give:focus{{background:var(--link);color:var(--bg)}}
 a.lozenge.more{{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}}
 a.lozenge.more:hover,a.lozenge.more:focus{{background:var(--fg);color:var(--bg)}}
-.source{{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .25rem}}
-.whenwhere{{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);margin:0 0 .15rem}}
-.byline{{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);margin:0 0 .6rem}}
+.source{{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}}
+.whenwhere{{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}}
+.byline{{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
+margin:0 0 .8rem}}
 @media(max-width:34rem){{.tagcol{{width:38%;max-width:8.5rem}}}}
 svg{{max-width:100%;height:auto}}
 blockquote{{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}}
@@ -846,19 +849,21 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
     national = (a.get("coverage_type") or "") == "national"
 
     # Both halves lead to a feed of everything from that state or that beat.
+    # Place is a pair of tags: the state gives you everything from that
+    # state, the region narrows it to that city or beat.
     bits = []
     if national:
-        bits.append('<a href="/search?national=1">National</a>')
+        bits.append('<a class="lozenge place" href="/search?national=1">National</a>')
     elif state_name:
-        bits.append(f'<a href="/search?state={quote(a["state"])}">{esc(state_name)}</a>')
+        bits.append(f'<a class="lozenge place" href="/search?state={quote(a["state"])}">'
+                    f'{esc(state_name)}</a>')
     if where:
         query = urlencode({"place": where, **({"state": a["state"]} if a.get("state") else {})})
-        bits.append(f'<a href="/search?{query}">{esc(where)}</a>')
-    place = "/".join(bits) or "National"
+        bits.append(f'<a class="lozenge place" href="/search?{query}">{esc(where)}</a>')
 
     when = (f'<time datetime="{moment.astimezone(timezone.utc).isoformat()}" '
             f'data-pub="{esc(pub_time)}">{esc(dateline)}</time>') if dateline else ""
-    out.append(f'<p class="whenwhere">{when}{" &middot; " if when else ""}{place}</p>')
+    out.append(f'<p class="whenwhere">{when}{"".join(bits)}</p>')
 
     # 4. headline, 5. byline
     out.append(f'<h2><a href="{esc(a["url"])}">{esc(tighten(a["title"]))}</a></h2>')
