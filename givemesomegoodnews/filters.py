@@ -40,6 +40,8 @@ DEFAULTS = [
     ("title", r"\ylive\y.*\y(webcam|cam|aurora|borealis|stream)\y", "livestreams"),
     ("title", r"\yphotos? of the (day|week)\y|\yphoto gallery\y", "photo galleries"),
     ("title", r"\yon a (roll|bun)\y|\yin a bowl\y", "recipe columns"),
+    # Broken feed entries: an image filename where a headline should be.
+    ("title", r"\.(png|jpe?g|gif|webp|pdf)$", "filenames, not headlines"),
 ]
 
 

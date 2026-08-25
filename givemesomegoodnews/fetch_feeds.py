@@ -178,7 +178,8 @@ def crawl_one(org):
                 "categories": categories,
                 "subject": subject,
                 "subject_source": subject_source,
-                "language": detect_language(title, summary),
+                "language": detect_language(title, summary,
+                                            default=org.get("language") or "English"),
             }
         )
     return org, feed_url, items
@@ -199,7 +200,7 @@ def main():
     embedder = get_embedder()
 
     with connect() as conn, conn.cursor() as cur:
-        query = "SELECT id, slug, url, feed_url FROM orgs WHERE crawl_feed"
+        query = "SELECT id, slug, url, feed_url, language FROM orgs WHERE crawl_feed"
         params = []
         if slugs:
             query += " AND slug = ANY(%s)"
@@ -210,7 +211,8 @@ def main():
         else:
             query += " ORDER BY slug"
         cur.execute(query, params)
-        orgs = [dict(zip(("id", "slug", "url", "feed_url"), r)) for r in cur.fetchall()]
+        orgs = [dict(zip(("id", "slug", "url", "feed_url", "language"), r))
+                for r in cur.fetchall()]
 
     with ThreadPoolExecutor(max_workers=config.CRAWL_WORKERS) as pool:
         results = list(pool.map(crawl_one, orgs))
