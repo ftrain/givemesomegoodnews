@@ -104,6 +104,9 @@ a:hover,a:focus{{text-decoration:underline}}
 .skip:focus{{position:static;display:block;padding:.5rem 0}}
 h1{{font-size:1.5rem;line-height:1.2;margin:1rem 0}}
 h2{{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}}
+article h2{{font-size:1.45rem;font-weight:400;line-height:1.22;margin:.1rem 0 .5rem}}
+.stamp{{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:0 0 .3rem}}
+.stamp .lozenge{{margin:0;flex:none}}
 h3{{font-size:1rem;margin:1.2rem 0 .4rem}}
 p{{margin:0 0 .7rem}}
 ul{{padding-left:1.1rem}}
@@ -695,20 +698,19 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
     moment = a["published_at"] or a["fetched_at"]
     dateline = local_dateline(moment, a.get("state"), a.get("timezone"))
     pub_time = local_time(moment, a.get("state"), a.get("timezone"))
-    stamp = []
+    stamp = ""
     if dateline:
-        stamp.append(
-            f'<time datetime="{moment.astimezone(timezone.utc).isoformat()}" '
-            f'data-pub="{esc(pub_time)}">{esc(dateline)}</time>'
-        )
+        stamp = (f'<time datetime="{moment.astimezone(timezone.utc).isoformat()}" '
+                 f'data-pub="{esc(pub_time)}">{esc(dateline)}</time>')
+    subject = ""
     if a.get("subject"):
         label = esc(a["subject"])
-        stamp.append(label if mode == "onepage" else
-                     f'<a href="{subject_href(a["subject"], prefix)}">{label}</a>')
+        subject = (f'<span class="lozenge">{label}</span>' if mode == "onepage" else
+                   f'<a class="lozenge" href="{subject_href(a["subject"], prefix)}">{label}</a>')
 
     out = ["<article>"]
-    if stamp:
-        out.append(f"<p><small>{' \u00b7 '.join(stamp)}</small></p>")
+    if stamp or subject:
+        out.append(f'<p class="stamp"><small>{stamp}</small>{subject}</p>')
     out.append(f"<p><small>{place_line(a, mode, prefix)}</small></p>")
     out.append(f'<h2><a href="{esc(a["url"])}">{esc(a["title"])}</a></h2>')
     tags = tag_links(a, prefix if mode != "onepage" else "")

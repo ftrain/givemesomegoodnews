@@ -2,6 +2,9 @@
 # `make all` goes from an empty database to a generated site.
 
 DB_NAME ?= givemesomegoodnews
+# Feeds per rotation slice; at one slice every 5 minutes this covers
+# roughly a thousand feeds in about an hour.
+ROTATE_BATCH ?= 90
 PY ?= python3
 
 all: db seed about taglines institutions support feeds classify build
@@ -28,6 +31,10 @@ support:
 feeds:
 	$(PY) -m givemesomegoodnews.fetch_feeds
 
+# One slice of the rotation — the feeds checked longest ago.
+rotate:
+	$(PY) -m givemesomegoodnews.fetch_feeds --rotate $(ROTATE_BATCH)
+
 # Garbage-collects unreferenced cached images. Never deletes a story.
 prune:
 	$(PY) -m givemesomegoodnews.prune
@@ -44,7 +51,10 @@ build:
 # What a cron job should run: pull new stories, regenerate the site.
 refresh: feeds classify prune build
 
+# What the frequent job runs: pull a slice, retag, regenerate.
+refresh-slice: rotate classify build
+
 serve:
 	$(PY) -m http.server 8000 --directory site
 
-.PHONY: all db seed about taglines institutions support feeds classify prune embed build refresh serve
+.PHONY: all db seed about taglines institutions support feeds rotate classify prune embed build refresh refresh-slice serve

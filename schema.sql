@@ -176,3 +176,8 @@ CREATE TABLE IF NOT EXISTS feed_filters (
     created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS feed_filters_enabled_idx ON feed_filters (enabled);
+
+-- Rotation: the crawler takes the least-recently-checked feeds each run.
+ALTER TABLE orgs ADD COLUMN IF NOT EXISTS last_crawled_at TIMESTAMPTZ;
+CREATE INDEX IF NOT EXISTS orgs_rotation_idx ON orgs (last_crawled_at NULLS FIRST)
+    WHERE crawl_feed;

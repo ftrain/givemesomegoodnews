@@ -175,6 +175,12 @@ def crawl_one(org):
 
 def main():
     slugs = [a for a in sys.argv[1:] if not a.startswith("-")]
+    # --rotate N: take the N feeds checked longest ago. Running a slice every
+    # few minutes keeps the feed fresh without hitting a thousand publishers
+    # at once, and spreads the load rather than spiking it every few hours.
+    rotate = None
+    if "--rotate" in sys.argv:
+        rotate = int(sys.argv[sys.argv.index("--rotate") + 1])
     embedder = get_embedder()
 
     with connect() as conn, conn.cursor() as cur:
@@ -183,7 +189,12 @@ def main():
         if slugs:
             query += " AND slug = ANY(%s)"
             params.append(slugs)
-        cur.execute(query + " ORDER BY slug", params)
+        if rotate:
+            query += " ORDER BY last_crawled_at NULLS FIRST, id LIMIT %s"
+            params.append(rotate)
+        else:
+            query += " ORDER BY slug"
+        cur.execute(query, params)
         orgs = [dict(zip(("id", "slug", "url", "feed_url"), r)) for r in cur.fetchall()]
 
     with ThreadPoolExecutor(max_workers=config.CRAWL_WORKERS) as pool:
@@ -194,6 +205,9 @@ def main():
         for org, feed_url, items in results:
             if not feed_url:
                 no_feed.append(org["slug"])
+                # Stamp it anyway so a feedless org doesn't monopolise the
+                # front of the rotation queue forever.
+                cur.execute("UPDATE orgs SET last_crawled_at = now() WHERE id = %s", (org["id"],))
                 log_fetch(cur, org["slug"], "feed", "", False, "no feed found")
                 continue
             if feed_url != org["feed_url"]:
@@ -227,6 +241,7 @@ def main():
                          item["categories"], item["subject"],
                          item["subject_source"], vec_literal(vec)),
                     )
+            cur.execute("UPDATE orgs SET last_crawled_at = now() WHERE id = %s", (org["id"],))
             log_fetch(cur, org["slug"], "feed", feed_url, True, f"{len(new_items)} new / {len(items)} in feed")
             print(f"  {org['slug']}: {len(new_items)} new / {len(items)} in feed")
             total_new += len(new_items)
