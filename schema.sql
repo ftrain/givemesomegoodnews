@@ -97,3 +97,18 @@ ALTER TABLE articles ADD COLUMN IF NOT EXISTS search_tsv tsvector
         setweight(to_tsvector('english', coalesce(summary, '')), 'B')
     ) STORED;
 CREATE INDEX IF NOT EXISTS articles_search_idx ON articles USING gin (search_tsv);
+
+-- The funders, networks and associations behind the newsrooms.
+CREATE TABLE IF NOT EXISTS institutions (
+    id              SERIAL PRIMARY KEY,
+    slug            TEXT UNIQUE NOT NULL,
+    name            TEXT NOT NULL,
+    url             TEXT NOT NULL,
+    about_url       TEXT,
+    kind            TEXT,            -- funder | network | association | program | research
+    affiliation     TEXT,            -- matches orgs.affiliations, to cross-reference
+    about_text      TEXT,
+    about_source_url TEXT,
+    tagline         TEXT,
+    about_fetched_at TIMESTAMPTZ
+);

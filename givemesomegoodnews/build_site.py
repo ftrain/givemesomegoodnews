@@ -58,6 +58,7 @@ NAV = [
     ("catalog.html", "Catalog"),
     ("map.html", "Map"),
     ("connections.html", "Connections"),
+    ("institutions.html", "Who funds this"),
     ("/search", "Search"),
     ("onepage.html", "Everything on one page"),
 ]
@@ -792,6 +793,79 @@ def render_connections(cur, mode="site", prefix="", limit=20):
     return "\n".join(parts)
 
 
+KIND_LABELS = {
+    "funder": "Funders",
+    "program": "Programs",
+    "association": "Associations",
+    "network": "Newsroom networks",
+    "research": "Research and directories",
+}
+
+
+def load_institutions(cur):
+    cur.execute(
+        "SELECT slug, name, url, kind, affiliation, about_text, about_source_url, tagline "
+        "FROM institutions ORDER BY name"
+    )
+    cols = ("slug", "name", "url", "kind", "affiliation", "about_text",
+            "about_source_url", "tagline")
+    return [dict(zip(cols, r)) for r in cur.fetchall()]
+
+
+def render_institutions(cur, orgs, mode="site", prefix=""):
+    """Who pays for, convenes, and counts these newsrooms."""
+    insts = load_institutions(cur)
+    by_affiliation = collections.defaultdict(list)
+    for org in orgs:
+        for name in (org.get("affiliations") or []):
+            by_affiliation[name].append(org)
+
+    parts = [
+        "<h1>Who funds this</h1>",
+        f"<p>{len(insts)} organisations that fund, convene, or count the newsrooms "
+        "in this catalog. Described in their own words, as the newsrooms are.</p>",
+    ]
+    grouped = collections.defaultdict(list)
+    for inst in insts:
+        grouped[inst["kind"] or "research"].append(inst)
+
+    for kind, label in KIND_LABELS.items():
+        group = grouped.get(kind)
+        if not group:
+            continue
+        parts.append(f"<h2>{esc(label)}</h2>")
+        for inst in group:
+            parts.append("<article>")
+            parts.append(
+                f'<h2><a href="{esc(inst["url"])}">{esc(inst["name"])}</a></h2>'
+            )
+            line = inst["tagline"] or ""
+            if line:
+                parts.append(f"<p>{esc(line)}</p>")
+            elif inst["about_text"]:
+                parts.append(f"<p>{esc(inst['about_text'].split(chr(10))[0][:240])}</p>")
+            else:
+                parts.append(
+                    "<p><small>Their site blocks automated readers, so there is no "
+                    "quotation here — the link goes to them.</small></p>"
+                )
+            if inst["about_source_url"]:
+                parts.append(
+                    f'<p><small>— from <a href="{esc(inst["about_source_url"])}">'
+                    "their About page</a></small></p>"
+                )
+            members = by_affiliation.get(inst["affiliation"] or "", [])
+            if members:
+                links = ", ".join(
+                    f'<a href="{esc(org_href(o, mode, prefix))}">{esc(o["name"])}</a>'
+                    for o in sorted(members, key=lambda o: o["name"])
+                )
+                noun = "newsroom" if len(members) == 1 else "newsrooms"
+                parts.append(f"<p><small>{len(members)} {noun} here: {links}</small></p>")
+            parts.append("</article>")
+    return "\n".join(parts)
+
+
 def render_org_page(cur, org):
     parts = [f'<h1><a href="{esc(org["url"])}">{esc(org["name"])}</a></h1>', f"<p>{meta_line(org)}</p>"]
     if org.get("support_url"):
@@ -909,6 +983,9 @@ def main():
         recent = {r[0] for r in cur.fetchall()}
 
         (site / "catalog.html").write_text(page(f"{config.SITE_NAME} — Catalog", render_catalog(orgs)))
+        (site / "institutions.html").write_text(
+            page(f"{config.SITE_NAME} — Who funds this", render_institutions(cur, orgs))
+        )
         (site / "map.html").write_text(
             page(f"{config.SITE_NAME} — Coverage map", render_map(orgs, recent=recent))
         )
