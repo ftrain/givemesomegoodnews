@@ -170,9 +170,19 @@ display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}}
 .lozenge.give:hover,.lozenge.give:focus{{background:var(--link);color:var(--bg)}}
 a.lozenge.more{{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}}
 a.lozenge.more:hover,a.lozenge.more:focus{{background:var(--fg);color:var(--bg)}}
-.source{{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}}
+/* A newsroom's name can run to sixty characters, and the tag column takes
+   a third of the width, so the name breaks rather than pushing out. */
+.source{{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem;
+overflow-wrap:break-word}}
+.source .orgpage{{display:block;width:fit-content;color:var(--dim);
+font:400 .8rem/1.4 PlexMono,ui-monospace,monospace}}
+.source .orgpage:hover,.source .orgpage:focus{{color:var(--link)}}
 .whenwhere{{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
-margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}}
+margin:0 0 .2rem;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}}
+/* A collected date is not a publication date and should not read like one.
+   Weight rather than a lozenge: the lozenges on this page are all links,
+   and this is a label. */
+.whenwhere .collected{{color:var(--fg);font-weight:600;white-space:nowrap}}
 .byline{{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
 margin:0 0 .8rem}}
 @media(max-width:34rem){{.tagcol{{width:38%;max-width:8.5rem}}}}
@@ -835,8 +845,10 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
     column.append(support_link(a))
     out.append(f'<aside class="tagcol">{"".join(column)}</aside>')
 
-    # 2. where it is, then who published it
-    moment = a["published_at"] or a["fetched_at"]
+    # 2. where it is; then, in the order a reader wants them, when it ran
+    #    and who ran it.
+    published = a["published_at"]
+    moment = published or a["fetched_at"]
     dateline = local_dateline(moment, a.get("state"), a.get("timezone"))
     pub_time = local_time(moment, a.get("state"), a.get("timezone"))
     where = a.get("beat") or a.get("city")
@@ -857,18 +869,30 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
     if bits:
         out.append(f'<p class="places">{"".join(bits)}</p>')
 
+    # 3. when. With no date from the newsroom the only date we have is the
+    #    day we picked the story up, which is a different claim and is
+    #    labelled as one rather than passed off as publication.
+    if dateline:
+        stamp = (f'<time datetime="{moment.astimezone(timezone.utc).isoformat()}" '
+                 f'data-pub="{esc(pub_time)}">{esc(dateline)}</time>')
+        if published:
+            out.append(f'<p class="whenwhere">{stamp}</p>')
+        else:
+            out.append(f'<p class="whenwhere nodate">'
+                       f'<span class="collected">Collected by this site</span> {stamp}</p>')
+
+    # 4. who published it. The name goes to the newsroom's own front page;
+    #    beside it, the page this site keeps about them — who they are, and
+    #    everything else of theirs we carry.
     source = f'<a href="{esc(a["org_url"])}"><strong>{esc(a["org_name"])}</strong></a>'
+    if a.get("slug"):
+        # On its own line rather than trailing the name: a name can run to
+        # sixty characters, and sharing the line with it breaks both.
+        source += (f'<a class="orgpage" href="{prefix}orgs/{esc(a["slug"])}.html">'
+                   f'about this newsroom</a>')
     out.append(f'<p class="source">{source}</p>')
 
-    # 3. when
-    if dateline:
-        out.append(
-            f'<p class="whenwhere"><time '
-            f'datetime="{moment.astimezone(timezone.utc).isoformat()}" '
-            f'data-pub="{esc(pub_time)}">{esc(dateline)}</time></p>'
-        )
-
-    # 4. headline, 5. byline
+    # 5. headline, 6. byline
     out.append(f'<h2><a href="{esc(a["url"])}">{esc(tighten(a["title"]))}</a></h2>')
     if a.get("author"):
         out.append(f'<p class="byline">By {esc(a["author"])}</p>')
