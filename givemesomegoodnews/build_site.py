@@ -21,6 +21,8 @@ import re
 from datetime import datetime, timezone
 from html import escape as esc
 
+from PIL import Image
+
 from . import config
 from .albers import MapProjection, state_locator
 from .timezones import local_dateline, local_time
@@ -876,29 +878,26 @@ WIDE_COVERAGE = ("state", "regional", "network", "national")
 
 
 # How wide the flag renders in the rail. Small enough that a seal is a
-# smudge, which is why the two-letter code sits next to it.
+# smudge, which is why the two-letter code sits next to it. The files in
+# assets/flags are 96px wide, so a dense screen still has pixels to spend.
 FLAG_WIDTH = 24
 # Flags are not all one shape — Ohio is a pennant, Rhode Island is nearly
-# square — so the height is read off each file's viewBox the first time it
-# is asked for, and cached for the rest of the build. An <img> given the
-# wrong proportions reserves the wrong box and jumps when the file lands.
+# square — so the height is read off each file the first time it is asked
+# for, and cached for the rest of the build. An <img> given the wrong
+# proportions reserves the wrong box and jumps when the file lands.
 _FLAG_BOX = {}
-_FLAG_VIEWBOX = re.compile(
-    r'viewBox="\s*[-+0-9.]+[\s,]+[-+0-9.]+[\s,]+([0-9.]+)[\s,]+([0-9.]+)')
 
 
 def flag_box(code):
     """The width and height to draw a state's flag at, or None if we have no
     flag for it."""
     if code not in _FLAG_BOX:
-        path = config.ASSETS_DIR / "flags" / f"{code.lower()}.svg"
+        path = config.ASSETS_DIR / "flags" / f"{code.lower()}.webp"
         box = None
         if path.is_file():
-            with path.open(encoding="utf-8") as fh:
-                found = _FLAG_VIEWBOX.search(fh.read(2000))
-            if found:
-                width, height = float(found.group(1)), float(found.group(2))
-                box = (FLAG_WIDTH, max(1, round(FLAG_WIDTH * height / width)))
+            with Image.open(path) as flag:
+                width, height = flag.size
+            box = (FLAG_WIDTH, max(1, round(FLAG_WIDTH * height / width)))
         _FLAG_BOX[code] = box
     return _FLAG_BOX[code]
 
@@ -922,9 +921,11 @@ def state_identity(a, prefix=""):
     box = flag_box(code) if name else None
     img = ""
     if box:
-        img = (f'<img class="flag" src="{prefix}flags/{code.lower()}.svg" '
-               f'width="{box[0]}" height="{box[1]}" alt="{esc(name)}" '
-               f'loading="lazy" decoding="async">')
+        # Not lazy-loaded, unlike the story photos: a flag is two kilobytes,
+        # every card in the feed carries one, and deferring it leaves an
+        # empty box where the answer to "whose newsroom is this" should be.
+        img = (f'<img class="flag" src="{prefix}flags/{code.lower()}.webp" '
+               f'width="{box[0]}" height="{box[1]}" alt="{esc(name)}">')
     return f'<p class="ident">{img}<span class="abbr">{esc(code)}</span></p>'
 
 
@@ -1845,12 +1846,13 @@ def main():
     if flags_src.is_dir():
         flags_dst = site / "flags"
         flags_dst.mkdir(parents=True, exist_ok=True)
-        wanted = {f.name for f in flags_src.glob("*.svg")}
-        for flag in flags_src.glob("*.svg"):
+        wanted = {f.name for f in flags_src.glob("*.webp")}
+        for flag in flags_src.glob("*.webp"):
             shutil.copyfile(flag, flags_dst / flag.name)
-        # A state that redraws its flag leaves the old one behind otherwise.
-        for stale in flags_dst.glob("*.svg"):
-            if stale.name not in wanted:
+        # A state that redraws its flag leaves the old one behind otherwise,
+        # and so does the earlier run that wrote these out as SVG.
+        for stale in flags_dst.glob("*"):
+            if stale.is_file() and stale.name not in wanted:
                 stale.unlink()
     masthead = config.ASSETS_DIR / "masthead.svg"
     if masthead.is_file():
