@@ -82,6 +82,9 @@ NAV = NAV_BROWSE + NAV_META
 # Everything the menu offers, filled in by main() before anything renders.
 MENU_SUBJECTS = []
 MENU_FEEDS = []
+# How often each newsroom publishes, likewise filled in by main() from one
+# grouped query. Keyed by org id; see cadence_by_org().
+CADENCE = {}
 
 
 def stylesheet(prefix=""):
@@ -175,10 +178,21 @@ display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}}
 .locator .here{{fill:var(--link);stroke:var(--bg);stroke-width:.7}}
 .region{{font:400 .72rem/1.35 PlexMono,ui-monospace,monospace;color:var(--dim);
 margin:0;max-width:100%;text-align:right;overflow-wrap:break-word}}
+/* How often they publish, in words. Same quiet caption voice as the region
+   line above it, italic so it reads as a note about the newsroom rather
+   than another piece of its address. Both are omitted outright where the
+   answer would be a guess, so neither leaves a labelled gap behind. */
+.cadence{{font:italic 400 .72rem/1.35 PlexMono,ui-monospace,monospace;
+color:var(--dim);margin:0;max-width:100%;text-align:right;
+overflow-wrap:break-word}}
 .places{{display:flex;flex-wrap:wrap;gap:.35rem;margin:0 0 .4rem}}
 .lozenge.place{{margin:0}}
 .lozenge.give{{border-color:var(--link);color:var(--link);font-weight:600}}
 .lozenge.give:hover,.lozenge.give:focus{{background:var(--link);color:var(--bg)}}
+/* The ask closes the rail, so it gets a little air above it rather than
+   sitting flush against the cadence line. Where there is no payment page to
+   send anyone to it is not rendered, and the rail simply ends earlier. */
+.tagcol .give{{margin-top:.2rem}}
 a.lozenge.more{{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}}
 a.lozenge.more:hover,a.lozenge.more:focus{{background:var(--fg);color:var(--bg)}}
 .source{{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}}
@@ -789,15 +803,18 @@ def subject_href(subject, prefix=""):
 
 
 def support_link(article):
-    """Every item carries the ask. Falls back to the newsroom's front page."""
-    if article.get("support_url"):
-        url = article["support_url"]
-        label = article.get("support_label") or "Donate"
-    else:
-        # No payment page found — send them to the newsroom itself rather
-        # than label a homepage as something it is not.
-        url, label = article["org_url"], "Support"
-    return f'<a class="lozenge give" href="{esc(url)}">{esc(label)}</a>'
+    """The ask, for the newsrooms that have somewhere to send it.
+
+    A front page is not a donate page. Labelling one "Support" makes a
+    promise the link cannot keep, and a reader who follows it lands on a
+    masthead with no idea what they were meant to do there. Where
+    fetch_support found nothing, the rail says nothing.
+    """
+    if not article.get("support_url"):
+        return ""
+    label = article.get("support_label") or "Donate"
+    return (f'<a class="lozenge give" href="{esc(article["support_url"])}">'
+            f'{esc(label)}</a>')
 
 
 _EM_SPACES = re.compile(r"\s*\u2014\s*")
@@ -910,12 +927,91 @@ def region_name(a):
     return f"{where}, {state_name}" if state_name else where
 
 
+# Four weeks. Long enough that a weekly paper reads as a rate rather than
+# noise, short enough that a newsroom which has gone quiet stops being
+# described as though it hadn't.
+CADENCE_WINDOW_DAYS = 28
+# Small numbers belong in the sentence, not standing on their own; past nine
+# the numeral is what a reader actually reads.
+COUNT_WORDS = {2: "two", 3: "three", 4: "four", 5: "five", 6: "six",
+               7: "seven", 8: "eight", 9: "nine"}
+
+
+def cadence_by_org(cur):
+    """How much each newsroom published lately, in one pass over the archive.
+
+    A feed page is thirty cards and the answer is the same all build, so this
+    is a grouped query run once from main() and handed down as a mapping, not
+    a lookup per card.
+
+    Two numbers per org, because the count alone would lie. How many stories
+    landed inside the averaging window, and whether the collected history
+    reaches back past the start of that window at all — an org first crawled
+    on Tuesday has a low count because nobody was watching, not because it is
+    quiet, and it gets no figure.
+    """
+    cur.execute(
+        """
+        SELECT o.id,
+               count(*) FILTER (WHERE coalesce(a.published_at, a.fetched_at)
+                                     > now() - %(window)s::interval),
+               min(coalesce(a.published_at, a.fetched_at))
+                   <= now() - %(window)s::interval
+        FROM orgs o JOIN articles a ON a.org_id = o.id
+        GROUP BY o.id
+        """,
+        {"window": f"{CADENCE_WINDOW_DAYS} days"},
+    )
+    return {org_id: (recent, full_window) for org_id, recent, full_window in cur.fetchall()}
+
+
+def cadence_phrase(stats):
+    """A publishing rate in plain words, or None where there isn't one.
+
+    Withheld rather than extrapolated. An org we have not been collecting for
+    a full window has nothing to average — a fortnight of crawling says
+    nothing about the fortnight before it. An org that has published nothing
+    lately is said to have published nothing, because "0 stories a week" is a
+    rate, and the newsroom is not keeping to it; it has stopped.
+    """
+    if not stats:
+        return None
+    recent, full_window = stats
+    if not full_window:
+        return None
+    if not recent:
+        return "nothing published in the past month"
+    per_week = recent / (CADENCE_WINDOW_DAYS / 7)
+    if per_week < 0.75:
+        # One or two in four weeks. A weekly rate here would round to nothing.
+        if recent == 1:
+            return "about a story a month"
+        return f"about {COUNT_WORDS[recent]} stories a month"
+    if per_week < 1.5:
+        return "about a story a week"
+    weekly = math.floor(per_week + 0.5)
+    return f"about {COUNT_WORDS.get(weekly, weekly)} stories a week"
+
+
+def cadence_line(a):
+    """The cadence element of the rail, or nothing at all.
+
+    A newsroom with no feed makes no cadence claim: whatever is in the
+    archive for it came from somewhere else and is not a measure of how it
+    publishes.
+    """
+    if not a.get("org_feed"):
+        return ""
+    phrase = cadence_phrase(CADENCE.get(a.get("org_id")))
+    return f'<p class="cadence">{esc(phrase)}</p>' if phrase else ""
+
+
 def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_images=()):
     """Where it is, who published it, when, and then the story."""
     out = ["<article>"]
 
-    # 1. a column down the right: section first, then what kind of newsroom
-    #    this is, then the ask.
+    # 1. a column down the right: section first, then where the newsroom is,
+    #    what kind of newsroom it is, how often it publishes, then the ask.
     column = []
     if a.get("subject"):
         label = esc(a["subject"])
@@ -927,6 +1023,7 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
     if region:
         column.append(f'<p class="region">{esc(region)}</p>')
     column.append(tag_links(a, prefix if mode != "onepage" else "", cap=RAIL_TAG_CAP))
+    column.append(cadence_line(a))
     column.append(support_link(a))
     out.append(f'<aside class="tagcol">{"".join(column)}</aside>')
 
@@ -1512,12 +1609,15 @@ def render_text_item(a, prefix="../"):
         out.append(f"<dt>Picture</dt><dd>{esc(a['image_alt'])}</dd>")
     if a.get("summary"):
         out.append(f"<dt>Summary</dt><dd>{esc(a['summary'][:600])}</dd>")
-    support_url = a.get("support_url") or a["org_url"]
-    support_label = a.get("support_label") or "Support"
-    out.append(
-        f'<dt>Support</dt><dd><a href="{esc(support_url)}">'
-        f'{esc(support_label)} {esc(a["org_name"])}</a></dd>'
-    )
+    # Only where there is a payment page. The homepage is not one, and a
+    # screen reader has even less to go on than a sighted reader when a link
+    # called "Support" lands on a masthead.
+    if a.get("support_url"):
+        label = a.get("support_label") or "Donate"
+        out.append(
+            f'<dt>Support</dt><dd><a href="{esc(a["support_url"])}">'
+            f'{esc(label)} {esc(a["org_name"])}</a></dd>'
+        )
     out.append("</dl></details></article>")
     return "\n".join(out)
 
@@ -1619,7 +1719,7 @@ def load_articles(cur, limit, subject=None, feature=None, default_only=False,
         """
         SELECT a.id, a.url, a.title, a.summary, a.author, a.published_at, a.fetched_at,
                a.image_file, a.image_w, a.image_h, a.image_alt, a.subject,
-               o.name AS org_name, o.slug, o.url AS org_url,
+               o.id AS org_id, o.name AS org_name, o.slug, o.url AS org_url,
                o.support_url, o.support_label,
                o.state, o.city, o.beat, o.coverage, o.coverage_type,
                o.lat, o.lon, o.geo_precision,
@@ -1637,7 +1737,8 @@ def load_articles(cur, limit, subject=None, feature=None, default_only=False,
          *filter_params, limit],
     )
     cols = ("id", "url", "title", "summary", "author", "published_at", "fetched_at",
-            "image_file", "image_w", "image_h", "image_alt", "subject", "org_name", "slug", "org_url",
+            "image_file", "image_w", "image_h", "image_alt", "subject",
+            "org_id", "org_name", "slug", "org_url",
             "support_url", "support_label", "state", "city", "beat", "coverage",
             "coverage_type", "lat", "lon", "geo_precision",
             "timezone", "model", "features", "org_feed",
@@ -1679,6 +1780,10 @@ def main():
 
     with connect() as conn, conn.cursor() as cur:
         orgs = load_orgs(cur)
+        # How often each newsroom publishes: one grouped query for the whole
+        # build, read from the mapping as each card renders.
+        CADENCE.clear()
+        CADENCE.update(cadence_by_org(cur))
         articles = collapse_duplicates(
             load_articles(cur, FEED_PAGE_ARTICLES, default_only=True))
         all_articles = collapse_duplicates(
