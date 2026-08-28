@@ -137,7 +137,13 @@ article{{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}}
 article::after{{content:"";display:block;clear:both}}
 img{{max-width:100%;height:auto;display:block}}
 .shot{{float:left;width:33%;margin:.35rem 1rem .3rem 0}}
-.shot img{{width:100%}}
+.shot img{{width:100%;border:1px solid var(--rule)}}
+/* Rows crawled before image_w/image_h existed have no dimensions to set
+   as attributes; reserve a box for them anyway so the layout doesn't
+   jump once the image loads. */
+.shot img:not([width]){{aspect-ratio:3/2;object-fit:cover}}
+.shot figcaption{{font:400 .78rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:.3rem 0 0}}
 @media(max-width:34rem){{.shot{{width:40%}}}}
 time[data-pub]{{cursor:pointer}}
 .yours{{color:var(--dim)}}
@@ -898,14 +904,21 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
         out.append(f'<p class="byline">By {esc(a["author"])}</p>')
 
     if a.get("image_file") and a["image_file"] not in skip_images:
+        # image_w/image_h are only missing on rows crawled before those
+        # columns existed; the .shot img:not([width]) CSS rule reserves an
+        # aspect-ratio box for those instead of explicit dimensions.
         size = ""
         if a.get("image_w") and a.get("image_h"):
             size = f' width="{a["image_w"]}" height="{a["image_h"]}"'
         alt = esc(a.get("image_alt") or "")
+        caption = f"<figcaption>{alt}</figcaption>" if a.get("image_alt") else ""
         out.append(
-            f'<a class="shot" href="{esc(a["url"])}" tabindex="-1" aria-hidden="true">'
+            f'<figure class="shot">'
+            f'<a href="{esc(a["url"])}" tabindex="-1" aria-hidden="true">'
             f'<img src="{prefix}img/{esc(a["image_file"])}" alt="{alt}"{size} '
             f'loading="lazy" decoding="async"></a>'
+            f'{caption}'
+            f'</figure>'
         )
 
     # 6. the text, with Read more running on from the end of it
