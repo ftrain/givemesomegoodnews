@@ -169,6 +169,18 @@ display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}}
 .tagcol .section{{border-color:var(--fg);color:var(--fg);font-weight:600}}
 .tags{{display:flex;flex-wrap:wrap;gap:.3rem}}
 .tagcol .tags{{justify-content:flex-end}}
+/* Whose state this is: the flag small, and the state's own code beside it
+   in type, because at this size the code is what reads. The rule around the
+   flag keeps a pale one (Rhode Island's white field) from dissolving into
+   the page. */
+.ident{{display:flex;align-items:center;gap:.35rem;margin:0}}
+.flag{{flex:none;border:1px solid var(--rule);background:var(--bg)}}
+.abbr{{font:600 .78rem/1 PlexMono,ui-monospace,monospace;letter-spacing:.06em;
+color:var(--fg)}}
+/* An outlet whose beat is the country has no state to fly. The marker takes
+   the line rather than leaving a flag-shaped hole in it. */
+.ident .marker{{font:600 .72rem/1 PlexMono,ui-monospace,monospace;
+letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}}
 /* Where the newsroom is: the state's outline with one mark on it, and the
    same answer in words underneath for anyone not seeing the picture. */
 .locator{{display:block;margin:.1rem 0}}
@@ -863,6 +875,59 @@ GEOJSON_STATE_NAMES = {"DC": "District of Columbia"}
 WIDE_COVERAGE = ("state", "regional", "network", "national")
 
 
+# How wide the flag renders in the rail. Small enough that a seal is a
+# smudge, which is why the two-letter code sits next to it.
+FLAG_WIDTH = 24
+# Flags are not all one shape — Ohio is a pennant, Rhode Island is nearly
+# square — so the height is read off each file's viewBox the first time it
+# is asked for, and cached for the rest of the build. An <img> given the
+# wrong proportions reserves the wrong box and jumps when the file lands.
+_FLAG_BOX = {}
+_FLAG_VIEWBOX = re.compile(
+    r'viewBox="\s*[-+0-9.]+[\s,]+[-+0-9.]+[\s,]+([0-9.]+)[\s,]+([0-9.]+)')
+
+
+def flag_box(code):
+    """The width and height to draw a state's flag at, or None if we have no
+    flag for it."""
+    if code not in _FLAG_BOX:
+        path = config.ASSETS_DIR / "flags" / f"{code.lower()}.svg"
+        box = None
+        if path.is_file():
+            with path.open(encoding="utf-8") as fh:
+                found = _FLAG_VIEWBOX.search(fh.read(2000))
+            if found:
+                width, height = float(found.group(1)), float(found.group(2))
+                box = (FLAG_WIDTH, max(1, round(FLAG_WIDTH * height / width)))
+        _FLAG_BOX[code] = box
+    return _FLAG_BOX[code]
+
+
+def state_identity(a, prefix=""):
+    """Which state's newsroom this is: the flag, and the state's own code.
+
+    A flag is recognised before it is read, which is the whole job at the top
+    of the rail — but at this size a seal is a smudge, so the two-letter code
+    beside it is what actually names the state, and it is text. Strip the
+    images out of the page and the answer is still there.
+
+    An outlet with no state, or one whose beat is the country, has no state
+    to fly. It gets the national marker instead of a flag that would be the
+    wrong answer, and the marker stands alone: no image, no abbreviation.
+    """
+    code = (a.get("state") or "").upper()
+    if not code or (a.get("coverage_type") or "") == "national":
+        return '<p class="ident"><span class="marker">National</span></p>'
+    name = REGION_NAMES.get(code)
+    box = flag_box(code) if name else None
+    img = ""
+    if box:
+        img = (f'<img class="flag" src="{prefix}flags/{code.lower()}.svg" '
+               f'width="{box[0]}" height="{box[1]}" alt="{esc(name)}" '
+               f'loading="lazy" decoding="async">')
+    return f'<p class="ident">{img}<span class="abbr">{esc(code)}</span></p>'
+
+
 def locator_state_name(a):
     """The state whose outline belongs beside this story, if any."""
     code = (a.get("state") or "").upper()
@@ -1010,14 +1075,16 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
     """Where it is, who published it, when, and then the story."""
     out = ["<article>"]
 
-    # 1. a column down the right: section first, then where the newsroom is,
-    #    what kind of newsroom it is, how often it publishes, then the ask.
+    # 1. a column down the right: section first, then whose state this
+    #    newsroom is in and where in it, what kind of newsroom it is, how
+    #    often it publishes, then the ask.
     column = []
     if a.get("subject"):
         label = esc(a["subject"])
         column.append(f'<span class="lozenge section">{label}</span>' if mode == "onepage"
                       else f'<a class="lozenge section" '
                            f'href="{subject_href(a["subject"], prefix)}">{label}</a>')
+    column.append(state_identity(a, prefix if mode != "onepage" else ""))
     column.append(locator_map(a))
     region = region_name(a)
     if region:
@@ -1772,6 +1839,17 @@ def main():
         # Drop faces that are no longer part of the design, so a typeface
         # change does not leave the old files being served forever.
         for stale in fonts_dst.glob("*.woff2"):
+            if stale.name not in wanted:
+                stale.unlink()
+    flags_src = config.ASSETS_DIR / "flags"
+    if flags_src.is_dir():
+        flags_dst = site / "flags"
+        flags_dst.mkdir(parents=True, exist_ok=True)
+        wanted = {f.name for f in flags_src.glob("*.svg")}
+        for flag in flags_src.glob("*.svg"):
+            shutil.copyfile(flag, flags_dst / flag.name)
+        # A state that redraws its flag leaves the old one behind otherwise.
+        for stale in flags_dst.glob("*.svg"):
             if stale.name not in wanted:
                 stale.unlink()
     masthead = config.ASSETS_DIR / "masthead.svg"
