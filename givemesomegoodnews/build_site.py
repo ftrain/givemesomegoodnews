@@ -22,10 +22,10 @@ from datetime import datetime, timezone
 from html import escape as esc
 
 from . import config
-from .albers import MapProjection
+from .albers import MapProjection, state_locator
 from .timezones import local_dateline, local_time
 from . import filters, syndicate
-from .tags import TAG_GROUPS, region_of, tag_slug
+from .tags import TAG_GROUPS, TAG_PRIORITY, region_of, tag_slug
 from .db import connect
 
 MIN_RELATED_SIM = float(os.environ.get("MIN_RELATED_SIM", "0.30"))
@@ -164,6 +164,17 @@ padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}}
 display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}}
 .tagcol .lozenge{{margin:0}}
 .tagcol .section{{border-color:var(--fg);color:var(--fg);font-weight:600}}
+.tags{{display:flex;flex-wrap:wrap;gap:.3rem}}
+.tagcol .tags{{justify-content:flex-end}}
+/* Where the newsroom is: the state's outline with one mark on it, and the
+   same answer in words underneath for anyone not seeing the picture. */
+.locator{{display:block;margin:.1rem 0}}
+.locator .state{{fill:var(--band);stroke:var(--dim);stroke-width:.6;stroke-linejoin:round}}
+.locator .state.whole{{fill:var(--link);fill-opacity:.3}}
+.locator .near{{fill:var(--link);fill-opacity:.35}}
+.locator .here{{fill:var(--link);stroke:var(--bg);stroke-width:.7}}
+.region{{font:400 .72rem/1.35 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;max-width:100%;text-align:right;overflow-wrap:break-word}}
 .places{{display:flex;flex-wrap:wrap;gap:.35rem;margin:0 0 .4rem}}
 .lozenge.place{{margin:0}}
 .lozenge.give{{border-color:var(--link);color:var(--link);font-weight:600}}
@@ -819,6 +830,86 @@ def place_line(a, mode="site", prefix=""):
     return " / ".join(esc(part) for part in (first, middle) if part) + " / " + pub
 
 
+# The locator is a thumbnail, not a map: one state's outline about this
+# many pixels across, with a single mark on it.
+LOCATOR_SIZE = 64
+# STATE_NAMES stops at the fifty states and the district; a newsroom in a
+# territory still has to be named in words.
+REGION_NAMES = {
+    **STATE_NAMES, "PR": "Puerto Rico", "GU": "Guam", "AS": "American Samoa",
+    "VI": "U.S. Virgin Islands", "MP": "Northern Mariana Islands",
+}
+# The GeoJSON spells the district out; the rest of the site says it short.
+GEOJSON_STATE_NAMES = {"DC": "District of Columbia"}
+# Outlets organised around a region rather than a city: naming a city they
+# do not cover would be a wrong answer, so they name their coverage.
+WIDE_COVERAGE = ("state", "regional", "network", "national")
+
+
+def locator_state_name(a):
+    """The state whose outline belongs beside this story, if any."""
+    code = (a.get("state") or "").upper()
+    if not code or (a.get("coverage_type") or "") == "national":
+        return None
+    return GEOJSON_STATE_NAMES.get(code) or REGION_NAMES.get(code)
+
+
+def locator_map(a):
+    """A small outline of the newsroom's state with its place marked on it.
+
+    The geocode's precision decides the mark. A place-level coordinate is a
+    dot; a county one knows an area and not a point, so it shades one rather
+    than claim a precision the gazetteer never had, and a state-level one
+    shades the whole state. So does a statewide outlet, because that is what
+    it covers. Coordinates hand-set in the YAML carry no precision at all;
+    somebody chose them for that newsroom, so they are treated as a place.
+
+    Decorative: the region line underneath carries the same information in
+    words, so this is hidden from screen readers rather than described.
+    """
+    name = locator_state_name(a)
+    if not name:
+        return ""
+    fit = state_locator(config.STATES_GEOJSON, name, LOCATOR_SIZE)
+    if fit is None:
+        # A territory with no outline in the GeoJSON. The region line names
+        # it; an empty box would say less than nothing.
+        return ""
+
+    precision = (a.get("geo_precision") or "").lower()
+    lat, lon = a.get("lat"), a.get("lon")
+    mark = ""
+    if ((a.get("coverage_type") or "") != "state" and precision != "state"
+            and lat is not None and lon is not None):
+        x, y = fit.point(float(lon), float(lat))
+        # A coordinate outside its own state is a bad geocode; shade the
+        # state rather than put a mark somewhere the reader cannot see.
+        if fit.contains(x, y):
+            mark = (f'<circle class="near" cx="{x}" cy="{y}" r="7"/>' if precision == "county"
+                    else f'<circle class="here" cx="{x}" cy="{y}" r="2.4"/>')
+    return (f'<svg class="locator" viewBox="0 0 {fit.width} {fit.height}" '
+            f'width="{fit.width}" height="{fit.height}" aria-hidden="true" '
+            f'focusable="false"><path class="{"state" if mark else "state whole"}" '
+            f'd="{fit.path}"/>{mark}</svg>')
+
+
+def region_name(a):
+    """The area the locator shades, in words, so it survives images off."""
+    state_name = REGION_NAMES.get((a.get("state") or "").upper())
+    coverage = a.get("coverage")
+    if (a.get("coverage_type") or "") in WIDE_COVERAGE:
+        return coverage or state_name or "National"
+    city = a.get("city")
+    precision = (a.get("geo_precision") or "").lower()
+    if not city or precision == "state":
+        return coverage or state_name
+    if state_name and state_name.startswith(city):
+        return state_name  # the district, whose city and state are one name
+    # A county-level geocode places the newsroom near its city, not in it.
+    where = city if precision != "county" or city.endswith("County") else f"{city} area"
+    return f"{where}, {state_name}" if state_name else where
+
+
 def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_images=()):
     """Where it is, who published it, when, and then the story."""
     out = ["<article>"]
@@ -831,7 +922,11 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
         column.append(f'<span class="lozenge section">{label}</span>' if mode == "onepage"
                       else f'<a class="lozenge section" '
                            f'href="{subject_href(a["subject"], prefix)}">{label}</a>')
-    column.append(tag_links(a, prefix if mode != "onepage" else ""))
+    column.append(locator_map(a))
+    region = region_name(a)
+    if region:
+        column.append(f'<p class="region">{esc(region)}</p>')
+    column.append(tag_links(a, prefix if mode != "onepage" else "", cap=RAIL_TAG_CAP))
     column.append(support_link(a))
     out.append(f'<aside class="tagcol">{"".join(column)}</aside>')
 
@@ -1099,13 +1194,28 @@ def ownership_tags(org):
     return tags
 
 
-def tag_links(org, prefix=""):
-    """Tags as tappable lozenges, each leading to that tag's own feed."""
-    out = [
-        f'<a class="lozenge" href="{prefix}tags/{tag_slug(tag)}.html">{esc(tag)}</a>'
-        for tag in ownership_tags(org)
-    ]
-    return "".join(out)
+# The rail is a narrow column; a newsroom carrying half a dozen features
+# would otherwise push its headline down a variable amount card to card.
+RAIL_TAG_CAP = 3
+
+
+def tag_links(org, prefix="", cap=None):
+    """Tags as tappable lozenges, each leading to that characteristic's page.
+
+    Ordered by TAG_PRIORITY (Ownership, then Community, then Practice, each
+    group in its own fixed order) so a capped render always keeps the same
+    subset, in the same order, as an uncapped one.
+    """
+    tags = sorted(ownership_tags(org), key=lambda t: TAG_PRIORITY.get(t, len(TAG_PRIORITY)))
+    if cap is not None:
+        tags = tags[:cap]
+    if not tags:
+        return ""
+    links = "".join(
+        f'<a class="lozenge" href="{prefix}features/{tag_slug(tag)}.html">{esc(tag)}</a>'
+        for tag in tags
+    )
+    return f'<span class="tags">{links}</span>'
 
 
 def feature_href(feature, prefix=""):
@@ -1491,7 +1601,7 @@ def render_org_page(cur, org):
 
 ORG_COLUMNS = (
     "id", "slug", "name", "url", "about_url", "feed_url", "city", "state", "lat", "lon",
-    "coverage", "coverage_type", "model", "affiliations", "founded",
+    "geo_precision", "coverage", "coverage_type", "model", "affiliations", "founded",
     "support_url", "support_label", "features", "source", "tagline", "beat",
     "about_text", "about_source_url", "about_fetched_at",
 )
@@ -1512,6 +1622,7 @@ def load_articles(cur, limit, subject=None, feature=None, default_only=False,
                o.name AS org_name, o.slug, o.url AS org_url,
                o.support_url, o.support_label,
                o.state, o.city, o.beat, o.coverage, o.coverage_type,
+               o.lat, o.lon, o.geo_precision,
                o.timezone, o.model, o.features, o.feed_url, o.in_default, o.language
         FROM articles a JOIN orgs o ON o.id = a.org_id
         WHERE (%s::text IS NULL OR a.subject = %s)
@@ -1528,7 +1639,8 @@ def load_articles(cur, limit, subject=None, feature=None, default_only=False,
     cols = ("id", "url", "title", "summary", "author", "published_at", "fetched_at",
             "image_file", "image_w", "image_h", "image_alt", "subject", "org_name", "slug", "org_url",
             "support_url", "support_label", "state", "city", "beat", "coverage",
-            "coverage_type", "timezone", "model", "features", "org_feed",
+            "coverage_type", "lat", "lon", "geo_precision",
+            "timezone", "model", "features", "org_feed",
             "in_default", "language")
     return [dict(zip(cols, row)) for row in cur.fetchall()]
 
@@ -1614,7 +1726,7 @@ def main():
         (site / "features").mkdir(parents=True, exist_ok=True)
         by_feature = collections.defaultdict(list)
         for org in orgs:
-            for feature in (org.get("features") or []):
+            for feature in ownership_tags(org):
                 by_feature[feature].append(org)
         for feature, group in by_feature.items():
             body = (f"<h1>{esc(feature)}</h1>"

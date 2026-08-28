@@ -167,3 +167,83 @@ class MapProjection:
         for code, (label, _fx, _fy) in TERRITORY_MARKERS.items():
             x, y = self.territory_points[code]
             yield code, label, x, y
+
+
+class StateLocator:
+    """One state on its own, fitted to a small box.
+
+    The composite map above is fitted to the country; a locator beside a
+    story is fitted to a single state, on a cone cut for that state's own
+    latitudes so Michigan and Texas each come out the shape people know.
+    """
+
+    def __init__(self, features, size, pad=1.0):
+        lons, lats = [], []
+        for feat in features:
+            for ring in _iter_rings(feat["geometry"]):
+                for lon, lat in ring:
+                    lons.append(lon)
+                    lats.append(lat)
+        span = max(lats) - min(lats)
+        self.project = _conic(
+            (min(lons) + max(lons)) / 2, (min(lats) + max(lats)) / 2,
+            min(lats) + span / 6, max(lats) - span / 6,
+        )
+        minx, maxx, miny, maxy = _bounds(features, self.project)
+        # One scale for both axes, then the box shrinks to what was drawn:
+        # a wide state gets a wide box, a tall one a tall box, and neither
+        # carries empty space beside it in the rail.
+        self.scale = min((size - 2 * pad) / (maxx - minx), (size - 2 * pad) / (maxy - miny))
+        self.tx = pad - minx * self.scale
+        self.ty = pad - miny * self.scale
+        self.width = round((maxx - minx) * self.scale + 2 * pad, 1)
+        self.height = round((maxy - miny) * self.scale + 2 * pad, 1)
+        self.path = self._build_path(features)
+
+    def point(self, lon, lat):
+        """Where a coordinate lands in the box, in SVG units."""
+        x, y = self.project(lon, lat)
+        return round(x * self.scale + self.tx, 1), round(y * self.scale + self.ty, 1)
+
+    def contains(self, x, y):
+        return 0 <= x <= self.width and 0 <= y <= self.height
+
+    def _build_path(self, features):
+        parts = []
+        for feat in features:
+            for ring in _iter_rings(feat["geometry"]):
+                pts = [f"{x},{y}" for x, y in (self.point(lon, lat) for lon, lat in ring)]
+                parts.append("M" + "L".join(pts) + "Z")
+        return "".join(parts)
+
+
+# Fitting a state costs a pass over its rings, and a feed page draws thirty
+# cards; fit each state once and let every card that names it reuse the fit.
+_STATE_LOCATORS = {}
+_GEOJSON_BY_NAME = {}
+
+
+def _features_by_name(geojson_path):
+    key = str(geojson_path)
+    if key not in _GEOJSON_BY_NAME:
+        with open(geojson_path) as f:
+            data = json.load(f)
+        by_name = {}
+        for feat in data["features"]:
+            by_name.setdefault(feat["properties"].get("name", ""), []).append(feat)
+        _GEOJSON_BY_NAME[key] = by_name
+    return _GEOJSON_BY_NAME[key]
+
+
+def state_locator(geojson_path, name, size=64):
+    """A fitted outline for one state, or None where there is no geometry.
+
+    Guam, the Marianas, American Samoa and the Virgin Islands have no
+    outline in the GeoJSON — the caller is expected to say so in words
+    rather than draw an empty box.
+    """
+    key = (str(geojson_path), name, size)
+    if key not in _STATE_LOCATORS:
+        feats = _features_by_name(geojson_path).get(name)
+        _STATE_LOCATORS[key] = StateLocator(feats, size) if feats else None
+    return _STATE_LOCATORS[key]
