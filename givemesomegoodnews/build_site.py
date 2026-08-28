@@ -123,6 +123,10 @@ h2{{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}}
 article h2{{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
 line-height:1.25;margin:1rem 0 .9rem;max-width:75%}}
 @media(max-width:34rem){{article h2{{max-width:100%;font-size:1.4rem}}}}
+/* Same short measure as the headline, so the paragraph doesn't run the
+   full width of the card just because the tag column has ended above it. */
+article .body{{max-width:75%}}
+@media(max-width:34rem){{article .body{{max-width:100%}}}}
 h3{{font-size:1rem;margin:1.2rem 0 .4rem}}
 p{{margin:0 0 .7rem}}
 ul{{padding-left:1.1rem}}
@@ -818,6 +822,33 @@ def tighten(text):
     return _EM_SPACES.sub("\u2014", text or "")
 
 
+_PARA_BREAK = re.compile(r"\n\s*\n")
+_SENTENCE_END = re.compile(r"[.!?][\"'\u201d\u2019)\]]*(?=\s|$)")
+
+SUMMARY_BUDGET = 400
+
+
+def clip_summary(text, budget=SUMMARY_BUDGET):
+    """The first paragraph of a source summary, held to a budget without
+    ever cutting mid-word or mid-sentence when a clean break is available.
+
+    Enough for a reader to judge the story; never enough that they need not
+    click through for the rest.
+    """
+    if not text:
+        return ""
+    para = _PARA_BREAK.split(text.strip(), maxsplit=1)[0].strip()
+    if len(para) <= budget:
+        return para
+    ends = [m.end() for m in _SENTENCE_END.finditer(para) if m.end() <= budget]
+    if ends:
+        return para[:ends[-1]].rstrip()
+    # No full sentence fits the budget \u2014 fall back to the last complete
+    # word rather than let the cut land mid-token.
+    cut = para.rfind(" ", 0, budget)
+    return para[:cut].rstrip() if cut > 0 else para
+
+
 def place_line(a, mode="site", prefix=""):
     """State / region / publication — or National / beat / publication for
     the outlets organised around a subject rather than a place."""
@@ -922,10 +953,10 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
         )
 
     # 6. the text, with Read more running on from the end of it
-    summary = esc(tighten(a["summary"][:400])) if a.get("summary") else ""
+    summary = esc(tighten(clip_summary(a["summary"]))) if a.get("summary") else ""
     more = (f'<a class="lozenge more" href="{esc(a["url"])}">Read more '
             f'<span aria-hidden="true">&rarr;</span></a>')
-    out.append(f"<p>{summary} {more}</p>" if summary else f"<p>{more}</p>")
+    out.append(f'<p class="body">{summary} {more}</p>' if summary else f"<p>{more}</p>")
 
     if a.get("_also"):
         others = " &middot; ".join(
