@@ -823,14 +823,24 @@ def tighten(text):
 
 
 _PARA_BREAK = re.compile(r"\n\s*\n")
-_SENTENCE_END = re.compile(r"[.!?][\"'\u201d\u2019)\]]*(?=\s|$)")
+# A period only ends a sentence when something follows it, which is how "St."
+# and "U.S." stay whole. The CJK stops carry no such ambiguity and are not
+# written with a space after them, so they end a sentence on their own \u2014 the
+# Chinese-language outlets publish under the same mastheads as the English.
+_SENTENCE_END = re.compile(
+    r"[.!?][\"'\u201d\u2019)\]]*(?=\s|$)"
+    r"|[\u3002\uff01\uff1f][\"'\u201d\u2019)\]\uff09]*"
+)
 
 SUMMARY_BUDGET = 400
+# How far a summary may run past the budget to finish the sentence it is in.
+# Overshooting by a line reads better than handing the reader half a sentence.
+SUMMARY_GRACE = 120
 
 
 def clip_summary(text, budget=SUMMARY_BUDGET):
-    """The first paragraph of a source summary, held to a budget without
-    ever cutting mid-word or mid-sentence when a clean break is available.
+    """The first paragraph of a source summary, held to a budget and cut only
+    at the end of a sentence.
 
     Enough for a reader to judge the story; never enough that they need not
     click through for the rest.
@@ -840,13 +850,19 @@ def clip_summary(text, budget=SUMMARY_BUDGET):
     para = _PARA_BREAK.split(text.strip(), maxsplit=1)[0].strip()
     if len(para) <= budget:
         return para
-    ends = [m.end() for m in _SENTENCE_END.finditer(para) if m.end() <= budget]
-    if ends:
-        return para[:ends[-1]].rstrip()
-    # No full sentence fits the budget \u2014 fall back to the last complete
-    # word rather than let the cut land mid-token.
+    ends = [m.end() for m in _SENTENCE_END.finditer(para)]
+    fits = [e for e in ends if e <= budget]
+    if fits:
+        return para[:fits[-1]].rstrip()
+    # Nothing ends inside the budget, so spend the grace to close the first
+    # sentence rather than break it.
+    if ends and ends[0] <= budget + SUMMARY_GRACE:
+        return para[:ends[0]].rstrip()
+    # A paragraph that runs on with no sentence break anywhere near the
+    # budget: cut at the last complete word and say so, rather than let the
+    # cut land mid-token and unmarked.
     cut = para.rfind(" ", 0, budget)
-    return para[:cut].rstrip() if cut > 0 else para
+    return (para[:cut].rstrip() + "\u2026") if cut > 0 else para
 
 
 def place_line(a, mode="site", prefix=""):
@@ -920,20 +936,25 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
 
     # 4. who published it. The name goes to the newsroom's own front page;
     #    beside it, the page this site keeps about them — who they are, and
-    #    everything else of theirs we carry.
+    #    everything else of theirs we carry. The one-pager carries no such
+    #    page, and the name already points at the newsroom, so it goes
+    #    without, the way the catalog entry drops its "details" link.
     source = f'<a href="{esc(a["org_url"])}"><strong>{esc(a["org_name"])}</strong></a>'
-    if a.get("slug"):
+    if a.get("slug") and mode != "onepage":
         # On its own line rather than trailing the name: a name can run to
         # sixty characters, and sharing the line with it breaks both.
         source += (f'<a class="orgpage" href="{prefix}orgs/{esc(a["slug"])}.html">'
                    f'about this newsroom</a>')
     out.append(f'<p class="source">{source}</p>')
 
-    # 5. headline, 6. byline
+    # 5. headline
     out.append(f'<h2><a href="{esc(a["url"])}">{esc(tighten(a["title"]))}</a></h2>')
+
+    # 6. byline
     if a.get("author"):
         out.append(f'<p class="byline">By {esc(a["author"])}</p>')
 
+    # 7. the photo
     if a.get("image_file") and a["image_file"] not in skip_images:
         # image_w/image_h are only missing on rows crawled before those
         # columns existed; the .shot img:not([width]) CSS rule reserves an
@@ -952,7 +973,7 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
             f'</figure>'
         )
 
-    # 6. the text, with Read more running on from the end of it
+    # 8. the text, with Read more running on from the end of it
     summary = esc(tighten(clip_summary(a["summary"]))) if a.get("summary") else ""
     more = (f'<a class="lozenge more" href="{esc(a["url"])}">Read more '
             f'<span aria-hidden="true">&rarr;</span></a>')
