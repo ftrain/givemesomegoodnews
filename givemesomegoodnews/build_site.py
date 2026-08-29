@@ -822,6 +822,21 @@ def tighten(text):
     return _EM_SPACES.sub("\u2014", text or "")
 
 
+_LEADING_BY = re.compile(r"^\s*by[:\s]\s*", re.IGNORECASE)
+
+
+def credit(author):
+    """The names in a byline, without the word the byline already supplies.
+
+    Plenty of feeds put the whole credit line in the author field — "By Bob
+    Berwyn", "By Howard Herman, The Berkshire Eagle" — and the byline adds its
+    own "By", which reads as "By By Bob Berwyn". Strip a leading one. The
+    separator the pattern requires after it keeps "Byron" whole, and a credit
+    that is nothing but the word itself is left alone rather than emptied.
+    """
+    return _LEADING_BY.sub("", author, count=1) or author
+
+
 _PARA_BREAK = re.compile(r"\n\s*\n")
 # Candidate sentence ends. A Latin period is only a candidate \u2014 sentence_ends()
 # still has to rule out the abbreviations. The CJK stops carry no such
@@ -994,7 +1009,7 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
 
     # 6. byline
     if a.get("author"):
-        out.append(f'<p class="byline">By {esc(a["author"])}</p>')
+        out.append(f'<p class="byline">By {esc(credit(a["author"]))}</p>')
 
     # 7. the photo
     if a.get("image_file") and a["image_file"] not in skip_images:
