@@ -7,7 +7,7 @@ DB_NAME ?= givemesomegoodnews
 ROTATE_BATCH ?= 90
 PY ?= python3
 
-all: db seed about taglines institutions support feeds classify build
+all: db seed about taglines institutions support feeds classify reporters build
 
 db:
 	createdb $(DB_NAME) 2>/dev/null || true
@@ -45,16 +45,21 @@ classify:
 embed:
 	$(PY) -m givemesomegoodnews.embed
 
+# Reporter identities from the bylines of newly crawled stories. Runs before
+# build, which renders a page per identity. --all re-reads the whole archive.
+reporters:
+	$(PY) -m givemesomegoodnews.reporters
+
 build:
 	$(PY) -m givemesomegoodnews.build_site
 
 # What a cron job should run: pull new stories, regenerate the site.
-refresh: feeds classify prune build
+refresh: feeds classify prune reporters build
 
 # What the frequent job runs: pull a slice, retag, regenerate.
-refresh-slice: rotate classify build
+refresh-slice: rotate classify reporters build
 
 serve:
 	$(PY) -m http.server 8000 --directory site
 
-.PHONY: all db seed about taglines institutions support feeds rotate classify prune embed build refresh refresh-slice serve
+.PHONY: all db seed about taglines institutions support feeds rotate classify prune embed reporters build refresh refresh-slice serve

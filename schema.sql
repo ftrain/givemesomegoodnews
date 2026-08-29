@@ -186,3 +186,32 @@ CREATE INDEX IF NOT EXISTS orgs_rotation_idx ON orgs (last_crawled_at NULLS FIRS
 -- publish in both under one name.
 ALTER TABLE articles ADD COLUMN IF NOT EXISTS language TEXT;
 CREATE INDEX IF NOT EXISTS articles_language_idx ON articles (language);
+
+-- Reporters, resolved from articles.author; see givemesomegoodnews/reporters.py.
+-- An identity belongs to one newsroom. The same name at two newsrooms stays two
+-- rows: the feeds give us no evidence they are the same person, and merging them
+-- is a judgement call this site leaves to a human.
+CREATE TABLE IF NOT EXISTS reporters (
+    id          SERIAL PRIMARY KEY,
+    org_id      INT NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
+    name        TEXT NOT NULL,   -- display name, as it reads on the page
+    match_key   TEXT NOT NULL,   -- normalised name; what makes two spellings one person
+    slug        TEXT NOT NULL,   -- URL-safe, for site/reporters/
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+    UNIQUE (org_id, match_key),
+    UNIQUE (org_id, slug)
+);
+CREATE INDEX IF NOT EXISTS reporters_org_idx ON reporters (org_id);
+
+-- Which people a story is credited to. A multi-byline story gets one row per
+-- person, so each of them gets the story on their page.
+CREATE TABLE IF NOT EXISTS article_reporters (
+    article_id  INT NOT NULL REFERENCES articles(id) ON DELETE CASCADE,
+    reporter_id INT NOT NULL REFERENCES reporters(id) ON DELETE CASCADE,
+    -- The span of articles.author this credit came from, kept verbatim so the
+    -- byline can be linked in place without guessing at the original spelling.
+    byline_text TEXT,
+    PRIMARY KEY (article_id, reporter_id)
+);
+CREATE INDEX IF NOT EXISTS article_reporters_reporter_idx
+    ON article_reporters (reporter_id);
