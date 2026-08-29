@@ -24,7 +24,7 @@ from html import escape as esc
 from . import config
 from .albers import MapProjection
 from .timezones import local_dateline, local_time
-from . import filters, syndicate
+from . import filters, reporters, syndicate
 from .tags import TAG_GROUPS, region_of, tag_slug
 from .db import connect
 
@@ -82,6 +82,13 @@ NAV = NAV_BROWSE + NAV_META
 # Everything the menu offers, filled in by main() before anything renders.
 MENU_SUBJECTS = []
 MENU_FEEDS = []
+
+# Headlines a reporter's disclosure lists before it stops.
+REPORTER_HEADLINES = 3
+# Every byline the site resolves to a person, keyed by reporter identity and
+# filled in by main() from one query before anything renders. A card then
+# costs a dictionary lookup rather than a query of its own.
+REPORTERS = {}
 
 
 def stylesheet(prefix=""):
@@ -896,6 +903,70 @@ def org_profile_panel(a, mode="site", prefix=""):
     return "\n".join(rows)
 
 
+def and_list(items):
+    """A, B and C — the way a sentence names a handful of things."""
+    items = list(items)
+    if len(items) < 3:
+        return " and ".join(items)
+    return ", ".join(items[:-1]) + " and " + items[-1]
+
+
+def newsroom_phrase(names, cap=4):
+    """Who a reporter publishes with, without listing thirty of them."""
+    if not names:
+        return ""
+    if len(names) <= cap:
+        return f"Publishes with {and_list(names)}."
+    rest = len(names) - cap
+    others = "another newsroom" if rest == 1 else f"{rest} other newsrooms"
+    return f"Publishes with {', '.join(names[:cap])} and {others}."
+
+
+def reporter_span(first_at, last_at):
+    """The period a reporter's work here covers, to the month."""
+    if not first_at or not last_at:
+        return ""
+    first, last = first_at.strftime("%B %Y"), last_at.strftime("%B %Y")
+    if first == last:
+        return f"All of it from {last}."
+    return f"Their work here runs from {first} to {last}."
+
+
+def reporter_of(a):
+    """The person behind an item's byline, or None where it names nobody.
+
+    `REPORTERS` is assembled once per build, so this is a lookup rather than
+    a query, and a byline that resolves to nobody is simply not in there.
+    """
+    return REPORTERS.get(reporters.reporter_key(a.get("author")))
+
+
+def reporter_facts(who):
+    """The reporter in sentences, for anywhere that can carry sentences."""
+    said = [reporters.prolificacy(who["n_stories"]),
+            newsroom_phrase(who["newsrooms"]),
+            reporter_span(who["first_at"], who["last_at"])]
+    return " ".join(part for part in said if part)
+
+
+def reporter_panel(a, mode="site", prefix=""):
+    """What this site holds under one byline: how much, where, when, what."""
+    who = reporter_of(a)
+    if not who:
+        return ""
+    rows = [f"<p>{esc(reporter_facts(who))}</p>"]
+    if who["recent"]:
+        items = "".join(
+            f'<li><a href="{esc(r["url"])}">{esc(tighten(r["title"]))}</a></li>'
+            for r in who["recent"]
+        )
+        rows.append(f"<p>Most recently:</p><ul>{items}</ul>")
+    if mode != "onepage":
+        rows.append(f'<p><a class="lozenge" href="{prefix}reporters/'
+                    f'{esc(who["slug"])}.html">Everything by {esc(who["name"])}</a></p>')
+    return "".join(rows)
+
+
 def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_images=()):
     """Where it is, who published it, when, and then the story."""
     out = ["<article>"]
@@ -951,7 +1022,14 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
     # 4. headline, 5. byline
     out.append(f'<h2><a href="{esc(a["url"])}">{esc(tighten(a["title"]))}</a></h2>')
     if a.get("author"):
-        out.append(f'<p class="byline">By {esc(a["author"])}</p>')
+        # The byline opens the same way the masthead above it does — but
+        # only where there is a person behind it. A byline the site cannot
+        # resolve stays the plain line of text it has always been, rather
+        # than becoming a marker that opens onto nothing.
+        who = reporter_of(a)
+        out.append(disclosure(f'By <strong>{esc(who["name"])}</strong>',
+                              reporter_panel(a, mode, prefix), "byline")
+                   if who else f'<p class="byline">By {esc(a["author"])}</p>')
 
     if a.get("image_file") and a["image_file"] not in skip_images:
         size = ""
@@ -1469,6 +1547,12 @@ def render_text_item(a, prefix="../"):
     where = a.get("beat") or a.get("city") or a.get("coverage") or ""
     if a.get("author"):
         out.append(f"<dt>Reported by</dt><dd>{esc(a['author'])}</dd>")
+        # What the full edition puts behind a marker beside the byline is
+        # written out here as a sentence instead — same words, no marker.
+        who = reporter_of(a)
+        if who:
+            out.append(f"<dt>About {esc(who['name'])}</dt>"
+                       f"<dd>{esc(reporter_facts(who))}</dd>")
     if when:
         out.append(f"<dt>Published</dt><dd>{esc(when)}</dd>")
     if where:
@@ -1620,6 +1704,71 @@ def load_articles(cur, limit, subject=None, feature=None, default_only=False,
     return [dict(zip(cols, row)) for row in cur.fetchall()]
 
 
+def load_reporter_panels(cur, headlines=REPORTER_HEADLINES):
+    """Every byline on the site that resolves to a person, in one query.
+
+    The database groups by the raw byline and counts, dates and collects the
+    newest headlines in the same pass; the fold from raw bylines to reporter
+    identities happens here, because that is where the rules for who counts
+    as a person live. What comes back is keyed by identity, so rendering a
+    card is a dictionary lookup however many cards the build writes.
+    """
+    cur.execute(
+        """
+        WITH byline AS (
+            SELECT lower(btrim(a.author)) AS raw,
+                   btrim(a.author) AS author, a.title, a.url,
+                   o.name AS org_name,
+                   coalesce(a.published_at, a.fetched_at) AS at
+            FROM articles a JOIN orgs o ON o.id = a.org_id
+            WHERE a.author IS NOT NULL AND btrim(a.author) <> ''
+        ), ranked AS (
+            SELECT byline.*,
+                   count(*) OVER (PARTITION BY raw) AS n_stories,
+                   row_number() OVER (PARTITION BY raw ORDER BY at DESC) AS rn
+            FROM byline
+        )
+        SELECT min(author), min(n_stories), min(at), max(at),
+               array_agg(DISTINCT org_name),
+               json_agg(json_build_object('title', title, 'url', url,
+                                          'ts', extract(epoch FROM at))
+                        ORDER BY at DESC) FILTER (WHERE rn <= %s)
+        FROM ranked GROUP BY raw
+        """,
+        (headlines,),
+    )
+    panels = {}
+    for author, n_stories, first_at, last_at, newsrooms, recent in cur.fetchall():
+        key = reporters.reporter_key(author)
+        if not key:
+            continue
+        name = reporters.reporter_name(author)
+        who = panels.get(key)
+        if who is None:
+            who = panels[key] = {
+                "name": name, "slug": reporters.reporter_slug(author),
+                "n_stories": 0, "first_at": first_at, "last_at": last_at,
+                "newsrooms": set(), "recent": [],
+            }
+        # Feeds disagree about capitals, and the database is under no
+        # obligation to hand the groups back in the same order twice. Prefer
+        # the spelling that is not shouted, and settle ties alphabetically,
+        # so one reporter is not named two ways from one build to the next.
+        if (name.isupper(), name) < (who["name"].isupper(), who["name"]):
+            who["name"] = name
+        who["n_stories"] += n_stories
+        who["first_at"] = min(who["first_at"], first_at)
+        who["last_at"] = max(who["last_at"], last_at)
+        who["newsrooms"].update(newsrooms or ())
+        who["recent"].extend(recent or ())
+    for who in panels.values():
+        who["newsrooms"] = sorted(who["newsrooms"])
+        who["recent"] = sorted(who["recent"],
+                               key=lambda r: (-r["ts"], r["title"]))[:headlines]
+    # A byline the site cannot point anywhere is not a profile.
+    return {key: who for key, who in panels.items() if who["slug"]}
+
+
 def export_catalog_json(orgs):
     out = []
     for o in orgs:
@@ -1654,6 +1803,11 @@ def main():
 
     with connect() as conn, conn.cursor() as cur:
         orgs = load_orgs(cur)
+        # One query for every byline on the site, before a single card is
+        # rendered. Feed pages, tag pages, subject pages and the plain-text
+        # edition all read this dictionary; none of them asks again.
+        REPORTERS.clear()
+        REPORTERS.update(load_reporter_panels(cur))
         articles = collapse_duplicates(
             load_articles(cur, FEED_PAGE_ARTICLES, default_only=True))
         all_articles = collapse_duplicates(
