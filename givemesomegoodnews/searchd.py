@@ -35,7 +35,7 @@ SELECT a.id, a.url, a.title, a.summary, a.author, a.published_at, a.fetched_at,
        a.image_file, a.image_w, a.image_h, a.image_alt, a.subject,
        o.name, o.slug, o.url, o.support_url, o.support_label,
        o.state, o.city, o.beat, o.coverage, o.coverage_type, o.timezone,
-       o.model, o.features, o.feed_url, o.in_default, o.language
+       o.model, o.features, o.feed_url, o.in_default, o.language, o.about_text
 FROM articles a JOIN orgs o ON o.id = a.org_id
 """
 
@@ -96,7 +96,7 @@ COLS = ("id", "url", "title", "summary", "author", "published_at", "fetched_at",
         "image_file", "image_w", "image_h", "image_alt", "subject", "org_name", "slug",
         "org_url", "support_url", "support_label", "state", "city", "beat",
         "coverage", "coverage_type", "timezone", "model", "features", "org_feed",
-        "in_default", "language")
+        "in_default", "language", "about_text")
 
 ORG_COLS = ("slug", "name", "lat", "lon", "state")
 

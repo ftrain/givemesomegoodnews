@@ -175,6 +175,29 @@ a.lozenge.more:hover,a.lozenge.more:focus{{background:var(--fg);color:var(--bg)}
 margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}}
 .byline{{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
 margin:0 0 .8rem}}
+/* Inline disclosures: a marker beside a name, its panel opening in place.
+   Native <details>, like the burger menu — it works with scripting off,
+   takes keyboard focus, and announces expanded/collapsed by itself. */
+.disc{{margin:0 0 .3rem}}
+.disc>summary{{cursor:pointer;list-style:none;color:var(--fg);
+display:inline-flex;flex-wrap:wrap;align-items:baseline;gap:.4rem}}
+.disc>summary::-webkit-details-marker{{display:none}}
+.disc>summary:hover,.disc>summary:focus{{color:var(--link)}}
+.disc-cue{{font:400 .68rem/1 PlexMono,ui-monospace,monospace;color:var(--dim);
+border:1px solid var(--rule);border-radius:1rem;padding:.24rem .45rem;
+white-space:nowrap;text-transform:uppercase;letter-spacing:.05em}}
+.disc-cue::after{{content:" \\25be"}}
+.disc[open]>summary .disc-cue::after{{content:" \\25b4"}}
+.disc>summary:hover .disc-cue,.disc>summary:focus-visible .disc-cue
+{{border-color:var(--link);color:var(--link)}}
+.disc-panel{{border-left:3px solid var(--rule);margin:.5rem 0 .7rem;padding-left:.8rem;
+font-family:Plex,system-ui,sans-serif;font-size:.9rem}}
+.disc-panel blockquote{{margin:0 0 .35rem;padding:0;border:0}}
+.disc-panel p{{margin:0 0 .45rem}}
+/* Motion only where it is asked for: under reduce, nothing here applies. */
+@media(prefers-reduced-motion:no-preference){{
+.disc[open]>.disc-panel{{animation:disc-open .18s ease-out}}
+@keyframes disc-open{{from{{opacity:0}}to{{opacity:1}}}}}}
 @media(max-width:34rem){{.tagcol{{width:38%;max-width:8.5rem}}}}
 svg{{max-width:100%;height:auto}}
 blockquote{{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}}
@@ -819,6 +842,60 @@ def place_line(a, mode="site", prefix=""):
     return " / ".join(esc(part) for part in (first, middle) if part) + " / " + pub
 
 
+def disclosure(marker, panel_html, extra_class=""):
+    """A marker that opens a panel in place, with no script behind it.
+
+    The marker is whatever inline HTML belongs next to the thing being
+    disclosed; the caret is added here so every disclosure on the page opens
+    the same way. Nothing to disclose means no marker at all, rather than a
+    marker that opens onto an empty panel.
+    """
+    if not panel_html:
+        return ""
+    classes = f"disc {extra_class}".strip()
+    return (f'<details class="{classes}">'
+            f'<summary>{marker}<span class="disc-cue">Profile</span></summary>'
+            f'<div class="disc-panel">{panel_html}</div></details>')
+
+
+def about_opening(text, max_chars=420):
+    """One paragraph of an About page, for somewhere that has room for one.
+
+    The first block is often the page's own heading, a tagline, or a stray
+    line of CMS furniture — a third of the catalog's About texts open that
+    way. Where a whole About page can carry that and recover in the next
+    paragraph, a single-paragraph quote cannot, so skip to the first
+    paragraph long enough to be a description.
+    """
+    if not usable_about(text):
+        return ""
+    paras = [p.strip() for p in text.split("\n\n") if len(p.strip()) >= 80]
+    excerpt, _ = excerpt_paragraphs("\n\n".join(paras), max_paras=1, max_chars=max_chars)
+    return excerpt[0] if excerpt else ""
+
+
+def org_profile_panel(a, mode="site", prefix=""):
+    """The newsroom in its own words, what it covers, what it is, where next."""
+    rows = []
+    quote = about_opening(a.get("about_text"))
+    if quote:
+        rows.append(f"<blockquote><p>{esc(quote)}</p></blockquote>")
+        rows.append('<p class="meta">— in their own words, from their About page.</p>')
+    if a.get("coverage"):
+        rows.append(f'<p>Covers {esc(a["coverage"])}.</p>')
+    # The whole tag set, not the shortened one the card's column carries.
+    tags = tag_links(a, prefix if mode != "onepage" else "")
+    if tags:
+        rows.append(f"<p>{tags}</p>")
+    links = [f'<a class="lozenge" href="{esc(a["org_url"])}">Their site</a>']
+    if mode != "onepage":
+        links.append(f'<a class="lozenge" href="{prefix}orgs/{esc(a["slug"])}.html">'
+                     f"Newsroom page</a>")
+    links.append(support_link(a))
+    rows.append(f'<p>{"".join(links)}</p>')
+    return "\n".join(rows)
+
+
 def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_images=()):
     """Where it is, who published it, when, and then the story."""
     out = ["<article>"]
@@ -857,8 +934,11 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
     if bits:
         out.append(f'<p class="places">{"".join(bits)}</p>')
 
-    source = f'<a href="{esc(a["org_url"])}"><strong>{esc(a["org_name"])}</strong></a>'
-    out.append(f'<p class="source">{source}</p>')
+    # The publication name is itself the marker: opening it gives the
+    # newsroom in its own words without leaving the feed. Their site is the
+    # first link inside, so it is still one tap away.
+    out.append(disclosure(f'<strong>{esc(a["org_name"])}</strong>',
+                          org_profile_panel(a, mode, prefix), "source"))
 
     # 3. when
     if dateline:
@@ -1398,6 +1478,12 @@ def render_text_item(a, prefix="../"):
     tags = ", ".join(ownership_tags(a))
     if tags:
         out.append(f"<dt>Newsroom type</dt><dd>{esc(tags)}</dd>")
+    # What the full edition puts behind a disclosure marker beside the
+    # masthead is written out here instead; a marker with nothing behind it
+    # would be worse than no marker at all.
+    about = about_opening(a.get("about_text"))
+    if about:
+        out.append(f"<dt>About {esc(a['org_name'])}</dt><dd>{esc(about)}</dd>")
     if a.get("image_alt"):
         out.append(f"<dt>Picture</dt><dd>{esc(a['image_alt'])}</dd>")
     if a.get("summary"):
@@ -1512,7 +1598,8 @@ def load_articles(cur, limit, subject=None, feature=None, default_only=False,
                o.name AS org_name, o.slug, o.url AS org_url,
                o.support_url, o.support_label,
                o.state, o.city, o.beat, o.coverage, o.coverage_type,
-               o.timezone, o.model, o.features, o.feed_url, o.in_default, o.language
+               o.timezone, o.model, o.features, o.feed_url, o.in_default, o.language,
+               o.about_text
         FROM articles a JOIN orgs o ON o.id = a.org_id
         WHERE (%s::text IS NULL OR a.subject = %s)
           AND (%s::text IS NULL OR %s = ANY(o.features))
@@ -1529,7 +1616,7 @@ def load_articles(cur, limit, subject=None, feature=None, default_only=False,
             "image_file", "image_w", "image_h", "image_alt", "subject", "org_name", "slug", "org_url",
             "support_url", "support_label", "state", "city", "beat", "coverage",
             "coverage_type", "timezone", "model", "features", "org_feed",
-            "in_default", "language")
+            "in_default", "language", "about_text")
     return [dict(zip(cols, row)) for row in cur.fetchall()]
 
 
