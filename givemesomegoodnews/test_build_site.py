@@ -9,9 +9,11 @@ import contextlib
 import re
 import unittest
 from datetime import datetime, timezone
+from unittest import mock
 
 from . import build_site as bs
 from . import reporters as rp
+from . import searchd
 
 
 ABOUT = (
@@ -56,7 +58,7 @@ def card(**over):
 
 def reporter(**over):
     who = {
-        "name": "Dana Reyes", "slug": "dana-reyes", "n_stories": 7,
+        "name": "Dana Reyes", "n_stories": 7,
         "first_at": datetime(2025, 6, 1, tzinfo=timezone.utc),
         "last_at": datetime(2026, 6, 1, tzinfo=timezone.utc),
         "newsrooms": ["The Ledger", "VTDigger"],
@@ -93,6 +95,28 @@ class FakeCursor:
 
     def fetchall(self):
         return self.rows
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        return False
+
+
+class FakeConnection:
+    """Enough of a connection for `with connect() as conn, conn.cursor() as cur`."""
+
+    def __init__(self, cursor):
+        self.cursor_obj = cursor
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        return False
+
+    def cursor(self):
+        return self.cursor_obj
 
 
 class DisclosureHelper(unittest.TestCase):
@@ -345,10 +369,11 @@ class ResolvingAByline(unittest.TestCase):
                        "Dana Reyes (The Ledger)", "<b>Dana Reyes</b>"):
             self.assertEqual(rp.reporter_key(byline), "dana reyes", byline)
 
-    def test_initials_and_accents_fold_to_one_identity(self):
+    def test_initials_capitals_and_accents_fold_to_one_identity(self):
         self.assertEqual(rp.reporter_key("J. R. Okonkwo"),
                          rp.reporter_key("J R Okonkwo"))
-        self.assertEqual(rp.reporter_slug("José García"), "jose-garcia")
+        self.assertEqual(rp.reporter_key("JOSÉ GARCÍA"),
+                         rp.reporter_key("José García"))
 
     def test_a_desk_a_wire_or_a_crowd_is_not_a_person(self):
         for byline in ("", None, "   ", "Staff", "Staff Report", "Newsroom",
@@ -410,13 +435,16 @@ class ReporterPanel(unittest.TestCase):
         self.assertIn("Publishes with Paper 0, Paper 1, Paper 2, Paper 3 "
                       "and 5 other newsrooms.", panel)
 
-    def test_panel_links_to_the_reporters_page(self):
+    def test_the_panel_links_nowhere_the_build_does_not_write(self):
+        # The build writes orgs/ and no reporters/ — a lozenge pointing at
+        # reporters/<slug>.html would be a 404 on every resolved byline on
+        # the site. Every link in the panel is a story on its publisher.
         with reporters_loaded(**{"dana reyes": reporter()}):
-            self.assertIn('href="reporters/dana-reyes.html"',
-                          bs.reporter_panel(article()))
-            self.assertIn('href="../reporters/dana-reyes.html"',
-                          bs.reporter_panel(article(), prefix="../"))
-            self.assertNotIn("reporters/", bs.reporter_panel(article(), mode="onepage"))
+            panel = bs.reporter_panel(article())
+        self.assertNotIn("reporters/", panel)
+        self.assertEqual(re.findall(r'href="(.*?)"', panel),
+                         ["https://ledger.example/story",
+                          "https://ledger.example/budget"])
 
     def test_prolificacy_is_the_shared_string_verbatim(self):
         for n in (1, 3, 7, 40):
@@ -452,6 +480,18 @@ class ReporterPanelQuery(unittest.TestCase):
         bs.load_reporter_panels(cur)
         self.assertEqual(len(cur.queries), 1)
 
+    def test_the_query_hands_back_each_spelling_of_a_byline_separately(self):
+        # Grouping on the case-folded byline would collapse "Dana Reyes" and
+        # "DANA REYES" into a single row inside the database, and whichever
+        # of them sorted first would be the name on the card — the merge
+        # below never gets to prefer the spelling that is not shouted.
+        cur = FakeCursor(self.ROWS)
+        bs.load_reporter_panels(cur)
+        sql = cur.queries[0][0]
+        self.assertIn("GROUP BY author", sql)
+        self.assertIn("PARTITION BY author", sql)
+        self.assertNotIn("lower(", sql)
+
     def test_one_person_written_two_ways_is_one_reporter(self):
         panels = bs.load_reporter_panels(FakeCursor(self.ROWS))
         self.assertEqual(list(panels), ["dana reyes"])
@@ -479,6 +519,37 @@ class ReporterPanelQuery(unittest.TestCase):
                  [{"title": f"H{n}", "url": f"u{n}", "ts": float(n)} for n in range(6)])]
         who = bs.load_reporter_panels(FakeCursor(rows), headlines=2)["dana reyes"]
         self.assertEqual([r["title"] for r in who["recent"]], ["H5", "H4"])
+
+
+class SearchService(unittest.TestCase):
+    """The live service renders the same cards, so it needs the same data.
+
+    `searchd` is a separate long-running process: nothing the build leaves
+    in memory reaches it, which is why it already looks the menu up for
+    itself at startup. The reporter profiles are the same kind of thing.
+    """
+
+    def test_startup_fills_the_reporter_profiles_it_renders(self):
+        cur = FakeCursor(ReporterPanelQuery.ROWS)
+        self.addCleanup(bs.REPORTERS.clear)
+        with mock.patch.object(searchd, "connect", lambda: FakeConnection(cur)):
+            searchd.load_reporters()
+        self.assertEqual(bs.REPORTERS["dana reyes"]["name"], "Dana Reyes")
+        self.assertEqual(len(cur.queries), 1)
+
+    def test_a_result_card_carries_the_byline_disclosure(self):
+        cur = FakeCursor(ReporterPanelQuery.ROWS)
+        self.addCleanup(bs.REPORTERS.clear)
+        with mock.patch.object(searchd, "connect", lambda: FakeConnection(cur)):
+            searchd.load_reporters()
+        # A result card is rendered exactly the way searchd renders one.
+        html = bs.render_feed_item(None, article(), with_related=False)
+        self.assertIn('<details class="disc byline">', html)
+        self.assertIn("By <strong>Dana Reyes</strong>", html)
+
+    def test_the_service_selects_the_about_text_the_publication_panel_needs(self):
+        self.assertIn("o.about_text", searchd.SELECT_COLS)
+        self.assertIn("about_text", searchd.COLS)
 
 
 class ReporterInPlainText(unittest.TestCase):

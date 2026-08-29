@@ -184,9 +184,11 @@ margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}}
 margin:0 0 .8rem}}
 /* Inline disclosures: a marker beside a name, its panel opening in place.
    Native <details>, like the burger menu — it works with scripting off,
-   takes keyboard focus, and announces expanded/collapsed by itself. */
-.disc{{margin:0 0 .3rem}}
-/* A <summary> keeps its own display:list-item. Overriding it is what costs
+   takes keyboard focus, and announces expanded/collapsed by itself.
+   A disclosure carries the class of whatever it replaced — .source, .byline
+   — and takes its type and its spacing from that, so a byline with a
+   profile behind it sits on exactly the rhythm one without a profile does.
+   A <summary> keeps its own display:list-item. Overriding it is what costs
    the element its disclosure semantics in some browsers — the marker would
    stop announcing expanded and collapsed — so the row of name and cue is
    laid out by a span inside the summary instead of by the summary itself. */
@@ -972,8 +974,14 @@ def reporter_facts(who):
     return " ".join(part for part in said if part)
 
 
-def reporter_panel(a, mode="site", prefix=""):
-    """What this site holds under one byline: how much, where, when, what."""
+def reporter_panel(a):
+    """What this site holds under one byline: how much, where, when, what.
+
+    Everything the panel points at is a story on the newsroom that published
+    it. There is no page of the reporter's own to send anyone to yet — the
+    build writes `orgs/` and nothing else — so the panel ends at the
+    headlines rather than at a link to a file that is never written.
+    """
     who = reporter_of(a)
     if not who:
         return ""
@@ -984,9 +992,6 @@ def reporter_panel(a, mode="site", prefix=""):
             for r in who["recent"]
         )
         rows.append(f"<p>Most recently:</p><ul>{items}</ul>")
-    if mode != "onepage":
-        rows.append(f'<p><a class="lozenge" href="{prefix}reporters/'
-                    f'{esc(who["slug"])}.html">Everything by {esc(who["name"])}</a></p>')
     return "".join(rows)
 
 
@@ -1051,7 +1056,7 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
         # than becoming a marker that opens onto nothing.
         who = reporter_of(a)
         out.append(disclosure(f'By <strong>{esc(who["name"])}</strong>',
-                              reporter_panel(a, mode, prefix), "byline")
+                              reporter_panel(a), "byline")
                    if who else f'<p class="byline">By {esc(a["author"])}</p>')
 
     if a.get("image_file") and a["image_file"] not in skip_images:
@@ -1741,33 +1746,39 @@ def load_articles(cur, limit, subject=None, feature=None, default_only=False,
 def load_reporter_panels(cur, headlines=REPORTER_HEADLINES):
     """Every byline on the site that resolves to a person, in one query.
 
-    The database groups by the raw byline and counts, dates and collects the
-    newest headlines in the same pass; the fold from raw bylines to reporter
-    identities happens here, because that is where the rules for who counts
-    as a person live. What comes back is keyed by identity, so rendering a
-    card is a dictionary lookup however many cards the build writes.
+    The database groups by the byline exactly as it was written and counts,
+    dates and collects the newest headlines in the same pass; the fold from
+    written bylines to reporter identities happens here, because that is
+    where the rules for who counts as a person live. What comes back is
+    keyed by identity, so rendering a card is a dictionary lookup however
+    many cards the build writes.
+
+    Grouping case-sensitively is deliberate. A CMS that files one story
+    under "Dana Reyes" and the next under "DANA REYES" would otherwise have
+    the two spellings collapsed into one row inside the database, and
+    whichever of them sorted first would be the name on the card; keeping
+    them apart lets the merge below prefer the one that is not shouted.
     """
     cur.execute(
         """
         WITH byline AS (
-            SELECT lower(btrim(a.author)) AS raw,
-                   btrim(a.author) AS author, a.title, a.url,
+            SELECT btrim(a.author) AS author, a.title, a.url,
                    o.name AS org_name,
                    coalesce(a.published_at, a.fetched_at) AS at
             FROM articles a JOIN orgs o ON o.id = a.org_id
             WHERE a.author IS NOT NULL AND btrim(a.author) <> ''
         ), ranked AS (
             SELECT byline.*,
-                   count(*) OVER (PARTITION BY raw) AS n_stories,
-                   row_number() OVER (PARTITION BY raw ORDER BY at DESC) AS rn
+                   count(*) OVER (PARTITION BY author) AS n_stories,
+                   row_number() OVER (PARTITION BY author ORDER BY at DESC) AS rn
             FROM byline
         )
-        SELECT min(author), min(n_stories), min(at), max(at),
+        SELECT author, min(n_stories), min(at), max(at),
                array_agg(DISTINCT org_name),
                json_agg(json_build_object('title', title, 'url', url,
                                           'ts', extract(epoch FROM at))
                         ORDER BY at DESC) FILTER (WHERE rn <= %s)
-        FROM ranked GROUP BY raw
+        FROM ranked GROUP BY author
         """,
         (headlines,),
     )
@@ -1780,8 +1791,8 @@ def load_reporter_panels(cur, headlines=REPORTER_HEADLINES):
         who = panels.get(key)
         if who is None:
             who = panels[key] = {
-                "name": name, "slug": reporters.reporter_slug(author),
-                "n_stories": 0, "first_at": first_at, "last_at": last_at,
+                "name": name, "n_stories": 0,
+                "first_at": first_at, "last_at": last_at,
                 "newsrooms": set(), "recent": [],
             }
         # Feeds disagree about capitals, and the database is under no
@@ -1799,8 +1810,7 @@ def load_reporter_panels(cur, headlines=REPORTER_HEADLINES):
         who["newsrooms"] = sorted(who["newsrooms"])
         who["recent"] = sorted(who["recent"],
                                key=lambda r: (-r["ts"], r["title"]))[:headlines]
-    # A byline the site cannot point anywhere is not a profile.
-    return {key: who for key, who in panels.items() if who["slug"]}
+    return panels
 
 
 def export_catalog_json(orgs):

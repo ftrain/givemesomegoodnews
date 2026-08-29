@@ -10,7 +10,6 @@ wonder whether two different sentences mean the same thing.
 """
 
 import re
-import unicodedata
 
 # A byline that carries any of these is a desk, a wire, or the CMS's idea of
 # an author rather than a person. Word boundaries matter: "reporter" is part
@@ -69,16 +68,6 @@ def reporter_key(byline):
         return ""
     folded = _PUNCTUATION.sub("", name.replace("’", "'").casefold())
     return re.sub(r"\s+", " ", folded).strip()
-
-
-def reporter_slug(byline):
-    """The reporter's page under `reporters/`, as a filename stem."""
-    key = reporter_key(byline)
-    if not key:
-        return ""
-    ascii_key = (unicodedata.normalize("NFKD", key)
-                 .encode("ascii", "ignore").decode("ascii"))
-    return re.sub(r"[^a-z0-9]+", "-", ascii_key).strip("-")
 
 
 def prolificacy(n_stories):

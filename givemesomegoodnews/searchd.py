@@ -17,7 +17,8 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlencode, urlparse
 
 from . import config, syndicate
-from .build_site import (MENU_FEEDS, MENU_SUBJECTS, page, render_feed_item,
+from .build_site import (MENU_FEEDS, MENU_SUBJECTS, REPORTERS,
+                          load_reporter_panels, page, render_feed_item,
                           render_result_map, search_form)
 from .timezones import local_dateline
 from .db import connect
@@ -111,6 +112,20 @@ def load_menu():
     MENU_FEEDS[:] = [("feed.xml", "Everything")] + [
         (f"subjects/{slug}.xml", name) for name, slug in subjects
     ]
+
+
+def load_reporters():
+    """Same as the menu: assembled at build time, looked up here.
+
+    A result card is rendered by the same `render_feed_item` the built pages
+    use, and that reads the reporter profiles out of a dictionary the build
+    fills in. Without this the byline on every result would fall back to
+    plain text while the same story on the feed carried a disclosure.
+    """
+    with connect() as conn, conn.cursor() as cur:
+        panels = load_reporter_panels(cur)
+    REPORTERS.clear()
+    REPORTERS.update(panels)
 
 
 def facet_bar(query, tags, region, language, rows):
@@ -354,6 +369,7 @@ class Handler(BaseHTTPRequestHandler):
 
 def main():
     load_menu()
+    load_reporters()
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 8081
     ThreadingHTTPServer(("127.0.0.1", port), Handler).serve_forever()
 
