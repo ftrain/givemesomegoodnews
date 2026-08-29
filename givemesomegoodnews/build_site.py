@@ -186,17 +186,33 @@ margin:0 0 .8rem}}
    Native <details>, like the burger menu — it works with scripting off,
    takes keyboard focus, and announces expanded/collapsed by itself. */
 .disc{{margin:0 0 .3rem}}
-.disc>summary{{cursor:pointer;list-style:none;color:var(--fg);
-display:inline-flex;flex-wrap:wrap;align-items:baseline;gap:.4rem}}
+/* A <summary> keeps its own display:list-item. Overriding it is what costs
+   the element its disclosure semantics in some browsers — the marker would
+   stop announcing expanded and collapsed — so the row of name and cue is
+   laid out by a span inside the summary instead of by the summary itself. */
+.disc>summary{{cursor:pointer;list-style:none;color:var(--fg)}}
 .disc>summary::-webkit-details-marker{{display:none}}
+.disc-line{{display:inline-flex;flex-wrap:wrap;align-items:baseline;gap:.4rem}}
 .disc>summary:hover,.disc>summary:focus{{color:var(--link)}}
+/* The summary spans the column, the marker does not: put the focus ring
+   around what a keyboard reader is actually pointing at. */
+.disc>summary:focus-visible{{outline:none}}
+.disc>summary:focus-visible .disc-line{{outline:3px solid var(--link);outline-offset:3px}}
 .disc-cue{{font:400 .68rem/1 PlexMono,ui-monospace,monospace;color:var(--dim);
 border:1px solid var(--rule);border-radius:1rem;padding:.24rem .45rem;
 white-space:nowrap;text-transform:uppercase;letter-spacing:.05em}}
-.disc-cue::after{{content:" \\25be"}}
-.disc[open]>summary .disc-cue::after{{content:" \\25b4"}}
+/* The caret is drawn rather than written: a glyph in the content of a
+   pseudo-element joins the summary's accessible name, and "black
+   down-pointing small triangle" read out after every masthead is noise on
+   top of the expanded/collapsed the browser already announces. */
+.disc-cue::after{{content:"";display:inline-block;width:0;height:0;margin-left:.45em;
+border:.32em solid transparent;border-top-color:currentColor;vertical-align:-.07em}}
+.disc[open]>summary .disc-cue::after{{border-top-color:transparent;
+border-bottom-color:currentColor;vertical-align:.25em}}
 .disc>summary:hover .disc-cue,.disc>summary:focus-visible .disc-cue
 {{border-color:var(--link);color:var(--link)}}
+/* The panel opens below the marker and nothing else moves: the card grows
+   downwards, so what is above it keeps the position the reader left it in. */
 .disc-panel{{border-left:3px solid var(--rule);margin:.5rem 0 .7rem;padding-left:.8rem;
 font-family:Plex,system-ui,sans-serif;font-size:.9rem}}
 .disc-panel blockquote{{margin:0 0 .35rem;padding:0;border:0}}
@@ -856,12 +872,19 @@ def disclosure(marker, panel_html, extra_class=""):
     disclosed; the caret is added here so every disclosure on the page opens
     the same way. Nothing to disclose means no marker at all, rather than a
     marker that opens onto an empty panel.
+
+    Everything about the behaviour is the browser's: the summary takes Tab,
+    toggles on Enter and Space, announces itself as expanded or collapsed,
+    and holds that state for as long as the page lives. So nothing here adds
+    a role, an `aria-expanded`, an `open` attribute or a line of script —
+    each of those would only compete with what the element already does.
     """
     if not panel_html:
         return ""
     classes = f"disc {extra_class}".strip()
     return (f'<details class="{classes}">'
-            f'<summary>{marker}<span class="disc-cue">Profile</span></summary>'
+            f'<summary><span class="disc-line">{marker}'
+            f'<span class="disc-cue">Profile</span></span></summary>'
             f'<div class="disc-panel">{panel_html}</div></details>')
 
 
@@ -1483,7 +1506,18 @@ dl{margin:.2rem 0 .6rem}dt{font-weight:700}dd{margin:0 0 .3rem}
 :focus-visible{outline:3px solid currentColor;outline-offset:2px}
 .skip{position:absolute;left:-9999px}.skip:focus{position:static;display:block}
 article{margin:0 0 2rem;padding-bottom:1rem;border-bottom:1px solid currentColor}
-summary{cursor:pointer;font-size:.95rem}
+/* The one disclosure in this edition. It keeps its display:list-item, which
+   is what its expanded/collapsed announcement depends on, and carries its
+   own cue rather than the browser's triangle. */
+summary{cursor:pointer;font-size:.95rem;list-style:none;width:max-content;
+max-width:100%;border:1px solid currentColor;border-radius:1rem;padding:.05rem .7rem}
+summary::-webkit-details-marker{display:none}
+/* Drawn, not written: a glyph here would be read out as part of the button.
+   This edition is the one a screen reader is most likely to be on. */
+summary::after{content:"";display:inline-block;width:0;height:0;margin-left:.5em;
+border:.3em solid transparent;border-top-color:currentColor;vertical-align:-.05em}
+details[open] summary::after{border-top-color:transparent;
+border-bottom-color:currentColor;vertical-align:.25em}
 details[open] dl{margin-top:.5rem}
 </style>"""
 

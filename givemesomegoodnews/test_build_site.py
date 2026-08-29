@@ -99,7 +99,7 @@ class DisclosureHelper(unittest.TestCase):
     def test_wraps_marker_and_panel_in_details(self):
         html = bs.disclosure("<strong>X</strong>", "<p>hello</p>")
         self.assertIn('<details class="disc">', html)
-        self.assertIn("<summary><strong>X</strong>", html)
+        self.assertIn('<summary><span class="disc-line"><strong>X</strong>', html)
         self.assertIn('<div class="disc-panel"><p>hello</p></div>', html)
 
     def test_no_marker_when_there_is_nothing_to_disclose(self):
@@ -200,6 +200,101 @@ class Stylesheet(unittest.TestCase):
         self.assertIn(".disc>summary:focus-visible .disc-cue", css)
 
 
+class DisclosureBehaviour(unittest.TestCase):
+    """What a disclosure does once it is on the page.
+
+    All of it is the browser's own behaviour, so what these guard is that
+    nothing in the markup or the stylesheet takes it away again.
+    """
+
+    def cards(self):
+        """Both disclosures on one card: the publication and the byline."""
+        with reporters_loaded(**{"dana reyes": reporter()}):
+            return card()
+
+    def summaries(self, html):
+        return re.findall(r"<summary>(.*?)</summary>", html, re.S)
+
+    def test_both_summaries_are_plain_summaries_the_browser_can_operate(self):
+        # No role, no tabindex and no aria-expanded: a <summary> already takes
+        # Tab, toggles on Enter and Space, and announces its own state. Any
+        # of those attributes would override what it does natively, and an
+        # aria-expanded nothing keeps in sync would go stale on first click.
+        html = self.cards()
+        self.assertEqual(len(self.summaries(html)), 2)
+        for marker in self.summaries(html):
+            for attr in ("role=", "tabindex=", "aria-expanded", "aria-controls"):
+                self.assertNotIn(attr, marker)
+
+    def test_no_interactive_element_sits_inside_a_summary(self):
+        # A link inside a summary swallows the toggle in several browsers and
+        # puts a second tab stop in front of the marker.
+        for marker in self.summaries(self.cards()):
+            self.assertNotIn("<a ", marker)
+            self.assertNotIn("<button", marker)
+
+    def test_the_summary_keeps_its_own_display(self):
+        # Overriding display on a <summary> is what costs it its disclosure
+        # semantics; the flex row lives on a span inside it instead.
+        css = bs.stylesheet()
+        rule = re.search(r"\n\.disc>summary\{(.*?)\}", css, re.S).group(1)
+        self.assertNotIn("display:", rule)
+        self.assertIn(".disc-line{display:inline-flex", css)
+        self.assertIn('<span class="disc-line">', self.cards())
+
+    def test_the_marker_carries_a_visible_focus_ring(self):
+        css = bs.stylesheet()
+        self.assertIn(".disc>summary:focus-visible{outline:none}", css)
+        self.assertIn(".disc>summary:focus-visible .disc-line{outline:3px solid", css)
+
+    def test_the_marker_does_not_rely_on_the_browsers_own_triangle(self):
+        css = bs.stylesheet()
+        self.assertIn(".disc>summary{cursor:pointer;list-style:none", css)
+        self.assertIn(".disc>summary::-webkit-details-marker{display:none}", css)
+        # Something of its own in its place, and it points the other way once
+        # the panel is open.
+        self.assertIn(".disc-cue::after{content:", css)
+        self.assertIn(".disc[open]>summary .disc-cue::after{border-top-color:", css)
+        self.assertIn(".disc>summary:focus-visible .disc-cue", css)
+
+    def test_the_cue_is_drawn_rather_than_written(self):
+        # A caret written as a glyph joins the summary's accessible name and
+        # is read out after every masthead, on top of the expanded and
+        # collapsed the browser announces by itself.
+        for css in (bs.stylesheet(), bs.TEXT_CSS):
+            for glyph in ("▾", "▴", "▸", "▼", "▲"):
+                self.assertNotIn(glyph, css)
+                self.assertNotIn(f"\\{ord(glyph):04x}", css.lower())
+
+    def test_the_panel_opens_below_the_marker_and_moves_nothing_above_it(self):
+        # The panel is the last thing in the <details> and the <details> is
+        # in the flow of the card, so opening one only ever grows the card
+        # downwards. Nothing takes it out of flow or pins it anywhere.
+        html = bs.disclosure("m", "<p>p</p>")
+        self.assertTrue(html.endswith('<div class="disc-panel"><p>p</p></div></details>'))
+        rule = re.search(r"\n\.disc-panel\{(.*?)\}", bs.stylesheet(), re.S).group(1)
+        for out_of_flow in ("position:absolute", "position:fixed", "position:sticky",
+                            "float:", "height:"):
+            self.assertNotIn(out_of_flow, rule)
+
+    def test_state_is_the_browsers_to_keep_not_the_builds(self):
+        # Nothing is rendered open, and nothing on the page closes one: a
+        # panel a reader opened is still open when they scroll back to it.
+        html = self.cards()
+        self.assertNotIn("<details class=\"disc\" open", html)
+        self.assertNotIn(" open>", html)
+        self.assertNotIn("<script", html)
+
+    def test_the_menu_script_cannot_reach_a_card_disclosure(self):
+        # The one script that closes a <details> on click is scoped to the
+        # menu. If it ever widened to "details[open]" every open profile on
+        # the page would slam shut on the next click.
+        selectors = re.findall(r'querySelector(?:All)?\("(.*?)"\)', bs.MENU_SCRIPT)
+        self.assertTrue(selectors)
+        for selector in selectors:
+            self.assertTrue(selector.startswith("details.menu"), selector)
+
+
 class PlainTextEdition(unittest.TestCase):
     def test_carries_the_profile_as_text_and_no_marker(self):
         html = bs.render_text_item(article())
@@ -211,6 +306,37 @@ class PlainTextEdition(unittest.TestCase):
         html = bs.render_text_item(article(about_text=None))
         self.assertNotIn("<dt>About", html)
         self.assertNotIn("disc-cue", html)
+
+    def test_one_marker_an_item_and_it_opens_onto_something(self):
+        # The full edition's two profile markers do not follow the profile
+        # text into this edition: there is the Details block and nothing else.
+        with reporters_loaded(**{"dana reyes": reporter()}):
+            html = bs.render_text_item(article())
+        self.assertEqual(html.count("<summary>"), 1)
+        self.assertEqual(html.count("<details>"), 1)
+        panel = re.search(r"</summary>(.*?)</details>", html, re.S).group(1)
+        self.assertIn("<dt>About The Ledger</dt>", panel)
+        self.assertIn("<dt>About Dana Reyes</dt>", panel)
+
+    def test_the_barest_item_still_opens_onto_something(self):
+        # Strip an item back to nothing disclosable and the Details block is
+        # still not empty — an inert marker would be worse than no marker.
+        bare = article(author=None, summary=None, subject=None, about_text=None,
+                       coverage=None, beat=None, city=None, image_alt=None,
+                       features=[], model="", published_at=None)
+        html = bs.render_text_item(bare)
+        self.assertEqual(html.count("<summary>"), 1)
+        panel = re.search(r"</summary>(.*?)</details>", html, re.S).group(1)
+        self.assertIn("<dd>", panel)
+
+    def test_the_details_marker_is_the_editions_own(self):
+        self.assertIn("summary::-webkit-details-marker{display:none}", bs.TEXT_CSS)
+        self.assertIn("summary::after{content:", bs.TEXT_CSS)
+        self.assertIn("details[open] summary::after{border-top-color:", bs.TEXT_CSS)
+        # Still a list-item, which is what its announcement depends on.
+        rule = re.search(r"\nsummary\{(.*?)\}", bs.TEXT_CSS, re.S).group(1)
+        self.assertNotIn("display:", rule)
+        self.assertIn(":focus-visible{outline:", bs.TEXT_CSS)
 
 
 class ResolvingAByline(unittest.TestCase):
