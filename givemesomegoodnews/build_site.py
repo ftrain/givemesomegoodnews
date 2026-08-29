@@ -823,14 +823,56 @@ def tighten(text):
 
 
 _PARA_BREAK = re.compile(r"\n\s*\n")
-# A period only ends a sentence when something follows it, which is how "St."
-# and "U.S." stay whole. The CJK stops carry no such ambiguity and are not
-# written with a space after them, so they end a sentence on their own \u2014 the
-# Chinese-language outlets publish under the same mastheads as the English.
+# Candidate sentence ends. A Latin period is only a candidate \u2014 sentence_ends()
+# still has to rule out the abbreviations. The CJK stops carry no such
+# ambiguity and are not written with a space after them, so they end a sentence
+# on their own \u2014 the Chinese-language outlets publish under the same mastheads
+# as the English.
 _SENTENCE_END = re.compile(
     r"[.!?][\"'\u201d\u2019)\]]*(?=\s|$)"
     r"|[\u3002\uff01\uff1f][\"'\u201d\u2019)\]\uff09]*"
 )
+# The word a period is attached to, with any interior periods, so "U.S." and
+# "a.m." arrive whole rather than as a bare trailing letter.
+_DOTTED_WORD = re.compile(r"([A-Za-z][A-Za-z.]*)\.$")
+# What a local paper abbreviates constantly. A period after one of these is
+# inside a sentence, not at the end of one.
+_ABBREVIATIONS = frozenset(
+    """
+    mr mrs ms mx dr prof rev fr sr jr st sen rep gov pres amb atty
+    sgt lt capt col gen maj cpl det ofc adm hon supt
+    ave blvd rd ln ct mt ft apt ste dept univ inst
+    inc corp co ltd llc plc assn bros
+    jan feb mar apr jun jul aug sept sep oct nov dec
+    mon tue tues wed thu thurs fri sat sun
+    no nos vs etc al approx est fig vol ed pp cf
+    """.split()
+)
+
+
+def _ends_sentence(para, i):
+    """Whether the period at para[i] is the end of a sentence.
+
+    Three things say it is not: a known abbreviation ("St.", "Gov."), a
+    dotted initialism or a lone initial ("U.S.", "a.m.", "J."), and a
+    following word that is lower-case, since an English sentence does not
+    start that way.
+    """
+    word = _DOTTED_WORD.search(para[:i + 1])
+    if word:
+        token = word.group(1)
+        if "." in token or len(token) == 1 or token.lower() in _ABBREVIATIONS:
+            return False
+    return not para[i + 1:].lstrip()[:1].islower()
+
+
+def sentence_ends(para):
+    """Offsets just past each sentence break in a paragraph."""
+    return [
+        m.end() for m in _SENTENCE_END.finditer(para)
+        if para[m.start()] != "." or _ends_sentence(para, m.start())
+    ]
+
 
 SUMMARY_BUDGET = 400
 # How far a summary may run past the budget to finish the sentence it is in.
@@ -850,7 +892,7 @@ def clip_summary(text, budget=SUMMARY_BUDGET):
     para = _PARA_BREAK.split(text.strip(), maxsplit=1)[0].strip()
     if len(para) <= budget:
         return para
-    ends = [m.end() for m in _SENTENCE_END.finditer(para)]
+    ends = sentence_ends(para)
     fits = [e for e in ends if e <= budget]
     if fits:
         return para[:fits[-1]].rstrip()
