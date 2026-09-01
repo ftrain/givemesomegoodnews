@@ -1,0 +1,92 @@
+{
+  "services": {
+    "database": {
+      "image": "pgvector/pgvector:pg16",
+      "port": 5432,
+      "public": false,
+      "replicas": 1,
+      "volumes": [
+        {
+          "path": "/var/lib/postgresql/data",
+          "size": "20Gi"
+        }
+      ],
+      "needs": [],
+      "env": {
+        "PGDATA": "/var/lib/postgresql/data/pgdata"
+      },
+      "engine": "postgres",
+      "secrets": []
+    },
+    "web": {
+      "build": ".",
+      "port": 8000,
+      "public": true,
+      "command": "sh /app/cadence/web.sh",
+      "dockerfile": "Dockerfile.cadence",
+      "healthCheckPath": "/",
+      "replicas": 1,
+      "volumes": [
+        {
+          "path": "/app/site/img",
+          "size": "10Gi"
+        }
+      ],
+      "needs": [
+        "database"
+      ],
+      "env": {
+        "PYTHONUNBUFFERED": "1",
+        "EMBEDDER": "hashing",
+        "CRAWL_WORKERS": "16",
+        "MIN_SUBJECT_SIM": "0.10",
+        "MIN_SUBJECT_MARGIN": "0.02",
+        "MIN_SUBJECT_SEEDS": "12",
+        "MIN_RELATED_SIM": "0.30",
+        "SAME_STORY_SIM": "0.80",
+        "CONNECTION_ANCHORS": "400",
+        "ROTATE_BATCH": "90",
+        "REFRESH_SECONDS": "900"
+      },
+      "secrets": []
+    },
+    "search": {
+      "build": ".",
+      "port": 8081,
+      "public": true,
+      "command": "sh /app/cadence/search.sh",
+      "dockerfile": "Dockerfile.cadence",
+      "healthCheckPath": "/",
+      "replicas": 1,
+      "volumes": [],
+      "needs": [
+        "database"
+      ],
+      "env": {
+        "PYTHONUNBUFFERED": "1",
+        "EMBEDDER": "hashing",
+        "MIN_RELATED_SIM": "0.30",
+        "SAME_STORY_SIM": "0.80",
+        "CONNECTION_ANCHORS": "400"
+      },
+      "secrets": []
+    },
+    "admin": {
+      "build": ".",
+      "port": 8082,
+      "public": true,
+      "command": "sh /app/cadence/admin.sh",
+      "dockerfile": "Dockerfile.cadence",
+      "replicas": 1,
+      "volumes": [],
+      "needs": [
+        "database"
+      ],
+      "env": {
+        "PYTHONUNBUFFERED": "1",
+        "ADMIN_EMAIL": "ford@ftrain.com"
+      },
+      "secrets": []
+    }
+  }
+}
