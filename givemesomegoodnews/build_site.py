@@ -1170,10 +1170,13 @@ GEOJSON_STATE_NAMES = {"DC": "District of Columbia"}
 WIDE_COVERAGE = ("state", "regional", "network", "national")
 
 
-# How wide the flag renders in the rail. Small enough that a seal is a
-# smudge, which is why the two-letter code sits next to it. The files in
-# assets/flags are 96px wide, so a dense screen still has pixels to spend.
-FLAG_WIDTH = 24
+# How wide the flag renders in the rail. Big enough now that a seal is a
+# device rather than a smudge, though the two-letter code stays beside it:
+# a flag is recognised, a seal is not, and the code is the part that is
+# text. The files in assets/flags are 96px wide, so this is exactly 2x on a
+# dense screen — the ceiling, and the reason not to go wider without
+# re-rendering the assets.
+FLAG_WIDTH = 48
 # Flags are not all one shape — Ohio is a pennant, Rhode Island is nearly
 # square — so the height is read off each file the first time it is asked
 # for, and cached for the rest of the build. An <img> given the wrong
