@@ -194,8 +194,6 @@ display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}}
    the page. */
 .ident{{display:flex;align-items:center;gap:.35rem;margin:0}}
 .flag{{flex:none;border:1px solid var(--rule);background:var(--bg)}}
-.abbr{{font:600 .78rem/1 PlexMono,ui-monospace,monospace;letter-spacing:.06em;
-color:var(--fg)}}
 /* An outlet whose beat is the country has no state to fly. The marker takes
    the line rather than leaving a flag-shaped hole in it. */
 .ident .marker{{font:600 .72rem/1 PlexMono,ui-monospace,monospace;
@@ -1199,16 +1197,18 @@ def flag_box(code):
 
 
 def state_identity(a, prefix=""):
-    """Which state's newsroom this is: the flag, and the state's own code.
+    """Which state's newsroom this is, as its flag.
 
-    A flag is recognised before it is read, which is the whole job at the top
-    of the rail — but at this size a seal is a smudge, so the two-letter code
-    beside it is what actually names the state, and it is text. Strip the
-    images out of the page and the answer is still there.
+    A flag is recognised before it is read, which is the whole job at the
+    top of the rail, and at 48px it carries that on its own. The state is
+    still named twice in text for anyone not seeing the picture — the
+    flag's alt is the state's full name, and the region line below the
+    locator says where in it — so nothing is lost with images off.
 
     An outlet with no state, or one whose beat is the country, has no state
     to fly. It gets the national marker instead of a flag that would be the
-    wrong answer, and the marker stands alone: no image, no abbreviation.
+    wrong answer. A code with no flag on disk gets nothing at all rather
+    than an empty line: the region line below already answers the question.
     """
     code = (a.get("state") or "").upper()
     if not code or (a.get("coverage_type") or "") == "national":
@@ -1222,7 +1222,7 @@ def state_identity(a, prefix=""):
         # empty box where the answer to "whose newsroom is this" should be.
         img = (f'<img class="flag" src="{prefix}flags/{code.lower()}.webp" '
                f'width="{box[0]}" height="{box[1]}" alt="{esc(name)}">')
-    return f'<p class="ident">{img}<span class="abbr">{esc(code)}</span></p>'
+    return f'<p class="ident">{img}</p>' if img else ""
 
 
 def locator_state_name(a):
