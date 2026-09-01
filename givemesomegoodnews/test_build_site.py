@@ -342,16 +342,55 @@ class PlainTextEdition(unittest.TestCase):
         self.assertIn("<dt>About The Ledger</dt>", panel)
         self.assertIn("<dt>About Dana Reyes</dt>", panel)
 
-    def test_the_barest_item_still_opens_onto_something(self):
+    def test_the_barest_item_opens_onto_nothing_rather_than_an_inert_marker(self):
         # Strip an item back to nothing disclosable and the Details block is
-        # still not empty — an inert marker would be worse than no marker.
+        # omitted entirely — a marker with nothing behind it would be worse
+        # than no marker at all.
         bare = article(author=None, summary=None, subject=None, about_text=None,
                        coverage=None, beat=None, city=None, image_alt=None,
                        features=[], model="", published_at=None)
         html = bs.render_text_item(bare)
-        self.assertEqual(html.count("<summary>"), 1)
-        panel = re.search(r"</summary>(.*?)</details>", html, re.S).group(1)
-        self.assertIn("<dd>", panel)
+        self.assertNotIn("<summary>", html)
+        self.assertNotIn("<details>", html)
+
+    def test_byline_and_date_are_visible_without_expanding_anything(self):
+        html = bs.render_text_item(article())
+        top = html.split("<details>")[0]
+        self.assertIn("By Dana Reyes", top)
+        self.assertIn("Mon, Jun 1", top)
+        self.assertIn("The Ledger", top)
+
+    def test_no_byline_line_when_the_source_supplied_no_author(self):
+        html = bs.render_text_item(article(author=None))
+        self.assertNotIn("By ", html)
+
+    def test_support_link_is_visible_without_expanding_anything(self):
+        html = bs.render_text_item(article())
+        top = html.split("<details>")[0]
+        self.assertIn('<a href="https://ledger.example/donate">Donate The Ledger</a>', top)
+
+    def test_no_support_line_when_the_org_has_no_support_url(self):
+        html = bs.render_text_item(article(support_url=None, support_label=None))
+        self.assertNotIn("Donate", html)
+        self.assertNotIn('href="https://ledger.example/"', html)
+
+    def test_summary_is_cut_at_a_boundary_not_mid_word(self):
+        long_summary = "The council voted five to two on Tuesday. " * 30
+        html = bs.render_text_item(article(summary=long_summary))
+        body = re.search(r"<h2>.*?</h2>\n<p>.*?</p>\n<p>(.*?)</p>", html, re.S).group(1)
+        self.assertTrue(body.endswith(".") or body.endswith("…"))
+
+    def test_every_story_link_points_off_site(self):
+        html = bs.render_text_item(article())
+        for href in re.findall(r'href="(.*?)"', html):
+            if href.startswith("../orgs/"):
+                continue
+            self.assertTrue(href.startswith("https://ledger.example/"), href)
+
+    def test_no_images_or_scripts(self):
+        html = bs.render_text_item(article())
+        self.assertNotIn("<img", html)
+        self.assertNotIn("<script", html)
 
     def test_the_details_marker_is_the_editions_own(self):
         self.assertIn("summary::-webkit-details-marker{display:none}", bs.TEXT_CSS)
@@ -556,7 +595,7 @@ class ReporterInPlainText(unittest.TestCase):
     def test_carries_the_profile_as_text_and_no_marker(self):
         with reporters_loaded(**{"dana reyes": reporter()}):
             html = bs.render_text_item(article())
-        self.assertIn("<dt>Reported by</dt><dd>Dana Reyes</dd>", html)
+        self.assertIn("By Dana Reyes", html)
         self.assertIn("<dt>About Dana Reyes</dt>", html)
         self.assertIn("Publishes with The Ledger and VTDigger.", html)
         self.assertNotIn("disc-cue", html)
@@ -565,7 +604,7 @@ class ReporterInPlainText(unittest.TestCase):
     def test_an_unresolved_byline_says_nothing_extra(self):
         with reporters_loaded(**{"dana reyes": reporter()}):
             html = bs.render_text_item(article(author="Staff Report"))
-        self.assertIn("<dt>Reported by</dt><dd>Staff Report</dd>", html)
+        self.assertIn("By Staff Report", html)
         self.assertNotIn("<dt>About Dana", html)
         self.assertNotIn("stories on this site", html)
 

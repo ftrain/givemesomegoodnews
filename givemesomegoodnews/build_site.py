@@ -1975,60 +1975,72 @@ and pay them if you can.</p>
 
 
 def render_text_item(a, prefix="../"):
-    """Source and headline, and nothing else until it is asked for.
+    """Publication, byline, date and headline up front; everything else
+    waits behind a marker.
 
-    A screen reader going down a feed wants the newsroom and the headline —
-    not a byline, a timestamp, a subject and a list of tags before every
-    single item. The rest goes in a <details>, which reads as a collapsed
-    "Details" button and stays out of the way until opened.
+    A screen reader going down a feed needs the newsroom, who wrote it, when
+    it ran and the headline before it decides whether to follow the story —
+    that much belongs on the line itself. It does not need a subject and a
+    list of tags before every single item, so the rest still goes in a
+    <details>, which reads as a collapsed "Details" button and stays out of
+    the way until opened.
     """
     org_link = f'<a href="{prefix}orgs/{esc(a["slug"])}.html">{esc(a["org_name"])}</a>'
-    out = [
-        "<article>",
-        f'<h2><a href="{esc(a["url"])}">{esc(a["title"])}</a></h2>',
-        f"<p>{org_link} &middot; "
-        f'<a href="{esc(a["url"])}">Read at {esc(a["org_name"])}</a></p>',
-        "<details><summary>Details</summary><dl>",
-    ]
     when = local_dateline(a["published_at"] or a["fetched_at"], a.get("state"), a.get("timezone"))
-    where = a.get("beat") or a.get("city") or a.get("coverage") or ""
+
+    meta = [org_link]
     if a.get("author"):
-        out.append(f"<dt>Reported by</dt><dd>{esc(a['author'])}</dd>")
-        # What the full edition puts behind a marker beside the byline is
-        # written out here as a sentence instead — same words, no marker.
-        who = reporter_of(a)
-        if who:
-            out.append(f"<dt>About {esc(who['name'])}</dt>"
-                       f"<dd>{esc(reporter_facts(who))}</dd>")
+        meta.append(f"By {esc(a['author'])}")
     if when:
-        out.append(f"<dt>Published</dt><dd>{esc(when)}</dd>")
-    if where:
-        out.append(f"<dt>Covers</dt><dd>{esc(where)}</dd>")
-    if a.get("subject"):
-        out.append(f"<dt>Subject</dt><dd>{esc(a['subject'])}</dd>")
-    tags = ", ".join(ownership_tags(a))
-    if tags:
-        out.append(f"<dt>Newsroom type</dt><dd>{esc(tags)}</dd>")
-    # What the full edition puts behind a disclosure marker beside the
-    # masthead is written out here instead; a marker with nothing behind it
-    # would be worse than no marker at all.
-    about = about_opening(a.get("about_text"))
-    if about:
-        out.append(f"<dt>About {esc(a['org_name'])}</dt><dd>{esc(about)}</dd>")
-    if a.get("image_alt"):
-        out.append(f"<dt>Picture</dt><dd>{esc(a['image_alt'])}</dd>")
-    if a.get("summary"):
-        out.append(f"<dt>Summary</dt><dd>{esc(a['summary'][:600])}</dd>")
+        meta.append(esc(when))
+
+    links = [f'<a href="{esc(a["url"])}">Read at {esc(a["org_name"])}</a>']
     # Only where there is a payment page. The homepage is not one, and a
     # screen reader has even less to go on than a sighted reader when a link
     # called "Support" lands on a masthead.
     if a.get("support_url"):
         label = a.get("support_label") or "Donate"
-        out.append(
-            f'<dt>Support</dt><dd><a href="{esc(a["support_url"])}">'
-            f'{esc(label)} {esc(a["org_name"])}</a></dd>'
-        )
-    out.append("</dl></details></article>")
+        links.append(f'<a href="{esc(a["support_url"])}">{esc(label)} {esc(a["org_name"])}</a>')
+
+    out = [
+        "<article>",
+        f'<h2><a href="{esc(a["url"])}">{esc(a["title"])}</a></h2>',
+        f'<p>{" &middot; ".join(meta)}</p>',
+    ]
+    if a.get("summary"):
+        out.append(f"<p>{esc(tighten(clip_summary(a['summary'], budget=600)))}</p>")
+    out.append(f'<p>{" &middot; ".join(links)}</p>')
+
+    panel = []
+    where = a.get("beat") or a.get("city") or a.get("coverage") or ""
+    if a.get("author"):
+        # What the full edition puts behind a marker beside the byline is
+        # written out here as a sentence instead — same words, no marker.
+        who = reporter_of(a)
+        if who:
+            panel.append(f"<dt>About {esc(who['name'])}</dt>"
+                         f"<dd>{esc(reporter_facts(who))}</dd>")
+    if where:
+        panel.append(f"<dt>Covers</dt><dd>{esc(where)}</dd>")
+    if a.get("subject"):
+        panel.append(f"<dt>Subject</dt><dd>{esc(a['subject'])}</dd>")
+    tags = ", ".join(ownership_tags(a))
+    if tags:
+        panel.append(f"<dt>Newsroom type</dt><dd>{esc(tags)}</dd>")
+    # What the full edition puts behind a disclosure marker beside the
+    # masthead is written out here instead; a marker with nothing behind it
+    # would be worse than no marker at all.
+    about = about_opening(a.get("about_text"))
+    if about:
+        panel.append(f"<dt>About {esc(a['org_name'])}</dt><dd>{esc(about)}</dd>")
+    if a.get("image_alt"):
+        panel.append(f"<dt>Picture</dt><dd>{esc(a['image_alt'])}</dd>")
+
+    if panel:
+        out.append("<details><summary>Details</summary><dl>")
+        out.extend(panel)
+        out.append("</dl></details>")
+    out.append("</article>")
     return "\n".join(out)
 
 
