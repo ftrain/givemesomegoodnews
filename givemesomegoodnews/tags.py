@@ -47,6 +47,11 @@ TAG_GROUPS = [
     ("Practice", PRACTICE_TAGS),
 ]
 
+# Stable priority order for capped tag displays (the rail): earlier groups,
+# then earlier tags within a group, outrank later ones. Derived from
+# TAG_GROUPS so the vocabulary and its ordering stay in one place.
+TAG_PRIORITY = {tag: i for i, tag in enumerate(t for _, group in TAG_GROUPS for t in group)}
+
 # A newsroom whose model says only this, and which carries no community or
 # mission tag, is an ordinary commercial paper. Still in the catalog, still
 # searchable, still one tap away — just not the default view.

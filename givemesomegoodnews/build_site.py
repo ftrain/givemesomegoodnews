@@ -21,11 +21,13 @@ import re
 from datetime import datetime, timezone
 from html import escape as esc
 
+from PIL import Image
+
 from . import config
-from .albers import MapProjection
+from .albers import MapProjection, state_locator
 from .timezones import local_dateline, local_time
 from . import filters, reporters, syndicate
-from .tags import TAG_GROUPS, region_of, tag_slug
+from .tags import TAG_GROUPS, TAG_PRIORITY, region_of, tag_slug
 from .db import connect
 
 MIN_RELATED_SIM = float(os.environ.get("MIN_RELATED_SIM", "0.30"))
@@ -82,6 +84,9 @@ NAV = NAV_BROWSE + NAV_META
 # Everything the menu offers, filled in by main() before anything renders.
 MENU_SUBJECTS = []
 MENU_FEEDS = []
+# How often each newsroom publishes, likewise filled in by main() from one
+# grouped query. Keyed by org id; see cadence_by_org().
+CADENCE = {}
 
 # Headlines a reporter's disclosure lists before it stops.
 REPORTER_HEADLINES = 3
@@ -171,10 +176,44 @@ padding:0 0 0 .5rem;color:var(--fg);cursor:pointer}}
 display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}}
 .tagcol .lozenge{{margin:0}}
 .tagcol .section{{border-color:var(--fg);color:var(--fg);font-weight:600}}
+.tags{{display:flex;flex-wrap:wrap;gap:.3rem}}
+.tagcol .tags{{justify-content:flex-end}}
+/* Whose state this is: the flag small, and the state's own code beside it
+   in type, because at this size the code is what reads. The rule around the
+   flag keeps a pale one (Rhode Island's white field) from dissolving into
+   the page. */
+.ident{{display:flex;align-items:center;gap:.35rem;margin:0}}
+.flag{{flex:none;border:1px solid var(--rule);background:var(--bg)}}
+.abbr{{font:600 .78rem/1 PlexMono,ui-monospace,monospace;letter-spacing:.06em;
+color:var(--fg)}}
+/* An outlet whose beat is the country has no state to fly. The marker takes
+   the line rather than leaving a flag-shaped hole in it. */
+.ident .marker{{font:600 .72rem/1 PlexMono,ui-monospace,monospace;
+letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}}
+/* Where the newsroom is: the state's outline with one mark on it, and the
+   same answer in words underneath for anyone not seeing the picture. */
+.locator{{display:block;margin:.1rem 0}}
+.locator .state{{fill:var(--band);stroke:var(--dim);stroke-width:.6;stroke-linejoin:round}}
+.locator .state.whole{{fill:var(--link);fill-opacity:.3}}
+.locator .near{{fill:var(--link);fill-opacity:.35}}
+.locator .here{{fill:var(--link);stroke:var(--bg);stroke-width:.7}}
+.region{{font:400 .72rem/1.35 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:0;max-width:100%;text-align:right;overflow-wrap:break-word}}
+/* How often they publish, in words. Same quiet caption voice as the region
+   line above it, italic so it reads as a note about the newsroom rather
+   than another piece of its address. Both are omitted outright where the
+   answer would be a guess, so neither leaves a labelled gap behind. */
+.cadence{{font:italic 400 .72rem/1.35 PlexMono,ui-monospace,monospace;
+color:var(--dim);margin:0;max-width:100%;text-align:right;
+overflow-wrap:break-word}}
 .places{{display:flex;flex-wrap:wrap;gap:.35rem;margin:0 0 .4rem}}
 .lozenge.place{{margin:0}}
 .lozenge.give{{border-color:var(--link);color:var(--link);font-weight:600}}
 .lozenge.give:hover,.lozenge.give:focus{{background:var(--link);color:var(--bg)}}
+/* The ask closes the rail, so it gets a little air above it rather than
+   sitting flush against the cadence line. Where there is no payment page to
+   send anyone to it is not rendered, and the rail simply ends earlier. */
+.tagcol .give{{margin-top:.2rem}}
 a.lozenge.more{{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}}
 a.lozenge.more:hover,a.lozenge.more:focus{{background:var(--fg);color:var(--bg)}}
 .source{{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}}
@@ -826,15 +865,18 @@ def subject_href(subject, prefix=""):
 
 
 def support_link(article):
-    """Every item carries the ask. Falls back to the newsroom's front page."""
-    if article.get("support_url"):
-        url = article["support_url"]
-        label = article.get("support_label") or "Donate"
-    else:
-        # No payment page found — send them to the newsroom itself rather
-        # than label a homepage as something it is not.
-        url, label = article["org_url"], "Support"
-    return f'<a class="lozenge give" href="{esc(url)}">{esc(label)}</a>'
+    """The ask, for the newsrooms that have somewhere to send it.
+
+    A front page is not a donate page. Labelling one "Support" makes a
+    promise the link cannot keep, and a reader who follows it lands on a
+    masthead with no idea what they were meant to do there. Where
+    fetch_support found nothing, the rail says nothing.
+    """
+    if not article.get("support_url"):
+        return ""
+    label = article.get("support_label") or "Donate"
+    return (f'<a class="lozenge give" href="{esc(article["support_url"])}">'
+            f'{esc(label)}</a>')
 
 
 _EM_SPACES = re.compile(r"\s*\u2014\s*")
@@ -995,19 +1037,237 @@ def reporter_panel(a):
     return "".join(rows)
 
 
+# The locator is a thumbnail, not a map: one state's outline about this
+# many pixels across, with a single mark on it.
+LOCATOR_SIZE = 64
+# STATE_NAMES stops at the fifty states and the district; a newsroom in a
+# territory still has to be named in words.
+REGION_NAMES = {
+    **STATE_NAMES, "PR": "Puerto Rico", "GU": "Guam", "AS": "American Samoa",
+    "VI": "U.S. Virgin Islands", "MP": "Northern Mariana Islands",
+}
+# The GeoJSON spells the district out; the rest of the site says it short.
+GEOJSON_STATE_NAMES = {"DC": "District of Columbia"}
+# Outlets organised around a region rather than a city: naming a city they
+# do not cover would be a wrong answer, so they name their coverage.
+WIDE_COVERAGE = ("state", "regional", "network", "national")
+
+
+# How wide the flag renders in the rail. Small enough that a seal is a
+# smudge, which is why the two-letter code sits next to it. The files in
+# assets/flags are 96px wide, so a dense screen still has pixels to spend.
+FLAG_WIDTH = 24
+# Flags are not all one shape — Ohio is a pennant, Rhode Island is nearly
+# square — so the height is read off each file the first time it is asked
+# for, and cached for the rest of the build. An <img> given the wrong
+# proportions reserves the wrong box and jumps when the file lands.
+_FLAG_BOX = {}
+
+
+def flag_box(code):
+    """The width and height to draw a state's flag at, or None if we have no
+    flag for it."""
+    if code not in _FLAG_BOX:
+        path = config.ASSETS_DIR / "flags" / f"{code.lower()}.webp"
+        box = None
+        if path.is_file():
+            with Image.open(path) as flag:
+                width, height = flag.size
+            box = (FLAG_WIDTH, max(1, round(FLAG_WIDTH * height / width)))
+        _FLAG_BOX[code] = box
+    return _FLAG_BOX[code]
+
+
+def state_identity(a, prefix=""):
+    """Which state's newsroom this is: the flag, and the state's own code.
+
+    A flag is recognised before it is read, which is the whole job at the top
+    of the rail — but at this size a seal is a smudge, so the two-letter code
+    beside it is what actually names the state, and it is text. Strip the
+    images out of the page and the answer is still there.
+
+    An outlet with no state, or one whose beat is the country, has no state
+    to fly. It gets the national marker instead of a flag that would be the
+    wrong answer, and the marker stands alone: no image, no abbreviation.
+    """
+    code = (a.get("state") or "").upper()
+    if not code or (a.get("coverage_type") or "") == "national":
+        return '<p class="ident"><span class="marker">National</span></p>'
+    name = REGION_NAMES.get(code)
+    box = flag_box(code) if name else None
+    img = ""
+    if box:
+        # Not lazy-loaded, unlike the story photos: a flag is two kilobytes,
+        # every card in the feed carries one, and deferring it leaves an
+        # empty box where the answer to "whose newsroom is this" should be.
+        img = (f'<img class="flag" src="{prefix}flags/{code.lower()}.webp" '
+               f'width="{box[0]}" height="{box[1]}" alt="{esc(name)}">')
+    return f'<p class="ident">{img}<span class="abbr">{esc(code)}</span></p>'
+
+
+def locator_state_name(a):
+    """The state whose outline belongs beside this story, if any."""
+    code = (a.get("state") or "").upper()
+    if not code or (a.get("coverage_type") or "") == "national":
+        return None
+    return GEOJSON_STATE_NAMES.get(code) or REGION_NAMES.get(code)
+
+
+def locator_map(a):
+    """A small outline of the newsroom's state with its place marked on it.
+
+    The geocode's precision decides the mark. A place-level coordinate is a
+    dot; a county one knows an area and not a point, so it shades one rather
+    than claim a precision the gazetteer never had, and a state-level one
+    shades the whole state. So does a statewide outlet, because that is what
+    it covers. Coordinates hand-set in the YAML carry no precision at all;
+    somebody chose them for that newsroom, so they are treated as a place.
+
+    Decorative: the region line underneath carries the same information in
+    words, so this is hidden from screen readers rather than described.
+    """
+    name = locator_state_name(a)
+    if not name:
+        return ""
+    fit = state_locator(config.STATES_GEOJSON, name, LOCATOR_SIZE)
+    if fit is None:
+        # A territory with no outline in the GeoJSON. The region line names
+        # it; an empty box would say less than nothing.
+        return ""
+
+    precision = (a.get("geo_precision") or "").lower()
+    lat, lon = a.get("lat"), a.get("lon")
+    mark = ""
+    if ((a.get("coverage_type") or "") != "state" and precision != "state"
+            and lat is not None and lon is not None):
+        x, y = fit.point(float(lon), float(lat))
+        # A coordinate outside its own state is a bad geocode; shade the
+        # state rather than put a mark somewhere the reader cannot see.
+        if fit.contains(x, y):
+            mark = (f'<circle class="near" cx="{x}" cy="{y}" r="7"/>' if precision == "county"
+                    else f'<circle class="here" cx="{x}" cy="{y}" r="2.4"/>')
+    return (f'<svg class="locator" viewBox="0 0 {fit.width} {fit.height}" '
+            f'width="{fit.width}" height="{fit.height}" aria-hidden="true" '
+            f'focusable="false"><path class="{"state" if mark else "state whole"}" '
+            f'd="{fit.path}"/>{mark}</svg>')
+
+
+def region_name(a):
+    """The area the locator shades, in words, so it survives images off."""
+    state_name = REGION_NAMES.get((a.get("state") or "").upper())
+    coverage = a.get("coverage")
+    if (a.get("coverage_type") or "") in WIDE_COVERAGE:
+        return coverage or state_name or "National"
+    city = a.get("city")
+    precision = (a.get("geo_precision") or "").lower()
+    if not city or precision == "state":
+        return coverage or state_name
+    if state_name and state_name.startswith(city):
+        return state_name  # the district, whose city and state are one name
+    # A county-level geocode places the newsroom near its city, not in it.
+    where = city if precision != "county" or city.endswith("County") else f"{city} area"
+    return f"{where}, {state_name}" if state_name else where
+
+
+# Four weeks. Long enough that a weekly paper reads as a rate rather than
+# noise, short enough that a newsroom which has gone quiet stops being
+# described as though it hadn't.
+CADENCE_WINDOW_DAYS = 28
+# Small numbers belong in the sentence, not standing on their own; past nine
+# the numeral is what a reader actually reads.
+COUNT_WORDS = {2: "two", 3: "three", 4: "four", 5: "five", 6: "six",
+               7: "seven", 8: "eight", 9: "nine"}
+
+
+def cadence_by_org(cur):
+    """How much each newsroom published lately, in one pass over the archive.
+
+    A feed page is thirty cards and the answer is the same all build, so this
+    is a grouped query run once from main() and handed down as a mapping, not
+    a lookup per card.
+
+    Two numbers per org, because the count alone would lie. How many stories
+    landed inside the averaging window, and whether the collected history
+    reaches back past the start of that window at all — an org first crawled
+    on Tuesday has a low count because nobody was watching, not because it is
+    quiet, and it gets no figure.
+    """
+    cur.execute(
+        """
+        SELECT o.id,
+               count(*) FILTER (WHERE coalesce(a.published_at, a.fetched_at)
+                                     > now() - %(window)s::interval),
+               min(coalesce(a.published_at, a.fetched_at))
+                   <= now() - %(window)s::interval
+        FROM orgs o JOIN articles a ON a.org_id = o.id
+        GROUP BY o.id
+        """,
+        {"window": f"{CADENCE_WINDOW_DAYS} days"},
+    )
+    return {org_id: (recent, full_window) for org_id, recent, full_window in cur.fetchall()}
+
+
+def cadence_phrase(stats):
+    """A publishing rate in plain words, or None where there isn't one.
+
+    Withheld rather than extrapolated. An org we have not been collecting for
+    a full window has nothing to average — a fortnight of crawling says
+    nothing about the fortnight before it. An org that has published nothing
+    lately is said to have published nothing, because "0 stories a week" is a
+    rate, and the newsroom is not keeping to it; it has stopped.
+    """
+    if not stats:
+        return None
+    recent, full_window = stats
+    if not full_window:
+        return None
+    if not recent:
+        return "nothing published in the past month"
+    per_week = recent / (CADENCE_WINDOW_DAYS / 7)
+    if per_week < 0.75:
+        # One or two in four weeks. A weekly rate here would round to nothing.
+        if recent == 1:
+            return "about a story a month"
+        return f"about {COUNT_WORDS[recent]} stories a month"
+    if per_week < 1.5:
+        return "about a story a week"
+    weekly = math.floor(per_week + 0.5)
+    return f"about {COUNT_WORDS.get(weekly, weekly)} stories a week"
+
+
+def cadence_line(a):
+    """The cadence element of the rail, or nothing at all.
+
+    A newsroom with no feed makes no cadence claim: whatever is in the
+    archive for it came from somewhere else and is not a measure of how it
+    publishes.
+    """
+    if not a.get("org_feed"):
+        return ""
+    phrase = cadence_phrase(CADENCE.get(a.get("org_id")))
+    return f'<p class="cadence">{esc(phrase)}</p>' if phrase else ""
+
+
 def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_images=()):
     """Where it is, who published it, when, and then the story."""
     out = ["<article>"]
 
-    # 1. a column down the right: section first, then what kind of newsroom
-    #    this is, then the ask.
+    # 1. a column down the right: section first, then whose state this
+    #    newsroom is in and where in it, what kind of newsroom it is, how
+    #    often it publishes, then the ask.
     column = []
     if a.get("subject"):
         label = esc(a["subject"])
         column.append(f'<span class="lozenge section">{label}</span>' if mode == "onepage"
                       else f'<a class="lozenge section" '
                            f'href="{subject_href(a["subject"], prefix)}">{label}</a>')
-    column.append(tag_links(a, prefix if mode != "onepage" else ""))
+    column.append(state_identity(a, prefix if mode != "onepage" else ""))
+    column.append(locator_map(a))
+    region = region_name(a)
+    if region:
+        column.append(f'<p class="region">{esc(region)}</p>')
+    column.append(tag_links(a, prefix if mode != "onepage" else "", cap=RAIL_TAG_CAP))
+    column.append(cadence_line(a))
     column.append(support_link(a))
     out.append(f'<aside class="tagcol">{"".join(column)}</aside>')
 
@@ -1285,13 +1545,28 @@ def ownership_tags(org):
     return tags
 
 
-def tag_links(org, prefix=""):
-    """Tags as tappable lozenges, each leading to that tag's own feed."""
-    out = [
-        f'<a class="lozenge" href="{prefix}tags/{tag_slug(tag)}.html">{esc(tag)}</a>'
-        for tag in ownership_tags(org)
-    ]
-    return "".join(out)
+# The rail is a narrow column; a newsroom carrying half a dozen features
+# would otherwise push its headline down a variable amount card to card.
+RAIL_TAG_CAP = 3
+
+
+def tag_links(org, prefix="", cap=None):
+    """Tags as tappable lozenges, each leading to that characteristic's page.
+
+    Ordered by TAG_PRIORITY (Ownership, then Community, then Practice, each
+    group in its own fixed order) so a capped render always keeps the same
+    subset, in the same order, as an uncapped one.
+    """
+    tags = sorted(ownership_tags(org), key=lambda t: TAG_PRIORITY.get(t, len(TAG_PRIORITY)))
+    if cap is not None:
+        tags = tags[:cap]
+    if not tags:
+        return ""
+    links = "".join(
+        f'<a class="lozenge" href="{prefix}features/{tag_slug(tag)}.html">{esc(tag)}</a>'
+        for tag in tags
+    )
+    return f'<span class="tags">{links}</span>'
 
 
 def feature_href(feature, prefix=""):
@@ -1611,12 +1886,15 @@ def render_text_item(a, prefix="../"):
         out.append(f"<dt>Picture</dt><dd>{esc(a['image_alt'])}</dd>")
     if a.get("summary"):
         out.append(f"<dt>Summary</dt><dd>{esc(a['summary'][:600])}</dd>")
-    support_url = a.get("support_url") or a["org_url"]
-    support_label = a.get("support_label") or "Support"
-    out.append(
-        f'<dt>Support</dt><dd><a href="{esc(support_url)}">'
-        f'{esc(support_label)} {esc(a["org_name"])}</a></dd>'
-    )
+    # Only where there is a payment page. The homepage is not one, and a
+    # screen reader has even less to go on than a sighted reader when a link
+    # called "Support" lands on a masthead.
+    if a.get("support_url"):
+        label = a.get("support_label") or "Donate"
+        out.append(
+            f'<dt>Support</dt><dd><a href="{esc(a["support_url"])}">'
+            f'{esc(label)} {esc(a["org_name"])}</a></dd>'
+        )
     out.append("</dl></details></article>")
     return "\n".join(out)
 
@@ -1700,7 +1978,7 @@ def render_org_page(cur, org):
 
 ORG_COLUMNS = (
     "id", "slug", "name", "url", "about_url", "feed_url", "city", "state", "lat", "lon",
-    "coverage", "coverage_type", "model", "affiliations", "founded",
+    "geo_precision", "coverage", "coverage_type", "model", "affiliations", "founded",
     "support_url", "support_label", "features", "source", "tagline", "beat",
     "about_text", "about_source_url", "about_fetched_at",
 )
@@ -1718,9 +1996,10 @@ def load_articles(cur, limit, subject=None, feature=None, default_only=False,
         """
         SELECT a.id, a.url, a.title, a.summary, a.author, a.published_at, a.fetched_at,
                a.image_file, a.image_w, a.image_h, a.image_alt, a.subject,
-               o.name AS org_name, o.slug, o.url AS org_url,
+               o.id AS org_id, o.name AS org_name, o.slug, o.url AS org_url,
                o.support_url, o.support_label,
                o.state, o.city, o.beat, o.coverage, o.coverage_type,
+               o.lat, o.lon, o.geo_precision,
                o.timezone, o.model, o.features, o.feed_url, o.in_default, o.language,
                o.about_text
         FROM articles a JOIN orgs o ON o.id = a.org_id
@@ -1736,9 +2015,11 @@ def load_articles(cur, limit, subject=None, feature=None, default_only=False,
          *filter_params, limit],
     )
     cols = ("id", "url", "title", "summary", "author", "published_at", "fetched_at",
-            "image_file", "image_w", "image_h", "image_alt", "subject", "org_name", "slug", "org_url",
+            "image_file", "image_w", "image_h", "image_alt", "subject",
+            "org_id", "org_name", "slug", "org_url",
             "support_url", "support_label", "state", "city", "beat", "coverage",
-            "coverage_type", "timezone", "model", "features", "org_feed",
+            "coverage_type", "lat", "lon", "geo_precision",
+            "timezone", "model", "features", "org_feed",
             "in_default", "language", "about_text")
     return [dict(zip(cols, row)) for row in cur.fetchall()]
 
@@ -1841,6 +2122,18 @@ def main():
         for stale in fonts_dst.glob("*.woff2"):
             if stale.name not in wanted:
                 stale.unlink()
+    flags_src = config.ASSETS_DIR / "flags"
+    if flags_src.is_dir():
+        flags_dst = site / "flags"
+        flags_dst.mkdir(parents=True, exist_ok=True)
+        wanted = {f.name for f in flags_src.glob("*.webp")}
+        for flag in flags_src.glob("*.webp"):
+            shutil.copyfile(flag, flags_dst / flag.name)
+        # A state that redraws its flag leaves the old one behind otherwise,
+        # and so does the earlier run that wrote these out as SVG.
+        for stale in flags_dst.glob("*"):
+            if stale.is_file() and stale.name not in wanted:
+                stale.unlink()
     masthead = config.ASSETS_DIR / "masthead.svg"
     if masthead.is_file():
         shutil.copyfile(masthead, site / "masthead.svg")
@@ -1852,6 +2145,10 @@ def main():
         # edition all read this dictionary; none of them asks again.
         REPORTERS.clear()
         REPORTERS.update(load_reporter_panels(cur))
+        # How often each newsroom publishes: one grouped query for the whole
+        # build, read from the mapping as each card renders.
+        CADENCE.clear()
+        CADENCE.update(cadence_by_org(cur))
         articles = collapse_duplicates(
             load_articles(cur, FEED_PAGE_ARTICLES, default_only=True))
         all_articles = collapse_duplicates(
@@ -1899,7 +2196,7 @@ def main():
         (site / "features").mkdir(parents=True, exist_ok=True)
         by_feature = collections.defaultdict(list)
         for org in orgs:
-            for feature in (org.get("features") or []):
+            for feature in ownership_tags(org):
                 by_feature[feature].append(org)
         for feature, group in by_feature.items():
             body = (f"<h1>{esc(feature)}</h1>"
