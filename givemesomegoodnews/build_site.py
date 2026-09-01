@@ -135,6 +135,10 @@ h2{{font-size:1.2rem;line-height:1.25;margin:.2rem 0 .4rem}}
 article h2{{font-family:Text,Georgia,serif;font-size:1.6rem;font-weight:600;
 line-height:1.25;margin:1rem 0 .9rem;max-width:75%}}
 @media(max-width:34rem){{article h2{{max-width:100%;font-size:1.4rem}}}}
+/* Same short measure as the headline, so the paragraph doesn't run the
+   full width of the card just because the tag column has ended above it. */
+article .body{{max-width:75%}}
+@media(max-width:34rem){{article .body{{max-width:100%}}}}
 h3{{font-size:1rem;margin:1.2rem 0 .4rem}}
 p{{margin:0 0 .7rem}}
 ul{{padding-left:1.1rem}}
@@ -149,7 +153,13 @@ article{{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}}
 article::after{{content:"";display:block;clear:both}}
 img{{max-width:100%;height:auto;display:block}}
 .shot{{float:left;width:33%;margin:.35rem 1rem .3rem 0}}
-.shot img{{width:100%}}
+.shot img{{width:100%;border:1px solid var(--rule)}}
+/* Rows crawled before image_w/image_h existed have no dimensions to set
+   as attributes; reserve a box for them anyway so the layout doesn't
+   jump once the image loads. */
+.shot img:not([width]){{aspect-ratio:3/2;object-fit:cover}}
+.shot figcaption{{font:400 .78rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
+margin:.3rem 0 0}}
 @media(max-width:34rem){{.shot{{width:40%}}}}
 time[data-pub]{{cursor:pointer}}
 .yours{{color:var(--dim)}}
@@ -216,9 +226,16 @@ overflow-wrap:break-word}}
 .tagcol .give{{margin-top:.2rem}}
 a.lozenge.more{{white-space:nowrap;border-color:var(--fg);color:var(--fg);font-weight:600}}
 a.lozenge.more:hover,a.lozenge.more:focus{{background:var(--fg);color:var(--bg)}}
-.source{{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem}}
+/* A newsroom's name can run to sixty characters, and the tag column takes
+   a third of the width, so the name breaks rather than pushing out. */
+.source{{font-family:Plex,system-ui,sans-serif;font-size:1rem;margin:0 0 .3rem;
+overflow-wrap:break-word}}
 .whenwhere{{font:400 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--dim);
-margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}}
+margin:0 0 .2rem;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}}
+/* A collected date is not a publication date and should not read like one.
+   Weight rather than a lozenge: the lozenges on this page are all links,
+   and this is a label. */
+.whenwhere .collected{{color:var(--fg);font-weight:600;white-space:nowrap}}
 .byline{{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
 margin:0 0 .8rem}}
 /* Inline disclosures: a marker beside a name, its panel opening in place.
@@ -892,6 +909,106 @@ def tighten(text):
     return _EM_SPACES.sub("\u2014", text or "")
 
 
+_LEADING_BY = re.compile(r"^\s*by[:\s]\s*", re.IGNORECASE)
+
+
+def credit(author):
+    """The names in a byline, without the word the byline already supplies.
+
+    Plenty of feeds put the whole credit line in the author field — "By Bob
+    Berwyn", "By Howard Herman, The Berkshire Eagle" — and the byline adds its
+    own "By", which reads as "By By Bob Berwyn". Strip a leading one. The
+    separator the pattern requires after it keeps "Byron" whole, and a credit
+    that is nothing but the word itself is left alone rather than emptied.
+    """
+    return _LEADING_BY.sub("", author, count=1) or author
+
+
+_PARA_BREAK = re.compile(r"\n\s*\n")
+# Candidate sentence ends. A Latin period is only a candidate \u2014 sentence_ends()
+# still has to rule out the abbreviations. The CJK stops carry no such
+# ambiguity and are not written with a space after them, so they end a sentence
+# on their own \u2014 the Chinese-language outlets publish under the same mastheads
+# as the English.
+_SENTENCE_END = re.compile(
+    r"[.!?][\"'\u201d\u2019)\]]*(?=\s|$)"
+    r"|[\u3002\uff01\uff1f][\"'\u201d\u2019)\]\uff09]*"
+)
+# The word a period is attached to, with any interior periods, so "U.S." and
+# "a.m." arrive whole rather than as a bare trailing letter.
+_DOTTED_WORD = re.compile(r"([A-Za-z][A-Za-z.]*)\.$")
+# What a local paper abbreviates constantly. A period after one of these is
+# inside a sentence, not at the end of one.
+_ABBREVIATIONS = frozenset(
+    """
+    mr mrs ms mx dr prof rev fr sr jr st sen rep gov pres amb atty
+    sgt lt capt col gen maj cpl det ofc adm hon supt
+    ave blvd rd ln ct mt ft apt ste dept univ inst
+    inc corp co ltd llc plc assn bros
+    jan feb mar apr jun jul aug sept sep oct nov dec
+    mon tue tues wed thu thurs fri sat sun
+    no nos vs etc al approx est fig vol ed pp cf
+    """.split()
+)
+
+
+def _ends_sentence(para, i):
+    """Whether the period at para[i] is the end of a sentence.
+
+    Three things say it is not: a known abbreviation ("St.", "Gov."), a
+    dotted initialism or a lone initial ("U.S.", "a.m.", "J."), and a
+    following word that is lower-case, since an English sentence does not
+    start that way.
+    """
+    word = _DOTTED_WORD.search(para[:i + 1])
+    if word:
+        token = word.group(1)
+        if "." in token or len(token) == 1 or token.lower() in _ABBREVIATIONS:
+            return False
+    return not para[i + 1:].lstrip()[:1].islower()
+
+
+def sentence_ends(para):
+    """Offsets just past each sentence break in a paragraph."""
+    return [
+        m.end() for m in _SENTENCE_END.finditer(para)
+        if para[m.start()] != "." or _ends_sentence(para, m.start())
+    ]
+
+
+SUMMARY_BUDGET = 400
+# How far a summary may run past the budget to finish the sentence it is in.
+# Overshooting by a line reads better than handing the reader half a sentence.
+SUMMARY_GRACE = 120
+
+
+def clip_summary(text, budget=SUMMARY_BUDGET):
+    """The first paragraph of a source summary, held to a budget and cut only
+    at the end of a sentence.
+
+    Enough for a reader to judge the story; never enough that they need not
+    click through for the rest.
+    """
+    if not text:
+        return ""
+    para = _PARA_BREAK.split(text.strip(), maxsplit=1)[0].strip()
+    if len(para) <= budget:
+        return para
+    ends = sentence_ends(para)
+    fits = [e for e in ends if e <= budget]
+    if fits:
+        return para[:fits[-1]].rstrip()
+    # Nothing ends inside the budget, so spend the grace to close the first
+    # sentence rather than break it.
+    if ends and ends[0] <= budget + SUMMARY_GRACE:
+        return para[:ends[0]].rstrip()
+    # A paragraph that runs on with no sentence break anywhere near the
+    # budget: cut at the last complete word and say so, rather than let the
+    # cut land mid-token and unmarked.
+    cut = para.rfind(" ", 0, budget)
+    return (para[:cut].rstrip() + "\u2026") if cut > 0 else para
+
+
 def place_line(a, mode="site", prefix=""):
     """State / region / publication — or National / beat / publication for
     the outlets organised around a subject rather than a place."""
@@ -1271,8 +1388,10 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
     column.append(support_link(a))
     out.append(f'<aside class="tagcol">{"".join(column)}</aside>')
 
-    # 2. where it is, then who published it
-    moment = a["published_at"] or a["fetched_at"]
+    # 2. where it is; then, in the order a reader wants them, when it ran
+    #    and who ran it.
+    published = a["published_at"]
+    moment = published or a["fetched_at"]
     dateline = local_dateline(moment, a.get("state"), a.get("timezone"))
     pub_time = local_time(moment, a.get("state"), a.get("timezone"))
     where = a.get("beat") or a.get("city")
@@ -1293,48 +1412,62 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
     if bits:
         out.append(f'<p class="places">{"".join(bits)}</p>')
 
-    # The publication name is itself the marker: opening it gives the
-    # newsroom in its own words without leaving the feed. Their site is the
-    # first link inside, so it is still one tap away.
+    # 3. when. With no date from the newsroom the only date we have is the
+    #    day we picked the story up, which is a different claim and is
+    #    labelled as one rather than passed off as publication.
+    if dateline:
+        stamp = (f'<time datetime="{moment.astimezone(timezone.utc).isoformat()}" '
+                 f'data-pub="{esc(pub_time)}">{esc(dateline)}</time>')
+        if published:
+            out.append(f'<p class="whenwhere">{stamp}</p>')
+        else:
+            out.append(f'<p class="whenwhere nodate">'
+                       f'<span class="collected">Collected by this site</span> {stamp}</p>')
+
+    # 4. who published it. The publication name is itself the marker:
+    #    opening it gives the newsroom in its own words without leaving the
+    #    feed. Their site is the first link inside, so it is still one tap
+    #    away, and the newsroom page is the one after it.
     out.append(disclosure(f'<strong>{esc(a["org_name"])}</strong>',
                           org_profile_panel(a, mode, prefix), "source"))
 
-    # 3. when
-    if dateline:
-        out.append(
-            f'<p class="whenwhere"><time '
-            f'datetime="{moment.astimezone(timezone.utc).isoformat()}" '
-            f'data-pub="{esc(pub_time)}">{esc(dateline)}</time></p>'
-        )
-
-    # 4. headline, 5. byline
+    # 5. headline
     out.append(f'<h2><a href="{esc(a["url"])}">{esc(tighten(a["title"]))}</a></h2>')
+
+    # 6. byline. It opens the same way the masthead above it does — but only
+    #    where there is a person behind it. A byline the site cannot resolve
+    #    stays the plain line of text it has always been, rather than
+    #    becoming a marker that opens onto nothing.
     if a.get("author"):
-        # The byline opens the same way the masthead above it does — but
-        # only where there is a person behind it. A byline the site cannot
-        # resolve stays the plain line of text it has always been, rather
-        # than becoming a marker that opens onto nothing.
         who = reporter_of(a)
         out.append(disclosure(f'By <strong>{esc(who["name"])}</strong>',
                               reporter_panel(a), "byline")
-                   if who else f'<p class="byline">By {esc(a["author"])}</p>')
+                   if who else f'<p class="byline">By {esc(credit(a["author"]))}</p>')
 
+    # 7. the photo
     if a.get("image_file") and a["image_file"] not in skip_images:
+        # image_w/image_h are only missing on rows crawled before those
+        # columns existed; the .shot img:not([width]) CSS rule reserves an
+        # aspect-ratio box for those instead of explicit dimensions.
         size = ""
         if a.get("image_w") and a.get("image_h"):
             size = f' width="{a["image_w"]}" height="{a["image_h"]}"'
         alt = esc(a.get("image_alt") or "")
+        caption = f"<figcaption>{alt}</figcaption>" if a.get("image_alt") else ""
         out.append(
-            f'<a class="shot" href="{esc(a["url"])}" tabindex="-1" aria-hidden="true">'
+            f'<figure class="shot">'
+            f'<a href="{esc(a["url"])}" tabindex="-1" aria-hidden="true">'
             f'<img src="{prefix}img/{esc(a["image_file"])}" alt="{alt}"{size} '
             f'loading="lazy" decoding="async"></a>'
+            f'{caption}'
+            f'</figure>'
         )
 
-    # 6. the text, with Read more running on from the end of it
-    summary = esc(tighten(a["summary"][:400])) if a.get("summary") else ""
+    # 8. the text, with Read more running on from the end of it
+    summary = esc(tighten(clip_summary(a["summary"]))) if a.get("summary") else ""
     more = (f'<a class="lozenge more" href="{esc(a["url"])}">Read more '
             f'<span aria-hidden="true">&rarr;</span></a>')
-    out.append(f"<p>{summary} {more}</p>" if summary else f"<p>{more}</p>")
+    out.append(f'<p class="body">{summary} {more}</p>' if summary else f"<p>{more}</p>")
 
     if a.get("_also"):
         others = " &middot; ".join(

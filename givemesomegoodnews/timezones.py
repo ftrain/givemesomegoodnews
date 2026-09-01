@@ -6,6 +6,7 @@ split states; those are listed below and can be corrected per newsroom with
 a `timezone:` field in data/orgs.yaml.
 """
 
+from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
 # Newsrooms with no fixed geography (national outlets) are stamped Eastern,
@@ -35,6 +36,9 @@ STATE_TZ = {
     "WV": "America/New_York",  "WI": "America/Chicago",   "WY": "America/Denver",
 }
 
+# How recent a story has to be for the time of day to still be news.
+RECENT = timedelta(hours=24)
+
 _CACHE = {}
 
 
@@ -56,9 +60,18 @@ def local_time(when, state=None, override=None):
     return local.strftime("%-I:%M %p %Z").strip()
 
 
-def local_dateline(when, state=None, override=None):
-    """Short dateline in the newsroom's own zone: 'Tue, Aug 25 @ 11AM EDT'."""
+def local_dateline(when, state=None, override=None, now=None):
+    """Short dateline in the newsroom's own zone.
+
+    While a story is still the day's news the hour is part of it, so the
+    dateline carries the time and the zone: 'Tue, Aug 25 @ 11AM EDT'. Once
+    it is older than a day the hour tells the reader nothing they want and
+    the date is the whole fact: 'Tue, Aug 25'.
+    """
     if not when:
         return ""
     local = when.astimezone(zone_for(state, override))
-    return local.strftime("%a, %b %-d @ %-I%p %Z").replace("AM", "AM").strip()
+    now = now or datetime.now(timezone.utc)
+    if now - local < RECENT:
+        return local.strftime("%a, %b %-d @ %-I%p %Z").strip()
+    return local.strftime("%a, %b %-d").strip()
