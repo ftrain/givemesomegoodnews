@@ -24,7 +24,7 @@ from html import escape as esc
 from . import config
 from .albers import MapProjection
 from .timezones import local_dateline, local_time
-from . import filters, syndicate
+from . import filters, reporters, syndicate
 from .tags import TAG_GROUPS, region_of, tag_slug
 from .db import connect
 
@@ -82,6 +82,13 @@ NAV = NAV_BROWSE + NAV_META
 # Everything the menu offers, filled in by main() before anything renders.
 MENU_SUBJECTS = []
 MENU_FEEDS = []
+
+# Headlines a reporter's disclosure lists before it stops.
+REPORTER_HEADLINES = 3
+# Every byline the site resolves to a person, keyed by reporter identity and
+# filled in by main() from one query before anything renders. A card then
+# costs a dictionary lookup rather than a query of its own.
+REPORTERS = {}
 
 
 def stylesheet(prefix=""):
@@ -175,6 +182,47 @@ a.lozenge.more:hover,a.lozenge.more:focus{{background:var(--fg);color:var(--bg)}
 margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}}
 .byline{{font-family:Plex,system-ui,sans-serif;font-size:.9rem;color:var(--dim);
 margin:0 0 .8rem}}
+/* Inline disclosures: a marker beside a name, its panel opening in place.
+   Native <details>, like the burger menu — it works with scripting off,
+   takes keyboard focus, and announces expanded/collapsed by itself.
+   A disclosure carries the class of whatever it replaced — .source, .byline
+   — and takes its type and its spacing from that, so a byline with a
+   profile behind it sits on exactly the rhythm one without a profile does.
+   A <summary> keeps its own display:list-item. Overriding it is what costs
+   the element its disclosure semantics in some browsers — the marker would
+   stop announcing expanded and collapsed — so the row of name and cue is
+   laid out by a span inside the summary instead of by the summary itself. */
+.disc>summary{{cursor:pointer;list-style:none;color:var(--fg)}}
+.disc>summary::-webkit-details-marker{{display:none}}
+.disc-line{{display:inline-flex;flex-wrap:wrap;align-items:baseline;gap:.4rem}}
+.disc>summary:hover,.disc>summary:focus{{color:var(--link)}}
+/* The summary spans the column, the marker does not: put the focus ring
+   around what a keyboard reader is actually pointing at. */
+.disc>summary:focus-visible{{outline:none}}
+.disc>summary:focus-visible .disc-line{{outline:3px solid var(--link);outline-offset:3px}}
+.disc-cue{{font:400 .68rem/1 PlexMono,ui-monospace,monospace;color:var(--dim);
+border:1px solid var(--rule);border-radius:1rem;padding:.24rem .45rem;
+white-space:nowrap;text-transform:uppercase;letter-spacing:.05em}}
+/* The caret is drawn rather than written: a glyph in the content of a
+   pseudo-element joins the summary's accessible name, and "black
+   down-pointing small triangle" read out after every masthead is noise on
+   top of the expanded/collapsed the browser already announces. */
+.disc-cue::after{{content:"";display:inline-block;width:0;height:0;margin-left:.45em;
+border:.32em solid transparent;border-top-color:currentColor;vertical-align:-.07em}}
+.disc[open]>summary .disc-cue::after{{border-top-color:transparent;
+border-bottom-color:currentColor;vertical-align:.25em}}
+.disc>summary:hover .disc-cue,.disc>summary:focus-visible .disc-cue
+{{border-color:var(--link);color:var(--link)}}
+/* The panel opens below the marker and nothing else moves: the card grows
+   downwards, so what is above it keeps the position the reader left it in. */
+.disc-panel{{border-left:3px solid var(--rule);margin:.5rem 0 .7rem;padding-left:.8rem;
+font-family:Plex,system-ui,sans-serif;font-size:.9rem}}
+.disc-panel blockquote{{margin:0 0 .35rem;padding:0;border:0}}
+.disc-panel p{{margin:0 0 .45rem}}
+/* Motion only where it is asked for: under reduce, nothing here applies. */
+@media(prefers-reduced-motion:no-preference){{
+.disc[open]>.disc-panel{{animation:disc-open .18s ease-out}}
+@keyframes disc-open{{from{{opacity:0}}to{{opacity:1}}}}}}
 @media(max-width:34rem){{.tagcol{{width:38%;max-width:8.5rem}}}}
 svg{{max-width:100%;height:auto}}
 blockquote{{margin:0 0 .7rem;padding-left:.9rem;border-left:3px solid var(--rule)}}
@@ -819,6 +867,134 @@ def place_line(a, mode="site", prefix=""):
     return " / ".join(esc(part) for part in (first, middle) if part) + " / " + pub
 
 
+def disclosure(marker, panel_html, extra_class=""):
+    """A marker that opens a panel in place, with no script behind it.
+
+    The marker is whatever inline HTML belongs next to the thing being
+    disclosed; the caret is added here so every disclosure on the page opens
+    the same way. Nothing to disclose means no marker at all, rather than a
+    marker that opens onto an empty panel.
+
+    Everything about the behaviour is the browser's: the summary takes Tab,
+    toggles on Enter and Space, announces itself as expanded or collapsed,
+    and holds that state for as long as the page lives. So nothing here adds
+    a role, an `aria-expanded`, an `open` attribute or a line of script —
+    each of those would only compete with what the element already does.
+    """
+    if not panel_html:
+        return ""
+    classes = f"disc {extra_class}".strip()
+    return (f'<details class="{classes}">'
+            f'<summary><span class="disc-line">{marker}'
+            f'<span class="disc-cue">Profile</span></span></summary>'
+            f'<div class="disc-panel">{panel_html}</div></details>')
+
+
+def about_opening(text, max_chars=420):
+    """One paragraph of an About page, for somewhere that has room for one.
+
+    The first block is often the page's own heading, a tagline, or a stray
+    line of CMS furniture — a third of the catalog's About texts open that
+    way. Where a whole About page can carry that and recover in the next
+    paragraph, a single-paragraph quote cannot, so skip to the first
+    paragraph long enough to be a description.
+    """
+    if not usable_about(text):
+        return ""
+    paras = [p.strip() for p in text.split("\n\n") if len(p.strip()) >= 80]
+    excerpt, _ = excerpt_paragraphs("\n\n".join(paras), max_paras=1, max_chars=max_chars)
+    return excerpt[0] if excerpt else ""
+
+
+def org_profile_panel(a, mode="site", prefix=""):
+    """The newsroom in its own words, what it covers, what it is, where next."""
+    rows = []
+    quote = about_opening(a.get("about_text"))
+    if quote:
+        rows.append(f"<blockquote><p>{esc(quote)}</p></blockquote>")
+        rows.append('<p class="meta">— in their own words, from their About page.</p>')
+    if a.get("coverage"):
+        rows.append(f'<p>Covers {esc(a["coverage"])}.</p>')
+    # The whole tag set, not the shortened one the card's column carries.
+    tags = tag_links(a, prefix if mode != "onepage" else "")
+    if tags:
+        rows.append(f"<p>{tags}</p>")
+    links = [f'<a class="lozenge" href="{esc(a["org_url"])}">Their site</a>']
+    if mode != "onepage":
+        links.append(f'<a class="lozenge" href="{prefix}orgs/{esc(a["slug"])}.html">'
+                     f"Newsroom page</a>")
+    links.append(support_link(a))
+    rows.append(f'<p>{"".join(links)}</p>')
+    return "\n".join(rows)
+
+
+def and_list(items):
+    """A, B and C — the way a sentence names a handful of things."""
+    items = list(items)
+    if len(items) < 3:
+        return " and ".join(items)
+    return ", ".join(items[:-1]) + " and " + items[-1]
+
+
+def newsroom_phrase(names, cap=4):
+    """Who a reporter publishes with, without listing thirty of them."""
+    if not names:
+        return ""
+    if len(names) <= cap:
+        return f"Publishes with {and_list(names)}."
+    rest = len(names) - cap
+    others = "another newsroom" if rest == 1 else f"{rest} other newsrooms"
+    return f"Publishes with {', '.join(names[:cap])} and {others}."
+
+
+def reporter_span(first_at, last_at):
+    """The period a reporter's work here covers, to the month."""
+    if not first_at or not last_at:
+        return ""
+    first, last = first_at.strftime("%B %Y"), last_at.strftime("%B %Y")
+    if first == last:
+        return f"All of it from {last}."
+    return f"Their work here runs from {first} to {last}."
+
+
+def reporter_of(a):
+    """The person behind an item's byline, or None where it names nobody.
+
+    `REPORTERS` is assembled once per build, so this is a lookup rather than
+    a query, and a byline that resolves to nobody is simply not in there.
+    """
+    return REPORTERS.get(reporters.reporter_key(a.get("author")))
+
+
+def reporter_facts(who):
+    """The reporter in sentences, for anywhere that can carry sentences."""
+    said = [reporters.prolificacy(who["n_stories"]),
+            newsroom_phrase(who["newsrooms"]),
+            reporter_span(who["first_at"], who["last_at"])]
+    return " ".join(part for part in said if part)
+
+
+def reporter_panel(a):
+    """What this site holds under one byline: how much, where, when, what.
+
+    Everything the panel points at is a story on the newsroom that published
+    it. There is no page of the reporter's own to send anyone to yet — the
+    build writes `orgs/` and nothing else — so the panel ends at the
+    headlines rather than at a link to a file that is never written.
+    """
+    who = reporter_of(a)
+    if not who:
+        return ""
+    rows = [f"<p>{esc(reporter_facts(who))}</p>"]
+    if who["recent"]:
+        items = "".join(
+            f'<li><a href="{esc(r["url"])}">{esc(tighten(r["title"]))}</a></li>'
+            for r in who["recent"]
+        )
+        rows.append(f"<p>Most recently:</p><ul>{items}</ul>")
+    return "".join(rows)
+
+
 def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_images=()):
     """Where it is, who published it, when, and then the story."""
     out = ["<article>"]
@@ -857,8 +1033,11 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
     if bits:
         out.append(f'<p class="places">{"".join(bits)}</p>')
 
-    source = f'<a href="{esc(a["org_url"])}"><strong>{esc(a["org_name"])}</strong></a>'
-    out.append(f'<p class="source">{source}</p>')
+    # The publication name is itself the marker: opening it gives the
+    # newsroom in its own words without leaving the feed. Their site is the
+    # first link inside, so it is still one tap away.
+    out.append(disclosure(f'<strong>{esc(a["org_name"])}</strong>',
+                          org_profile_panel(a, mode, prefix), "source"))
 
     # 3. when
     if dateline:
@@ -871,7 +1050,14 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
     # 4. headline, 5. byline
     out.append(f'<h2><a href="{esc(a["url"])}">{esc(tighten(a["title"]))}</a></h2>')
     if a.get("author"):
-        out.append(f'<p class="byline">By {esc(a["author"])}</p>')
+        # The byline opens the same way the masthead above it does — but
+        # only where there is a person behind it. A byline the site cannot
+        # resolve stays the plain line of text it has always been, rather
+        # than becoming a marker that opens onto nothing.
+        who = reporter_of(a)
+        out.append(disclosure(f'By <strong>{esc(who["name"])}</strong>',
+                              reporter_panel(a), "byline")
+                   if who else f'<p class="byline">By {esc(a["author"])}</p>')
 
     if a.get("image_file") and a["image_file"] not in skip_images:
         size = ""
@@ -1325,7 +1511,18 @@ dl{margin:.2rem 0 .6rem}dt{font-weight:700}dd{margin:0 0 .3rem}
 :focus-visible{outline:3px solid currentColor;outline-offset:2px}
 .skip{position:absolute;left:-9999px}.skip:focus{position:static;display:block}
 article{margin:0 0 2rem;padding-bottom:1rem;border-bottom:1px solid currentColor}
-summary{cursor:pointer;font-size:.95rem}
+/* The one disclosure in this edition. It keeps its display:list-item, which
+   is what its expanded/collapsed announcement depends on, and carries its
+   own cue rather than the browser's triangle. */
+summary{cursor:pointer;font-size:.95rem;list-style:none;width:max-content;
+max-width:100%;border:1px solid currentColor;border-radius:1rem;padding:.05rem .7rem}
+summary::-webkit-details-marker{display:none}
+/* Drawn, not written: a glyph here would be read out as part of the button.
+   This edition is the one a screen reader is most likely to be on. */
+summary::after{content:"";display:inline-block;width:0;height:0;margin-left:.5em;
+border:.3em solid transparent;border-top-color:currentColor;vertical-align:-.05em}
+details[open] summary::after{border-top-color:transparent;
+border-bottom-color:currentColor;vertical-align:.25em}
 details[open] dl{margin-top:.5rem}
 </style>"""
 
@@ -1389,6 +1586,12 @@ def render_text_item(a, prefix="../"):
     where = a.get("beat") or a.get("city") or a.get("coverage") or ""
     if a.get("author"):
         out.append(f"<dt>Reported by</dt><dd>{esc(a['author'])}</dd>")
+        # What the full edition puts behind a marker beside the byline is
+        # written out here as a sentence instead — same words, no marker.
+        who = reporter_of(a)
+        if who:
+            out.append(f"<dt>About {esc(who['name'])}</dt>"
+                       f"<dd>{esc(reporter_facts(who))}</dd>")
     if when:
         out.append(f"<dt>Published</dt><dd>{esc(when)}</dd>")
     if where:
@@ -1398,6 +1601,12 @@ def render_text_item(a, prefix="../"):
     tags = ", ".join(ownership_tags(a))
     if tags:
         out.append(f"<dt>Newsroom type</dt><dd>{esc(tags)}</dd>")
+    # What the full edition puts behind a disclosure marker beside the
+    # masthead is written out here instead; a marker with nothing behind it
+    # would be worse than no marker at all.
+    about = about_opening(a.get("about_text"))
+    if about:
+        out.append(f"<dt>About {esc(a['org_name'])}</dt><dd>{esc(about)}</dd>")
     if a.get("image_alt"):
         out.append(f"<dt>Picture</dt><dd>{esc(a['image_alt'])}</dd>")
     if a.get("summary"):
@@ -1512,7 +1721,8 @@ def load_articles(cur, limit, subject=None, feature=None, default_only=False,
                o.name AS org_name, o.slug, o.url AS org_url,
                o.support_url, o.support_label,
                o.state, o.city, o.beat, o.coverage, o.coverage_type,
-               o.timezone, o.model, o.features, o.feed_url, o.in_default, o.language
+               o.timezone, o.model, o.features, o.feed_url, o.in_default, o.language,
+               o.about_text
         FROM articles a JOIN orgs o ON o.id = a.org_id
         WHERE (%s::text IS NULL OR a.subject = %s)
           AND (%s::text IS NULL OR %s = ANY(o.features))
@@ -1529,8 +1739,78 @@ def load_articles(cur, limit, subject=None, feature=None, default_only=False,
             "image_file", "image_w", "image_h", "image_alt", "subject", "org_name", "slug", "org_url",
             "support_url", "support_label", "state", "city", "beat", "coverage",
             "coverage_type", "timezone", "model", "features", "org_feed",
-            "in_default", "language")
+            "in_default", "language", "about_text")
     return [dict(zip(cols, row)) for row in cur.fetchall()]
+
+
+def load_reporter_panels(cur, headlines=REPORTER_HEADLINES):
+    """Every byline on the site that resolves to a person, in one query.
+
+    The database groups by the byline exactly as it was written and counts,
+    dates and collects the newest headlines in the same pass; the fold from
+    written bylines to reporter identities happens here, because that is
+    where the rules for who counts as a person live. What comes back is
+    keyed by identity, so rendering a card is a dictionary lookup however
+    many cards the build writes.
+
+    Grouping case-sensitively is deliberate. A CMS that files one story
+    under "Dana Reyes" and the next under "DANA REYES" would otherwise have
+    the two spellings collapsed into one row inside the database, and
+    whichever of them sorted first would be the name on the card; keeping
+    them apart lets the merge below prefer the one that is not shouted.
+    """
+    cur.execute(
+        """
+        WITH byline AS (
+            SELECT btrim(a.author) AS author, a.title, a.url,
+                   o.name AS org_name,
+                   coalesce(a.published_at, a.fetched_at) AS at
+            FROM articles a JOIN orgs o ON o.id = a.org_id
+            WHERE a.author IS NOT NULL AND btrim(a.author) <> ''
+        ), ranked AS (
+            SELECT byline.*,
+                   count(*) OVER (PARTITION BY author) AS n_stories,
+                   row_number() OVER (PARTITION BY author ORDER BY at DESC) AS rn
+            FROM byline
+        )
+        SELECT author, min(n_stories), min(at), max(at),
+               array_agg(DISTINCT org_name),
+               json_agg(json_build_object('title', title, 'url', url,
+                                          'ts', extract(epoch FROM at))
+                        ORDER BY at DESC) FILTER (WHERE rn <= %s)
+        FROM ranked GROUP BY author
+        """,
+        (headlines,),
+    )
+    panels = {}
+    for author, n_stories, first_at, last_at, newsrooms, recent in cur.fetchall():
+        key = reporters.reporter_key(author)
+        if not key:
+            continue
+        name = reporters.reporter_name(author)
+        who = panels.get(key)
+        if who is None:
+            who = panels[key] = {
+                "name": name, "n_stories": 0,
+                "first_at": first_at, "last_at": last_at,
+                "newsrooms": set(), "recent": [],
+            }
+        # Feeds disagree about capitals, and the database is under no
+        # obligation to hand the groups back in the same order twice. Prefer
+        # the spelling that is not shouted, and settle ties alphabetically,
+        # so one reporter is not named two ways from one build to the next.
+        if (name.isupper(), name) < (who["name"].isupper(), who["name"]):
+            who["name"] = name
+        who["n_stories"] += n_stories
+        who["first_at"] = min(who["first_at"], first_at)
+        who["last_at"] = max(who["last_at"], last_at)
+        who["newsrooms"].update(newsrooms or ())
+        who["recent"].extend(recent or ())
+    for who in panels.values():
+        who["newsrooms"] = sorted(who["newsrooms"])
+        who["recent"] = sorted(who["recent"],
+                               key=lambda r: (-r["ts"], r["title"]))[:headlines]
+    return panels
 
 
 def export_catalog_json(orgs):
@@ -1567,6 +1847,11 @@ def main():
 
     with connect() as conn, conn.cursor() as cur:
         orgs = load_orgs(cur)
+        # One query for every byline on the site, before a single card is
+        # rendered. Feed pages, tag pages, subject pages and the plain-text
+        # edition all read this dictionary; none of them asks again.
+        REPORTERS.clear()
+        REPORTERS.update(load_reporter_panels(cur))
         articles = collapse_duplicates(
             load_articles(cur, FEED_PAGE_ARTICLES, default_only=True))
         all_articles = collapse_duplicates(

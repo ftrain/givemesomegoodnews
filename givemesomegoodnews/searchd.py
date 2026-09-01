@@ -17,7 +17,8 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlencode, urlparse
 
 from . import config, syndicate
-from .build_site import (MENU_FEEDS, MENU_SUBJECTS, page, render_feed_item,
+from .build_site import (MENU_FEEDS, MENU_SUBJECTS, REPORTERS,
+                          load_reporter_panels, page, render_feed_item,
                           render_result_map, search_form)
 from .timezones import local_dateline
 from .db import connect
@@ -35,7 +36,7 @@ SELECT a.id, a.url, a.title, a.summary, a.author, a.published_at, a.fetched_at,
        a.image_file, a.image_w, a.image_h, a.image_alt, a.subject,
        o.name, o.slug, o.url, o.support_url, o.support_label,
        o.state, o.city, o.beat, o.coverage, o.coverage_type, o.timezone,
-       o.model, o.features, o.feed_url, o.in_default, o.language
+       o.model, o.features, o.feed_url, o.in_default, o.language, o.about_text
 FROM articles a JOIN orgs o ON o.id = a.org_id
 """
 
@@ -96,7 +97,7 @@ COLS = ("id", "url", "title", "summary", "author", "published_at", "fetched_at",
         "image_file", "image_w", "image_h", "image_alt", "subject", "org_name", "slug",
         "org_url", "support_url", "support_label", "state", "city", "beat",
         "coverage", "coverage_type", "timezone", "model", "features", "org_feed",
-        "in_default", "language")
+        "in_default", "language", "about_text")
 
 ORG_COLS = ("slug", "name", "lat", "lon", "state")
 
@@ -111,6 +112,20 @@ def load_menu():
     MENU_FEEDS[:] = [("feed.xml", "Everything")] + [
         (f"subjects/{slug}.xml", name) for name, slug in subjects
     ]
+
+
+def load_reporters():
+    """Same as the menu: assembled at build time, looked up here.
+
+    A result card is rendered by the same `render_feed_item` the built pages
+    use, and that reads the reporter profiles out of a dictionary the build
+    fills in. Without this the byline on every result would fall back to
+    plain text while the same story on the feed carried a disclosure.
+    """
+    with connect() as conn, conn.cursor() as cur:
+        panels = load_reporter_panels(cur)
+    REPORTERS.clear()
+    REPORTERS.update(panels)
 
 
 def facet_bar(query, tags, region, language, rows):
@@ -354,6 +369,7 @@ class Handler(BaseHTTPRequestHandler):
 
 def main():
     load_menu()
+    load_reporters()
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 8081
     ThreadingHTTPServer(("127.0.0.1", port), Handler).serve_forever()
 
