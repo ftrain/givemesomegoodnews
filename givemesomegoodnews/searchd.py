@@ -18,8 +18,8 @@ from urllib.parse import parse_qs, urlencode, urlparse
 
 from . import config, syndicate
 from .build_site import (MENU_FEEDS, MENU_SUBJECTS, REPORTERS,
-                          load_reporter_panels, page, render_feed_item,
-                          render_result_map, search_form)
+                          collapse_duplicates, load_reporter_panels, page,
+                          render_feed_item, render_result_map, search_form)
 from .timezones import local_dateline
 from .db import connect
 import collections
@@ -199,6 +199,24 @@ def feed_link(query, tags, region, language, state="", place="", national=False)
 
 def run_search(cur, query, tags, region, language, subject, page_num=1,
                state="", place="", national=False):
+    """One page of results, with reprints folded the way the feed folds them.
+
+    A syndicated story arrives from every newsroom that ran it — a search
+    for "data centers" returns one story eleven times, another eight — and
+    a page of the same headline over and over reads as a broken site rather
+    than as eight newsrooms covering something. `collapse_duplicates` is the
+    same fold the feed, tag and subject pages already apply, so search now
+    agrees with the rest of the site instead of contradicting it, and the
+    newsrooms that ran the reprint are still named on the card's "Also in"
+    line rather than dropped.
+
+    Two consequences, both deliberate. Pages come back short and uneven,
+    because the fold happens after the LIMIT — the alternative is
+    over-fetching and counting the offset in rows consumed rather than
+    pages, which is a bigger change than the duplicates are worth. And the
+    total below stays the raw count: counting folded stories means folding
+    the whole result set, and this is one page.
+    """
     offset = (page_num - 1) * PAGE_SIZE
     sql, params = build_query(query, tags, region, language, subject,
                               limit=PAGE_SIZE, offset=offset,
@@ -208,7 +226,7 @@ def run_search(cur, query, tags, region, language, subject, page_num=1,
     csql, cparams = build_query(query, tags, region, language, subject, count_only=True,
                                 state=state, place=place, national=national)
     cur.execute(csql, cparams)
-    return rows, cur.fetchone()[0]
+    return collapse_duplicates(rows), cur.fetchone()[0]
 
 
 def render_search_rss(query, tags, region, language, subject,

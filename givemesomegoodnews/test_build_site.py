@@ -570,5 +570,73 @@ class ReporterInPlainText(unittest.TestCase):
         self.assertNotIn("stories on this site", html)
 
 
+class SearchCursor(FakeCursor):
+    """A cursor for the two queries `run_search` runs: the page, then the count."""
+
+    def __init__(self, rows, total):
+        super().__init__(rows)
+        self.total = total
+
+    def fetchone(self):
+        return (self.total,)
+
+
+def result_row(title, slug, name):
+    """One row shaped the way `searchd.SELECT_COLS` returns them."""
+    row = dict.fromkeys(searchd.COLS)
+    row.update(id=abs(hash(slug + title)) % 9999, url=f"https://{slug}.example/story",
+               title=title, summary="Words.",
+               published_at=datetime(2026, 9, 1, tzinfo=timezone.utc),
+               org_name=name, slug=slug, org_url=f"https://{slug}.example",
+               state="CA", city="Fresno", coverage_type="local",
+               timezone="America/Los_Angeles", features=[], language="English",
+               org_feed=f"https://{slug}.example/feed")
+    return tuple(row[col] for col in searchd.COLS)
+
+
+REPRINT = "Newsom vetoed a data center water bill last year. Will he sign it this time?"
+
+
+class SearchFoldsReprints(unittest.TestCase):
+    """A syndicated story is one result, not one per newsroom that ran it.
+
+    Search was the last surface still showing every copy: the feed, tag and
+    subject pages have always folded them, so a search for a wire story came
+    back as the same headline eight times over.
+    """
+
+    ROWS = [result_row(REPRINT, "calmatters", "CalMatters"),
+            result_row(REPRINT, "sjspotlight", "San José Spotlight"),
+            result_row(REPRINT, "benitolink", "BenitoLink"),
+            result_row("City of Fresno weighs data center ban", "fresnoland", "Fresnoland")]
+
+    def search(self):
+        return searchd.run_search(SearchCursor(self.ROWS, 453), "data centers",
+                                  (), "", "", None)
+
+    def test_the_copies_fold_into_one_result(self):
+        rows, _total = self.search()
+        self.assertEqual([r["title"] for r in rows],
+                         [REPRINT, "City of Fresno weighs data center ban"])
+
+    def test_the_newsrooms_that_ran_it_are_still_named(self):
+        rows, _total = self.search()
+        self.assertEqual([o["org_name"] for o in rows[0]["_also"]],
+                         ["San José Spotlight", "BenitoLink"])
+        html = bs.render_feed_item(None, rows[0], with_related=False)
+        self.assertIn("Also in", html)
+        self.assertIn("BenitoLink", html)
+
+    def test_a_distinct_story_keeps_its_own_card(self):
+        rows, _total = self.search()
+        self.assertEqual(rows[1]["_also"], [])
+
+    def test_the_total_stays_the_unfolded_count(self):
+        # Folding a whole result set to count it would cost a second pass
+        # over every match; the pager and the count are about the query.
+        _rows, total = self.search()
+        self.assertEqual(total, 453)
+
+
 if __name__ == "__main__":
     unittest.main()
