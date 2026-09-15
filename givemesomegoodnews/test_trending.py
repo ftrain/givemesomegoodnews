@@ -6,7 +6,6 @@ story dicts, the naming call is given a fake `requests.post`, and the page is
 rendered from a snapshot dict.
 """
 
-import json
 import unittest
 from datetime import datetime, timedelta, timezone
 from unittest import mock
@@ -207,6 +206,9 @@ class Naming(unittest.TestCase):
                                           "After the school shooting, a vigil"]),
                          "School shooting")
         self.assertEqual(tr.surface_form("trump mail", ["Trump’s mail order upheld"]), "Trump mail")
+        self.assertEqual(tr.surface_form("marks since", ["Town marks 25 years since the attacks"]),
+                         "Marks 25 years since")
+        self.assertEqual(tr.surface_form("groups sue", []), "Groups sue")
 
 
 class Calling(unittest.TestCase):

@@ -266,14 +266,16 @@ def surface_form(term, titles):
     "school shooting" is not a name, "Colorado River" is.
     """
     words = term.split()
-    pattern = r"[\s\-–—:,]+(?:\w+\s+)?".join(
+    # Terms skip numbers, stopwords and calendar words, so a phrase can have
+    # a few of those between its words in the headline: "marks 25 years since".
+    pattern = r"[\s\-–—:,]+(?:[\w'’]+[\s\-–—:,]+){0,3}?".join(
         re.escape(w) + r"(?:['’]s)?" for w in words)
     found = collections.Counter()
     for title in titles:
         for m in re.finditer(r"\b" + pattern + r"\b", title, re.IGNORECASE):
             found[m.group(0)] += 1
     if not found:
-        return term
+        return term[0].upper() + term[1:]
     plain = {t: n for t, n in found.items() if any(w[0].islower() for w in t.split()[1:])}
     text = max((plain or found).items(), key=lambda kv: (kv[1], kv[0]))[0]
     text = re.sub(r"['’]s\b", "", text)
@@ -294,8 +296,8 @@ index would put it: "Hurricane Erin reaches the Carolinas", "School cellphone ba
 - Use only what the headlines say. Add no facts, numbers or names that are not in them.
 - If two or more groups are the same topic, put them in one topic.
 - Reject a group that is not a topic: headlines that merely share a common word or \
-phrase but are about unrelated things, calendar or event listings, routine forecasts, \
-or site boilerplate.
+phrase but are about unrelated things, press releases or advertising copy, calendar \
+or event listings, routine forecasts, or site boilerplate.
 - If a group is a topic but some of its headlines are about something else, list \
 those headline ids in "exclude".
 - When a label from the previous hour still fits a topic, reuse it word for word.
