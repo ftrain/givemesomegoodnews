@@ -69,6 +69,12 @@ MERGE_CONTAINED = 0.8
 # its $5,000 dividend pledge, which are one story. What 0.27 leaves apart —
 # "Ground zero" beside the anniversary — is the naming step's to merge.
 MERGE_SIMILAR = float(os.environ.get("TRENDING_MERGE_SIM", "0.27"))
+# Two topics naming the same number merge at this lower bar. Headline style
+# spells out a number that opens a headline, so one anniversary arrives as
+# "Twenty-five years later" and as "25th anniversary" — 0.26 apart, which
+# is also how far "25th anniversary" is from an unrelated "4th annual".
+# The number is what tells them apart.
+MERGE_SIMILAR_SAME_NUMBER = float(os.environ.get("TRENDING_MERGE_SIM_NUMBER", "0.2"))
 # How many word-built topics go into the embedding merge; merging frees
 # candidate places, so it takes more than it will offer for naming.
 MERGE_POOL = 40
@@ -253,6 +259,39 @@ def group_terms(rising, stories):
     return topics
 
 
+_UNITS = {w: n for n, w in enumerate(
+    "zero one two three four five six seven eight nine ten eleven twelve thirteen "
+    "fourteen fifteen sixteen seventeen eighteen nineteen".split())}
+_UNIT_ORDINALS = {w: n for n, w in enumerate(
+    "zeroth first second third fourth fifth sixth seventh eighth ninth tenth eleventh "
+    "twelfth thirteenth fourteenth fifteenth sixteenth seventeenth eighteenth "
+    "nineteenth".split())}
+_TENS = {w: 10 * n for n, w in enumerate(
+    "_ _ twenty thirty forty fifty sixty seventy eighty ninety".split()) if w != "_"}
+_TENS_ORDINALS = {w[:-1] + "ieth": n for w, n in _TENS.items()}
+
+
+def topic_numbers(terms):
+    """The numbers a topic's terms name, however written: "25th anniversary"
+    and "twenty five" both name 25. Only 10 to 999: single digits and years
+    turn up in every day's unrelated headlines."""
+    found = set()
+    for term in terms:
+        words = term.split()
+        for k, w in enumerate(words):
+            digits = re.match(r"^(\d+)(st|nd|rd|th)?$", w)
+            if digits:
+                found.add(int(digits.group(1)))
+            elif w in _TENS or w in _TENS_ORDINALS:
+                n = _TENS.get(w) or _TENS_ORDINALS[w]
+                nxt = words[k + 1] if k + 1 < len(words) else ""
+                unit = _UNITS.get(nxt, _UNIT_ORDINALS.get(nxt))
+                found.add(n + unit if unit is not None and 0 < unit < 10 else n)
+            elif w in _UNITS or w in _UNIT_ORDINALS:
+                found.add(_UNITS.get(w, _UNIT_ORDINALS.get(w)))
+    return {n for n in found if 10 <= n <= 999}
+
+
 def _add(acc, vec, sign=1.0):
     for k, x in enumerate(vec):
         acc[k] += sign * x
@@ -264,7 +303,8 @@ def _unit_cosine(a, b):
     return sum(x * y for x, y in zip(a, b)) / (na * nb) if na and nb else 0.0
 
 
-def merge_similar(topics, stories, threshold=MERGE_SIMILAR):
+def merge_similar(topics, stories, threshold=MERGE_SIMILAR,
+                  same_number=MERGE_SIMILAR_SAME_NUMBER):
     """Merge topics that are one event told in different words.
 
     Repeatedly joins the closest pair of topics while they are at least
@@ -272,8 +312,9 @@ def merge_similar(topics, stories, threshold=MERGE_SIMILAR):
     ones the other does not share. A single headline that happens to carry
     both "Planned Parenthood" and "general election" would otherwise pull two
     unrelated small topics together. A topic wholly inside another merges.
-    Each story's unit embedding is its "vector"; stories without one are
-    left out of the comparison, not out of the topic.
+    Topics naming the same number (see topic_numbers) need only
+    MERGE_SIMILAR_SAME_NUMBER. Each story's unit embedding is its "vector";
+    stories without one are left out of the comparison, not out of the topic.
     """
     clusters = [{"terms": list(t["terms"]), "score": t["score"], "stories": set(t["stories"])}
                 for t in topics]
@@ -287,6 +328,12 @@ def merge_similar(topics, stories, threshold=MERGE_SIMILAR):
         return acc
 
     def similarity(a, b):
+        """How close two topics are, as a margin over the bar they must clear:
+        0 or more merges."""
+        bar = same_number if topic_numbers(a["terms"]) & topic_numbers(b["terms"]) else threshold
+        return cosine(a, b) - bar
+
+    def cosine(a, b):
         shared = a["stories"] & b["stories"]
         if shared == a["stories"] or shared == b["stories"]:
             return 1.0
@@ -306,7 +353,7 @@ def merge_similar(topics, stories, threshold=MERGE_SIMILAR):
     alive = set(range(len(clusters)))
     while sims:
         (a, b), best = max(sims.items(), key=lambda kv: (kv[1], -kv[0][0], -kv[0][1]))
-        if best < threshold:
+        if best < 0:
             break
         # The stronger topic leads, so its terms name the merged one.
         keep, drop = (a, b) if clusters[a]["score"] >= clusters[b]["score"] else (b, a)

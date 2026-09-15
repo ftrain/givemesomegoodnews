@@ -171,11 +171,27 @@ class SimilarMerging(unittest.TestCase):
         topics = [candidate(["mail voting"], [0, 1, 2], score=8), candidate(["ballots"], [1, 2], score=3)]
         self.assertEqual(len(tr.merge_similar(topics, stories)), 1)
 
+    def test_numbers_are_read_however_a_headline_writes_them(self):
+        self.assertEqual(tr.topic_numbers(["twenty five", "twenty"]), {25, 20})
+        self.assertEqual(tr.topic_numbers(["25th anniversary"]), {25})
+        self.assertEqual(tr.topic_numbers(["twenty fifth anniversary"]), {25})
+        self.assertEqual(tr.topic_numbers(["fiftieth year"]), {50})
+        self.assertEqual(tr.topic_numbers(["4th annual", "2026 election", "five later"]), set())
+
+    def test_the_same_number_lowers_the_bar(self):
+        # Cosine between the two topics' stories is 0.23: under the ordinary
+        # bar, over the same-number one.
+        stories = self.stories([1, 0, 0], [0.23, 0.973, 0])
+        spelled = [candidate(["25th anniversary"], [0], 9), candidate(["twenty five"], [1], 3)]
+        self.assertEqual(len(tr.merge_similar(spelled, stories)), 1)
+        other = [candidate(["25th anniversary"], [0], 9), candidate(["4th annual"], [1], 3)]
+        self.assertEqual(len(tr.merge_similar(other, stories)), 2)
+
     def test_merging_is_transitive_through_the_merged_topic(self):
         # a~b 0.95 merges first; a~c alone is 0.6, but the merged a+b is 0.72 from c.
         stories = self.stories([1, 0, 0], [0.95, 0.31, 0], [0.6, 0.8, 0])
         topics = [candidate(["a"], [0], 9), candidate(["b"], [1], 5), candidate(["c"], [2], 1)]
-        merged = tr.merge_similar(topics, stories, threshold=0.7)
+        merged = tr.merge_similar(topics, stories, threshold=0.7, same_number=0.7)
         self.assertEqual([m["terms"] for m in merged], [["a", "b", "c"]])
 
 
