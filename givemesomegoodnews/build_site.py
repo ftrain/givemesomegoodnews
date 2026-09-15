@@ -1710,6 +1710,14 @@ TRENDING_STALE_HOURS = 3
 TOPIC_PAGES_KEPT_HOURS = 48
 
 
+def topic_slug(label):
+    """A topic's page name. Feed pages continue as <stem>-2.html, <stem>-3.html,
+    so a slug may never end in a bare number: "Route 66" would otherwise be
+    page 66 of a topic called "Route"."""
+    slug = tag_slug(label) or "topic"
+    return f"{slug}-topic" if re.search(r"-\d+$", slug) or slug.isdigit() else slug
+
+
 def topic_href(topic, prefix=""):
     return f"{prefix}topics/{topic['slug']}.html"
 
@@ -1746,12 +1754,13 @@ def load_topics(cur, kept_hours=TOPIC_PAGES_KEPT_HOURS):
     current, former, seen = [], [], set()
     for r in cur.fetchall():
         topic = dict(zip(cols, r))
-        slug = tag_slug(topic["label"]) or "topic"
+        slug = topic_slug(topic["label"])
         if topic["snapshot_id"] == snapshot["id"]:
-            # Two current topics can reduce to one slug; the second is -2.
-            base, n = slug, 2
+            # Two current topics can reduce to one slug; the second is -b, as
+            # a numeric suffix would be taken for the first one's page 2.
+            base, n = slug, 1
             while slug in seen:
-                slug, n = f"{base}-{n}", n + 1
+                slug, n = f"{base}-{chr(ord('a') + n)}", n + 1
             topic["slug"] = slug
             seen.add(slug)
             current.append(topic)

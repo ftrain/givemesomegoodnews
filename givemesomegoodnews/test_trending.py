@@ -462,6 +462,13 @@ class SearchPages(TopicsSet):
 class LoadTopics(unittest.TestCase):
     """load_topics against a cursor that answers its three queries in order."""
 
+    def test_a_slug_never_ends_in_a_number_a_page_could_have(self):
+        self.assertEqual(bs.topic_slug("Route 66"), "route-66-topic")
+        self.assertEqual(bs.topic_slug("2026"), "2026-topic")
+        self.assertEqual(bs.topic_slug("25th anniversary"), "25th-anniversary")
+        self.assertEqual(bs.topic_slug("<>!"), "topic")
+        self.assertNotEqual(bs.feed_page_name("route", 65), bs.topic_slug("Route 66") + ".html")
+
     def cursor(self, snapshot_row, topic_rows, lead_rows):
         cur = mock.Mock()
         cur.fetchone.return_value = snapshot_row
@@ -486,7 +493,7 @@ class LoadTopics(unittest.TestCase):
         snapshot, current, former = bs.load_topics(
             self.cursor((7, NOW, 24, 14, "terms"), rows, leads))
         self.assertEqual(snapshot["id"], 7)
-        self.assertEqual([t["slug"] for t in current], ["heat-wave", "heat-wave-2"])
+        self.assertEqual([t["slug"] for t in current], ["heat-wave", "heat-wave-b"])
         self.assertEqual([(t["slug"], t["until"]) for t in former], [("bridge-collapse", earlier)])
         self.assertEqual(current[0]["lead"]["title"], "Heat wave grips valley")
 
