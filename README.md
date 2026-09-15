@@ -150,6 +150,30 @@ serving if the service is down.
 Not a client-side index on purpose: shipping every headline and summary to
 every reader would cost more bandwidth than the whole feed does.
 
+### Trending
+
+`trending.html` is what local newsrooms are covering more than usual. Once
+an hour, `givemesomegoodnews.trending` sets the last 24 hours against the 14
+days before and stores a snapshot; the build renders the newest one.
+
+Finding the topics is counting. Stories are read the way the front page reads
+them, reprints fold into one story, and each headline's words and two-word
+phrases are counted by the *newsrooms* that used them, so one busy feed or a
+wire piece in eleven papers cannot make a trend. A term has to reach three
+newsrooms in two states and several times its usual rate (the usual rate
+scaled to how many newsrooms published today), and terms sharing their
+stories merge into topics.
+
+Naming the topics is the one place on the site a language model is used, and
+the page says so. The headlines of the strongest candidates — headlines only
+— go to DeepSeek, which labels each topic, merges the ones that are the same
+story, and rejects coincidences of vocabulary. It cannot add a story or
+change a count; anything it returns that does not refer to what it was sent
+is ignored. Without `DEEPSEEK_API_KEY`, or when the call fails, topics are
+named by the phrase their headlines share, and only phrase-built topics are
+shown. Snapshots are kept, one per hour; an hour whose candidates have not
+changed reuses the last hour's names without a call.
+
 ### The vector part
 
 Articles live in an `articles` table with an `embedding vector(384)`
@@ -200,6 +224,7 @@ python3 -m givemesomegoodnews.fetch_feeds the-city           # crawl one org
 python3 -m givemesomegoodnews.fetch_support --force          # re-find support links
 python3 -m givemesomegoodnews.classify --dry-run             # tag report, no writes
 python3 -m givemesomegoodnews.search "school board recall"   # vector search
+python3 -m givemesomegoodnews.trending --dry-run --no-label  # trending topics, no writes
 ```
 
 ## Adding a newsroom

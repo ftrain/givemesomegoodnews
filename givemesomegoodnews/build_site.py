@@ -6,6 +6,7 @@ Pages:
     site/map.html           inline-SVG coverage map (Albers projection)
     site/feed-2.html ...     the rest of the feed
     site/connections.html   strongest story pairs across regions (pgvector)
+    site/trending.html      the newest hourly trending snapshot (see trending.py)
     site/orgs/<slug>.html   one page per org
     site/onepage.html       everything on one self-contained page
     data/catalog.json       machine-readable catalog export
@@ -18,14 +19,14 @@ from urllib.parse import quote, urlencode
 import math
 import os
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from html import escape as esc
 
 from PIL import Image
 
 from . import config
 from .albers import MapProjection, state_locator
-from .timezones import local_dateline, local_time
+from .timezones import local_dateline, local_time, zone_for
 from . import filters, reporters, syndicate
 from .tags import TAG_GROUPS, TAG_PRIORITY, region_of, tag_slug
 from .db import connect
@@ -67,6 +68,7 @@ SUBJECT_ORDER = [
     "Business", "Housing", "Sports", "Food", "Arts",
 ]
 NAV_BROWSE = [
+    ("trending.html", "Trending"),
     ("map.html", "Map"),
     ("catalog.html", "Newsrooms"),
     ("big-stories.html", "Big Stories"),
@@ -1649,6 +1651,119 @@ def render_story_links(cur, mode="site", prefix="", limit=40):
     return "\n".join(parts)
 
 
+# Stories listed under each trending topic before it points to search instead.
+TRENDING_STORIES = 6
+# The job runs hourly; past this the page says its list is late.
+TRENDING_STALE_HOURS = 3
+
+
+def load_trending(cur):
+    """The newest trending snapshot and its topics, each with its stories
+    folded the way the feed folds them. None before the first snapshot."""
+    cur.execute(
+        "SELECT id, generated_at, window_hours, baseline_days, labeler "
+        "FROM trending_snapshots ORDER BY generated_at DESC, id DESC LIMIT 1"
+    )
+    row = cur.fetchone()
+    if not row:
+        return None
+    snapshot = dict(zip(("id", "generated_at", "window_hours", "baseline_days", "labeler"), row))
+    cur.execute(
+        "SELECT label, search, n_stories, n_newsrooms, n_states, article_ids "
+        "FROM trending_topics WHERE snapshot_id = %s ORDER BY rank",
+        (snapshot["id"],),
+    )
+    topics = [dict(zip(("label", "search", "n_stories", "n_newsrooms", "n_states",
+                        "article_ids"), r)) for r in cur.fetchall()]
+    ids = sorted({i for t in topics for i in t["article_ids"]})
+    cur.execute(
+        """
+        SELECT a.id, a.url, a.title, coalesce(a.published_at, a.fetched_at),
+               o.name, o.slug, o.url, o.state
+        FROM articles a JOIN orgs o ON o.id = a.org_id
+        WHERE a.id = ANY(%s)
+        """,
+        (ids,),
+    )
+    cols = ("id", "url", "title", "published_at", "org_name", "slug", "org_url", "state")
+    by_id = {r[0]: dict(zip(cols, r)) for r in cur.fetchall()}
+    for topic in topics:
+        # Stored most central first, each story followed by its reprints.
+        found = [by_id[i] for i in topic.pop("article_ids") if i in by_id]
+        topic["stories"] = collapse_duplicates(found)
+    snapshot["topics"] = topics
+    return snapshot
+
+
+def _count(n, noun, plural=None):
+    return f"{n} {noun}" if n == 1 else f"{n} {plural or noun + 's'}"
+
+
+def render_trending(snapshot, prefix="", now=None):
+    """What newsrooms are covering more than usual, from the hourly snapshot."""
+    parts = ["<h1>Trending</h1>"]
+    if not snapshot:
+        parts.append("<p>What local newsrooms are covering more than usual. The first "
+                     "list is made at seven minutes past the hour.</p>")
+        return "\n".join(parts)
+
+    when = snapshot["generated_at"]
+    local = when.astimezone(zone_for(None))
+    stamp = (f'<time datetime="{when.isoformat()}" data-pub="{esc(local_time(when))}">'
+             f'{local.strftime("%a, %b %-d at %-I:%M %p %Z")}</time>')
+    now = now or datetime.now(timezone.utc)
+    late = (" The hourly update is running late."
+            if now - when > timedelta(hours=TRENDING_STALE_HOURS) else "")
+    parts.append(
+        f"<p>What local newsrooms are covering more than usual: the last "
+        f"{snapshot['window_hours']} hours set against the {snapshot['baseline_days']} "
+        f"days before, counting newsrooms rather than stories, and a reprint once. "
+        f"Made every hour; this list at {stamp}.{late}</p>"
+    )
+    if snapshot["labeler"] == "terms":
+        parts.append('<p class="meta">Each topic is named by the phrase its headlines share.</p>')
+    else:
+        parts.append(
+            f'<p class="meta">Topic names are written from the headlines by DeepSeek '
+            f'({esc(snapshot["labeler"])}). Which topics rise, and every count, are worked '
+            f'out here without it.</p>'
+        )
+    if not snapshot["topics"]:
+        parts.append("<p>Nothing is running well above its usual level right now.</p>")
+        return "\n".join(parts)
+
+    for topic in snapshot["topics"]:
+        parts.append(f"<h2>{esc(topic['label'])}</h2>")
+        parts.append(
+            f'<p class="meta">{_count(topic["n_stories"], "story", "stories")}'
+            f' &middot; {_count(topic["n_newsrooms"], "newsroom")}'
+            f' &middot; {_count(topic["n_states"], "state")}</p>'
+        )
+        parts.append("<ul>")
+        for story in topic["stories"][:TRENDING_STORIES]:
+            also = story["_also"]
+            names = list(dict.fromkeys(a["org_name"] for a in also if a["org_name"] != story["org_name"]))
+            also_html = ""
+            if names:
+                shown = ", ".join(esc(n) for n in names[:3])
+                more = f" and {len(names) - 3} more" if len(names) > 3 else ""
+                also_html = f" &middot; also in {shown}{more}"
+            parts.append(
+                f'<li><a href="{esc(story["url"])}">{esc(story["title"])}</a>'
+                f'<br><span class="meta">{_org_line(story, "site", prefix)}{also_html}</span></li>'
+            )
+        parts.append("</ul>")
+        rest = len(topic["stories"]) - TRENDING_STORIES
+        if rest > 0 and topic.get("search"):
+            q = topic["search"]
+            q = f'"{q}"' if " " in q else q
+            parts.append(
+                f'<p class="meta">{_count(rest, "more story", "more stories")}. '
+                f'<a href="/search?{esc(urlencode({"q": q}))}">Search for {esc(q)}</a></p>'
+            )
+    return "\n".join(parts)
+
+
 # What a reader actually wants to know about a newsroom: who owns it and
 # who it serves. The `model` field is free text written per newsroom, so it
 # is matched to a small canonical set rather than printed raw.
@@ -2426,6 +2541,9 @@ def main():
         (site / "big-stories.html").write_text(page(
             f"{config.SITE_NAME} — Big stories", render_big_stories(cur),
             description="Stories running in several newsrooms at once."))
+        (site / "trending.html").write_text(page(
+            f"{config.SITE_NAME} — Trending", render_trending(load_trending(cur)),
+            description="What local newsrooms are covering more than usual today."))
         (site / "story-links.html").write_text(page(
             f"{config.SITE_NAME} — Story links", render_story_links(cur),
             description="Separate newsrooms reporting the same pressure."))

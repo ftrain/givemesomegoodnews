@@ -6,4 +6,7 @@ SHELL=/bin/bash
 MAILTO=""
 */5 * * * * givemesomegoodnews flock -n /srv/givemesomegoodnews/run/crawl.lock /srv/givemesomegoodnews/bin/rotate.sh >> /srv/givemesomegoodnews/log/rotate.log 2>&1
 */15 * * * * givemesomegoodnews flock -n /srv/givemesomegoodnews/run/build.lock /srv/givemesomegoodnews/bin/build.sh >> /srv/givemesomegoodnews/log/build.log 2>&1
+# Trending writes one snapshot in a transaction and the build only reads the
+# newest, so it needs no share of the build lock; its own keeps runs apart.
+7 * * * * givemesomegoodnews flock -n /srv/givemesomegoodnews/run/trending.lock /srv/givemesomegoodnews/bin/trending.sh >> /srv/givemesomegoodnews/log/trending.log 2>&1
 23 4 * * * givemesomegoodnews flock -n /srv/givemesomegoodnews/run/build.lock /srv/givemesomegoodnews/bin/nightly.sh >> /srv/givemesomegoodnews/log/nightly.log 2>&1

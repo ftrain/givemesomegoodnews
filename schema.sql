@@ -186,3 +186,33 @@ CREATE INDEX IF NOT EXISTS orgs_rotation_idx ON orgs (last_crawled_at NULLS FIRS
 -- publish in both under one name.
 ALTER TABLE articles ADD COLUMN IF NOT EXISTS language TEXT;
 CREATE INDEX IF NOT EXISTS articles_language_idx ON articles (language);
+
+-- Trending: once an hour, what newsrooms are covering more than usual. One
+-- snapshot per run, kept, so the page can be rebuilt from any hour; see
+-- givemesomegoodnews/trending.py. Counts are computed there; `label` is the
+-- only field a language model writes, and `labeler` says which.
+CREATE TABLE IF NOT EXISTS trending_snapshots (
+    id              SERIAL PRIMARY KEY,
+    generated_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+    window_end      TIMESTAMPTZ NOT NULL,
+    window_hours    INT NOT NULL,
+    baseline_days   INT NOT NULL,
+    fingerprint     TEXT NOT NULL,   -- the candidates, so an unchanged hour reuses its names
+    labeler         TEXT NOT NULL,   -- terms | the model that named the topics
+    decision        JSONB            -- the model's reply, as given
+);
+CREATE INDEX IF NOT EXISTS trending_snapshots_generated_idx
+    ON trending_snapshots (generated_at DESC);
+CREATE TABLE IF NOT EXISTS trending_topics (
+    snapshot_id     INT NOT NULL REFERENCES trending_snapshots(id) ON DELETE CASCADE,
+    rank            INT NOT NULL,
+    label           TEXT NOT NULL,
+    terms           TEXT[] NOT NULL DEFAULT '{}',
+    search          TEXT,            -- the strongest term as headlines write it
+    score           REAL NOT NULL,
+    n_stories       INT NOT NULL,    -- reprints folded
+    n_newsrooms     INT NOT NULL,    -- every newsroom that ran one, reprints included
+    n_states        INT NOT NULL,
+    article_ids     INT[] NOT NULL,
+    PRIMARY KEY (snapshot_id, rank)
+);

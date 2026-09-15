@@ -7,10 +7,14 @@ dev box) from the commit being deployed. Edit here and deploy.
 |---|---|
 | `nginx-gmsgn.conf` | `/etc/nginx/sites-available/gmsgn` — serves `site/`, proxies `/search` and `/admin` |
 | `systemd/givemesomegoodnews-{search,admin}.service` | `/etc/systemd/system/` |
-| `cron.d-givemesomegoodnews` | `/etc/cron.d/givemesomegoodnews` — rotate every 5 min, build every 15, nightly at 04:23 |
+| `cron.d-givemesomegoodnews` | `/etc/cron.d/givemesomegoodnews` — rotate every 5 min, build every 15, trending at :07, nightly at 04:23 |
 | `bin/*.sh` | `/srv/givemesomegoodnews/bin/` — the jobs cron runs |
 
 The app lives in `/srv/givemesomegoodnews/app`, owned by the `givemesomegoodnews`
 user. The crawl rewrites tracked files under `site/` and `data/catalog.json`
 continuously, so a deploy ignores drift there and rebuilds the site afterwards;
 it also waits for the `run/build.lock` and `run/crawl.lock` the cron jobs hold.
+
+`bin/trending.sh` reads `DEEPSEEK_API_KEY` from `/srv/givemesomegoodnews/.env`
+(owned by `givemesomegoodnews`, mode 600), the only place the key is kept.
+Without it, trending topics are named by their headlines' shared phrase.

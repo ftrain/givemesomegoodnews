@@ -118,6 +118,7 @@ User-agent: *
 Disallow: /search
 Disallow: /feed-
 Disallow: /subjects/
+Disallow: /trending.html
 Disallow: /img/
 Disallow: /text/
 Disallow: /*.xml$

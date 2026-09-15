@@ -48,6 +48,10 @@ embed:
 build:
 	$(PY) -m givemesomegoodnews.build_site
 
+# What newsrooms are covering more than usual; build renders the newest list.
+trending:
+	$(PY) -m givemesomegoodnews.trending
+
 # What a cron job should run: pull new stories, regenerate the site.
 refresh: feeds classify prune build
 
@@ -57,4 +61,4 @@ refresh-slice: rotate classify build
 serve:
 	$(PY) -m http.server 8000 --directory site
 
-.PHONY: all db seed about taglines institutions support feeds rotate classify prune embed build refresh refresh-slice serve
+.PHONY: all db seed about taglines institutions support feeds rotate classify prune embed build trending refresh refresh-slice serve
