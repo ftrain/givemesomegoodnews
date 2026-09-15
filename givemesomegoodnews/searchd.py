@@ -12,14 +12,16 @@ Run: python3 -m givemesomegoodnews.searchd [port]
 
 import re
 import sys
+import threading
+import time
 from html import escape as esc
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlencode, urlparse
 
 from . import config, syndicate
 from .build_site import (MENU_FEEDS, MENU_SUBJECTS, REPORTERS,
-                          collapse_duplicates, load_reporter_panels, page,
-                          render_feed_item, render_result_map, search_form)
+                          collapse_duplicates, load_reporter_panels, load_topics, page,
+                          render_feed_item, render_result_map, search_form, set_topics)
 from .timezones import local_dateline
 from .db import connect
 import collections
@@ -127,6 +129,31 @@ def load_reporters():
         panels = load_reporter_panels(cur)
     REPORTERS.clear()
     REPORTERS.update(panels)
+
+
+# Trending topics change by the hour, unlike the menu, so the service looks
+# them up again once they are this old rather than once at start.
+TOPICS_TTL = 300
+_topics_loaded = 0.0
+_topics_lock = threading.Lock()
+
+
+def refresh_topics(now=None):
+    """The topic bar and card tags a search page shows, at most TOPICS_TTL old.
+    A failed lookup keeps the topics already held: the bar is not worth a 500."""
+    global _topics_loaded
+    now = now if now is not None else time.monotonic()
+    if now - _topics_loaded < TOPICS_TTL or not _topics_lock.acquire(blocking=False):
+        return
+    try:
+        with connect() as conn, conn.cursor() as cur:
+            _snapshot, current, _former = load_topics(cur)
+        set_topics(current)
+    except Exception as e:
+        print(f"searchd: trending topics not refreshed: {type(e).__name__}", file=sys.stderr)
+    finally:
+        _topics_loaded = now
+        _topics_lock.release()
 
 
 def facet_bar(query, tags, region, language, rows):
@@ -361,6 +388,7 @@ class Handler(BaseHTTPRequestHandler):
         state = (params.get("state") or [""])[0][:2]
         place = (params.get("place") or [""])[0][:60]
         national = bool(params.get("national"))
+        refresh_topics()
         raw_page = (params.get("page") or ["1"])[0]
         page_num = int(raw_page) if raw_page.isdigit() and 1 <= int(raw_page) <= MAX_PAGES else 1
         try:

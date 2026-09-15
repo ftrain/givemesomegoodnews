@@ -7,6 +7,7 @@ Pages:
     site/feed-2.html ...     the rest of the feed
     site/connections.html   strongest story pairs across regions (pgvector)
     site/trending.html      the newest hourly trending snapshot (see trending.py)
+    site/topics/<slug>.html one tag page per trending topic, current and recent
     site/orgs/<slug>.html   one page per org
     site/onepage.html       everything on one self-contained page
     data/catalog.json       machine-readable catalog export
@@ -171,6 +172,37 @@ color:var(--dim);text-decoration:none}}
 .lozenge:hover,.lozenge:focus{{border-color:var(--link);color:var(--link);text-decoration:none}}
 .lozenge[aria-current=page],.lozenge.on{{border-color:var(--link);color:var(--bg);background:var(--link)}}
 .chips{{margin:.75rem 0 1.25rem}}
+/* A trending topic is a tag like the others, marked with the site's red dot.
+   The dot is drawn, not written, so it adds nothing to the link's name. */
+.lozenge.topic{{color:var(--fg)}}
+.lozenge.topic::before{{content:"";display:inline-block;width:.45em;height:.45em;
+border-radius:50%;background:var(--link);margin-right:.4em;vertical-align:.08em}}
+.lozenge.topic.on,.lozenge.topic[aria-current=page]{{color:var(--bg)}}
+.lozenge.topic.on::before,.lozenge.topic[aria-current=page]::before{{background:var(--bg)}}
+/* The topics under the masthead: one row that scrolls sideways on a phone
+   rather than wrapping into a wall of tags above every page. */
+.trendbar{{display:flex;align-items:center;gap:.35rem;overflow-x:auto;
+margin:-.6rem 0 1rem;padding:0 1rem .35rem;scrollbar-width:thin;
+-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 2.5rem),transparent);
+mask-image:linear-gradient(to right,#000 calc(100% - 2.5rem),transparent)}}
+.trendbar .lozenge{{flex:none;margin:0;white-space:nowrap}}
+.trendlabel{{flex:none;font:600 .68rem/1 PlexMono,ui-monospace,monospace;
+text-transform:uppercase;letter-spacing:.06em;color:var(--fg);margin-right:.25rem}}
+a.trendlabel:visited{{color:var(--fg)}}
+/* The front page's section: topics in a grid, each with its reach and the
+   story at its centre. */
+.trending-now{{margin:.5rem 0 1.25rem;padding:1rem;background:var(--band);
+border-top:2px solid var(--fg);border-bottom:1px solid var(--rule)}}
+.trending-now h2{{font:600 .8rem/1.4 PlexMono,ui-monospace,monospace;color:var(--fg);
+text-transform:uppercase;letter-spacing:.06em;margin:0 0 .75rem}}
+.trending-now ol{{list-style:none;padding:0;margin:0 0 .75rem;display:grid;
+grid-template-columns:repeat(auto-fill,minmax(15rem,1fr));gap:1rem 1.5rem}}
+.trending-now li{{margin:0;display:flex;flex-direction:column;gap:.2rem}}
+.trending-now .name{{font:600 1.2rem/1.25 Text,Georgia,serif}}
+.trending-now .name::before{{content:"";display:inline-block;width:.4em;height:.4em;
+border-radius:50%;background:var(--link);margin-right:.45em;vertical-align:.15em}}
+.trending-now .lead{{font:400 .95rem/1.4 Text,Georgia,serif;color:var(--fg)}}
+.trending-now>p{{margin:0}}
 .mapwrap{{position:relative;margin:0 0 1rem}}
 .mapwrap a[data-slug]{{cursor:pointer}}
 /* Half the width of the map, centred over it, sitting low so the dots
@@ -386,7 +418,7 @@ def footer_links(prefix=""):
 
 
 def page(title, body, prefix="", nav_html=None, scripts="", description="",
-         feed_href="feed.xml", feed_title=None):
+         feed_href="feed.xml", feed_title=None, current_topic=None):
     meta_desc = (
         f'<meta name="description" content="{esc(description)}">\n' if description else ""
     )
@@ -407,6 +439,7 @@ def page(title, body, prefix="", nav_html=None, scripts="", description="",
 <header>
 {nav_html or menu(prefix, config.SITE_NAME)}
 </header>
+{"" if nav_html else topic_bar(prefix, current_topic)}
 <main id="main">
 {body}
 </main>
@@ -857,7 +890,8 @@ def feed_page_name(stem, index):
 def write_feed_pages(site, cur, articles, stem, title, heading, prefix="",
                      skip_images=(), subdir=None,
                      first_name=None, intro="", with_related=True,
-                     feed_href="feed.xml", feed_title=None, show_heading=True):
+                     feed_href="feed.xml", feed_title=None, show_heading=True,
+                     current_topic=None):
     """Split a feed into pages so no single page carries the whole crawl."""
     target = (site / subdir) if subdir else site
     target.mkdir(parents=True, exist_ok=True)
@@ -872,7 +906,7 @@ def write_feed_pages(site, cur, articles, stem, title, heading, prefix="",
         name = first_name if (index == 0 and first_name) else feed_page_name(stem, index)
         target.joinpath(name).write_text(
             page(head, body, prefix=prefix, scripts=FEED_SCRIPT,
-                 feed_href=feed_href, feed_title=feed_title)
+                 feed_href=feed_href, feed_title=feed_title, current_topic=current_topic)
         )
     return len(chunks)
 
@@ -1383,6 +1417,10 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
         column.append(f'<span class="lozenge section">{label}</span>' if mode == "onepage"
                       else f'<a class="lozenge section" '
                            f'href="{subject_href(a["subject"], prefix)}">{label}</a>')
+    # A trending topic is a tag that links out of the page, so the
+    # self-contained one-pager leaves it off.
+    if mode != "onepage":
+        column.append(card_topics(a, prefix))
     column.append(state_identity(a, prefix if mode != "onepage" else ""))
     column.append(locator_map(a))
     region = region_name(a)
@@ -1651,56 +1689,189 @@ def render_story_links(cur, mode="site", prefix="", limit=40):
     return "\n".join(parts)
 
 
-# Stories listed under each trending topic before it points to search instead.
-TRENDING_STORIES = 6
-# The job runs hourly; past this the page says its list is late.
+# --- trending topics ---------------------------------------------------------
+# A topic is a tag like any other: a lozenge on the cards it covers, a page of
+# full cards at topics/<slug>.html. What makes it different is that it comes
+# and goes by the hour, from the snapshot givemesomegoodnews.trending writes.
+
+# The current snapshot's topics, ranked, and the topics each article is in.
+# Filled in by set_topics() before anything renders — by main() for the
+# build, by searchd for its pages — like MENU_SUBJECTS.
+TOPICS = []
+TOPICS_OF = {}
+# Headlines under each topic on trending.html; the topic page has them all.
+TRENDING_STORIES = 3
+# Topics on the home page's section.
+HOME_TOPICS = 6
+# The job runs hourly; past this trending.html says its list is late.
 TRENDING_STALE_HOURS = 3
+# A topic's page outlives its place on the list by this long, so a link
+# someone shared this morning still leads somewhere this evening.
+TOPIC_PAGES_KEPT_HOURS = 48
 
 
-def load_trending(cur):
-    """The newest trending snapshot and its topics, each with its stories
-    folded the way the feed folds them. None before the first snapshot."""
+def topic_href(topic, prefix=""):
+    return f"{prefix}topics/{topic['slug']}.html"
+
+
+def load_topics(cur, kept_hours=TOPIC_PAGES_KEPT_HOURS):
+    """The newest snapshot, its topics, and the recent topics no longer in it.
+
+    Returns (snapshot, current, former). A snapshot is None before the first
+    run. Every topic carries a unique slug, its counts, its article ids (most
+    central first) and its lead story's headline and newsroom; a former topic
+    also carries `until`, the last time it was on the list. A label that
+    comes back names the same page, so a topic keeps its address across hours.
+    """
     cur.execute(
         "SELECT id, generated_at, window_hours, baseline_days, labeler "
         "FROM trending_snapshots ORDER BY generated_at DESC, id DESC LIMIT 1"
     )
     row = cur.fetchone()
     if not row:
-        return None
+        return None, [], []
     snapshot = dict(zip(("id", "generated_at", "window_hours", "baseline_days", "labeler"), row))
     cur.execute(
-        "SELECT label, search, n_stories, n_newsrooms, n_states, article_ids "
-        "FROM trending_topics WHERE snapshot_id = %s ORDER BY rank",
-        (snapshot["id"],),
-    )
-    topics = [dict(zip(("label", "search", "n_stories", "n_newsrooms", "n_states",
-                        "article_ids"), r)) for r in cur.fetchall()]
-    ids = sorted({i for t in topics for i in t["article_ids"]})
-    cur.execute(
         """
-        SELECT a.id, a.url, a.title, coalesce(a.published_at, a.fetched_at),
-               o.name, o.slug, o.url, o.state
-        FROM articles a JOIN orgs o ON o.id = a.org_id
-        WHERE a.id = ANY(%s)
+        SELECT t.snapshot_id, s.generated_at, s.labeler, t.label, t.n_stories,
+               t.n_newsrooms, t.n_states, t.article_ids
+        FROM trending_topics t JOIN trending_snapshots s ON s.id = t.snapshot_id
+        WHERE t.snapshot_id = %s OR s.generated_at > %s - make_interval(hours => %s)
+        ORDER BY s.generated_at DESC, s.id DESC, t.rank
         """,
-        (ids,),
+        (snapshot["id"], snapshot["generated_at"], kept_hours),
     )
-    cols = ("id", "url", "title", "published_at", "org_name", "slug", "org_url", "state")
-    by_id = {r[0]: dict(zip(cols, r)) for r in cur.fetchall()}
+    cols = ("snapshot_id", "until", "labeler", "label", "n_stories", "n_newsrooms",
+            "n_states", "article_ids")
+    current, former, seen = [], [], set()
+    for r in cur.fetchall():
+        topic = dict(zip(cols, r))
+        slug = tag_slug(topic["label"]) or "topic"
+        if topic["snapshot_id"] == snapshot["id"]:
+            # Two current topics can reduce to one slug; the second is -2.
+            base, n = slug, 2
+            while slug in seen:
+                slug, n = f"{base}-{n}", n + 1
+            topic["slug"] = slug
+            seen.add(slug)
+            current.append(topic)
+        elif slug not in seen:
+            topic["slug"] = slug
+            seen.add(slug)
+            former.append(topic)
+
+    leads = [t["article_ids"][0] for t in current + former if t["article_ids"]]
+    cur.execute(
+        "SELECT a.id, a.title, a.url, o.name FROM articles a JOIN orgs o ON o.id = a.org_id "
+        "WHERE a.id = ANY(%s)", (leads,))
+    by_id = {r[0]: {"title": r[1], "url": r[2], "org_name": r[3]} for r in cur.fetchall()}
+    for t in current + former:
+        t["lead"] = by_id.get(t["article_ids"][0]) if t["article_ids"] else None
+    return snapshot, current, former
+
+
+def set_topics(topics):
+    """Make these the topics every page and card renders from."""
+    of = collections.defaultdict(list)
     for topic in topics:
-        # Stored most central first, each story followed by its reprints.
-        found = [by_id[i] for i in topic.pop("article_ids") if i in by_id]
-        topic["stories"] = collapse_duplicates(found)
-    snapshot["topics"] = topics
-    return snapshot
+        for article_id in topic["article_ids"]:
+            of[article_id].append(topic)
+    TOPICS[:] = topics
+    TOPICS_OF.clear()
+    TOPICS_OF.update(of)
+
+
+def topic_lozenge(topic, prefix="", current=False):
+    here = ' aria-current="page"' if current else ""
+    return (f'<a class="lozenge topic" href="{topic_href(topic, prefix)}"{here}>'
+            f'{esc(topic["label"])}</a>')
+
+
+def topic_bar(prefix="", current_topic=None):
+    """The current topics as a row of tags under the masthead, on every page;
+    on a topic's own page its tag is the one lit."""
+    if not TOPICS:
+        return ""
+    links = "".join(topic_lozenge(t, prefix, t["slug"] == current_topic) for t in TOPICS)
+    return (f'<nav class="trendbar" aria-label="Trending topics">'
+            f'<a class="trendlabel" href="{prefix}trending.html">Trending</a>{links}</nav>')
+
+
+def card_topics(a, prefix=""):
+    """The current topics a story, or one of the reprints folded into it, is in."""
+    ids = [a.get("id")] + [d.get("id") for d in a.get("_also", ())]
+    found = []
+    for article_id in ids:
+        for topic in TOPICS_OF.get(article_id, ()):
+            if topic not in found:
+                found.append(topic)
+    if not found:
+        return ""
+    return f'<span class="tags">{"".join(topic_lozenge(t, prefix) for t in found)}</span>'
 
 
 def _count(n, noun, plural=None):
     return f"{n} {noun}" if n == 1 else f"{n} {plural or noun + 's'}"
 
 
-def render_trending(snapshot, prefix="", now=None):
-    """What newsrooms are covering more than usual, from the hourly snapshot."""
+def topic_counts(topic):
+    return (f'{_count(topic["n_stories"], "story", "stories")} &middot; '
+            f'{_count(topic["n_newsrooms"], "newsroom")} &middot; '
+            f'{_count(topic["n_states"], "state")}')
+
+
+def _stamp(when):
+    local = when.astimezone(zone_for(None))
+    return (f'<time datetime="{when.isoformat()}" data-pub="{esc(local_time(when))}">'
+            f'{local.strftime("%a, %b %-d at %-I:%M %p %Z")}</time>')
+
+
+def naming_note(labeler):
+    if labeler == "terms":
+        return "Named by the phrase its headlines share."
+    return (f"Named from its headlines by DeepSeek ({esc(labeler)}); which topics rise, "
+            f"and every count, are worked out here without it.")
+
+
+def render_home_topics(prefix=""):
+    """The front page's trending section: each topic, its reach, its lead story."""
+    if not TOPICS:
+        return ""
+    items = []
+    for topic in TOPICS[:HOME_TOPICS]:
+        lead = topic.get("lead")
+        lead_html = (f'<span class="lead">{esc(tighten(lead["title"]))} '
+                     f'<span class="meta">&mdash; {esc(lead["org_name"])}</span></span>'
+                     if lead else "")
+        items.append(
+            f'<li><a class="name" href="{topic_href(topic, prefix)}">{esc(topic["label"])}</a>'
+            f'<span class="meta">{_count(topic["n_newsrooms"], "newsroom")} &middot; '
+            f'{_count(topic["n_states"], "state")}</span>{lead_html}</li>'
+        )
+    more = (f'<a href="{prefix}trending.html">All {len(TOPICS)} trending topics</a>'
+            if len(TOPICS) > HOME_TOPICS else
+            f'<a href="{prefix}trending.html">How these are found</a>')
+    return (f'<section class="trending-now" aria-labelledby="trending-now">'
+            f'<h2 id="trending-now">Trending now</h2>'
+            f'<ol>{"".join(items)}</ol>'
+            f'<p class="meta">What local newsrooms are covering more than usual today. {more}</p>'
+            f'</section>')
+
+
+def topic_intro(topic, snapshot, current=True, prefix="../"):
+    """The line above a topic page's cards: what the tag means, and its reach."""
+    if current:
+        when = (f"trending in the {snapshot['window_hours']} hours to "
+                f"{_stamp(snapshot['generated_at'])}")
+    else:
+        when = f"trending until {_stamp(topic['until'])}, and no longer on the list"
+    return (f'<p class="meta"><a class="lozenge topic on" href="{prefix}trending.html">Topic</a> '
+            f'{topic_counts(topic)}, {when}. {naming_note(topic["labeler"])} '
+            f'<a href="{prefix}trending.html">All trending topics</a></p>')
+
+
+def render_trending(snapshot, topics, stories_by_topic, prefix="", now=None):
+    """The index of topics: each with its reach, first headlines, and page."""
     parts = ["<h1>Trending</h1>"]
     if not snapshot:
         parts.append("<p>What local newsrooms are covering more than usual. The first "
@@ -1708,9 +1879,6 @@ def render_trending(snapshot, prefix="", now=None):
         return "\n".join(parts)
 
     when = snapshot["generated_at"]
-    local = when.astimezone(zone_for(None))
-    stamp = (f'<time datetime="{when.isoformat()}" data-pub="{esc(local_time(when))}">'
-             f'{local.strftime("%a, %b %-d at %-I:%M %p %Z")}</time>')
     now = now or datetime.now(timezone.utc)
     late = (" The hourly update is running late."
             if now - when > timedelta(hours=TRENDING_STALE_HOURS) else "")
@@ -1718,7 +1886,7 @@ def render_trending(snapshot, prefix="", now=None):
         f"<p>What local newsrooms are covering more than usual: the last "
         f"{snapshot['window_hours']} hours set against the {snapshot['baseline_days']} "
         f"days before, counting newsrooms rather than stories, and a reprint once. "
-        f"Made every hour; this list at {stamp}.{late}</p>"
+        f"Made every hour; this list at {_stamp(when)}.{late}</p>"
     )
     if snapshot["labeler"] == "terms":
         parts.append('<p class="meta">Each topic is named by the phrase its headlines share.</p>')
@@ -1728,40 +1896,55 @@ def render_trending(snapshot, prefix="", now=None):
             f'({esc(snapshot["labeler"])}). Which topics rise, and every count, are worked '
             f'out here without it.</p>'
         )
-    if not snapshot["topics"]:
+    if not topics:
         parts.append("<p>Nothing is running well above its usual level right now.</p>")
         return "\n".join(parts)
 
-    for topic in snapshot["topics"]:
-        parts.append(f"<h2>{esc(topic['label'])}</h2>")
-        parts.append(
-            f'<p class="meta">{_count(topic["n_stories"], "story", "stories")}'
-            f' &middot; {_count(topic["n_newsrooms"], "newsroom")}'
-            f' &middot; {_count(topic["n_states"], "state")}</p>'
-        )
+    for topic in topics:
+        href = topic_href(topic, prefix)
+        parts.append(f'<h2><a href="{href}">{esc(topic["label"])}</a></h2>')
+        parts.append(f'<p class="meta">{topic_counts(topic)}</p>')
         parts.append("<ul>")
-        for story in topic["stories"][:TRENDING_STORIES]:
-            also = story["_also"]
-            names = list(dict.fromkeys(a["org_name"] for a in also if a["org_name"] != story["org_name"]))
+        for story in stories_by_topic.get(topic["slug"], [])[:TRENDING_STORIES]:
+            names = list(dict.fromkeys(d["org_name"] for d in story["_also"]
+                                       if d["org_name"] != story["org_name"]))
             also_html = ""
             if names:
-                shown = ", ".join(esc(n) for n in names[:3])
                 more = f" and {len(names) - 3} more" if len(names) > 3 else ""
-                also_html = f" &middot; also in {shown}{more}"
+                also_html = f" &middot; also in {', '.join(esc(n) for n in names[:3])}{more}"
             parts.append(
                 f'<li><a href="{esc(story["url"])}">{esc(story["title"])}</a>'
                 f'<br><span class="meta">{_org_line(story, "site", prefix)}{also_html}</span></li>'
             )
         parts.append("</ul>")
-        rest = len(topic["stories"]) - TRENDING_STORIES
-        if rest > 0 and topic.get("search"):
-            q = topic["search"]
-            q = f'"{q}"' if " " in q else q
-            parts.append(
-                f'<p class="meta">{_count(rest, "more story", "more stories")}. '
-                f'<a href="/search?{esc(urlencode({"q": q}))}">Search for {esc(q)}</a></p>'
-            )
+        parts.append(f'<p class="meta"><a href="{href}">Every story on this topic</a></p>')
     return "\n".join(parts)
+
+
+def write_topic_pages(site, cur, snapshot, current, former, skip_images=()):
+    """One tag page of full cards per topic, current and recently former;
+    pages for topics older than that are removed. Returns each topic's
+    stories, folded, keyed by slug."""
+    target = site / "topics"
+    target.mkdir(parents=True, exist_ok=True)
+    written, stories = set(), {}
+    for topic, is_current in [(t, True) for t in current] + [(t, False) for t in former]:
+        articles = collapse_duplicates(load_articles(
+            cur, len(topic["article_ids"]), ids=topic["article_ids"],
+            apply_filters=False, language=None))
+        stories[topic["slug"]] = articles
+        n_pages = write_feed_pages(
+            site, cur, articles, topic["slug"],
+            f"{config.SITE_NAME} — {topic['label']}", topic["label"], prefix="../",
+            skip_images=skip_images, subdir="topics", with_related=False,
+            intro=topic_intro(topic, snapshot, current=is_current),
+            current_topic=topic["slug"],
+        )
+        written.update(feed_page_name(topic["slug"], i) for i in range(n_pages))
+    for stale in target.glob("*.html"):
+        if stale.name not in written:
+            stale.unlink()
+    return stories
 
 
 # What a reader actually wants to know about a newsroom: who owns it and
@@ -2241,7 +2424,7 @@ def load_orgs(cur):
 
 
 def load_articles(cur, limit, subject=None, feature=None, default_only=False,
-                  apply_filters=True, language="English"):
+                  apply_filters=True, language="English", ids=None):
     filter_sql, filter_params = filters.where_clause(cur) if apply_filters else ("", [])
     cur.execute(
         """
@@ -2258,12 +2441,13 @@ def load_articles(cur, limit, subject=None, feature=None, default_only=False,
           AND (%s::text IS NULL OR %s = ANY(o.features))
           AND (NOT %s OR o.in_default)
           AND (%s::text IS NULL OR coalesce(a.language, 'English') = %s)
+          AND (%s::int[] IS NULL OR a.id = ANY(%s))
           {extra}
         ORDER BY coalesce(a.published_at, a.fetched_at) DESC, a.id DESC
         LIMIT %s
         """.format(extra=("AND " + filter_sql) if filter_sql else ""),
         [subject, subject, feature, feature, default_only, language, language,
-         *filter_params, limit],
+         ids, ids, *filter_params, limit],
     )
     cols = ("id", "url", "title", "summary", "author", "published_at", "fetched_at",
             "image_file", "image_w", "image_h", "image_alt", "subject",
@@ -2400,6 +2584,10 @@ def main():
         # build, read from the mapping as each card renders.
         CADENCE.clear()
         CADENCE.update(cadence_by_org(cur))
+        # The trending topics, likewise: the bar on every page and the tag on
+        # every card read them, so they are set before the first page.
+        snapshot, current_topics, former_topics = load_topics(cur)
+        set_topics(current_topics)
         articles = collapse_duplicates(
             load_articles(cur, FEED_PAGE_ARTICLES, default_only=True))
         all_articles = collapse_duplicates(
@@ -2485,7 +2673,7 @@ def main():
         n_feed_pages = write_feed_pages(
             site, cur, articles, "feed", config.SITE_NAME, "Feed",
             skip_images=house_images, first_name="index.html",
-            show_heading=False, intro=search_form(),
+            show_heading=False, intro=search_form() + render_home_topics(),
         )
 
         # Everything, including the ordinary commercial weeklies the default
@@ -2541,8 +2729,11 @@ def main():
         (site / "big-stories.html").write_text(page(
             f"{config.SITE_NAME} — Big stories", render_big_stories(cur),
             description="Stories running in several newsrooms at once."))
+        topic_stories = write_topic_pages(site, cur, snapshot, current_topics, former_topics,
+                                          skip_images=house_images)
         (site / "trending.html").write_text(page(
-            f"{config.SITE_NAME} — Trending", render_trending(load_trending(cur)),
+            f"{config.SITE_NAME} — Trending",
+            render_trending(snapshot, current_topics, topic_stories),
             description="What local newsrooms are covering more than usual today."))
         (site / "story-links.html").write_text(page(
             f"{config.SITE_NAME} — Story links", render_story_links(cur),

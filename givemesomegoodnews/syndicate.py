@@ -119,6 +119,7 @@ Disallow: /search
 Disallow: /feed-
 Disallow: /subjects/
 Disallow: /trending.html
+Disallow: /topics/
 Disallow: /img/
 Disallow: /text/
 Disallow: /*.xml$

@@ -178,6 +178,14 @@ named by the phrase their headlines share, and only phrase-built topics are
 shown. Snapshots are kept, one per hour; an hour whose candidates have not
 changed reuses the last hour's names without a call.
 
+A trending topic is a tag like the others. The current topics run as a row
+of tags under the masthead on every page (search included — `searchd` looks
+them up again every five minutes), the front page opens with a section of
+them, and a story in a topic carries its tag in the card's rail. Each topic
+has a page of full cards at `topics/<slug>.html`, and keeps it for 48 hours
+after it drops off the list, marked as no longer trending, so a shared link
+still works that evening.
+
 ### The vector part
 
 Articles live in an `articles` table with an `embedding vector(384)`
