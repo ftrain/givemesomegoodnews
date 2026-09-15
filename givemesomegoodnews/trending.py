@@ -14,8 +14,10 @@ Finding the topics is counting, and no language model is involved:
    count is set against its daily average over the baseline, and scored by
    how far above that average it sits: (today - expected) / sqrt(expected + 1).
 3. A term needs MIN_NEWSROOMS newsrooms in MIN_STATES states, and at least
-   MIN_RATIO times its usual count (MIN_RATIO_WORD for a single word). Terms that describe mostly the same
-   stories merge into one candidate topic.
+   MIN_RATIO times its usual count (MIN_RATIO_WORD for a single word).
+4. Terms that describe mostly the same stories merge into one topic, and
+   topics whose stories are close by embedding merge after that: one event
+   is headlined in many different words.
 
 Naming is the one place a model is used. The headlines of the strongest
 candidates — headlines only, never summaries — go to DeepSeek, which labels
@@ -59,6 +61,17 @@ MIN_SCORE = float(os.environ.get("TRENDING_MIN_SCORE", "2.5"))
 MERGE_OVERLAP = 0.5
 MERGE_SIZE = 0.25
 MERGE_CONTAINED = 0.8
+# Topics whose own stories — the ones they do not share — sit this close by
+# embedding are one event told in different words: "25th anniversary",
+# "remembers" and "first responders" on September 11th. Tried against a week
+# of the archive, 0.25 also joined "25th anniversary" to "4th annual" and a
+# convention speech to a congressional map ruling; 0.29 lost the speech and
+# its $5,000 dividend pledge, which are one story. What 0.27 leaves apart —
+# "Ground zero" beside the anniversary — is the naming step's to merge.
+MERGE_SIMILAR = float(os.environ.get("TRENDING_MERGE_SIM", "0.27"))
+# How many word-built topics go into the embedding merge; merging frees
+# candidate places, so it takes more than it will offer for naming.
+MERGE_POOL = 40
 # Candidates offered for naming, and topics the page shows.
 CANDIDATES = 20
 TOPICS_SHOWN = 12
@@ -109,11 +122,18 @@ def headline_words(title):
     return out
 
 
+ORDINAL = re.compile(r"^\d+(st|nd|rd|th)$")
+
+
 def terms_of(title):
-    """Every word and adjacent pair of words in a headline, as a set."""
+    """Every word and adjacent pair of words in a headline, as a set.
+
+    An ordinal counts only inside a phrase: "25th anniversary" is a topic,
+    "5th" matches every Fifth District race in the country.
+    """
     words = headline_words(title)
     pairs = {f"{a} {b}" for a, b in zip(words, words[1:]) if a != b}
-    return set(words) | pairs
+    return {w for w in words if not ORDINAL.match(w)} | pairs
 
 
 def fold_stories(articles):
@@ -231,6 +251,80 @@ def group_terms(rising, stories):
             if topic["terms"][0] in s["terms"] or matches(topic["terms"], s["terms"]) >= 2
         }
     return topics
+
+
+def _add(acc, vec, sign=1.0):
+    for k, x in enumerate(vec):
+        acc[k] += sign * x
+
+
+def _unit_cosine(a, b):
+    na = math.sqrt(sum(x * x for x in a))
+    nb = math.sqrt(sum(x * x for x in b))
+    return sum(x * y for x, y in zip(a, b)) / (na * nb) if na and nb else 0.0
+
+
+def merge_similar(topics, stories, threshold=MERGE_SIMILAR):
+    """Merge topics that are one event told in different words.
+
+    Repeatedly joins the closest pair of topics while they are at least
+    `threshold` apart by cosine, comparing each topic's *own* stories — the
+    ones the other does not share. A single headline that happens to carry
+    both "Planned Parenthood" and "general election" would otherwise pull two
+    unrelated small topics together. A topic wholly inside another merges.
+    Each story's unit embedding is its "vector"; stories without one are
+    left out of the comparison, not out of the topic.
+    """
+    clusters = [{"terms": list(t["terms"]), "score": t["score"], "stories": set(t["stories"])}
+                for t in topics]
+    dim = next((len(s["vector"]) for s in stories if s.get("vector")), 0)
+
+    def total(ids):
+        acc = [0.0] * dim
+        for i in ids:
+            if stories[i].get("vector"):
+                _add(acc, stories[i]["vector"])
+        return acc
+
+    def similarity(a, b):
+        shared = a["stories"] & b["stories"]
+        if shared == a["stories"] or shared == b["stories"]:
+            return 1.0
+        if not dim:
+            return 0.0
+        own_a, own_b = list(a["sum"]), list(b["sum"])
+        if shared:
+            common = total(shared)
+            _add(own_a, common, -1.0)
+            _add(own_b, common, -1.0)
+        return _unit_cosine(own_a, own_b)
+
+    for c in clusters:
+        c["sum"] = total(c["stories"])
+    sims = {(a, b): similarity(clusters[a], clusters[b])
+            for a in range(len(clusters)) for b in range(a + 1, len(clusters))}
+    alive = set(range(len(clusters)))
+    while sims:
+        (a, b), best = max(sims.items(), key=lambda kv: (kv[1], -kv[0][0], -kv[0][1]))
+        if best < threshold:
+            break
+        # The stronger topic leads, so its terms name the merged one.
+        keep, drop = (a, b) if clusters[a]["score"] >= clusters[b]["score"] else (b, a)
+        k, d = clusters[keep], clusters[drop]
+        k["terms"] += [t for t in d["terms"] if t not in k["terms"]]
+        k["score"] = max(k["score"], d["score"])
+        k["stories"] |= d["stories"]
+        k["sum"] = total(k["stories"])
+        alive.discard(drop)
+        sims = {pair: s for pair, s in sims.items() if keep not in pair and drop not in pair}
+        for other in alive - {keep}:
+            pair = (min(keep, other), max(keep, other))
+            sims[pair] = similarity(clusters[pair[0]], clusters[pair[1]])
+    merged = [clusters[i] for i in sorted(alive)]
+    for c in merged:
+        del c["sum"]
+    merged.sort(key=lambda c: -c["score"])
+    return merged
 
 
 def measure(story_ids, stories):
@@ -458,6 +552,21 @@ def load_stories(cur, start, end):
             for row in cur.fetchall()]
 
 
+def load_vectors(cur, stories):
+    """Give each story its lead's unit embedding as "vector", where it has one."""
+    ids = [s["lead"]["id"] for s in stories]
+    cur.execute("SELECT id, embedding FROM articles WHERE id = ANY(%s) AND embedding IS NOT NULL",
+                (ids,))
+    found = {}
+    for article_id, vec in cur.fetchall():
+        vec = json.loads(vec) if isinstance(vec, str) else list(vec)
+        norm = math.sqrt(sum(x * x for x in vec))
+        if norm:
+            found[article_id] = [x / norm for x in vec]
+    for s in stories:
+        s["vector"] = found.get(s["lead"]["id"])
+
+
 def latest_snapshot(cur):
     cur.execute(
         "SELECT id, fingerprint, labeler, decision FROM trending_snapshots "
@@ -529,7 +638,8 @@ def main(argv=None):
             scale_to=publishing)
 
         rising = rising_terms(stories, expected)
-        candidates = group_terms(rising, stories)[:CANDIDATES]
+        load_vectors(cur, stories)
+        candidates = merge_similar(group_terms(rising, stories)[:MERGE_POOL], stories)[:CANDIDATES]
         fp = fingerprint(candidates, stories)
         print(f"trending: {len(stories)} stories in the {WINDOW_HOURS}h to "
               f"{end:%Y-%m-%d %H:%M %Z}, baseline {days:.1f} days; "

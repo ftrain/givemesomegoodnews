@@ -161,8 +161,12 @@ them, reprints fold into one story, and each headline's words and two-word
 phrases are counted by the *newsrooms* that used them, so one busy feed or a
 wire piece in eleven papers cannot make a trend. A term has to reach three
 newsrooms in two states and several times its usual rate (the usual rate
-scaled to how many newsrooms published today), and terms sharing their
-stories merge into topics.
+scaled to how many newsrooms published today). Terms sharing their stories
+merge into topics, and then topics whose stories sit close by embedding merge
+too: on September 11th, "25th anniversary", "remembers" and "first
+responders" are one event in different words. Topics are compared by the
+stories they do not share, so one headline that mentions two things cannot
+join them.
 
 Naming the topics is the one place on the site a language model is used, and
 the page says so. The headlines of the strongest candidates — headlines only

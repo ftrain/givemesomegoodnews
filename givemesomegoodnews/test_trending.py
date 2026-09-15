@@ -40,6 +40,11 @@ class Terms(unittest.TestCase):
                          {"hurricane", "erin", "nears", "coast",
                           "hurricane erin", "erin nears", "nears coast"})
 
+    def test_an_ordinal_is_a_term_only_inside_a_phrase(self):
+        terms = tr.terms_of("Town marks 25th anniversary")
+        self.assertIn("25th anniversary", terms)
+        self.assertNotIn("25th", terms)
+
     def test_a_word_inside_a_matched_phrase_counts_once(self):
         terms = ["mail", "supreme court", "supreme"]
         self.assertEqual(tr.matches(terms, tr.terms_of("Supreme Court takes up a Ten Commandments case")), 1)
@@ -131,6 +136,47 @@ class Grouping(unittest.TestCase):
         rising = [{"term": "mail", "stories": set(range(30)), "score": 16},
                   {"term": "voting order", "stories": {1, 2, 3, 4, 5}, "score": 5}]
         self.assertEqual(len(tr.group_terms(rising, stories)), 1)
+
+
+class SimilarMerging(unittest.TestCase):
+    """Vectors here are 3-d stand-ins for story embeddings."""
+
+    def stories(self, *vectors):
+        return [{"terms": set(), "lead": None, "copies": [], "vector": v} for v in vectors]
+
+    def test_one_event_in_different_words_merges_under_the_stronger_topic(self):
+        stories = self.stories([1, 0.1, 0], [0.9, 0.2, 0], [1, 0, 0.1], [0.95, 0.1, 0.1])
+        topics = [candidate(["never forget"], [2, 3], score=3),
+                  candidate(["25th anniversary"], [0, 1], score=9)]
+        merged = tr.merge_similar(topics, stories)
+        self.assertEqual(len(merged), 1)
+        self.assertEqual(merged[0]["terms"], ["25th anniversary", "never forget"])
+        self.assertEqual((merged[0]["stories"], merged[0]["score"]), ({0, 1, 2, 3}, 9))
+
+    def test_different_events_stay_apart(self):
+        stories = self.stories([1, 0, 0], [0.9, 0.1, 0], [0, 1, 0], [0, 0.9, 0.1])
+        topics = [candidate(["coal plant"], [0, 1], score=7),
+                  candidate(["convention speech"], [2, 3], score=4)]
+        self.assertEqual(len(tr.merge_similar(topics, stories)), 2)
+
+    def test_one_shared_headline_does_not_pull_two_topics_together(self):
+        # Story 2 carries both "Planned Parenthood" and "general election".
+        stories = self.stories([1, 0, 0], [0.9, 0.1, 0], [0.5, 0.5, 0], [0, 1, 0], [0, 0.9, 0.1])
+        topics = [candidate(["planned parenthood"], [0, 1, 2]),
+                  candidate(["general election"], [2, 3, 4])]
+        self.assertEqual(len(tr.merge_similar(topics, stories)), 2)
+
+    def test_a_topic_wholly_inside_another_merges_even_without_vectors(self):
+        stories = self.stories(None, None, None)
+        topics = [candidate(["mail voting"], [0, 1, 2], score=8), candidate(["ballots"], [1, 2], score=3)]
+        self.assertEqual(len(tr.merge_similar(topics, stories)), 1)
+
+    def test_merging_is_transitive_through_the_merged_topic(self):
+        # a~b 0.95 merges first; a~c alone is 0.6, but the merged a+b is 0.72 from c.
+        stories = self.stories([1, 0, 0], [0.95, 0.31, 0], [0.6, 0.8, 0])
+        topics = [candidate(["a"], [0], 9), candidate(["b"], [1], 5), candidate(["c"], [2], 1)]
+        merged = tr.merge_similar(topics, stories, threshold=0.7)
+        self.assertEqual([m["terms"] for m in merged], [["a", "b", "c"]])
 
 
 class Naming(unittest.TestCase):
