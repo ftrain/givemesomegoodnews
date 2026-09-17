@@ -42,6 +42,8 @@ FEED_PAGE_ARTICLES = 600
 FEED_PAGE_SIZE = 30
 # An image on this many articles is house art, not story art.
 HOUSE_IMAGE_USES = 4
+# Pictures near the top of a page load straight away rather than on scroll.
+EAGER_IMAGES = 3
 # How many recent stories to look for cross-state echoes from.
 CONNECTION_ANCHORS = int(os.environ.get("CONNECTION_ANCHORS", "400"))
 ONEPAGE_ARTICLES = 80
@@ -156,7 +158,10 @@ article{{padding:1.5rem 1rem;border-bottom:1px solid var(--rule)}}
 article::after{{content:"";display:block;clear:both}}
 img{{max-width:100%;height:auto;display:block}}
 .shot{{float:left;width:33%;margin:.35rem 1rem .3rem 0}}
-.shot img{{width:100%;border:1px solid var(--rule)}}
+/* The box is reserved before the picture arrives so nothing below it moves
+   when it does. Tinted rather than left white: an empty white rectangle mid
+   story reads as something broken, a pale block reads as a picture coming. */
+.shot img{{width:100%;border:1px solid var(--rule);background:var(--band)}}
 /* Rows crawled before image_w/image_h existed have no dimensions to set
    as attributes; reserve a box for them anyway so the layout doesn't
    jump once the image loads. */
@@ -450,6 +455,7 @@ def page(title, body, prefix="", nav_html=None, scripts="", description="",
 {MENU_SCRIPT}
 {MAP_SCRIPT}
 {LOCAL_TIME_SCRIPT}
+{IMAGE_SCRIPT}
 {scripts}
 </body>
 </html>
@@ -853,6 +859,19 @@ document.addEventListener("click", function (event) {
   span.textContent = " \u00b7 " + mine + " your time";
   el.parentNode.insertBefore(span, el.nextSibling);
 });
+</script>"""
+
+IMAGE_SCRIPT = """<script>
+/* A picture that fails to load leaves a reserved box with nothing in it.
+   Nothing can be done about that in CSS, so the figure goes; the card is
+   the same one it would have been had the story never carried a picture.
+   Delegated and capturing, because error does not bubble. */
+document.addEventListener("error", function (event) {
+  var img = event.target;
+  if (!img || img.tagName !== "IMG") return;
+  var shot = img.closest && img.closest("figure.shot");
+  if (shot) shot.remove();
+}, true);
 </script>"""
 
 FEED_SCRIPT = """<script>
@@ -1404,7 +1423,8 @@ def cadence_line(a):
     return f'<p class="cadence">{esc(phrase)}</p>' if phrase else ""
 
 
-def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_images=()):
+def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_images=(),
+                     eager=False):
     """Where it is, who published it, when, and then the story."""
     out = ["<article>"]
 
@@ -1497,11 +1517,16 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
             size = f' width="{a["image_w"]}" height="{a["image_h"]}"'
         alt = esc(a.get("image_alt") or "")
         caption = f"<figcaption>{alt}</figcaption>" if a.get("image_alt") else ""
+        # The pictures already on screen when the page opens are not worth
+        # deferring: lazy-loading them leaves the reserved box empty exactly
+        # where someone is looking. The rest load as they are scrolled to.
+        how = ('fetchpriority="high" decoding="async"' if eager
+               else 'loading="lazy" decoding="async"')
         out.append(
             f'<figure class="shot">'
             f'<a href="{esc(a["url"])}" tabindex="-1" aria-hidden="true">'
             f'<img src="{prefix}img/{esc(a["image_file"])}" alt="{alt}"{size} '
-            f'loading="lazy" decoding="async"></a>'
+            f'{how}></a>'
             f'{caption}'
             f'</figure>'
         )
@@ -1539,8 +1564,13 @@ def render_feed(cur, articles, mode="site", prefix="", with_related=True, headin
         if intro:
             parts.append(intro)
     parts.append('<div id="feed-items">')
+    with_picture = 0
     for a in articles:
-        parts.append(render_feed_item(cur, a, mode, prefix, with_related, skip_images))
+        eager = False
+        if a.get("image_file") and a["image_file"] not in skip_images:
+            with_picture += 1
+            eager = with_picture <= EAGER_IMAGES
+        parts.append(render_feed_item(cur, a, mode, prefix, with_related, skip_images, eager))
     parts.append("</div>")
     if stem and page_index + 1 < page_count:
         parts.append(

@@ -207,6 +207,37 @@ class AboutOpening(unittest.TestCase):
         self.assertLess(html.index('class="disc source"'), html.index("<h2>"))
 
 
+class Pictures(unittest.TestCase):
+    """The space a picture will take is reserved; how it reads until then."""
+
+    def test_the_first_pictures_on_a_page_do_not_wait_to_be_scrolled_to(self):
+        items = [article(id=n, image_file=f"{n}.webp", image_w=480, image_h=320)
+                 for n in range(1, bs.EAGER_IMAGES + 3)]
+        html = bs.render_feed(None, items, with_related=False)
+        tags = re.findall(r"<img[^>]*\d+\.webp[^>]*>", html)
+        self.assertEqual(len(tags), bs.EAGER_IMAGES + 2)
+        for tag in tags[:bs.EAGER_IMAGES]:
+            self.assertIn('fetchpriority="high"', tag)
+            self.assertNotIn("lazy", tag)
+        for tag in tags[bs.EAGER_IMAGES:]:
+            self.assertIn('loading="lazy"', tag)
+
+    def test_a_skipped_house_image_does_not_use_up_an_eager_place(self):
+        items = [article(id=1, image_file="house.webp", image_w=480, image_h=320),
+                 article(id=2, image_file="story.webp", image_w=480, image_h=320)]
+        html = bs.render_feed(None, items, with_related=False, skip_images={"house.webp"})
+        self.assertNotIn("house.webp", html)
+        self.assertIn('fetchpriority="high"', html)
+
+    def test_the_reserved_box_is_tinted_rather_than_white(self):
+        self.assertRegex(bs.stylesheet(), r"\.shot img\{[^}]*background:var\(--band\)")
+
+    def test_a_picture_that_fails_to_load_takes_its_box_with_it(self):
+        self.assertIn('img.closest("figure.shot")', bs.IMAGE_SCRIPT)
+        self.assertIn("shot.remove()", bs.IMAGE_SCRIPT)
+        self.assertIn(bs.IMAGE_SCRIPT, bs.page("Anything", "<p>body</p>"))
+
+
 class Stylesheet(unittest.TestCase):
     def test_no_motion_property_applies_under_reduced_motion(self):
         css = bs.stylesheet()
