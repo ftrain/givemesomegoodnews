@@ -34,9 +34,9 @@ data/us_states.geojson  state outlines for the map (US Census-derived)
 assets/fonts/           IBM Plex woff2, copied into site/fonts/ at build
 schema.sql              Postgres schema; requires pgvector
 givemesomegoodnews/     the pipeline (Python, five small dependencies)
-site/                   the generated site (committed so it can be served
-                        as-is; site/img/ is a local image cache and is
-                        gitignored, rebuilt by the crawl)
+site/                   the generated site — output, not source, and not in
+                        git: every page is rebuilt from the database, and the
+                        database is what the backups hold
 ```
 
 ## How it works
@@ -235,6 +235,9 @@ pip install -r requirements.txt
 make all        # db + seed + about + feeds + build
 make serve      # http://localhost:8000
 ```
+
+A fresh checkout has no `site/` until something builds one; `make all` or
+`make build` writes it, and the VMs rebuild every fifteen minutes.
 
 `make refresh` (feeds + build) is the recurring job; it's idempotent —
 articles dedupe on canonical URL. A crontab line like
