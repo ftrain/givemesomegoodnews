@@ -31,6 +31,14 @@
 #   - fetch_log, which is crawl bookkeeping, not the archive.
 #
 # Restoring is described in RESTORE.md, written beside the backups.
+#
+# Nothing here ever deletes. One consequence: the picture cache moved into
+# subdirectories on 17 September 2026, so a copy pulled before that holds both
+# layouts — the same bytes twice. Once img/<two>/<name> is there, the files
+# left at the top of img/ are duplicates and can go:
+#
+#   find "$DEST/img" -maxdepth 1 -type f -exec sh -c \
+#     'test -f "$(dirname "$1")/$(basename "$1" | cut -c1-2)/$(basename "$1")" && rm "$1"' _ {} \;
 set -euo pipefail
 
 DEST="${DEST:-$HOME/backups/givemesomegood}"
@@ -41,7 +49,10 @@ KEEP_ENV="${KEEP_ENV:-0}"
 SSH=(ssh -o BatchMode=yes -o ConnectTimeout=20)
 
 stamp="$(date -u +%Y%m%dT%H%M%SZ)"
-night="$DEST/db/$stamp"
+# A night is built under .part and named only once everything is in it and
+# checked, so a run that dies half way leaves something plainly unfinished
+# rather than a directory that looks like a backup.
+night="$DEST/db/$stamp.part"
 say() { printf '%s  %s\n' "$(date -u +%H:%M:%SZ)" "$*"; }
 mkdir -p "$night" "$DEST/img"
 
@@ -90,8 +101,21 @@ fi
 #    exactly right: a name that is already here is the same bytes, and the
 #    day's new pictures are all that crosses. No --delete, ever.
 say "pictures"
-rsync -a --ignore-existing --info=stats2 \
-	"$HOST:$APP_DIR/site/img/" "$DEST/img/" | sed -n 's/^/  /; /Number of files\|Total transferred/p'
+# macOS ships rsync 2.6.9 (and newer versions ship openrsync), neither of
+# which has everything this needs. --stats and --ignore-existing are the two
+# that matter; say so plainly rather than half-copying the cache.
+# (Ask in one piece: grep -q would close the pipe and kill rsync mid-sentence,
+# which under pipefail reads as "this rsync cannot do it".)
+case "$(rsync --help 2>&1)" in
+*--ignore-existing*) ;;
+*)
+	echo "this rsync has no --ignore-existing; install a current one (brew install rsync)" >&2
+	exit 1
+	;;
+esac
+rsync -a --ignore-existing --stats \
+	"$HOST:$APP_DIR/site/img/" "$DEST/img/" |
+	sed -n '/Number of files:/s/^/  /p; /Total transferred file size/s/^/  /p'
 
 # 5. What this backup is of, for whoever has to restore it.
 say "manifest"
@@ -106,6 +130,8 @@ say "manifest"
 	du -h "$night"/* | sed 's/^/  /'
 	echo "pictures:  $(find "$DEST/img" -type f | wc -l) files, $(du -sh "$DEST/img" | cut -f1)"
 } >"$night/MANIFEST"
+sed -i.bak "s#$night#$DEST/db/$stamp#g" "$night/MANIFEST" 2>/dev/null || true
+rm -f "$night/MANIFEST.bak"
 cat "$night/MANIFEST"
 
 if [ "$KEEP_ENV" = 1 ]; then
@@ -162,4 +188,5 @@ To check a backup without restoring over anything, do all of it against a
 database called something else and run `make serve`.
 DOC
 
-say "done: $night"
+mv "$night" "$DEST/db/$stamp"
+say "done: $DEST/db/$stamp"
