@@ -46,7 +46,7 @@ HOST="${HOST:-givemesomegood.exe.xyz}"
 DB="${DB:-givemesomegoodnews}"
 APP_DIR="${APP_DIR:-/srv/givemesomegoodnews/app}"
 KEEP_ENV="${KEEP_ENV:-0}"
-SSH=(ssh -o BatchMode=yes -o ConnectTimeout=20)
+SSH=(ssh -i ~/.ssh/id_exe -o BatchMode=yes -o ConnectTimeout=20)
 
 stamp="$(date -u +%Y%m%dT%H%M%SZ)"
 # A night is built under .part and named only once everything is in it and
