@@ -10,8 +10,8 @@ import unittest
 from datetime import datetime, timedelta, timezone
 from unittest import mock
 
-from . import build_site as bs
-from . import dedupe, links, shell, topics
+
+from . import cards, dedupe, links, shell, topics
 from . import syndicate
 from . import trending as tr
 
@@ -402,8 +402,8 @@ class TopicTags(TopicsSet):
     def test_a_card_in_a_topic_carries_its_tag_and_one_outside_it_does_not(self):
         from .test_build_site import article
         topics.set_topics([topic(article_ids=[41, 42])])
-        inside = bs.render_feed_item(None, article(id=41), with_related=False)
-        outside = bs.render_feed_item(None, article(id=40), with_related=False)
+        inside = cards.render_feed_item(None, article(id=41), with_related=False)
+        outside = cards.render_feed_item(None, article(id=40), with_related=False)
         self.assertIn('class="lozenge topic" href="topics/colorado-river-cuts.html"', inside)
         self.assertLess(inside.index("lozenge topic"), inside.index("</aside>"), "in the tag rail")
         self.assertNotIn("lozenge topic", outside)
@@ -412,13 +412,13 @@ class TopicTags(TopicsSet):
         from .test_build_site import article
         topics.set_topics([topic(article_ids=[42])])
         card = article(id=41, _also=[article(id=42, org_name="Arizona Mirror")])
-        self.assertIn("lozenge topic", bs.render_feed_item(None, card, with_related=False))
+        self.assertIn("lozenge topic", cards.render_feed_item(None, card, with_related=False))
 
     def test_the_one_pager_card_has_no_topic_tag(self):
         from .test_build_site import article
         topics.set_topics([topic(article_ids=[41])])
         self.assertNotIn("lozenge topic",
-                         bs.render_feed_item(None, article(id=41), mode="onepage", with_related=False))
+                         cards.render_feed_item(None, article(id=41), mode="onepage", with_related=False))
 
     def test_home_section_names_reach_and_lead_story(self):
         topics.set_topics([topic()])

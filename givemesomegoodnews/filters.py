@@ -11,7 +11,6 @@ nothing useful, but an unanchored "memoriam" could catch a genuine story
 about a memorial.
 """
 
-from .db import connect
 
 FIELDS = ("title", "summary", "url", "subject")
 

@@ -15,7 +15,7 @@ from datetime import datetime, timezone
 from unittest import mock
 
 from . import build_site as bs
-from . import images, links, migrate_images, prose, prune, shell, syndicate
+from . import cards, images, links, migrate_images, prose, prune, shell, syndicate
 from . import reporters as rp
 from . import searchd
 
@@ -57,7 +57,7 @@ def article(**over):
 
 
 def card(**over):
-    return bs.render_feed_item(None, article(**over), with_related=False)
+    return cards.render_feed_item(None, article(**over), with_related=False)
 
 
 def reporter(**over):
@@ -80,12 +80,12 @@ def reporter(**over):
 @contextlib.contextmanager
 def reporters_loaded(**by_key):
     """What main() leaves in place before anything renders."""
-    bs.REPORTERS.clear()
-    bs.REPORTERS.update(by_key)
+    cards.REPORTERS.clear()
+    cards.REPORTERS.update(by_key)
     try:
         yield
     finally:
-        bs.REPORTERS.clear()
+        cards.REPORTERS.clear()
 
 
 class FakeCursor:
@@ -125,16 +125,16 @@ class FakeConnection:
 
 class DisclosureHelper(unittest.TestCase):
     def test_wraps_marker_and_panel_in_details(self):
-        html = bs.disclosure("<strong>X</strong>", "<p>hello</p>")
+        html = cards.disclosure("<strong>X</strong>", "<p>hello</p>")
         self.assertIn('<details class="disc">', html)
         self.assertIn('<summary><span class="disc-line"><strong>X</strong>', html)
         self.assertIn('<div class="disc-panel"><p>hello</p></div>', html)
 
     def test_no_marker_when_there_is_nothing_to_disclose(self):
-        self.assertEqual(bs.disclosure("<strong>X</strong>", ""), "")
+        self.assertEqual(cards.disclosure("<strong>X</strong>", ""), "")
 
     def test_extra_class_joins_the_base_class(self):
-        html = bs.disclosure("m", "<p>p</p>", "source")
+        html = cards.disclosure("m", "<p>p</p>", "source")
         self.assertIn('<details class="disc source">', html)
 
 
@@ -159,13 +159,13 @@ class PublicationPanel(unittest.TestCase):
 
     def test_panel_shows_the_whole_feature_set_uncapped(self):
         many = [f"Tag{n}" for n in range(9)]
-        panel = bs.org_profile_panel(article(features=many, model=""))
+        panel = cards.org_profile_panel(article(features=many, model=""))
         for tag in many:
             self.assertIn(f">{tag}</a>", panel)
 
     def test_unusable_about_text_still_gets_a_panel(self):
         for about in (None, "", "Too short to be anybody's About page."):
-            panel = bs.org_profile_panel(article(about_text=about))
+            panel = cards.org_profile_panel(article(about_text=about))
             self.assertNotIn("<blockquote>", panel)
             self.assertIn("Covers Rutland County.", panel)
             self.assertIn(">Worker-owned</a>", panel)
@@ -173,7 +173,7 @@ class PublicationPanel(unittest.TestCase):
             self.assertIn("Newsroom page</a>", panel)
 
     def test_quote_is_an_excerpt_not_the_whole_about_page(self):
-        panel = bs.org_profile_panel(article())
+        panel = cards.org_profile_panel(article())
         quote = re.search(r"<blockquote><p>(.*?)</p></blockquote>", panel, re.S).group(1)
         self.assertLessEqual(len(quote), 430)
         self.assertNotIn("weekly print edition", quote)
@@ -194,11 +194,11 @@ class AboutOpening(unittest.TestCase):
             self.assertEqual(prose.about_opening(text), "")
 
     def test_prefix_reaches_the_org_page_from_a_subdirectory(self):
-        panel = bs.org_profile_panel(article(), prefix="../")
+        panel = cards.org_profile_panel(article(), prefix="../")
         self.assertIn('href="../orgs/the-ledger.html"', panel)
 
     def test_onepage_stays_self_contained(self):
-        panel = bs.org_profile_panel(article(), mode="onepage")
+        panel = cards.org_profile_panel(article(), mode="onepage")
         self.assertNotIn("orgs/the-ledger.html", panel)
         self.assertIn('href="https://ledger.example/">Their site</a>', panel)
 
@@ -289,20 +289,20 @@ class Pictures(unittest.TestCase):
 
     def test_the_first_pictures_on_a_page_do_not_wait_to_be_scrolled_to(self):
         items = [article(id=n, image_file=f"{n}.webp", image_w=480, image_h=320)
-                 for n in range(1, bs.EAGER_IMAGES + 3)]
-        html = bs.render_feed(None, items, with_related=False)
+                 for n in range(1, cards.EAGER_IMAGES + 3)]
+        html = cards.render_feed(None, items, with_related=False)
         tags = re.findall(r"<img[^>]*\d+\.webp[^>]*>", html)
-        self.assertEqual(len(tags), bs.EAGER_IMAGES + 2)
-        for tag in tags[:bs.EAGER_IMAGES]:
+        self.assertEqual(len(tags), cards.EAGER_IMAGES + 2)
+        for tag in tags[:cards.EAGER_IMAGES]:
             self.assertIn('fetchpriority="high"', tag)
             self.assertNotIn("lazy", tag)
-        for tag in tags[bs.EAGER_IMAGES:]:
+        for tag in tags[cards.EAGER_IMAGES:]:
             self.assertIn('loading="lazy"', tag)
 
     def test_a_skipped_house_image_does_not_use_up_an_eager_place(self):
         items = [article(id=1, image_file="house.webp", image_w=480, image_h=320),
                  article(id=2, image_file="story.webp", image_w=480, image_h=320)]
-        html = bs.render_feed(None, items, with_related=False, skip_images={"house.webp"})
+        html = cards.render_feed(None, items, with_related=False, skip_images={"house.webp"})
         self.assertNotIn("house.webp", html)
         self.assertIn('fetchpriority="high"', html)
 
@@ -402,7 +402,7 @@ class DisclosureBehaviour(unittest.TestCase):
         # The panel is the last thing in the <details> and the <details> is
         # in the flow of the card, so opening one only ever grows the card
         # downwards. Nothing takes it out of flow or pins it anywhere.
-        html = bs.disclosure("m", "<p>p</p>")
+        html = cards.disclosure("m", "<p>p</p>")
         self.assertTrue(html.endswith('<div class="disc-panel"><p>p</p></div></details>'))
         rule = re.search(r"\n\.disc-panel\{(.*?)\}", shell.stylesheet(), re.S).group(1)
         for out_of_flow in ("position:absolute", "position:fixed", "position:sticky",
@@ -523,7 +523,7 @@ class ReporterPanel(unittest.TestCase):
 
     def test_panel_shows_count_newsrooms_span_and_recent_headlines(self):
         with reporters_loaded(**{"dana reyes": reporter()}):
-            panel = bs.reporter_panel(article())
+            panel = cards.reporter_panel(article())
         self.assertIn(rp.prolificacy(7), panel)
         self.assertIn("Publishes with The Ledger and VTDigger.", panel)
         self.assertIn("Their work here runs from June 2025 to June 2026.", panel)
@@ -539,7 +539,7 @@ class ReporterPanel(unittest.TestCase):
     def test_a_long_list_of_newsrooms_is_capped(self):
         rooms = [f"Paper {n}" for n in range(9)]
         with reporters_loaded(**{"dana reyes": reporter(newsrooms=rooms)}):
-            panel = bs.reporter_panel(article())
+            panel = cards.reporter_panel(article())
         self.assertIn("Publishes with Paper 0, Paper 1, Paper 2, Paper 3 "
                       "and 5 other newsrooms.", panel)
 
@@ -548,7 +548,7 @@ class ReporterPanel(unittest.TestCase):
         # reporters/<slug>.html would be a 404 on every resolved byline on
         # the site. Every link in the panel is a story on its publisher.
         with reporters_loaded(**{"dana reyes": reporter()}):
-            panel = bs.reporter_panel(article())
+            panel = cards.reporter_panel(article())
         self.assertNotIn("reporters/", panel)
         self.assertEqual(re.findall(r'href="(.*?)"', panel),
                          ["https://ledger.example/story",
@@ -557,14 +557,14 @@ class ReporterPanel(unittest.TestCase):
     def test_prolificacy_is_the_shared_string_verbatim(self):
         for n in (1, 3, 7, 40):
             with reporters_loaded(**{"dana reyes": reporter(n_stories=n)}):
-                panel = bs.reporter_panel(article())
+                panel = cards.reporter_panel(article())
                 text = bs.render_text_item(article())
             self.assertIn(rp.prolificacy(n), panel)
             self.assertIn(rp.prolificacy(n), text)
 
     def test_a_single_month_of_work_reads_as_one(self):
         june = datetime(2026, 6, 1, tzinfo=timezone.utc)
-        self.assertEqual(bs.reporter_span(june, june), "All of it from June 2026.")
+        self.assertEqual(cards.reporter_span(june, june), "All of it from June 2026.")
 
     def test_disclosure_adds_no_script(self):
         with reporters_loaded(**{"dana reyes": reporter()}):
@@ -585,7 +585,7 @@ class ReporterPanelQuery(unittest.TestCase):
 
     def test_one_query_for_the_whole_build(self):
         cur = FakeCursor(self.ROWS)
-        bs.load_reporter_panels(cur)
+        cards.load_reporter_panels(cur)
         self.assertEqual(len(cur.queries), 1)
 
     def test_the_query_hands_back_each_spelling_of_a_byline_separately(self):
@@ -594,14 +594,14 @@ class ReporterPanelQuery(unittest.TestCase):
         # of them sorted first would be the name on the card — the merge
         # below never gets to prefer the spelling that is not shouted.
         cur = FakeCursor(self.ROWS)
-        bs.load_reporter_panels(cur)
+        cards.load_reporter_panels(cur)
         sql = cur.queries[0][0]
         self.assertIn("GROUP BY author", sql)
         self.assertIn("PARTITION BY author", sql)
         self.assertNotIn("lower(", sql)
 
     def test_one_person_written_two_ways_is_one_reporter(self):
-        panels = bs.load_reporter_panels(FakeCursor(self.ROWS))
+        panels = cards.load_reporter_panels(FakeCursor(self.ROWS))
         self.assertEqual(list(panels), ["dana reyes"])
         who = panels["dana reyes"]
         self.assertEqual(who["n_stories"], 7)
@@ -618,14 +618,14 @@ class ReporterPanelQuery(unittest.TestCase):
              datetime(2026, 2, 1, tzinfo=timezone.utc), ["The Ledger"], None),
         ]
         for order in (rows, rows[::-1]):
-            panels = bs.load_reporter_panels(FakeCursor(order))
+            panels = cards.load_reporter_panels(FakeCursor(order))
             self.assertEqual(panels["dana reyes"]["name"], "Dana Reyes")
 
     def test_headlines_are_capped(self):
         rows = [("Dana Reyes", 9, datetime(2026, 1, 1, tzinfo=timezone.utc),
                  datetime(2026, 6, 1, tzinfo=timezone.utc), ["The Ledger"],
                  [{"title": f"H{n}", "url": f"u{n}", "ts": float(n)} for n in range(6)])]
-        who = bs.load_reporter_panels(FakeCursor(rows), headlines=2)["dana reyes"]
+        who = cards.load_reporter_panels(FakeCursor(rows), headlines=2)["dana reyes"]
         self.assertEqual([r["title"] for r in who["recent"]], ["H5", "H4"])
 
 
@@ -639,19 +639,19 @@ class SearchService(unittest.TestCase):
 
     def test_startup_fills_the_reporter_profiles_it_renders(self):
         cur = FakeCursor(ReporterPanelQuery.ROWS)
-        self.addCleanup(bs.REPORTERS.clear)
+        self.addCleanup(cards.REPORTERS.clear)
         with mock.patch.object(searchd, "connect", lambda: FakeConnection(cur)):
             searchd.load_reporters()
-        self.assertEqual(bs.REPORTERS["dana reyes"]["name"], "Dana Reyes")
+        self.assertEqual(cards.REPORTERS["dana reyes"]["name"], "Dana Reyes")
         self.assertEqual(len(cur.queries), 1)
 
     def test_a_result_card_carries_the_byline_disclosure(self):
         cur = FakeCursor(ReporterPanelQuery.ROWS)
-        self.addCleanup(bs.REPORTERS.clear)
+        self.addCleanup(cards.REPORTERS.clear)
         with mock.patch.object(searchd, "connect", lambda: FakeConnection(cur)):
             searchd.load_reporters()
         # A result card is rendered exactly the way searchd renders one.
-        html = bs.render_feed_item(None, article(), with_related=False)
+        html = cards.render_feed_item(None, article(), with_related=False)
         self.assertIn('<details class="disc byline">', html)
         self.assertIn("By <strong>Dana Reyes</strong>", html)
 
@@ -731,7 +731,7 @@ class SearchFoldsReprints(unittest.TestCase):
         rows, _total = self.search()
         self.assertEqual([o["org_name"] for o in rows[0]["_also"]],
                          ["San José Spotlight", "BenitoLink"])
-        html = bs.render_feed_item(None, rows[0], with_related=False)
+        html = cards.render_feed_item(None, rows[0], with_related=False)
         self.assertIn("Also in", html)
         self.assertIn("BenitoLink", html)
 

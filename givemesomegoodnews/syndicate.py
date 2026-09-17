@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 from html import escape as esc
 from xml.sax.saxutils import quoteattr
 
-from . import config, images
+from . import images
 
 RSS_ITEMS = 60
 RFC822 = "%a, %d %b %Y %H:%M:%S %z"
