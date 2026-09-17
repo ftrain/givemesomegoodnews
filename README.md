@@ -107,7 +107,10 @@ come from the directory. Every tag gets its own page.
 
 Stories are never deleted. A piece that has aged out of its publisher's own
 feed may not be easy to find anywhere else, so `prune` only garbage-collects
-cached image files that no article points at any more.
+what nothing points at any more: cached image files no article references,
+and — nightly, with `--stale-pages 7` — generated pages no build has written
+in a week, which are the pages of newsrooms that have left the catalog and
+the tail of a feed that has since grown shorter.
 
 At the observed rate — around 1,500 stories a day across roughly a thousand
 live feeds, about two thirds carrying a picture — the database grows about

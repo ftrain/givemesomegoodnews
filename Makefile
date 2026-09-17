@@ -39,9 +39,11 @@ rotate:
 migrate-images:
 	$(PY) -m givemesomegoodnews.migrate_images
 
-# Garbage-collects unreferenced cached images. Never deletes a story.
+# Garbage-collects unreferenced cached images, and — with PRUNE_ARGS — pages
+# no build writes any more. Never deletes a story.
+PRUNE_ARGS ?=
 prune:
-	$(PY) -m givemesomegoodnews.prune
+	$(PY) -m givemesomegoodnews.prune $(PRUNE_ARGS)
 
 classify:
 	$(PY) -m givemesomegoodnews.classify

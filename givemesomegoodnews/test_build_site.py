@@ -6,10 +6,12 @@ which is the same thing `searchd` does, so no cursor is ever used.
 """
 
 import contextlib
+import os
 import pathlib
 import re
 import shutil
 import tempfile
+import time
 import unittest
 from datetime import datetime, timezone
 from unittest import mock
@@ -281,6 +283,34 @@ class ImageCacheLayout(unittest.TestCase):
             prune.main()
         self.assertTrue(keep.exists())
         self.assertFalse((self.dir / "ff" / "ffee00.webp").exists())
+
+
+class StalePages(unittest.TestCase):
+    """Every page is rewritten by every build, so an old one is not a page."""
+
+    def setUp(self):
+        self.site = pathlib.Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.site, True)
+        for rel in ("index.html", "orgs/current.html", "orgs/gone.html",
+                    "img/ab/old.webp", "fonts/plex.woff2", "flags/vt.webp"):
+            path = self.site / rel
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(b"x")
+        old = time.time() - 30 * 86400
+        for rel in ("orgs/gone.html", "img/ab/old.webp", "fonts/plex.woff2", "flags/vt.webp"):
+            os.utime(self.site / rel, (old, old))
+
+    def test_finds_only_pages_no_build_has_written(self):
+        found = prune.stale_pages(self.site, days=7)
+        self.assertEqual([pathlib.Path(p).name for p in found], ["gone.html"])
+
+    def test_leaves_the_pictures_fonts_and_flags_alone(self):
+        found = " ".join(prune.stale_pages(self.site, days=7))
+        for safe in ("old.webp", "plex.woff2", "vt.webp"):
+            self.assertNotIn(safe, found)
+
+    def test_nothing_is_stale_when_the_window_is_long(self):
+        self.assertEqual(prune.stale_pages(self.site, days=90), [])
 
 
 class Pictures(unittest.TestCase):
