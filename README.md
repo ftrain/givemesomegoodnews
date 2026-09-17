@@ -107,10 +107,24 @@ its text and its `image_url`; a block-storage volume is the other answer.
 ### Images
 
 Feed images are downloaded, downscaled to 480px wide, and served from this
-site (`site/img/`, named by SHA-1 of the source URL). Nothing is hotlinked:
-a publisher's server is hit once per image rather than once per reader, and
-the page keeps working when they reshuffle their CDN. `image_url` keeps the
-provenance. A broken image is a missing image, never a failed crawl.
+site, named by SHA-1 of the source URL. Nothing is hotlinked: a publisher's
+server is hit once per image rather than once per reader, and the page keeps
+working when they reshuffle their CDN. `image_url` keeps the provenance. A
+broken image is a missing image, never a failed crawl.
+
+Files are spread over 256 subdirectories by the first two characters of the
+name — `site/img/a3/a3f2….webp`. One directory holding every picture works
+until it doesn't: at a thousand new pictures a day it passes a million
+entries inside three years, and long before that, listing it, pruning it or
+backing it up means reading one enormous directory. The shard is derived
+from the name, so nothing records where a file went, and `make
+migrate-images` moves anything still at the top level down into place (the
+deploy runs it). nginx serves either spelling while the two overlap.
+
+The pictures average 19 KB (480px WebP at quality 78; 66,000 files, 1.3 GB),
+growing about 7 GB a year. AVIF at quality 60 would take 18% off that at the
+same measured quality, which was judged not worth losing the browsers that
+cannot read it.
 
 ### Subjects
 
@@ -238,6 +252,32 @@ python3 -m givemesomegoodnews.classify --dry-run             # tag report, no wr
 python3 -m givemesomegoodnews.search "school board recall"   # vector search
 python3 -m givemesomegoodnews.trending --dry-run --no-label  # trending topics, no writes
 ```
+
+## Backups
+
+`ops/backup/pull-backup.sh` runs on a machine at home, from cron, and pulls:
+one directory per night holding the database, and the picture cache beside
+them. It only ever copies down and only ever adds — no `--delete`, no
+overwriting, nothing written to the server.
+
+A night costs about 20 MB, plus that day's new pictures. Two things are
+deliberately left out, which is most of the weight:
+
+- **The embedding column**, 27 MB of a 45 MB dump. It is computed from the
+  headline and summary, which *are* backed up, and `make embed` puts it back
+  — verified identical to what production stores, to six decimals. This
+  holds only while `EMBEDDER=hashing`, which is deterministic and local.
+- **Indexes.** No `pg_dump` ever holds index data, only the statements that
+  rebuild them, and `schema.sql` is already those statements.
+
+Restoring is `RESTORE.md`, written beside the backups: schema, load, re-embed,
+rebuild the index. A full restore of 101,120 articles takes about ten seconds
+plus the re-embedding.
+
+Nightly full dumps rather than incremental ones, and that is measured, not
+assumed: this database writes about 989 MB of WAL a day (the vector index
+churns), while a whole compressed dump is 45 MB. WAL archiving would move
+twenty times more data for no more safety.
 
 ## Adding a newsroom
 

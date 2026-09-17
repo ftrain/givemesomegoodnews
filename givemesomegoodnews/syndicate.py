@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 from html import escape as esc
 from xml.sax.saxutils import quoteattr
 
-from . import config
+from . import config, images
 
 RSS_ITEMS = 60
 RFC822 = "%a, %d %b %Y %H:%M:%S %z"
@@ -39,7 +39,8 @@ def _item(article, site_url):
             f"<source url={quoteattr(article['org_feed'])}>{esc(article['org_name'])}</source>"
         )
     if article.get("image_file"):
-        image = f"{site_url}/img/{article['image_file']}"
+        name = article["image_file"]
+        image = f"{site_url}/img/{name[:images.SHARD]}/{name}"
         parts.append(f'<media:content url={quoteattr(image)} medium="image" />')
 
     support = article.get("support_url") or article["org_url"]

@@ -16,11 +16,10 @@ and image_url untouched. It is off unless you ask for it.
 Run: python3 -m givemesomegoodnews.prune [--dry-run] [--images-older-than N]
 """
 
-import os
 import sys
 
 from .db import connect
-from .images import cache_dir
+from . import images
 
 
 def main():
@@ -54,12 +53,10 @@ def main():
         cur.execute("SELECT image_file FROM articles WHERE image_file IS NOT NULL")
         referenced = {r[0] for r in cur.fetchall()}
 
-    directory = cache_dir()
     removed = freed = 0
-    for name in os.listdir(directory):
+    for name, path in images.every_file():
         if name in referenced:
             continue
-        path = directory / name
         try:
             size = path.stat().st_size
             if not dry:

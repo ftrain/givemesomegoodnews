@@ -35,6 +35,10 @@ feeds:
 rotate:
 	$(PY) -m givemesomegoodnews.fetch_feeds --rotate $(ROTATE_BATCH)
 
+# Puts any cached picture still at the top of site/img/ into its subdirectory.
+migrate-images:
+	$(PY) -m givemesomegoodnews.migrate_images
+
 # Garbage-collects unreferenced cached images. Never deletes a story.
 prune:
 	$(PY) -m givemesomegoodnews.prune
@@ -61,4 +65,4 @@ refresh-slice: rotate classify build
 serve:
 	$(PY) -m http.server 8000 --directory site
 
-.PHONY: all db seed about taglines institutions support feeds rotate classify prune embed build trending refresh refresh-slice serve
+.PHONY: all db seed about taglines institutions support feeds rotate classify prune embed build trending migrate-images refresh refresh-slice serve

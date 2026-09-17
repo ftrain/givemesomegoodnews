@@ -6,12 +6,16 @@ which is the same thing `searchd` does, so no cursor is ever used.
 """
 
 import contextlib
+import pathlib
 import re
+import shutil
+import tempfile
 import unittest
 from datetime import datetime, timezone
 from unittest import mock
 
 from . import build_site as bs
+from . import images, migrate_images, prune, syndicate
 from . import reporters as rp
 from . import searchd
 
@@ -205,6 +209,79 @@ class AboutOpening(unittest.TestCase):
         html = card()
         self.assertLess(html.index('class="places"'), html.index('class="disc source"'))
         self.assertLess(html.index('class="disc source"'), html.index("<h2>"))
+
+
+class ImageCacheLayout(unittest.TestCase):
+    """Pictures live in site/img/<first two of the name>/<name>."""
+
+    def setUp(self):
+        self.dir = pathlib.Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.dir, True)
+        patch = mock.patch.object(images, "cache_dir", lambda: self.dir)
+        patch.start()
+        self.addCleanup(patch.stop)
+
+    def name(self, n="ab12cd"):
+        return n + ".webp"
+
+    def test_a_pages_picture_url_carries_its_subdirectory(self):
+        self.assertEqual(bs.image_href("ab12cd.webp"), "img/ab/ab12cd.webp")
+        self.assertEqual(bs.image_href("ab12cd.webp", "../"), "../img/ab/ab12cd.webp")
+
+    def test_the_rss_url_matches_the_page_url(self):
+        article = {"url": "https://x.example/a", "title": "T", "published_at": None,
+                   "fetched_at": None, "org_name": "Org", "org_url": "https://x.example/",
+                   "image_file": "ab12cd.webp"}
+        item = syndicate._item(article, "https://site.example")
+        self.assertIn("https://site.example/img/ab/ab12cd.webp", item)
+
+    def test_a_file_is_written_into_its_subdirectory(self):
+        path = images.path_for(self.name(), write=True)
+        self.assertEqual(path, self.dir / "ab" / "ab12cd.webp")
+        self.assertTrue(path.parent.is_dir())
+
+    def test_a_file_left_at_the_top_is_still_found(self):
+        (self.dir / self.name()).write_bytes(b"x")
+        self.assertEqual(images.path_for(self.name()), self.dir / self.name())
+
+    def test_migration_moves_what_is_left_at_the_top_and_repeats_harmlessly(self):
+        for n in ("ab12cd", "ffee00"):
+            (self.dir / (n + ".webp")).write_bytes(b"x")
+        (self.dir / "ab").mkdir()
+        (self.dir / "ab" / "abcdef.webp").write_bytes(b"x")
+        self.assertEqual(migrate_images.main(["--dry-run"]), 0)
+        self.assertTrue((self.dir / "ab12cd.webp").exists(), "a dry run moves nothing")
+        migrate_images.main([])
+        self.assertEqual(images.path_for("ab12cd.webp"), self.dir / "ab" / "ab12cd.webp")
+        self.assertEqual(images.path_for("ffee00.webp"), self.dir / "ff" / "ffee00.webp")
+        self.assertEqual(sorted(n for n, _ in images.every_file()),
+                         ["ab12cd.webp", "abcdef.webp", "ffee00.webp"])
+        migrate_images.main([])
+        self.assertEqual(len(list(images.every_file())), 3)
+
+    def test_migration_refuses_to_move_pictures_out_of_the_cache(self):
+        """The guard against the two halves disagreeing about where the cache is."""
+        (self.dir / self.name()).write_bytes(b"x")
+        elsewhere = pathlib.Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, elsewhere, True)
+        with mock.patch.object(images, "path_for",
+                               lambda n, write=False: elsewhere / n[:2] / n), \
+                mock.patch("sys.stderr"):
+            self.assertEqual(migrate_images.main([]), 2)
+        self.assertTrue((self.dir / self.name()).exists(), "nothing left the cache")
+        self.assertEqual(list(elsewhere.rglob("*.webp")), [])
+
+    def test_prune_reaches_files_in_subdirectories(self):
+        keep = images.path_for("ab12cd.webp", write=True)
+        keep.write_bytes(b"x")
+        images.path_for("ffee00.webp", write=True).write_bytes(b"x")
+        with mock.patch.object(prune, "connect") as connect:
+            cur = connect.return_value.__enter__.return_value.cursor.return_value.__enter__.return_value
+            cur.fetchone.return_value = (2,)
+            cur.fetchall.return_value = [("ab12cd.webp",)]
+            prune.main()
+        self.assertTrue(keep.exists())
+        self.assertFalse((self.dir / "ff" / "ffee00.webp").exists())
 
 
 class Pictures(unittest.TestCase):

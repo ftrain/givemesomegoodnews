@@ -28,7 +28,7 @@ from PIL import Image
 from . import config
 from .albers import MapProjection, state_locator
 from .timezones import local_dateline, local_time, zone_for
-from . import filters, reporters, syndicate
+from . import filters, images, reporters, syndicate
 from .tags import TAG_GROUPS, TAG_PRIORITY, region_of, tag_slug
 from .db import connect
 
@@ -930,6 +930,12 @@ def write_feed_pages(site, cur, articles, stem, title, heading, prefix="",
     return len(chunks)
 
 
+def image_href(name, prefix=""):
+    """Where a cached picture is served from: img/<first two of the name>/<name>.
+    See givemesomegoodnews.images for why the cache is spread out."""
+    return f"{prefix}img/{name[:images.SHARD]}/{name}"
+
+
 def subject_href(subject, prefix=""):
     return f"{prefix}subjects/{subject.lower().replace(' ', '-')}.html"
 
@@ -1525,7 +1531,7 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
         out.append(
             f'<figure class="shot">'
             f'<a href="{esc(a["url"])}" tabindex="-1" aria-hidden="true">'
-            f'<img src="{prefix}img/{esc(a["image_file"])}" alt="{alt}"{size} '
+            f'<img src="{esc(image_href(a["image_file"], prefix))}" alt="{alt}"{size} '
             f'{how}></a>'
             f'{caption}'
             f'</figure>'
