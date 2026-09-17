@@ -11,9 +11,12 @@
 #
 # Settings, all optional:
 #   DEST=~/backups/givemesomegood   where the copies go
-#   HOST=givemesomegood.exe.xyz     the VM
+#   HOST=givemesomegood.exe.xyz     the VM. Where ssh has no alias for it,
+#                                   name it the way exe.dev expects:
+#                                   HOST=vm+givemesomegood@vm.exe.xyz
 #   DB=givemesomegoodnews           the database on it
 #   APP_DIR=/srv/givemesomegoodnews/app
+#   SSH_KEY=~/.ssh/id_exe           the key to use (cron has no agent)
 #   KEEP_ENV=1                      also copy the VM's .env (it holds secrets)
 #
 # What a night costs: about 20 MB of database, plus that day's new pictures
@@ -46,7 +49,13 @@ HOST="${HOST:-givemesomegood.exe.xyz}"
 DB="${DB:-givemesomegoodnews}"
 APP_DIR="${APP_DIR:-/srv/givemesomegoodnews/app}"
 KEEP_ENV="${KEEP_ENV:-0}"
-SSH=(ssh -i ~/.ssh/id_exe -o BatchMode=yes -o ConnectTimeout=20)
+# LogLevel=ERROR keeps a host's login banner out of the log every night.
+SSH=(ssh -o BatchMode=yes -o ConnectTimeout=20 -o LogLevel=ERROR)
+# cron has no agent and no shell of yours, so the key is named. SSH_KEY says
+# which; the default is the exe.dev one, and a machine without it just uses
+# whatever ssh would have used anyway.
+SSH_KEY="${SSH_KEY:-$HOME/.ssh/id_exe}"
+[ -r "$SSH_KEY" ] && SSH+=(-i "$SSH_KEY")
 
 stamp="$(date -u +%Y%m%dT%H%M%SZ)"
 # A night is built under .part and named only once everything is in it and
@@ -86,15 +95,42 @@ mv "$night/articles.csv.zst.part" "$night/articles.csv.zst"
 # 3. Check what arrived before calling it a backup. A dump that cannot be
 #    listed and an archive that cannot be decompressed are not backups.
 say "checking"
+checked="archive verified"
 if command -v zstd >/dev/null; then
+	# The archive is the irreplaceable half; a bad one fails the run.
 	zstd -t "$night/articles.csv.zst"
 else
-	say "  zstd not installed here; the archive was not verified"
+	checked="archive NOT verified (no zstd here)"
+	say "  zstd is not installed here; the archive was not checked"
 fi
+# Every custom-format dump starts with PGDMP. That much can be told without
+# any Postgres tools at all, and it catches the failure that matters — an
+# empty or truncated file where a dump should be.
+case "$(head -c 5 "$night/schema-and-tables.dump")" in
+PGDMP) ;;
+*)
+	echo "the dump does not look like a pg_dump file" >&2
+	exit 1
+	;;
+esac
+dump_check="dump header ok"
 if command -v pg_restore >/dev/null; then
-	pg_restore -l "$night/schema-and-tables.dump" >/dev/null
+	# A pg_restore older than the server's Postgres cannot read its dumps
+	# ("unsupported version ... in file header"). That says something about
+	# this machine, not about the backup, so it is a note rather than a stop
+	# — but it is the same tool a restore needs, so it is worth saying.
+	if pg_restore -l "$night/schema-and-tables.dump" >/dev/null 2>"$night/.pg_restore_err"; then
+		dump_check="dump listed by pg_restore"
+	else
+		dump_check="dump NOT listed: $(tr -d '\n' <"$night/.pg_restore_err" | cut -c1-120)"
+		say "  $dump_check"
+		say "  (the dump is kept; a restore needs a pg_restore of the server's"
+		say "   version or newer — on a Mac: brew install libpq@16)"
+	fi
+	rm -f "$night/.pg_restore_err"
 else
-	say "  pg_restore not installed here; the dump was not verified"
+	dump_check="dump not listed (no pg_restore here)"
+	say "  pg_restore is not installed here; only the dump's header was checked"
 fi
 
 # 4. The pictures. Content-addressed and immutable, so --ignore-existing is
@@ -113,7 +149,9 @@ case "$(rsync --help 2>&1)" in
 	exit 1
 	;;
 esac
-rsync -a --ignore-existing --stats \
+# rsync starts its own ssh, which would otherwise know nothing about the key
+# or the options above.
+rsync -a --ignore-existing --stats -e "${SSH[*]}" \
 	"$HOST:$APP_DIR/site/img/" "$DEST/img/" |
 	sed -n '/Number of files:/s/^/  /p; /Total transferred file size/s/^/  /p'
 
@@ -126,6 +164,7 @@ say "manifest"
 	echo "commit:    $("${SSH[@]}" "$HOST" "sudo -u \"\$(stat -c %U $APP_DIR)\" git -C $APP_DIR rev-parse HEAD" 2>/dev/null || echo unknown)"
 	echo "articles:  $("${SSH[@]}" "$HOST" "sudo -u postgres psql -d $DB -Atc 'select count(*) from articles'" 2>/dev/null || echo '?') rows"
 	echo "columns:   $columns"
+	echo "checks:    $checked; $dump_check"
 	echo "sizes:"
 	du -h "$night"/* | sed 's/^/  /'
 	echo "pictures:  $(find "$DEST/img" -type f | wc -l) files, $(du -sh "$DEST/img" | cut -f1)"
