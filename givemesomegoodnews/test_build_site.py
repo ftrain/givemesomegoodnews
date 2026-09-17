@@ -15,7 +15,7 @@ from datetime import datetime, timezone
 from unittest import mock
 
 from . import build_site as bs
-from . import images, migrate_images, prune, syndicate
+from . import images, links, migrate_images, prose, prune, shell, syndicate
 from . import reporters as rp
 from . import searchd
 
@@ -182,16 +182,16 @@ class PublicationPanel(unittest.TestCase):
 class AboutOpening(unittest.TestCase):
     def test_skips_a_heading_or_stray_line_to_reach_the_description(self):
         text = "About The Ledger\n\nPublished: June 30, 2025\n\n" + ABOUT
-        self.assertTrue(bs.about_opening(text).startswith("The Ledger is a worker-owned"))
+        self.assertTrue(prose.about_opening(text).startswith("The Ledger is a worker-owned"))
 
     def test_truncates_a_long_paragraph(self):
-        got = bs.about_opening("word " * 300)
+        got = prose.about_opening("word " * 300)
         self.assertLessEqual(len(got), 430)
         self.assertTrue(got.endswith("[…]"))
 
     def test_nothing_from_an_unusable_about_text(self):
         for text in (None, "", "Short.", "About Us\n\nRead more"):
-            self.assertEqual(bs.about_opening(text), "")
+            self.assertEqual(prose.about_opening(text), "")
 
     def test_prefix_reaches_the_org_page_from_a_subdirectory(self):
         panel = bs.org_profile_panel(article(), prefix="../")
@@ -225,8 +225,8 @@ class ImageCacheLayout(unittest.TestCase):
         return n + ".webp"
 
     def test_a_pages_picture_url_carries_its_subdirectory(self):
-        self.assertEqual(bs.image_href("ab12cd.webp"), "img/ab/ab12cd.webp")
-        self.assertEqual(bs.image_href("ab12cd.webp", "../"), "../img/ab/ab12cd.webp")
+        self.assertEqual(links.image_href("ab12cd.webp"), "img/ab/ab12cd.webp")
+        self.assertEqual(links.image_href("ab12cd.webp", "../"), "../img/ab/ab12cd.webp")
 
     def test_the_rss_url_matches_the_page_url(self):
         article = {"url": "https://x.example/a", "title": "T", "published_at": None,
@@ -307,17 +307,17 @@ class Pictures(unittest.TestCase):
         self.assertIn('fetchpriority="high"', html)
 
     def test_the_reserved_box_is_tinted_rather_than_white(self):
-        self.assertRegex(bs.stylesheet(), r"\.shot img\{[^}]*background:var\(--band\)")
+        self.assertRegex(shell.stylesheet(), r"\.shot img\{[^}]*background:var\(--band\)")
 
     def test_a_picture_that_fails_to_load_takes_its_box_with_it(self):
-        self.assertIn('img.closest("figure.shot")', bs.IMAGE_SCRIPT)
-        self.assertIn("shot.remove()", bs.IMAGE_SCRIPT)
-        self.assertIn(bs.IMAGE_SCRIPT, bs.page("Anything", "<p>body</p>"))
+        self.assertIn('img.closest("figure.shot")', shell.IMAGE_SCRIPT)
+        self.assertIn("shot.remove()", shell.IMAGE_SCRIPT)
+        self.assertIn(shell.IMAGE_SCRIPT, shell.page("Anything", "<p>body</p>"))
 
 
 class Stylesheet(unittest.TestCase):
     def test_no_motion_property_applies_under_reduced_motion(self):
-        css = bs.stylesheet()
+        css = shell.stylesheet()
         block = re.search(r"@media\(prefers-reduced-motion:no-preference\)\{(.*?)\n\n",
                           css + "\n\n", re.S).group(1)
         self.assertIn("disc-open", block)
@@ -327,7 +327,7 @@ class Stylesheet(unittest.TestCase):
         self.assertNotIn("transition", css)
 
     def test_marker_is_styled_and_focusable(self):
-        css = bs.stylesheet()
+        css = shell.stylesheet()
         self.assertIn(".disc>summary{cursor:pointer;list-style:none", css)
         self.assertIn(".disc>summary:focus-visible .disc-cue", css)
 
@@ -368,19 +368,19 @@ class DisclosureBehaviour(unittest.TestCase):
     def test_the_summary_keeps_its_own_display(self):
         # Overriding display on a <summary> is what costs it its disclosure
         # semantics; the flex row lives on a span inside it instead.
-        css = bs.stylesheet()
+        css = shell.stylesheet()
         rule = re.search(r"\n\.disc>summary\{(.*?)\}", css, re.S).group(1)
         self.assertNotIn("display:", rule)
         self.assertIn(".disc-line{display:inline-flex", css)
         self.assertIn('<span class="disc-line">', self.cards())
 
     def test_the_marker_carries_a_visible_focus_ring(self):
-        css = bs.stylesheet()
+        css = shell.stylesheet()
         self.assertIn(".disc>summary:focus-visible{outline:none}", css)
         self.assertIn(".disc>summary:focus-visible .disc-line{outline:3px solid", css)
 
     def test_the_marker_does_not_rely_on_the_browsers_own_triangle(self):
-        css = bs.stylesheet()
+        css = shell.stylesheet()
         self.assertIn(".disc>summary{cursor:pointer;list-style:none", css)
         self.assertIn(".disc>summary::-webkit-details-marker{display:none}", css)
         # Something of its own in its place, and it points the other way once
@@ -393,7 +393,7 @@ class DisclosureBehaviour(unittest.TestCase):
         # A caret written as a glyph joins the summary's accessible name and
         # is read out after every masthead, on top of the expanded and
         # collapsed the browser announces by itself.
-        for css in (bs.stylesheet(), bs.TEXT_CSS):
+        for css in (shell.stylesheet(), bs.TEXT_CSS):
             for glyph in ("▾", "▴", "▸", "▼", "▲"):
                 self.assertNotIn(glyph, css)
                 self.assertNotIn(f"\\{ord(glyph):04x}", css.lower())
@@ -404,7 +404,7 @@ class DisclosureBehaviour(unittest.TestCase):
         # downwards. Nothing takes it out of flow or pins it anywhere.
         html = bs.disclosure("m", "<p>p</p>")
         self.assertTrue(html.endswith('<div class="disc-panel"><p>p</p></div></details>'))
-        rule = re.search(r"\n\.disc-panel\{(.*?)\}", bs.stylesheet(), re.S).group(1)
+        rule = re.search(r"\n\.disc-panel\{(.*?)\}", shell.stylesheet(), re.S).group(1)
         for out_of_flow in ("position:absolute", "position:fixed", "position:sticky",
                             "float:", "height:"):
             self.assertNotIn(out_of_flow, rule)
@@ -421,7 +421,7 @@ class DisclosureBehaviour(unittest.TestCase):
         # The one script that closes a <details> on click is scoped to the
         # menu. If it ever widened to "details[open]" every open profile on
         # the page would slam shut on the next click.
-        selectors = re.findall(r'querySelector(?:All)?\("(.*?)"\)', bs.MENU_SCRIPT)
+        selectors = re.findall(r'querySelector(?:All)?\("(.*?)"\)', shell.MENU_SCRIPT)
         self.assertTrue(selectors)
         for selector in selectors:
             self.assertTrue(selector.startswith("details.menu"), selector)

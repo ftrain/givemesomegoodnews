@@ -6,7 +6,7 @@ spell them the same way.
 """
 
 import re
-
+from html import escape as esc
 
 from . import images
 
@@ -64,3 +64,9 @@ def feature_href(feature, prefix=""):
 
 def state_href(state_name, prefix=""):
     return f"{prefix}catalog/{re.sub(r'[^a-z0-9]+', '-', state_name.lower()).strip('-')}.html"
+
+
+def _org_line(art, mode, prefix):
+    loc = STATE_NAMES.get(art["state"], art["state"]) if art["state"] else "everywhere"
+    href = art["org_url"] if mode == "onepage" else f"{prefix}orgs/{art['slug']}.html"
+    return f'<a href="{esc(href)}">{esc(art["org_name"])}</a> ({esc(loc)})'

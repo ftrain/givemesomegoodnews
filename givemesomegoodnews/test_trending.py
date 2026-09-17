@@ -11,7 +11,7 @@ from datetime import datetime, timedelta, timezone
 from unittest import mock
 
 from . import build_site as bs
-from . import dedupe
+from . import dedupe, links, shell, topics
 from . import syndicate
 from . import trending as tr
 
@@ -339,15 +339,15 @@ class TopicsSet(unittest.TestCase):
     """Topics are module state, like the menu: set them, and put them back."""
 
     def setUp(self):
-        self.addCleanup(bs.set_topics, list(bs.TOPICS))
+        self.addCleanup(topics.set_topics, list(topics.TOPICS))
 
 
 class TrendingPage(TopicsSet):
     def test_before_the_first_snapshot(self):
-        self.assertIn("first list", bs.render_trending(None, [], {}))
+        self.assertIn("first list", topics.render_trending(None, [], {}))
 
     def test_each_topic_links_its_tag_page_with_counts_and_first_headlines(self):
-        html = bs.render_trending(SNAPSHOT, [topic()], river_stories(), now=NOW)
+        html = topics.render_trending(SNAPSHOT, [topic()], river_stories(), now=NOW)
         self.assertIn('<h2><a href="topics/colorado-river-cuts.html">Colorado River &lt;cuts&gt;</a></h2>',
                       html)
         self.assertIn("1 story &middot; 2 newsrooms &middot; 2 states", html)
@@ -358,28 +358,28 @@ class TrendingPage(TopicsSet):
         self.assertNotIn("running late", html)
 
     def test_says_how_topics_were_named_without_a_model(self):
-        html = bs.render_trending(dict(SNAPSHOT, labeler="terms"), [topic()], {}, now=NOW)
+        html = topics.render_trending(dict(SNAPSHOT, labeler="terms"), [topic()], {}, now=NOW)
         self.assertNotIn("DeepSeek", html)
         self.assertIn("phrase its headlines share", html)
 
     def test_says_when_the_list_is_late(self):
-        later = NOW + timedelta(hours=bs.TRENDING_STALE_HOURS + 1)
-        self.assertIn("running late", bs.render_trending(SNAPSHOT, [topic()], {}, now=later))
+        later = NOW + timedelta(hours=topics.TRENDING_STALE_HOURS + 1)
+        self.assertIn("running late", topics.render_trending(SNAPSHOT, [topic()], {}, now=later))
 
     def test_nothing_rising(self):
-        self.assertIn("Nothing is running", bs.render_trending(SNAPSHOT, [], {}, now=NOW))
+        self.assertIn("Nothing is running", topics.render_trending(SNAPSHOT, [], {}, now=NOW))
 
     def test_in_the_menu_and_kept_from_crawlers(self):
-        self.assertIn('href="trending.html"', bs.menu())
+        self.assertIn('href="trending.html"', shell.menu())
         self.assertIn("Disallow: /trending.html", syndicate.ROBOTS)
         self.assertIn("Disallow: /topics/", syndicate.ROBOTS)
 
 
 class TopicTags(TopicsSet):
     def test_every_page_carries_the_bar_under_the_masthead(self):
-        bs.set_topics([topic(), topic(label="School cellphone bans", slug="school-cellphone-bans",
+        topics.set_topics([topic(), topic(label="School cellphone bans", slug="school-cellphone-bans",
                                       article_ids=[9])])
-        html = bs.page("Anything", "<p>body</p>", prefix="../")
+        html = shell.page("Anything", "<p>body</p>", prefix="../")
         bar = html[html.index("</header>"):html.index('<main id="main">')]
         self.assertIn('<nav class="trendbar" aria-label="Trending topics">', bar)
         self.assertIn('href="../trending.html">Trending</a>', bar)
@@ -388,20 +388,20 @@ class TopicTags(TopicsSet):
         self.assertIn("topics/school-cellphone-bans.html", bar)
 
     def test_a_topic_page_lights_its_own_tag_in_the_bar(self):
-        bs.set_topics([topic(), topic(label="Heat wave", slug="heat-wave", article_ids=[9])])
-        bar = bs.topic_bar("../", current_topic="heat-wave")
+        topics.set_topics([topic(), topic(label="Heat wave", slug="heat-wave", article_ids=[9])])
+        bar = topics.topic_bar("../", current_topic="heat-wave")
         self.assertIn('href="../topics/heat-wave.html" aria-current="page">Heat wave', bar)
         self.assertEqual(bar.count("aria-current"), 1)
 
     def test_no_bar_without_topics_or_on_the_one_pager(self):
-        bs.set_topics([])
-        self.assertNotIn('class="trendbar"', bs.page("Anything", "<p>body</p>"))
-        bs.set_topics([topic()])
-        self.assertNotIn('class="trendbar"', bs.page("One page", "<p>body</p>", nav_html="<a>x</a>"))
+        topics.set_topics([])
+        self.assertNotIn('class="trendbar"', shell.page("Anything", "<p>body</p>"))
+        topics.set_topics([topic()])
+        self.assertNotIn('class="trendbar"', shell.page("One page", "<p>body</p>", nav_html="<a>x</a>"))
 
     def test_a_card_in_a_topic_carries_its_tag_and_one_outside_it_does_not(self):
         from .test_build_site import article
-        bs.set_topics([topic(article_ids=[41, 42])])
+        topics.set_topics([topic(article_ids=[41, 42])])
         inside = bs.render_feed_item(None, article(id=41), with_related=False)
         outside = bs.render_feed_item(None, article(id=40), with_related=False)
         self.assertIn('class="lozenge topic" href="topics/colorado-river-cuts.html"', inside)
@@ -410,19 +410,19 @@ class TopicTags(TopicsSet):
 
     def test_a_folded_reprint_in_a_topic_tags_the_card_it_is_folded_into(self):
         from .test_build_site import article
-        bs.set_topics([topic(article_ids=[42])])
+        topics.set_topics([topic(article_ids=[42])])
         card = article(id=41, _also=[article(id=42, org_name="Arizona Mirror")])
         self.assertIn("lozenge topic", bs.render_feed_item(None, card, with_related=False))
 
     def test_the_one_pager_card_has_no_topic_tag(self):
         from .test_build_site import article
-        bs.set_topics([topic(article_ids=[41])])
+        topics.set_topics([topic(article_ids=[41])])
         self.assertNotIn("lozenge topic",
                          bs.render_feed_item(None, article(id=41), mode="onepage", with_related=False))
 
     def test_home_section_names_reach_and_lead_story(self):
-        bs.set_topics([topic()])
-        html = bs.render_home_topics()
+        topics.set_topics([topic()])
+        html = topics.render_home_topics()
         self.assertIn('<h2 id="trending-now">Trending now</h2>', html)
         self.assertIn('<a class="name" href="topics/colorado-river-cuts.html">Colorado River &lt;cuts&gt;</a>',
                       html)
@@ -431,21 +431,21 @@ class TopicTags(TopicsSet):
         self.assertIn("The Nevada Independent", html)
 
     def test_home_section_caps_and_points_to_the_rest(self):
-        bs.set_topics([topic(label=f"Topic {n}", slug=f"topic-{n}", article_ids=[n])
-                       for n in range(bs.HOME_TOPICS + 2)])
-        html = bs.render_home_topics()
-        self.assertEqual(html.count("<li>"), bs.HOME_TOPICS)
-        self.assertIn(f"All {bs.HOME_TOPICS + 2} trending topics", html)
+        topics.set_topics([topic(label=f"Topic {n}", slug=f"topic-{n}", article_ids=[n])
+                       for n in range(topics.HOME_TOPICS + 2)])
+        html = topics.render_home_topics()
+        self.assertEqual(html.count("<li>"), topics.HOME_TOPICS)
+        self.assertIn(f"All {topics.HOME_TOPICS + 2} trending topics", html)
 
     def test_no_home_section_without_topics(self):
-        bs.set_topics([])
-        self.assertEqual(bs.render_home_topics(), "")
+        topics.set_topics([])
+        self.assertEqual(topics.render_home_topics(), "")
 
     def test_topic_page_intro_says_current_or_former(self):
-        now = bs.topic_intro(topic(), SNAPSHOT, current=True)
+        now = topics.topic_intro(topic(), SNAPSHOT, current=True)
         self.assertIn("trending in the 24 hours to", now)
         self.assertIn('href="../trending.html"', now)
-        gone = bs.topic_intro(topic(), SNAPSHOT, current=False)
+        gone = topics.topic_intro(topic(), SNAPSHOT, current=False)
         self.assertIn("no longer on the list", gone)
 
 
@@ -466,25 +466,25 @@ class SearchPages(TopicsSet):
             self.assertEqual(load.call_count, 1)
             self.searchd.refresh_topics(now=1000.0 + self.searchd.TOPICS_TTL + 1)
             self.assertEqual(load.call_count, 2)
-        self.assertEqual([t["slug"] for t in bs.TOPICS], ["colorado-river-cuts"])
+        self.assertEqual([t["slug"] for t in topics.TOPICS], ["colorado-river-cuts"])
 
     def test_a_failed_lookup_keeps_the_topics_it_had(self):
-        bs.set_topics([topic()])
+        topics.set_topics([topic()])
         with mock.patch.object(self.searchd, "connect", side_effect=OSError("db down")), \
                 mock.patch("sys.stderr"):
             self.searchd.refresh_topics(now=5000.0)
-        self.assertEqual(len(bs.TOPICS), 1)
+        self.assertEqual(len(topics.TOPICS), 1)
 
 
 class LoadTopics(unittest.TestCase):
     """load_topics against a cursor that answers its three queries in order."""
 
     def test_a_slug_never_ends_in_a_number_a_page_could_have(self):
-        self.assertEqual(bs.topic_slug("Route 66"), "route-66-topic")
-        self.assertEqual(bs.topic_slug("2026"), "2026-topic")
-        self.assertEqual(bs.topic_slug("25th anniversary"), "25th-anniversary")
-        self.assertEqual(bs.topic_slug("<>!"), "topic")
-        self.assertNotEqual(bs.feed_page_name("route", 65), bs.topic_slug("Route 66") + ".html")
+        self.assertEqual(topics.topic_slug("Route 66"), "route-66-topic")
+        self.assertEqual(topics.topic_slug("2026"), "2026-topic")
+        self.assertEqual(topics.topic_slug("25th anniversary"), "25th-anniversary")
+        self.assertEqual(topics.topic_slug("<>!"), "topic")
+        self.assertNotEqual(links.feed_page_name("route", 65), topics.topic_slug("Route 66") + ".html")
 
     def cursor(self, snapshot_row, topic_rows, lead_rows):
         cur = mock.Mock()
@@ -495,7 +495,7 @@ class LoadTopics(unittest.TestCase):
     def test_nothing_before_the_first_snapshot(self):
         cur = mock.Mock()
         cur.fetchone.return_value = None
-        self.assertEqual(bs.load_topics(cur), (None, [], []))
+        self.assertEqual(topics.load_topics(cur), (None, [], []))
 
     def test_current_slugs_are_unique_and_a_former_topic_keeps_its_page(self):
         earlier = NOW - timedelta(hours=5)
@@ -507,7 +507,7 @@ class LoadTopics(unittest.TestCase):
         ]
         leads = [(1, "Heat wave grips valley", "https://a", "A"), (3, "More heat", "https://b", "B"),
                  (8, "Bridge falls", "https://c", "C")]
-        snapshot, current, former = bs.load_topics(
+        snapshot, current, former = topics.load_topics(
             self.cursor((7, NOW, 24, 14, "terms"), rows, leads))
         self.assertEqual(snapshot["id"], 7)
         self.assertEqual([t["slug"] for t in current], ["heat-wave", "heat-wave-b"])
