@@ -14,8 +14,7 @@ import unittest
 from datetime import datetime, timezone
 from unittest import mock
 
-from . import build_site as bs
-from . import cards, images, links, migrate_images, prose, prune, shell, syndicate
+from . import cards, images, links, migrate_images, pages, prose, prune, shell, syndicate
 from . import reporters as rp
 from . import searchd
 
@@ -393,7 +392,7 @@ class DisclosureBehaviour(unittest.TestCase):
         # A caret written as a glyph joins the summary's accessible name and
         # is read out after every masthead, on top of the expanded and
         # collapsed the browser announces by itself.
-        for css in (shell.stylesheet(), bs.TEXT_CSS):
+        for css in (shell.stylesheet(), pages.TEXT_CSS):
             for glyph in ("▾", "▴", "▸", "▼", "▲"):
                 self.assertNotIn(glyph, css)
                 self.assertNotIn(f"\\{ord(glyph):04x}", css.lower())
@@ -429,13 +428,13 @@ class DisclosureBehaviour(unittest.TestCase):
 
 class PlainTextEdition(unittest.TestCase):
     def test_carries_the_profile_as_text_and_no_marker(self):
-        html = bs.render_text_item(article())
+        html = pages.render_text_item(article())
         self.assertIn("<dt>About The Ledger</dt>", html)
         self.assertIn("worker-owned newsroom covering the county", html)
         self.assertNotIn("disc-cue", html)
 
     def test_omits_the_row_when_there_is_no_usable_about_text(self):
-        html = bs.render_text_item(article(about_text=None))
+        html = pages.render_text_item(article(about_text=None))
         self.assertNotIn("<dt>About", html)
         self.assertNotIn("disc-cue", html)
 
@@ -443,7 +442,7 @@ class PlainTextEdition(unittest.TestCase):
         # The full edition's two profile markers do not follow the profile
         # text into this edition: there is the Details block and nothing else.
         with reporters_loaded(**{"dana reyes": reporter()}):
-            html = bs.render_text_item(article())
+            html = pages.render_text_item(article())
         self.assertEqual(html.count("<summary>"), 1)
         self.assertEqual(html.count("<details>"), 1)
         panel = re.search(r"</summary>(.*?)</details>", html, re.S).group(1)
@@ -456,19 +455,19 @@ class PlainTextEdition(unittest.TestCase):
         bare = article(author=None, summary=None, subject=None, about_text=None,
                        coverage=None, beat=None, city=None, image_alt=None,
                        features=[], model="", published_at=None)
-        html = bs.render_text_item(bare)
+        html = pages.render_text_item(bare)
         self.assertEqual(html.count("<summary>"), 1)
         panel = re.search(r"</summary>(.*?)</details>", html, re.S).group(1)
         self.assertIn("<dd>", panel)
 
     def test_the_details_marker_is_the_editions_own(self):
-        self.assertIn("summary::-webkit-details-marker{display:none}", bs.TEXT_CSS)
-        self.assertIn("summary::after{content:", bs.TEXT_CSS)
-        self.assertIn("details[open] summary::after{border-top-color:", bs.TEXT_CSS)
+        self.assertIn("summary::-webkit-details-marker{display:none}", pages.TEXT_CSS)
+        self.assertIn("summary::after{content:", pages.TEXT_CSS)
+        self.assertIn("details[open] summary::after{border-top-color:", pages.TEXT_CSS)
         # Still a list-item, which is what its announcement depends on.
-        rule = re.search(r"\nsummary\{(.*?)\}", bs.TEXT_CSS, re.S).group(1)
+        rule = re.search(r"\nsummary\{(.*?)\}", pages.TEXT_CSS, re.S).group(1)
         self.assertNotIn("display:", rule)
-        self.assertIn(":focus-visible{outline:", bs.TEXT_CSS)
+        self.assertIn(":focus-visible{outline:", pages.TEXT_CSS)
 
 
 class ResolvingAByline(unittest.TestCase):
@@ -558,7 +557,7 @@ class ReporterPanel(unittest.TestCase):
         for n in (1, 3, 7, 40):
             with reporters_loaded(**{"dana reyes": reporter(n_stories=n)}):
                 panel = cards.reporter_panel(article())
-                text = bs.render_text_item(article())
+                text = pages.render_text_item(article())
             self.assertIn(rp.prolificacy(n), panel)
             self.assertIn(rp.prolificacy(n), text)
 
@@ -663,7 +662,7 @@ class SearchService(unittest.TestCase):
 class ReporterInPlainText(unittest.TestCase):
     def test_carries_the_profile_as_text_and_no_marker(self):
         with reporters_loaded(**{"dana reyes": reporter()}):
-            html = bs.render_text_item(article())
+            html = pages.render_text_item(article())
         self.assertIn("<dt>Reported by</dt><dd>Dana Reyes</dd>", html)
         self.assertIn("<dt>About Dana Reyes</dt>", html)
         self.assertIn("Publishes with The Ledger and VTDigger.", html)
@@ -672,7 +671,7 @@ class ReporterInPlainText(unittest.TestCase):
 
     def test_an_unresolved_byline_says_nothing_extra(self):
         with reporters_loaded(**{"dana reyes": reporter()}):
-            html = bs.render_text_item(article(author="Staff Report"))
+            html = pages.render_text_item(article(author="Staff Report"))
         self.assertIn("<dt>Reported by</dt><dd>Staff Report</dd>", html)
         self.assertNotIn("<dt>About Dana", html)
         self.assertNotIn("stories on this site", html)

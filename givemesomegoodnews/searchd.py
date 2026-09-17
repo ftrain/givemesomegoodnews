@@ -19,7 +19,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlencode, urlparse
 
 from . import config, syndicate
-from .build_site import render_result_map
+from .pages import render_result_map
 from .cards import REPORTERS, load_reporter_panels, render_feed_item
 from .shell import MENU_FEEDS, MENU_SUBJECTS, page, search_form
 from .topics import load_topics, set_topics
