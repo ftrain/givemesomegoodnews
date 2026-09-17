@@ -42,7 +42,7 @@ from datetime import datetime, timedelta, timezone
 import requests
 
 from . import filters, language
-from .build_site import collapse_duplicates, title_tokens
+from .dedupe import collapse_duplicates, title_tokens
 from .db import connect
 
 WINDOW_HOURS = int(os.environ.get("TRENDING_WINDOW_HOURS", "24"))

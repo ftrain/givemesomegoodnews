@@ -28,15 +28,15 @@ from PIL import Image
 from . import config
 from .albers import MapProjection, state_locator
 from .timezones import local_dateline, local_time, zone_for
-from . import filters, images, reporters, syndicate
+from . import filters, reporters, syndicate
+from .dedupe import classify_pair, collapse_duplicates
+from .links import (STATE_NAMES, feature_href, feed_page_name, image_href,
+                    org_href, place_label, state_href, subject_href)
+from .prose import (_count, about_opening, clip_summary, credit,
+                    excerpt_paragraphs, newsroom_phrase, tighten, usable_about)
 from .tags import TAG_GROUPS, TAG_PRIORITY, region_of, tag_slug
 from .db import connect
 
-MIN_RELATED_SIM = float(os.environ.get("MIN_RELATED_SIM", "0.30"))
-# Above this cosine similarity, or with near-identical headlines, two
-# articles are the same story running in multiple outlets (syndication or a
-# co-publish), not two newsrooms independently circling one topic.
-SAME_STORY_SIM = float(os.environ.get("SAME_STORY_SIM", "0.80"))
 FEED_PAGE_ARTICLES = 600
 # Items per feed page — the rest arrive as you scroll.
 FEED_PAGE_SIZE = 30
@@ -48,21 +48,6 @@ EAGER_IMAGES = 3
 CONNECTION_ANCHORS = int(os.environ.get("CONNECTION_ANCHORS", "400"))
 ONEPAGE_ARTICLES = 80
 
-STATE_NAMES = {
-    "AL": "Alabama", "AK": "Alaska", "AZ": "Arizona", "AR": "Arkansas",
-    "CA": "California", "CO": "Colorado", "CT": "Connecticut", "DE": "Delaware",
-    "DC": "Washington, D.C.", "FL": "Florida", "GA": "Georgia", "HI": "Hawaii",
-    "ID": "Idaho", "IL": "Illinois", "IN": "Indiana", "IA": "Iowa",
-    "KS": "Kansas", "KY": "Kentucky", "LA": "Louisiana", "ME": "Maine",
-    "MD": "Maryland", "MA": "Massachusetts", "MI": "Michigan", "MN": "Minnesota",
-    "MS": "Mississippi", "MO": "Missouri", "MT": "Montana", "NE": "Nebraska",
-    "NV": "Nevada", "NH": "New Hampshire", "NJ": "New Jersey", "NM": "New Mexico",
-    "NY": "New York", "NC": "North Carolina", "ND": "North Dakota", "OH": "Ohio",
-    "OK": "Oklahoma", "OR": "Oregon", "PA": "Pennsylvania", "RI": "Rhode Island",
-    "SC": "South Carolina", "SD": "South Dakota", "TN": "Tennessee", "TX": "Texas",
-    "UT": "Utah", "VT": "Vermont", "VA": "Virginia", "WA": "Washington",
-    "WV": "West Virginia", "WI": "Wisconsin", "WY": "Wyoming",
-}
 
 # Subjects come first because they are what a reader is actually choosing
 # between; then the ways of navigating the whole thing; then the meta pages.
@@ -462,19 +447,8 @@ def page(title, body, prefix="", nav_html=None, scripts="", description="",
 """
 
 
-def place_label(org):
-    if org["city"] and org["state"]:
-        return f"{org['city']}, {org['state']}"
-    if org["state"]:
-        return STATE_NAMES.get(org["state"], org["state"])
-    return "no fixed geography"
 
 
-def org_href(org, mode, prefix=""):
-    """Internal org page for the site; the org's own site on the one-pager."""
-    if mode == "onepage":
-        return org["url"]
-    return f"{prefix}orgs/{org['slug']}.html"
 
 
 def meta_line(org):
@@ -490,17 +464,6 @@ def meta_line(org):
     return " · ".join(bits)
 
 
-def excerpt_paragraphs(text, max_paras=3, max_chars=1100):
-    if not text:
-        return [], False
-    paras = [p for p in text.split("\n\n") if p.strip()]
-    out, used = [], 0
-    for p in paras[:max_paras]:
-        if used + len(p) > max_chars and out:
-            break
-        out.append(p if used + len(p) <= max_chars else p[: max_chars - used].rsplit(" ", 1)[0] + " […]")
-        used += len(p)
-    return out, len(out) < len(paras)
 
 
 def catalog_entry(org, mode, prefix="", full=False):
@@ -684,37 +647,8 @@ def render_map(orgs, mode="site", prefix="", recent=()):
     )
 
 
-def title_tokens(title):
-    from .embedder import _STOPWORDS, _WORD_RE
-
-    # Normalize typographic apostrophes and strip possessives, so one
-    # outlet's "West's" matches another's "West’s".
-    norm = title.lower().replace("’", "'").replace("‘", "'")
-    words = (re.sub(r"'s$", "", w).replace("'", "") for w in _WORD_RE.findall(norm))
-    return {w for w in words if len(w) > 2 and w not in _STOPWORDS}
 
 
-def classify_pair(sim, title_a, title_b):
-    """'same' = one story in two outlets; 'kindred' = distinct stories that
-    rhyme; None = too weak to show. Embedding similarity alone can't split
-    reprints from echoes (a retitled reprint scores ~0.89 but co-published
-    copies with differently-truncated summaries score ~0.6, while
-    independent coverage of one event scores ~0.35), so headlines carry
-    half the decision."""
-    a, b = title_tokens(title_a), title_tokens(title_b)
-    union = a | b
-    jac = len(a & b) / len(union) if union else 0.0
-    if sim >= SAME_STORY_SIM:
-        return "same"
-    if jac >= 0.75 and min(len(a), len(b)) >= 4:
-        return "same"
-    if sim >= 0.50 and jac >= 0.40:
-        return "same"
-    if sim >= MIN_RELATED_SIM and (len(a & b) >= 1 or sim >= 0.45):
-        # The shared-headline-token guard keeps out spurious hashing
-        # collisions between short or unrelated titles.
-        return "kindred"
-    return None
 
 
 def related_to(cur, article_id, limit=4):
@@ -746,36 +680,6 @@ def search_form(query=""):
     )
 
 
-def collapse_duplicates(articles):
-    """Fold reprints of one story into a single feed entry.
-
-    Syndication and co-publishing mean the same headline arrives from
-    several newsrooms; showing it four times makes the feed look broken.
-    The first copy (newest, since the list is already ordered) is kept and
-    the rest are listed under it as "Also in". Headline-token overlap
-    decides — the same measure classify_pair() uses for reprints.
-    """
-    kept = []
-    for a in articles:
-        tokens = title_tokens(a["title"])
-        match = None
-        if len(tokens) >= 4:
-            for candidate in kept:
-                other = candidate["_tokens"]
-                union = tokens | other
-                if not union or len(other) < 4:
-                    continue
-                if len(tokens & other) / len(union) >= 0.75:
-                    match = candidate
-                    break
-        if match:
-            match["_also"].append(a)
-        else:
-            entry = dict(a)
-            entry["_tokens"] = tokens
-            entry["_also"] = []
-            kept.append(entry)
-    return kept
 
 
 MAP_SCRIPT = """<script>
@@ -901,9 +805,6 @@ FEED_SCRIPT = """<script>
 </script>"""
 
 
-def feed_page_name(stem, index):
-    """feed.html, feed-2.html, feed-3.html ..."""
-    return f"{stem}.html" if index == 0 else f"{stem}-{index + 1}.html"
 
 
 def write_feed_pages(site, cur, articles, stem, title, heading, prefix="",
@@ -930,14 +831,8 @@ def write_feed_pages(site, cur, articles, stem, title, heading, prefix="",
     return len(chunks)
 
 
-def image_href(name, prefix=""):
-    """Where a cached picture is served from: img/<first two of the name>/<name>.
-    See givemesomegoodnews.images for why the cache is spread out."""
-    return f"{prefix}img/{name[:images.SHARD]}/{name}"
 
 
-def subject_href(subject, prefix=""):
-    return f"{prefix}subjects/{subject.lower().replace(' ', '-')}.html"
 
 
 def support_link(article):
@@ -955,117 +850,22 @@ def support_link(article):
             f'{esc(label)}</a>')
 
 
-_EM_SPACES = re.compile(r"\s*\u2014\s*")
 
 
-def tighten(text):
-    """Close the gaps around em dashes.
-
-    ' \u2014 ' gives the browser two break opportunities and a wide gap that
-    reads as a hole in a headline. Closed up, the dash stays with the words
-    on either side of it.
-    """
-    return _EM_SPACES.sub("\u2014", text or "")
 
 
-_LEADING_BY = re.compile(r"^\s*by[:\s]\s*", re.IGNORECASE)
 
 
-def credit(author):
-    """The names in a byline, without the word the byline already supplies.
-
-    Plenty of feeds put the whole credit line in the author field — "By Bob
-    Berwyn", "By Howard Herman, The Berkshire Eagle" — and the byline adds its
-    own "By", which reads as "By By Bob Berwyn". Strip a leading one. The
-    separator the pattern requires after it keeps "Byron" whole, and a credit
-    that is nothing but the word itself is left alone rather than emptied.
-    """
-    return _LEADING_BY.sub("", author, count=1) or author
 
 
-_PARA_BREAK = re.compile(r"\n\s*\n")
-# Candidate sentence ends. A Latin period is only a candidate \u2014 sentence_ends()
-# still has to rule out the abbreviations. The CJK stops carry no such
-# ambiguity and are not written with a space after them, so they end a sentence
-# on their own \u2014 the Chinese-language outlets publish under the same mastheads
-# as the English.
-_SENTENCE_END = re.compile(
-    r"[.!?][\"'\u201d\u2019)\]]*(?=\s|$)"
-    r"|[\u3002\uff01\uff1f][\"'\u201d\u2019)\]\uff09]*"
-)
-# The word a period is attached to, with any interior periods, so "U.S." and
-# "a.m." arrive whole rather than as a bare trailing letter.
-_DOTTED_WORD = re.compile(r"([A-Za-z][A-Za-z.]*)\.$")
-# What a local paper abbreviates constantly. A period after one of these is
-# inside a sentence, not at the end of one.
-_ABBREVIATIONS = frozenset(
-    """
-    mr mrs ms mx dr prof rev fr sr jr st sen rep gov pres amb atty
-    sgt lt capt col gen maj cpl det ofc adm hon supt
-    ave blvd rd ln ct mt ft apt ste dept univ inst
-    inc corp co ltd llc plc assn bros
-    jan feb mar apr jun jul aug sept sep oct nov dec
-    mon tue tues wed thu thurs fri sat sun
-    no nos vs etc al approx est fig vol ed pp cf
-    """.split()
-)
 
 
-def _ends_sentence(para, i):
-    """Whether the period at para[i] is the end of a sentence.
-
-    Three things say it is not: a known abbreviation ("St.", "Gov."), a
-    dotted initialism or a lone initial ("U.S.", "a.m.", "J."), and a
-    following word that is lower-case, since an English sentence does not
-    start that way.
-    """
-    word = _DOTTED_WORD.search(para[:i + 1])
-    if word:
-        token = word.group(1)
-        if "." in token or len(token) == 1 or token.lower() in _ABBREVIATIONS:
-            return False
-    return not para[i + 1:].lstrip()[:1].islower()
 
 
-def sentence_ends(para):
-    """Offsets just past each sentence break in a paragraph."""
-    return [
-        m.end() for m in _SENTENCE_END.finditer(para)
-        if para[m.start()] != "." or _ends_sentence(para, m.start())
-    ]
 
 
-SUMMARY_BUDGET = 400
-# How far a summary may run past the budget to finish the sentence it is in.
-# Overshooting by a line reads better than handing the reader half a sentence.
-SUMMARY_GRACE = 120
 
 
-def clip_summary(text, budget=SUMMARY_BUDGET):
-    """The first paragraph of a source summary, held to a budget and cut only
-    at the end of a sentence.
-
-    Enough for a reader to judge the story; never enough that they need not
-    click through for the rest.
-    """
-    if not text:
-        return ""
-    para = _PARA_BREAK.split(text.strip(), maxsplit=1)[0].strip()
-    if len(para) <= budget:
-        return para
-    ends = sentence_ends(para)
-    fits = [e for e in ends if e <= budget]
-    if fits:
-        return para[:fits[-1]].rstrip()
-    # Nothing ends inside the budget, so spend the grace to close the first
-    # sentence rather than break it.
-    if ends and ends[0] <= budget + SUMMARY_GRACE:
-        return para[:ends[0]].rstrip()
-    # A paragraph that runs on with no sentence break anywhere near the
-    # budget: cut at the last complete word and say so, rather than let the
-    # cut land mid-token and unmarked.
-    cut = para.rfind(" ", 0, budget)
-    return (para[:cut].rstrip() + "\u2026") if cut > 0 else para
 
 
 def place_line(a, mode="site", prefix=""):
@@ -1108,20 +908,6 @@ def disclosure(marker, panel_html, extra_class=""):
             f'<div class="disc-panel">{panel_html}</div></details>')
 
 
-def about_opening(text, max_chars=420):
-    """One paragraph of an About page, for somewhere that has room for one.
-
-    The first block is often the page's own heading, a tagline, or a stray
-    line of CMS furniture — a third of the catalog's About texts open that
-    way. Where a whole About page can carry that and recover in the next
-    paragraph, a single-paragraph quote cannot, so skip to the first
-    paragraph long enough to be a description.
-    """
-    if not usable_about(text):
-        return ""
-    paras = [p.strip() for p in text.split("\n\n") if len(p.strip()) >= 80]
-    excerpt, _ = excerpt_paragraphs("\n\n".join(paras), max_paras=1, max_chars=max_chars)
-    return excerpt[0] if excerpt else ""
 
 
 def org_profile_panel(a, mode="site", prefix=""):
@@ -1146,23 +932,8 @@ def org_profile_panel(a, mode="site", prefix=""):
     return "\n".join(rows)
 
 
-def and_list(items):
-    """A, B and C — the way a sentence names a handful of things."""
-    items = list(items)
-    if len(items) < 3:
-        return " and ".join(items)
-    return ", ".join(items[:-1]) + " and " + items[-1]
 
 
-def newsroom_phrase(names, cap=4):
-    """Who a reporter publishes with, without listing thirty of them."""
-    if not names:
-        return ""
-    if len(names) <= cap:
-        return f"Publishes with {and_list(names)}."
-    rest = len(names) - cap
-    others = "another newsroom" if rest == 1 else f"{rest} other newsrooms"
-    return f"Publishes with {', '.join(names[:cap])} and {others}."
 
 
 def reporter_span(first_at, last_at):
@@ -1855,8 +1626,6 @@ def card_topics(a, prefix=""):
     return f'<span class="tags">{"".join(topic_lozenge(t, prefix) for t in found)}</span>'
 
 
-def _count(n, noun, plural=None):
-    return f"{n} {noun}" if n == 1 else f"{n} {plural or noun + 's'}"
 
 
 def topic_counts(topic):
@@ -2048,12 +1817,8 @@ def tag_links(org, prefix="", cap=None):
     return f'<span class="tags">{links}</span>'
 
 
-def feature_href(feature, prefix=""):
-    return f"{prefix}features/{re.sub(r'[^a-z0-9]+', '-', feature.lower()).strip('-')}.html"
 
 
-def state_href(state_name, prefix=""):
-    return f"{prefix}catalog/{re.sub(r'[^a-z0-9]+', '-', state_name.lower()).strip('-')}.html"
 
 
 def feature_links(org, prefix=""):
@@ -2239,20 +2004,8 @@ def render_institutions(cur, orgs, mode="site", prefix=""):
     return "\n".join(parts)
 
 
-# Plenty of About pages scrape down to a cookie notice or "we have turned
-# off comments". Show the quotation only when there is really something there.
-_ABOUT_JUNK = re.compile(
-    r"turned off comments|comment(ing)? (is|has been) (disabled|closed)|"
-    r"cookies?|privacy policy|javascript|subscribe to (our|the) newsletter|"
-    r"page not found|404", re.IGNORECASE)
 
 
-def usable_about(text):
-    text = (text or "").strip()
-    if len(text) < 240:
-        return False
-    head = text[:400]
-    return not _ABOUT_JUNK.search(head)
 
 
 TEXT_CSS = """<style>

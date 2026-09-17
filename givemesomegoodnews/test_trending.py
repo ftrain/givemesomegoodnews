@@ -11,6 +11,7 @@ from datetime import datetime, timedelta, timezone
 from unittest import mock
 
 from . import build_site as bs
+from . import dedupe
 from . import syndicate
 from . import trending as tr
 
@@ -331,7 +332,7 @@ def river_stories():
             "slug": "the-nevada-independent", "org_url": "https://thenevadaindependent.com/",
             "state": "NV"}
     reprint = dict(item, id=2, org_name="Arizona Mirror", slug="arizona-mirror", state="AZ")
-    return {"colorado-river-cuts": bs.collapse_duplicates([item, reprint])}
+    return {"colorado-river-cuts": dedupe.collapse_duplicates([item, reprint])}
 
 
 class TopicsSet(unittest.TestCase):

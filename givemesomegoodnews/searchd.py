@@ -20,8 +20,9 @@ from urllib.parse import parse_qs, urlencode, urlparse
 
 from . import config, syndicate
 from .build_site import (MENU_FEEDS, MENU_SUBJECTS, REPORTERS,
-                          collapse_duplicates, load_reporter_panels, load_topics, page,
+                          load_reporter_panels, load_topics, page,
                           render_feed_item, render_result_map, search_form, set_topics)
+from .dedupe import collapse_duplicates
 from .timezones import local_dateline
 from .db import connect
 import collections
