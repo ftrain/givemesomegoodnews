@@ -17,6 +17,9 @@
 #   DB=givemesomegoodnews           the database on it
 #   APP_DIR=/srv/givemesomegoodnews/app
 #   SSH_KEY=~/.ssh/id_exe           the key to use (cron has no agent)
+#   KEEP_DAILY=14                   days for which every night is kept
+#   KEEP_WEEKLY=0                   weeks to keep one night a week after that;
+#                                   0 keeps the weekly ones for good
 #   KEEP_ENV=1                      also copy the VM's .env (it holds secrets)
 #
 # What a night costs: about 20 MB of database, plus that day's new pictures
@@ -49,6 +52,8 @@ HOST="${HOST:-givemesomegood.exe.xyz}"
 DB="${DB:-givemesomegoodnews}"
 APP_DIR="${APP_DIR:-/srv/givemesomegoodnews/app}"
 KEEP_ENV="${KEEP_ENV:-0}"
+KEEP_DAILY="${KEEP_DAILY:-14}"
+KEEP_WEEKLY="${KEEP_WEEKLY:-0}"
 # LogLevel=ERROR keeps a host's login banner out of the log every night.
 SSH=(ssh -o BatchMode=yes -o ConnectTimeout=20 -o LogLevel=ERROR)
 # cron has no agent and no shell of yours, so the key is named. SSH_KEY says
@@ -228,4 +233,63 @@ database called something else and run `make serve`.
 DOC
 
 mv "$night" "$DEST/db/$stamp"
+
+# Thin out the old nights: every night for KEEP_DAILY days, then the first
+# night of each week. The newest is never touched, and neither are the
+# pictures — those are the archive itself, and they only ever grow.
+#
+# Dates are done in awk rather than with date(1), whose arithmetic differs
+# between a Mac and a Linux box; this is the same arithmetic everywhere.
+prune_nights() {
+	local listed="" d name
+	for d in "$DEST"/db/*Z; do
+		name="$(basename "$d")"
+		case "$name" in
+		[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]T[0-9][0-9][0-9][0-9][0-9][0-9]Z)
+			[ -d "$d" ] && listed="$listed$name
+" ;;
+		esac
+	done
+	[ -n "$listed" ] || return 0
+	printf '%s' "$listed" | sort | awk -v today="$(date -u +%Y%m%d)" \
+		-v keep_daily="$KEEP_DAILY" -v keep_weekly="$KEEP_WEEKLY" '
+		function days(ymd,   y, m, d, era, yoe, doy, doe) {
+			y = substr(ymd, 1, 4) + 0; m = substr(ymd, 5, 2) + 0; d = substr(ymd, 7, 2) + 0
+			if (m <= 2) y--
+			era = int((y >= 0 ? y : y - 399) / 400)
+			yoe = y - era * 400
+			doy = int((153 * (m + (m > 2 ? -3 : 9)) + 2) / 5) + d - 1
+			doe = yoe * 365 + int(yoe / 4) - int(yoe / 100) + doy
+			return era * 146097 + doe - 719468
+		}
+		BEGIN { now = days(today) }
+		{ night[NR] = $0; day[NR] = days(substr($0, 1, 8)); n = NR }
+		END {
+			for (i = 1; i <= n; i++) {
+				week = int((day[i] + 3) / 7)
+				if (!(week in first)) first[week] = i
+			}
+			for (i = 1; i <= n; i++) {
+				age = now - day[i]
+				week = int((day[i] + 3) / 7)
+				keep = (i == n) || (age <= keep_daily) ||
+				       (first[week] == i && (keep_weekly == 0 || age <= keep_weekly * 7))
+				if (!keep) print night[i]
+			}
+		}' | while read -r old; do
+		case "$old" in
+		[0-9]*Z)
+			rm -rf "${DEST:?}/db/$old"
+			echo "  dropped $old"
+			;;
+		esac
+	done
+	# Runs that died before they were named, from some earlier day.
+	find "$DEST/db" -maxdepth 1 -name "*.part" -type d -mtime +1 -exec rm -rf {} + 2>/dev/null || true
+	return 0
+}
+say "thinning old nights (every night for ${KEEP_DAILY}d, then one a week)"
+prune_nights
+say "kept: $(ls -1d "$DEST"/db/*Z 2>/dev/null | wc -l | tr -d " ") night(s), $(du -sh "$DEST" | cut -f1) in all"
+
 say "done: $DEST/db/$stamp"
