@@ -377,11 +377,40 @@ def footer_links(prefix=""):
     )
 
 
+def share_card(title, description):
+    """What a link to this page unfurls into when somebody posts it.
+
+    One picture for the whole site rather than one per page: the card is
+    the masthead over the map of who is in the catalog, which is as true of
+    a tag page as it is of the front page. The image has to be an absolute
+    URL — a scraper resolves nothing — and a PNG, because none of the
+    platforms render SVG.
+
+    No og:url: this shell does not know which path it is being written to,
+    and a canonical link that is wrong on every page but one is worse than
+    none. Scrapers fall back to the URL they fetched, which is right.
+    """
+    image = f"{config.SITE_URL}/{config.SHARE_IMAGE}"
+    width, height = config.SHARE_IMAGE_SIZE
+    return "\n".join((
+        '<meta property="og:type" content="website">',
+        f'<meta property="og:site_name" content="{esc(config.SITE_NAME)}">',
+        f'<meta property="og:title" content="{esc(title)}">',
+        f'<meta property="og:description" content="{esc(description)}">',
+        f'<meta property="og:image" content="{esc(image)}">',
+        f'<meta property="og:image:type" content="image/png">',
+        f'<meta property="og:image:width" content="{width}">',
+        f'<meta property="og:image:height" content="{height}">',
+        f'<meta property="og:image:alt" content="{esc(config.SHARE_IMAGE_ALT)}">',
+        '<meta name="twitter:card" content="summary_large_image">',
+    ))
+
+
 def page(title, body, prefix="", nav_html=None, scripts="", description="",
          feed_href="feed.xml", feed_title=None, current_topic=None):
-    meta_desc = (
-        f'<meta name="description" content="{esc(description)}">\n' if description else ""
-    )
+    # A page with nothing more particular to say describes itself the way
+    # the site does, rather than going out with no description at all.
+    description = description or config.SITE_DESCRIPTION
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -389,7 +418,9 @@ def page(title, body, prefix="", nav_html=None, scripts="", description="",
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
 <title>{esc(title)}</title>
-{meta_desc}<link rel="icon" href="{prefix}favicon.svg" type="image/svg+xml">
+<meta name="description" content="{esc(description)}">
+{share_card(title, description)}
+<link rel="icon" href="{prefix}favicon.svg" type="image/svg+xml">
 <link rel="alternate" type="application/rss+xml"
  title="{esc(feed_title or config.SITE_NAME)}" href="{prefix}{feed_href}">
 {stylesheet(prefix)}

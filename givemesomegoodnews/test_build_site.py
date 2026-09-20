@@ -16,7 +16,10 @@ import unittest
 from datetime import datetime, timezone
 from unittest import mock
 
-from . import cards, images, links, migrate_images, pages, prose, prune, shell, syndicate
+from PIL import Image
+
+from . import cards, config, images, links, migrate_images, pages, prose, prune
+from . import share_card, shell, syndicate
 from . import reporters as rp
 from . import searchd
 
@@ -832,3 +835,54 @@ class SearchFoldsReprints(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ShareCard(unittest.TestCase):
+    """The picture a link to this site unfurls into."""
+
+    def test_every_page_carries_the_card(self):
+        html = shell.page("A page", "<p>x</p>")
+        self.assertIn('<meta property="og:image" '
+                      f'content="{config.SITE_URL}/{config.SHARE_IMAGE}">', html)
+        self.assertIn('<meta name="twitter:card" content="summary_large_image">', html)
+        self.assertIn('<meta property="og:title" content="A page">', html)
+        # An absolute URL: a scraper is not on the site and resolves nothing.
+        self.assertNotIn(f'og:image" content="{config.SHARE_IMAGE}"', html)
+
+    def test_the_card_is_the_size_the_pages_promise(self):
+        width, height = config.SHARE_IMAGE_SIZE
+        self.assertIn(f'<meta property="og:image:width" content="{width}">',
+                      shell.page("A page", "<p>x</p>"))
+        with Image.open(config.ASSETS_DIR / config.SHARE_IMAGE) as card:
+            self.assertEqual(card.format, "PNG")  # no platform renders SVG
+            self.assertEqual(card.size, (width, height))
+
+    def test_a_page_with_nothing_of_its_own_to_say_says_what_the_site_is(self):
+        html = shell.page("A page", "<p>x</p>")
+        for attr in ('name="description"', 'property="og:description"'):
+            self.assertIn(f'<meta {attr} content="{config.SITE_DESCRIPTION}">', html)
+        own = shell.page("A page", "<p>x</p>", description="Its own words.")
+        self.assertIn('<meta name="description" content="Its own words.">', own)
+        self.assertIn('<meta property="og:description" content="Its own words.">', own)
+
+    def test_no_page_claims_to_be_the_canonical_one(self):
+        # The shell does not know the path it is being written to, and an
+        # og:url that is right on one page and wrong on the rest is worse
+        # than leaving the scraper with the URL it fetched.
+        self.assertNotIn("og:url", shell.page("A page", "<p>x</p>"))
+
+    def test_the_card_is_drawn_from_the_catalog(self):
+        html = share_card.card_html()
+        self.assertIn(config.SITE_DESCRIPTION, html)
+        self.assertIn("givemesomegood.news", html)
+        # The masthead's letterforms are paths, so the card needs no font
+        # for them, and there is a dot for every town in the catalog.
+        self.assertIn('class="wordmark"', html)
+        self.assertGreater(html.count("<circle"), 300)
+
+    def test_the_card_is_a_copied_asset_not_a_page_the_build_draws(self):
+        # The fifteen-minute build must not have to run a browser.
+        source = (config.ROOT / "givemesomegoodnews" / "build_site.py").read_text()
+        self.assertIn("config.ASSETS_DIR / config.SHARE_IMAGE", source)
+        for importing in ("import share_card", "from .share_card"):
+            self.assertNotIn(importing, source)

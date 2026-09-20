@@ -15,6 +15,19 @@ ASSETS_DIR = ROOT / "assets"
 
 SITE_NAME = "Give Me Some Good News"
 SITE_URL = "https://givemesomegood.news"
+# The site in one sentence: the line on the share card, the description a
+# page gives a search engine when it has nothing more particular to say, and
+# what a post of a link to it carries underneath the picture. One sentence
+# in one place, so those three can never drift apart.
+SITE_DESCRIPTION = ("Local not-for-profit newsrooms and community news sources "
+                    "from around the United States.")
+# Drawn by givemesomegoodnews.share_card and copied into the site by the
+# build; the size is what the platforms crop least from.
+SHARE_IMAGE = "share.png"
+SHARE_IMAGE_SIZE = (1200, 630)
+SHARE_IMAGE_ALT = ("The words Give Me Some Good News above a map of the "
+                   "United States with a red dot on every town that has a "
+                   "newsroom in the catalog.")
 REPO_URL = "https://github.com/ftrain/givemesomegoodnews"
 REPO_LABEL = "ftrain/givemesomegoodnews"
 

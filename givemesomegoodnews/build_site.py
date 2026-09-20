@@ -387,6 +387,13 @@ def main():
     masthead = config.ASSETS_DIR / "masthead.svg"
     if masthead.is_file():
         shutil.copyfile(masthead, site / "masthead.svg")
+    # The share card is drawn by givemesomegoodnews.share_card and lives in
+    # the repository; the build only carries it across, the way it carries
+    # the flags. Every page points at it, so it has to be here before any
+    # of them are written.
+    share = config.ASSETS_DIR / config.SHARE_IMAGE
+    if share.is_file():
+        shutil.copyfile(share, site / config.SHARE_IMAGE)
 
     with connect() as conn, conn.cursor() as cur:
         orgs = load_orgs(cur)
