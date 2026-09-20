@@ -24,4 +24,9 @@ done
 python3 -m givemesomegoodnews.seed || true
 
 mkdir -p site/img
+
+# site/ is generated output, not committed (see .gitignore), so a fresh clone
+# has no index.html until the first build. Cheap: a catalog-only build is ~1s.
+python3 -m givemesomegoodnews.build_site
+
 echo "database ready: $DATABASE_URL"
