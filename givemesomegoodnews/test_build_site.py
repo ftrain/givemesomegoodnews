@@ -1066,3 +1066,39 @@ class SearchPaths(unittest.TestCase):
         self.assertEqual(sent["code"], 301)
         self.assertEqual(sent["Location"], "/search?q=library")
         self.assertNotIn("error", sent)
+
+
+class AskedCursor:
+    """A cursor that remembers the question and answers nothing."""
+
+    def __init__(self):
+        self.sql = self.params = None
+
+    def execute(self, sql, params=None):
+        self.sql, self.params = sql, params
+
+    def fetchall(self):
+        return []
+
+
+class RelatedStoriesUseTheIndex(unittest.TestCase):
+    def test_the_vector_is_handed_over_as_a_constant(self):
+        # An HNSW index can only be walked from a vector it has been given.
+        # Ordering by a column that comes from a join in the same statement
+        # is not that, and Postgres answered it by scanning every embedding
+        # on the site — four hundred milliseconds a card, and most of a
+        # build. This is the shape that can use the index.
+        cur = AskedCursor()
+        cards.related_to(cur, 7)
+        order = cur.sql[cur.sql.index("ORDER BY"):]
+        self.assertIn("(SELECT embedding FROM articles WHERE id =", order)
+        self.assertNotIn("a.embedding <=> b.embedding", cur.sql)
+        self.assertEqual(cur.params["id"], 7)
+
+    def test_somewhere_else_is_asked_inside_the_walk(self):
+        # Filtering after the fact means fetching neighbours to throw away.
+        cur = AskedCursor()
+        cards.related_to(cur, 7)
+        where = cur.sql[cur.sql.index("WHERE"):cur.sql.index("ORDER BY")]
+        self.assertIn("b.org_id <>", where)
+        self.assertIn("o2.state IS DISTINCT FROM", where)

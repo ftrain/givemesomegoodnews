@@ -65,20 +65,39 @@ def meta_line(org):
 
 
 def related_to(cur, article_id, limit=4):
+    """The same story somewhere else: nearest neighbours in another state.
+
+    What makes this affordable is the HNSW index on articles.embedding, and
+    an index can only be walked from a vector it has been handed. This used
+    to order by `a.embedding <=> b.embedding` with `a` fetched in the same
+    statement, and a column from a join is not a constant, so Postgres
+    could not use the index at all: every card on the front page cost a
+    scan of all seventy-nine thousand embeddings — four hundred
+    milliseconds each, and most of the build. Handing the vector over as a
+    scalar subquery makes it the constant the walk starts from, and the
+    same question is answered in two.
+
+    Both "somewhere else" conditions ride inside that scan rather than
+    around it, so the walk stops as soon as enough rows have passed them
+    rather than gathering neighbours to throw away. The answer is the
+    index's, so it is the approximate one: near neighbours, not provably
+    the nearest, which is all a row of "also reported in" ever needed.
+    """
     cur.execute(
         """
         SELECT b.title, b.url, o2.name, o2.slug, o2.url AS org_url,
-               1 - (a.embedding <=> b.embedding) AS sim
-        FROM articles a
-        JOIN orgs o1 ON o1.id = a.org_id,
-        articles b JOIN orgs o2 ON o2.id = b.org_id
-        WHERE a.id = %s AND b.org_id <> a.org_id
-          AND o2.state IS DISTINCT FROM o1.state
-          AND a.embedding IS NOT NULL AND b.embedding IS NOT NULL
-        ORDER BY a.embedding <=> b.embedding
-        LIMIT %s
+               1 - (b.embedding <=> (SELECT embedding FROM articles WHERE id = %(id)s))
+                   AS sim
+        FROM articles b JOIN orgs o2 ON o2.id = b.org_id
+        WHERE b.embedding IS NOT NULL
+          AND b.org_id <> (SELECT org_id FROM articles WHERE id = %(id)s)
+          AND o2.state IS DISTINCT FROM (SELECT o.state FROM articles a
+                                           JOIN orgs o ON o.id = a.org_id
+                                          WHERE a.id = %(id)s)
+        ORDER BY b.embedding <=> (SELECT embedding FROM articles WHERE id = %(id)s)
+        LIMIT %(limit)s
         """,
-        (article_id, limit),
+        {"id": article_id, "limit": limit},
     )
     return [r for r in cur.fetchall() if r[5] >= 0.28]
 
