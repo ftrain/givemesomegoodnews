@@ -147,21 +147,35 @@ class PublicationPanel(unittest.TestCase):
         self.assertIn("<strong>The Ledger</strong>", marker)
         self.assertIn('<span class="disc-cue">Profile</span>', marker)
 
-    def test_panel_shows_description_coverage_tags_and_three_links(self):
+    def test_panel_shows_description_coverage_and_two_links(self):
         html = card()
         panel = re.search(r'<div class="disc-panel">(.*?)</div>', html, re.S).group(1)
         self.assertIn("worker-owned newsroom covering the county", panel)
         self.assertIn("Covers Rutland County.", panel)
-        for tag in ("Worker-owned", "Reader-funded", "INN member"):
-            self.assertIn(f">{tag}</a>", panel)
         self.assertIn('href="https://ledger.example/">Their site</a>', panel)
         self.assertIn('href="orgs/the-ledger.html">Newsroom page</a>', panel)
-        self.assertIn('href="https://ledger.example/donate"', panel)
 
-    def test_panel_shows_the_whole_feature_set_uncapped(self):
+    def test_panel_repeats_nothing_the_rail_is_already_showing(self):
+        # The panel opens beside the rail, not in place of it: a tag or an
+        # ask rendered in both is the same lozenge printed twice, an inch
+        # apart, and reads as two different ones.
+        html = card()
+        panel = re.search(r'<div class="disc-panel">(.*?)</div>', html, re.S).group(1)
+        rail = re.search(r'<aside class="tagcol">(.*?)</aside>', html, re.S).group(1)
+        for tag in re.findall(r'class="lozenge" href="features/[^"]*">([^<]+)<', rail):
+            self.assertNotIn(f">{tag}</a>", panel)
+        self.assertIn("ledger.example/donate", rail)
+        self.assertNotIn("ledger.example/donate", panel)
+
+    def test_panel_carries_the_tags_the_rail_had_no_room_for(self):
         many = [f"Tag{n}" for n in range(9)]
-        panel = cards.org_profile_panel(article(features=many, model=""))
-        for tag in many:
+        a = article(features=many, model="")
+        panel = cards.org_profile_panel(a)
+        rail = cards.tag_links(a, cap=cards.RAIL_TAG_CAP)
+        for tag in many[:cards.RAIL_TAG_CAP]:
+            self.assertIn(f">{tag}</a>", rail)
+            self.assertNotIn(f">{tag}</a>", panel)
+        for tag in many[cards.RAIL_TAG_CAP:]:
             self.assertIn(f">{tag}</a>", panel)
 
     def test_unusable_about_text_still_gets_a_panel(self):
@@ -169,7 +183,6 @@ class PublicationPanel(unittest.TestCase):
             panel = cards.org_profile_panel(article(about_text=about))
             self.assertNotIn("<blockquote>", panel)
             self.assertIn("Covers Rutland County.", panel)
-            self.assertIn(">Worker-owned</a>", panel)
             self.assertIn("Their site</a>", panel)
             self.assertIn("Newsroom page</a>", panel)
 

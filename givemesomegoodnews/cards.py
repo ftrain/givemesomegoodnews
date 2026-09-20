@@ -147,15 +147,19 @@ def org_profile_panel(a, mode="site", prefix=""):
         rows.append('<p class="meta">— in their own words, from their About page.</p>')
     if a.get("coverage"):
         rows.append(f'<p>Covers {esc(a["coverage"])}.</p>')
-    # The whole tag set, not the shortened one the card's column carries.
-    tags = tag_links(a, prefix if mode != "onepage" else "")
+    # The panel opens a finger's width from the rail, and a lozenge repeated
+    # there reads as a second, different one: a card whose newsroom is
+    # tagged Nonprofit and takes donations was showing Nonprofit and Donate
+    # twice over, side by side. So the panel carries only what the rail had
+    # no room for — the tags past its cap — and leaves the ask to the rail,
+    # which is always showing it when this panel is open.
+    tags = tag_links(a, prefix if mode != "onepage" else "", after=RAIL_TAG_CAP)
     if tags:
         rows.append(f"<p>{tags}</p>")
     links = [f'<a class="lozenge" href="{esc(a["org_url"])}">Their site</a>']
     if mode != "onepage":
         links.append(f'<a class="lozenge" href="{prefix}orgs/{esc(a["slug"])}.html">'
                      f"Newsroom page</a>")
-    links.append(support_link(a))
     rows.append(f'<p>{"".join(links)}</p>')
     return "\n".join(rows)
 
@@ -628,14 +632,16 @@ def ownership_tags(org):
 RAIL_TAG_CAP = 3
 
 
-def tag_links(org, prefix="", cap=None):
+def tag_links(org, prefix="", cap=None, after=0):
     """Tags as tappable lozenges, each leading to that characteristic's page.
 
     Ordered by TAG_PRIORITY (Ownership, then Community, then Practice, each
     group in its own fixed order) so a capped render always keeps the same
-    subset, in the same order, as an uncapped one.
+    subset, in the same order, as an uncapped one — and so `after` picks up
+    exactly where a render capped at the same number left off.
     """
     tags = sorted(ownership_tags(org), key=lambda t: TAG_PRIORITY.get(t, len(TAG_PRIORITY)))
+    tags = tags[after:]
     if cap is not None:
         tags = tags[:cap]
     if not tags:
