@@ -1102,3 +1102,27 @@ class RelatedStoriesUseTheIndex(unittest.TestCase):
         where = cur.sql[cur.sql.index("WHERE"):cur.sql.index("ORDER BY")]
         self.assertIn("b.org_id <>", where)
         self.assertIn("o2.state IS DISTINCT FROM", where)
+
+
+class StandingDownForADeploy(unittest.TestCase):
+    def test_the_hold_file_is_where_the_deploy_puts_it(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            hold = pathlib.Path(tmp) / "deploy.hold"
+            with mock.patch.object(config, "HOLD_FILE", hold):
+                self.assertFalse(config.standing_down())
+                hold.touch()
+                self.assertTrue(config.standing_down())
+
+    def test_a_crawl_passes_over_what_it_has_not_reached(self):
+        # Not "no feed found", which would stamp the org as crawled and put
+        # it at the back of the rotation: nothing at all, so the next slice
+        # finds it exactly where it was.
+        org = {"id": 1, "slug": "the-ledger", "url": "https://ledger.example/",
+               "feed_url": None, "language": "English"}
+        with mock.patch.object(config, "standing_down", lambda: True):
+            self.assertEqual(fetch_feeds.crawl_one(org), (org, None, None))
+
+    def test_a_feed_passed_over_is_not_a_feed_that_failed(self):
+        source = (config.ROOT / "givemesomegoodnews" / "fetch_feeds.py").read_text()
+        loop = source[source.index("for org, feed_url, items in results:"):]
+        self.assertLess(loop.index("if items is None:"), loop.index("if not feed_url:"))

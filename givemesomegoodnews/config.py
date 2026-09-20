@@ -31,6 +31,22 @@ SHARE_IMAGE_ALT = ("The words Give Me Some Good News above a map of the "
 REPO_URL = "https://github.com/ftrain/givemesomegoodnews"
 REPO_LABEL = "ftrain/givemesomegoodnews"
 
+# A deploy that is about to swap this checkout under the running app writes
+# this file first. The long scheduled jobs look for it and stop at their next
+# clean point, rather than making the deploy wait out a crawl it is only going
+# to interrupt the moment it finishes. The deploy removes it when it is done;
+# nothing else ever creates it.
+HOLD_FILE = Path(os.environ.get("GMSGN_HOLD", ROOT.parent / "run" / "deploy.hold"))
+
+
+def standing_down():
+    """True when a deploy has asked the scheduled jobs to stand down."""
+    try:
+        return HOLD_FILE.exists()
+    except OSError:
+        return False
+
+
 USER_AGENT = (
     f"GiveMeSomeGoodNewsBot/0.1 (+{SITE_URL}; a directory and feed reader "
     "celebrating independent local news)"

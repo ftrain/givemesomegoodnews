@@ -138,6 +138,14 @@ FUTURE_GRACE = timedelta(hours=2)
 
 
 def crawl_one(org):
+    # A deploy is waiting for this slice's lock. The feeds already in flight
+    # finish — they are a timeout away at worst — and the rest of the queue
+    # drains in a moment, which is the difference between a deploy waiting
+    # five minutes and waiting thirty seconds. Nothing is lost: the rotation
+    # is ordered by when a feed was last crawled, so a feed passed over here
+    # is at the front of the next slice, five minutes later.
+    if config.standing_down():
+        return org, None, None
     feed_url, parsed = resolve_feed(org)
     if not parsed:
         return org, None, []
@@ -217,9 +225,14 @@ def main():
     with ThreadPoolExecutor(max_workers=config.CRAWL_WORKERS) as pool:
         results = list(pool.map(crawl_one, orgs))
 
-    total_new, no_feed = 0, []
+    total_new, no_feed, stood_down = 0, [], 0
     with connect() as conn, conn.cursor() as cur:
         for org, feed_url, items in results:
+            if items is None:
+                # Passed over for a deploy: not crawled, not stamped, not
+                # logged as a failure. It is simply still waiting its turn.
+                stood_down += 1
+                continue
             if not feed_url:
                 no_feed.append(org["slug"])
                 # Stamp it anyway so a feedless org doesn't monopolise the
@@ -264,6 +277,8 @@ def main():
             total_new += len(new_items)
 
     print(f"feeds: {total_new} new articles; no feed for: {', '.join(no_feed) or 'none'}")
+    if stood_down:
+        print(f"feeds: {stood_down} left for the next slice — a deploy asked for the lock")
 
 
 if __name__ == "__main__":
