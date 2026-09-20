@@ -18,7 +18,7 @@ from unittest import mock
 
 from PIL import Image
 
-from . import cards, config, images, links, migrate_images, pages, prose, prune
+from . import cards, config, images, links, mapbox, migrate_images, pages, prose, prune
 from . import share_card, shell, syndicate
 from . import reporters as rp
 from . import searchd
@@ -886,3 +886,114 @@ class ShareCard(unittest.TestCase):
         self.assertIn("config.ASSETS_DIR / config.SHARE_IMAGE", source)
         for importing in ("import share_card", "from .share_card"):
             self.assertNotIn(importing, source)
+
+
+class MapBox(unittest.TestCase):
+    """The box a reader drags over the search map."""
+
+    def test_a_box_is_four_numbers_or_nothing_at_all(self):
+        self.assertEqual(mapbox.parse("100,200,600,700"), (100, 200, 600, 700))
+        # Dragged bottom-right to top-left: the same box, written backwards.
+        self.assertEqual(mapbox.parse("600,700,100,200"), (100, 200, 600, 700))
+        # Beyond the map is the edge of the map.
+        self.assertEqual(mapbox.parse("-50,0,4000,900"), (0, 0, 1000, 900))
+        for nonsense in ("", "1,2,3", "a,b,c,d", "1,2,3,4,5", None, "0,0,1000,1000"):
+            self.assertIsNone(mapbox.parse(nonsense))
+        # A mis-drag, not an ask.
+        self.assertIsNone(mapbox.parse("500,500,505,505"))
+
+    def test_the_whole_map_is_not_a_filter(self):
+        self.assertIsNone(mapbox.parse(mapbox.unparse(mapbox.WHOLE)))
+
+    def test_a_dot_is_where_the_map_draws_it_not_where_the_globe_does(self):
+        # Alaska is drawn as an inset in the Pacific, bottom left, so its
+        # dot is nowhere near where its longitude would put it. This is the
+        # whole reason the box is kept in the map's coordinates.
+        alaska = mapbox.point(61.2, -149.9, "AK")
+        vermont = mapbox.point(43.6, -72.9, "VT")
+        self.assertLess(alaska[0], 250)
+        self.assertGreater(alaska[1], 600)
+        self.assertGreater(vermont[0], 800)
+        self.assertLess(vermont[1], 300)
+
+    def test_a_newsroom_the_map_cannot_place_is_in_no_box(self):
+        for nowhere in ((None, None, "VT"), (43.6, -72.9, None), (43.6, -72.9, "")):
+            self.assertIsNone(mapbox.point(*nowhere))
+            self.assertFalse(mapbox.contains(mapbox.WHOLE, mapbox.point(*nowhere)))
+
+    def test_only_the_newsrooms_under_the_box(self):
+        rows = [(1, 43.6, -72.9, "VT"), (2, 61.2, -149.9, "AK"), (3, None, None, "CA")]
+        self.assertEqual(mapbox.ids_inside(mapbox.WHOLE, rows), [1, 2])
+        northeast = (800, 0, 1000, 300)
+        self.assertEqual(mapbox.ids_inside(northeast, rows), [1])
+
+
+# One newsroom the map can place, for the maps that need a dot on them.
+ORG_ON_THE_MAP = {"slug": "the-ledger", "name": "The Ledger",
+                  "lat": 43.6, "lon": -72.9, "state": "VT"}
+
+
+class MapBoxOnThePage(unittest.TestCase):
+    def test_the_box_is_drawn_by_the_server_not_the_script(self):
+        # A search narrowed to one corner of the country has to show which
+        # corner with scripting off; the script only makes it draggable.
+        html = pages.render_result_map([], box=(100, 250, 600, 750))
+        self.assertIn('data-box="100,250,600,750"', html)
+        self.assertIn("left:10%", html)
+        self.assertIn("top:25%", html)
+        self.assertIn("width:50%", html)
+        self.assertIn("height:50%", html)
+
+    def test_the_default_box_is_the_whole_map(self):
+        html = pages.render_result_map([ORG_ON_THE_MAP])
+        self.assertIn(f'data-box="{mapbox.unparse(mapbox.WHOLE)}"', html)
+        self.assertIn("width:100%;height:100%", html)
+
+    def test_a_box_that_matches_nothing_still_gets_its_map(self):
+        # Otherwise the only way back to the rest of the country is the
+        # browser's back button.
+        self.assertEqual(pages.render_result_map([]), "")
+        self.assertIn('class="mapbox"', pages.render_result_map([], box=(0, 0, 500, 500)))
+
+    def test_the_box_sits_over_the_map_and_not_over_the_caption(self):
+        html = pages.render_result_map([ORG_ON_THE_MAP])
+        frame = re.search(r'<div class="mapframe">(.*?)</div>\s*<div class="preview"',
+                          html, re.S).group(1)
+        self.assertIn("<svg", frame)
+        self.assertIn('class="mapbox"', frame)
+        self.assertNotIn("figcaption", frame)
+
+    def test_the_inside_of_the_box_does_not_eat_taps_on_the_dots(self):
+        css = shell.stylesheet()
+        rule = re.search(r"\n\.mapbox\{(.*?)\}", css, re.S).group(1)
+        self.assertIn("pointer-events:none", rule)
+        self.assertIn("pointer-events:auto", re.search(r"\n\.mapbox \.mh\{(.*?)\}",
+                                                      css, re.S).group(1))
+
+
+class SearchByArea(unittest.TestCase):
+    def test_the_query_asks_for_the_newsrooms_under_the_box(self):
+        sql, params = searchd.build_query("library", [], "", "", "", org_ids=[7, 9])
+        self.assertIn("o.id = ANY(%s)", sql)
+        self.assertIn([7, 9], params)
+
+    def test_no_box_is_no_clause(self):
+        sql, _params = searchd.build_query("library", [], "", "", "")
+        self.assertNotIn("o.id = ANY", sql)
+
+    def test_every_link_on_the_page_keeps_the_box(self):
+        box = (100, 100, 500, 500)
+        keep = searchd.where_params(box=box)
+        self.assertEqual(keep, {"box": "100,100,500,500"})
+        self.assertIn("box=100%2C100%2C500%2C500",
+                      searchd.pager("library", [], "", "", 1, 3, keep=keep))
+        chips = searchd.facet_bar("library", ["Nonprofit"], "", "", [], keep=keep)
+        # The tag chip carries the box; the box's own chip is the way out.
+        self.assertIn("box=100%2C100%2C500%2C500", chips)
+        self.assertIn("This part of the map", chips)
+        out = re.search(r'href="([^"]*)"[^>]*>This part of the map', chips).group(1)
+        self.assertNotIn("box=", out)
+
+    def test_the_rss_for_a_search_is_the_same_search(self):
+        self.assertIn("box=100%2C100%2C500%2C500",
+                      searchd.feed_link("library", [], "", "", box=(100, 100, 500, 500)))

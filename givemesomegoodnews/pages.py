@@ -14,7 +14,7 @@ import re
 from datetime import timezone
 from html import escape as esc
 
-from . import config
+from . import config, mapbox
 from .albers import MapProjection
 from .cards import (meta_line, ownership_tags, reporter_facts, reporter_of,
                     tag_links)
@@ -82,11 +82,23 @@ def render_catalog(orgs, mode="site", prefix=""):
     return "\n".join(parts)
 
 
-def render_result_map(orgs, prefix="", caption="Where these newsrooms are", stories=None):
-    """A compact map of one subset of newsrooms — used above search results."""
+def render_result_map(orgs, prefix="", caption="Where these newsrooms are", stories=None,
+                      box=mapbox.WHOLE):
+    """A compact map of one subset of newsrooms — used above search results.
+
+    `box` is the area the search is limited to, drawn over the map as a
+    shaded rectangle the reader can take hold of; the whole map is the
+    default and filters nothing. It is drawn here, server-side, rather than
+    by the script that makes it draggable, so a search narrowed to one
+    corner of the country still shows which corner with scripting off, and
+    so the box is on screen in the same paint as the dots underneath it.
+    """
     proj = MapProjection(config.STATES_GEOJSON)
     mappable = [o for o in orgs if o.get("lat") and o.get("lon") and o.get("state")]
-    if not mappable:
+    # With a box drawn there is always a map: it is the only way back to the
+    # whole country, and a narrowing that leaves nothing has to show that it
+    # was the narrowing that did it.
+    if not mappable and box == mapbox.WHOLE:
         return ""
     clusters = collections.defaultdict(list)
     for org in mappable:
@@ -115,14 +127,20 @@ def render_result_map(orgs, prefix="", caption="Where these newsrooms are", stor
     if stories:
         payload = ('<script type="application/json" id="map-stories">'
                    + json.dumps(stories) + "</script>")
+    x0, y0, x1, y1 = box
+    area = (f'<div class="mapbox" data-box="{mapbox.unparse(box)}" '
+            f'style="left:{x0 / 10:g}%;top:{y0 / 10:g}%;'
+            f'width:{(x1 - x0) / 10:g}%;height:{(y1 - y0) / 10:g}%"></div>')
     return (
         f'<figure class="mapwrap">'
+        f'<div class="mapframe">'
         f'<svg viewBox="0 0 {proj.width} {proj.height}" width="100%" role="img" '
         f'aria-label="{esc(caption)}: {esc(names[:600])}">{states}{"".join(dots)}</svg>'
+        f'{area}</div>'
         f'<div class="preview" hidden><button type="button" class="preview-close" '
         f'aria-label="Close">&times;</button><div class="preview-body"></div></div>'
         f'<figcaption class="meta">{esc(caption)} &mdash; {len(mappable)} newsrooms. '
-        f'Tap a dot for its stories.</figcaption>'
+        f'Tap a dot for its stories.<span class="boxhint"></span></figcaption>'
         f"{payload}</figure>"
     )
 

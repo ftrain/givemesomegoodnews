@@ -18,10 +18,10 @@ from html import escape as esc
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlencode, urlparse
 
-from . import config, syndicate
+from . import config, mapbox, syndicate
 from .pages import render_result_map
 from .cards import REPORTERS, load_reporter_panels, render_feed_item
-from .shell import MENU_FEEDS, MENU_SUBJECTS, page, search_form
+from .shell import MAP_BOX_SCRIPT, MENU_FEEDS, MENU_SUBJECTS, page, search_form
 from .topics import load_topics, set_topics
 from .dedupe import collapse_duplicates
 from .timezones import local_dateline
@@ -47,7 +47,7 @@ FROM articles a JOIN orgs o ON o.id = a.org_id
 
 
 def build_query(query, tags, region, language, subject, limit=PAGE_SIZE, offset=0,
-                count_only=False, state="", place="", national=False):
+                count_only=False, state="", place="", national=False, org_ids=None):
     """Text search and facets are independent: either alone is a valid ask.
 
     Browsing by tag with no words typed is the common case for "show me the
@@ -90,6 +90,12 @@ def build_query(query, tags, region, language, subject, limit=PAGE_SIZE, offset=
         params.extend([place, place])
     if national:
         where.append("o.coverage_type = 'national'")
+    if org_ids is not None:
+        # The newsrooms whose dots are inside the box the reader dragged.
+        # Worked out in Python, because the map is a composite and the box
+        # is in its coordinates rather than in degrees (see mapbox.py).
+        where.append("o.id = ANY(%s)")
+        params.append(org_ids)
     if where:
         sql += " WHERE " + " AND ".join(where)
     if count_only:
@@ -158,7 +164,7 @@ def refresh_topics(now=None):
         _topics_lock.release()
 
 
-def facet_bar(query, tags, region, language, rows):
+def facet_bar(query, tags, region, language, rows, keep=None):
     """Only the tags actually present in these results, each one a toggle.
 
     Showing the whole taxonomy meant most of it led nowhere from wherever
@@ -174,22 +180,32 @@ def facet_bar(query, tags, region, language, rows):
             if r:
                 present[r] += 1
 
-    def url_for(drop=None, add=None, drop_region=False, drop_lang=False):
-        keep = [t for t in tags if t != drop]
-        if add and add not in keep:
-            keep = keep + [add]
+    def url_for(drop=None, add=None, drop_region=False, drop_lang=False,
+                drop_box=False):
+        kept = [t for t in tags if t != drop]
+        if add and add not in kept:
+            kept = kept + [add]
         params = {"q": query} if query else {}
-        if keep:
-            params["tag"] = keep
+        if kept:
+            params["tag"] = kept
         if region and not drop_region and add not in REGIONS:
             params["region"] = region
         if region and add in REGIONS:
             params["region"] = add
         if language and not drop_lang:
             params["lang"] = language
+        # Where the reader is looking rides along with every one of these:
+        # narrowing by tag inside a box should not throw the box away.
+        for name, value in (keep or {}).items():
+            if not (drop_box and name == "box"):
+                params[name] = value
         return "/search?" + urlencode(params, doseq=True)
 
     chips = []
+    if (keep or {}).get("box"):
+        chips.append(f'<a class="lozenge on" href="{esc(url_for(drop_box=True))}" '
+                     f'aria-current="page" title="Search the whole country again">'
+                     f'This part of the map &times;</a>')
     # Active filters first, marked, and clicking one turns it off.
     for tag in tags:
         chips.append(f'<a class="lozenge on" href="{esc(url_for(drop=tag))}" '
@@ -211,23 +227,59 @@ def facet_bar(query, tags, region, language, rows):
     return '<p class="chips">' + "".join(chips) + "</p>"
 
 
-def filter_params(query, tags, region, language, state="", place="", national=False):
-    params = {k: v for k, v in
-              (("q", query), ("tag", list(tags)), ("region", region), ("lang", language),
-               ("state", state), ("place", place)) if v}
+def where_params(state="", place="", national=False, box=None):
+    """The filters that say where, as query-string parameters.
+
+    Kept apart from the words and the tags because every link on the page —
+    a tag chip, the next page, the RSS — has to carry them along unchanged.
+    Dropping them there is how a search narrowed to Vermont used to widen
+    itself again the moment you touched a tag.
+    """
+    params = {}
+    if state:
+        params["state"] = state
+    if place:
+        params["place"] = place
     if national:
         params["national"] = "1"
+    if box:
+        params["box"] = mapbox.unparse(box)
     return params
 
 
-def feed_link(query, tags, region, language, state="", place="", national=False):
+def filter_params(query, tags, region, language, state="", place="", national=False,
+                  box=None):
+    params = {k: v for k, v in
+              (("q", query), ("tag", list(tags)), ("region", region),
+               ("lang", language)) if v}
+    params.update(where_params(state, place, national, box))
+    return params
+
+
+def feed_link(query, tags, region, language, state="", place="", national=False,
+              box=None):
     """The RSS equivalent of whatever the reader is currently looking at."""
     return "search.xml?" + urlencode(
-        filter_params(query, tags, region, language, state, place, national), doseq=True)
+        filter_params(query, tags, region, language, state, place, national, box),
+        doseq=True)
+
+
+def box_org_ids(cur, box):
+    """The newsrooms inside the box, or None when it covers the whole map.
+
+    The orgs table is a thousand rows with coordinates on them; projecting
+    all of them is a millisecond and needs no index, no cache and no second
+    copy of the geometry. It is only done when there is a box to test.
+    """
+    if not box:
+        return None
+    cur.execute("SELECT id, lat, lon, state FROM orgs "
+                "WHERE lat IS NOT NULL AND lon IS NOT NULL")
+    return mapbox.ids_inside(box, cur.fetchall())
 
 
 def run_search(cur, query, tags, region, language, subject, page_num=1,
-               state="", place="", national=False):
+               state="", place="", national=False, box=None):
     """One page of results, with reprints folded the way the feed folds them.
 
     A syndicated story arrives from every newsroom that ran it — a search
@@ -247,39 +299,43 @@ def run_search(cur, query, tags, region, language, subject, page_num=1,
     the whole result set, and this is one page.
     """
     offset = (page_num - 1) * PAGE_SIZE
+    org_ids = box_org_ids(cur, box)
     sql, params = build_query(query, tags, region, language, subject,
                               limit=PAGE_SIZE, offset=offset,
-                              state=state, place=place, national=national)
+                              state=state, place=place, national=national,
+                              org_ids=org_ids)
     cur.execute(sql, params)
     rows = [dict(zip(COLS, r)) for r in cur.fetchall()]
     csql, cparams = build_query(query, tags, region, language, subject, count_only=True,
-                                state=state, place=place, national=national)
+                                state=state, place=place, national=national,
+                                org_ids=org_ids)
     cur.execute(csql, cparams)
     return collapse_duplicates(rows), cur.fetchone()[0]
 
 
 def render_search_rss(query, tags, region, language, subject,
-                      state="", place="", national=False):
+                      state="", place="", national=False, box=None):
     label = (query.strip()
              or " + ".join(list(tags) + [x for x in (region, language) if x])
              or "everything")
     with connect() as conn, conn.cursor() as cur:
         rows, _total = run_search(cur, query, tags, region, language, subject,
-                                  state=state, place=place, national=national)
+                                  state=state, place=place, national=national, box=box)
     return syndicate.render_rss(
         rows, f"{config.SITE_NAME} — {label}",
         f"Search results for {label}, newest first.",
-        feed_link(query, tags, region, language, state, place, national),
+        feed_link(query, tags, region, language, state, place, national, box),
         config.SITE_URL.rstrip("/"))
 
 
-def pager(query, tags, region, language, page_num, pages):
+def pager(query, tags, region, language, page_num, pages, keep=None):
     """Previous and next, and nothing clever."""
     if pages <= 1:
         return ""
     def link(n, label):
         params = {k: v for k, v in
                   (("q", query), ("tag", list(tags)), ("region", region), ("lang", language)) if v}
+        params.update(keep or {})
         if n > 1:
             params["page"] = n
         return f'<a class="lozenge" href="/search?{urlencode(params, doseq=True)}">{label}</a>'
@@ -292,7 +348,7 @@ def pager(query, tags, region, language, page_num, pages):
 
 
 def render(query, tags=(), region="", language="", subject="", page_num=1,
-           state="", place="", national=False):
+           state="", place="", national=False, box=None):
     tags = list(tags)
     active = [t for t in tags]
     if region:
@@ -300,31 +356,39 @@ def render(query, tags=(), region="", language="", subject="", page_num=1,
     if language:
         active.append(language)
     for extra in (place, STATE_NAMES_BY_CODE.get(state.upper()) if state else None,
-                  "National" if national else None):
+                  "National" if national else None,
+                  "this part of the map" if box else None):
         if extra:
             active.append(extra)
     heading = "Search"
     if active:
         heading = "Search — " + " + ".join(active)
+    keep = where_params(state, place, national, box)
 
     with connect() as conn, conn.cursor() as cur:
         parts = [search_form(query)]
         if not query.strip() and not tags and not region and not language \
-                and not state and not place and not national:
+                and not state and not place and not national and not box:
             parts.append('<p class="meta">Search headlines and summaries, or start '
                          'from a subject or tag in the menu.</p>')
             return page(f"{config.SITE_NAME} — Search", "\n".join(parts))
 
         rows, total = run_search(cur, query, tags, region, language, subject, page_num,
-                                 state=state, place=place, national=national)
+                                 state=state, place=place, national=national, box=box)
 
         if not rows:
             shown = esc(query) if query.strip() else esc(" + ".join(active))
             parts.append(f"<p>Nothing matches <strong>{shown}</strong>.</p>")
+            # A box that has narrowed the search down to nothing still has to
+            # be on screen, or there is no way back to the rest of the
+            # country except the browser's back button.
+            if box:
+                parts.append(render_result_map([], caption="The area searched", box=box))
+                parts.append(facet_bar(query, tags, region, language, [], keep=keep))
         else:
             noun = "story" if total == 1 else "stories"
             label = esc(query) if query.strip() else esc(" + ".join(active))
-            rss = feed_link(query, tags, region, language)
+            rss = feed_link(query, tags, region, language, state, place, national, box)
             pages = max(1, min(MAX_PAGES, -(-total // PAGE_SIZE)))
             shown = f", page {page_num} of {pages}" if pages > 1 else ""
             parts.append(f"<p>{total} {noun} matching <strong>{label}</strong>{shown}. "
@@ -358,17 +422,19 @@ def render(query, tags=(), region="", language="", subject="", page_num=1,
                         {"title": row["title"][:140], "url": row["url"], "when": when}
                     )
             map_svg = render_result_map(result_orgs, caption="Newsrooms in these results",
-                                        stories=by_slug)
+                                        stories=by_slug, box=box or mapbox.WHOLE)
             if map_svg:
                 parts.append(map_svg)
-            parts.append(facet_bar(query, tags, region, language, rows))
+            parts.append(facet_bar(query, tags, region, language, rows, keep=keep))
             parts.append('<div id="feed-items">')
             for row in rows:
                 parts.append(render_feed_item(cur, row, with_related=False))
             parts.append("</div>")
-            parts.append(pager(query, tags, region, language, page_num, pages))
+            parts.append(pager(query, tags, region, language, page_num, pages, keep=keep))
         return page(f"{config.SITE_NAME} — {heading}", "\n".join(parts),
-                    feed_href=feed_link(query, tags, region, language),
+                    scripts=MAP_BOX_SCRIPT,
+                    feed_href=feed_link(query, tags, region, language, state, place,
+                                        national, box),
                     feed_title=f"{config.SITE_NAME} — {heading}")
 
 
@@ -390,16 +456,17 @@ class Handler(BaseHTTPRequestHandler):
         state = (params.get("state") or [""])[0][:2]
         place = (params.get("place") or [""])[0][:60]
         national = bool(params.get("national"))
+        box = mapbox.parse((params.get("box") or [""])[0][:40])
         refresh_topics()
         raw_page = (params.get("page") or ["1"])[0]
         page_num = int(raw_page) if raw_page.isdigit() and 1 <= int(raw_page) <= MAX_PAGES else 1
         try:
             if wants_rss:
                 body = render_search_rss(query, tags, region, language, subject,
-                                         state, place, national).encode("utf-8")
+                                         state, place, national, box).encode("utf-8")
             else:
                 body = render(query, tags, region, language, subject, page_num,
-                              state, place, national).encode("utf-8")
+                              state, place, national, box).encode("utf-8")
         except Exception:
             self.send_error(500)
             raise

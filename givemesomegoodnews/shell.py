@@ -155,6 +155,41 @@ border-radius:50%;background:var(--link);margin-right:.45em;vertical-align:.15em
 .trending-now>p{{margin:0}}
 .mapwrap{{position:relative;margin:0 0 1rem}}
 .mapwrap a[data-slug]{{cursor:pointer}}
+/* The map and the box over it, and nothing else: the box is positioned
+   against this rather than against the figure, whose caption would put it
+   out by a line and a half. */
+/* The corner handles hang half outside the box, which at the whole map is
+   half outside the picture: the margin is the room they sit in, so they
+   never land on the line of type above or below. */
+.mapframe{{position:relative;line-height:0;margin:9px 0}}
+/* The search's area box. The shading says what is being searched, and the
+   four corners are what a reader takes hold of to say "only here". The
+   inside of the box does not take the pointer, so every dot under it is
+   still a dot you can tap; only the corners and the edges do. */
+.mapbox{{position:absolute;box-sizing:border-box;pointer-events:none;
+background:rgba(200,16,46,.10);border:2px solid var(--link)}}
+.mapbox .mh{{position:absolute;width:15px;height:15px;padding:0;border-radius:2px;
+background:var(--bg);border:2px solid var(--link);pointer-events:auto;
+cursor:nwse-resize;touch-action:none}}
+/* The mark is 15px because a bigger one covers the map; the hit area is
+   the fingertip the mark is too small to be. */
+.mapbox .mh::after{{content:"";position:absolute;top:-13px;right:-13px;
+bottom:-13px;left:-13px}}
+.mapbox .mh:focus-visible{{outline:3px solid var(--link);outline-offset:3px}}
+.mapbox .nw{{left:-8px;top:-8px}}
+.mapbox .ne{{right:-8px;top:-8px;cursor:nesw-resize}}
+.mapbox .se{{right:-8px;bottom:-8px}}
+.mapbox .sw{{left:-8px;bottom:-8px;cursor:nesw-resize}}
+/* The edges move the box without changing its size. They are the border
+   itself, widened to something a thumb can find. */
+.mapbox .me{{position:absolute;pointer-events:auto;cursor:move;touch-action:none}}
+.mapbox .me.n,.mapbox .me.s{{left:18px;right:18px;height:15px}}
+.mapbox .me.n{{top:-8px}}
+.mapbox .me.s{{bottom:-8px}}
+.mapbox .me.w,.mapbox .me.e{{top:18px;bottom:18px;width:15px}}
+.mapbox .me.w{{left:-8px}}
+.mapbox .me.e{{right:-8px}}
+.boxhint{{display:block}}
 /* Half the width of the map, centred over it, sitting low so the dots
    stay visible above the panel. */
 .preview{{position:absolute;left:50%;transform:translateX(-50%);
@@ -515,6 +550,130 @@ MENU_SCRIPT = """<script>
   }
   document.addEventListener("click", close);
   document.addEventListener("keydown", close);
+})();
+</script>"""
+
+
+MAP_BOX_SCRIPT = """<script>
+/* The area box on the search map. The server has already drawn it, and the
+   search is already filtered by it; this is what lets a reader change it —
+   the four corners resize it, the edges move it, and letting go runs the
+   search again for whatever is inside. Arrow keys move a focused corner
+   and Enter runs it, so the box is not mouse-only.
+
+   Nothing here draws the box, so with scripting off a narrowed search
+   still shows the part of the country it is narrowed to; it is the "whole
+   map" chip beside the results that widens it again. */
+(function () {
+  var frame = document.querySelector(".mapframe");
+  var box = frame && frame.querySelector(".mapbox");
+  if (!box || !window.PointerEvent) return;
+  var SCALE = 1000, MIN = 30, STEP = 20;
+  var cur = (box.getAttribute("data-box") || "").split(",").map(Number);
+  if (cur.length !== 4 || cur.some(isNaN)) { cur = [0, 0, SCALE, SCALE]; }
+
+  function clamp(n) { return Math.max(0, Math.min(SCALE, n)); }
+  function place() {
+    box.style.left = cur[0] / 10 + "%";
+    box.style.top = cur[1] / 10 + "%";
+    box.style.width = (cur[2] - cur[0]) / 10 + "%";
+    box.style.height = (cur[3] - cur[1]) / 10 + "%";
+  }
+  function whole() {
+    return cur[0] <= 0 && cur[1] <= 0 && cur[2] >= SCALE && cur[3] >= SCALE;
+  }
+  /* A search is a URL here, as it is everywhere else on the site: the box
+     goes into the query string and the page comes back filtered, rather
+     than the results being patched up in place. */
+  function apply() {
+    var params = new URLSearchParams(location.search);
+    if (whole()) { params.delete("box"); }
+    else { params.set("box", cur.map(Math.round).join(",")); }
+    params.delete("page");
+    location.search = params.toString();
+  }
+  function at(e) {
+    var r = frame.getBoundingClientRect();
+    return [clamp((e.clientX - r.left) / r.width * SCALE),
+            clamp((e.clientY - r.top) / r.height * SCALE)];
+  }
+  /* The corner opposite the one being dragged stays where it is, and the
+     box never gets smaller than a fingertip. */
+  function resize(corner, x, y) {
+    var west = corner.indexOf("w") >= 0, north = corner.indexOf("n") >= 0;
+    var ax = west ? cur[2] : cur[0], ay = north ? cur[3] : cur[1];
+    x = west ? Math.min(x, ax - MIN) : Math.max(x, ax + MIN);
+    y = north ? Math.min(y, ay - MIN) : Math.max(y, ay + MIN);
+    cur = [Math.min(x, ax), Math.min(y, ay), Math.max(x, ax), Math.max(y, ay)];
+    place();
+  }
+  function moveTo(x, y) {
+    var w = cur[2] - cur[0], h = cur[3] - cur[1];
+    x = Math.max(0, Math.min(SCALE - w, x));
+    y = Math.max(0, Math.min(SCALE - h, y));
+    cur = [x, y, x + w, y + h];
+    place();
+  }
+  function drag(el, onMove) {
+    el.addEventListener("pointerdown", function (e) {
+      e.preventDefault();
+      e.stopPropagation();  /* not a tap on the map underneath */
+      el.setPointerCapture(e.pointerId);
+      var from = cur.slice(), start = at(e);
+      function moved(ev) { onMove(at(ev), start, from); }
+      function done() {
+        el.removeEventListener("pointermove", moved);
+        el.removeEventListener("pointerup", done);
+        el.removeEventListener("pointercancel", done);
+        apply();
+      }
+      el.addEventListener("pointermove", moved);
+      el.addEventListener("pointerup", done);
+      el.addEventListener("pointercancel", done);
+    });
+    el.addEventListener("click", function (e) { e.stopPropagation(); });
+  }
+
+  /* Said here rather than in the page, because until this script has run
+     there is nothing to drag and the instruction would be a lie. */
+  var hint = document.querySelector(".boxhint");
+  if (hint) {
+    hint.textContent = whole()
+      ? " Drag a corner of the box to search a smaller part of the country."
+      : " Drag a corner to change the area, or an edge to move it.";
+  }
+
+  var CORNERS = [["nw", "Top left"], ["ne", "Top right"],
+                 ["se", "Bottom right"], ["sw", "Bottom left"]];
+  CORNERS.forEach(function (corner) {
+    var handle = document.createElement("button");
+    handle.type = "button";
+    handle.className = "mh " + corner[0];
+    handle.setAttribute("aria-label", corner[1] + " corner of the area searched");
+    box.appendChild(handle);
+    drag(handle, function (pt) { resize(corner[0], pt[0], pt[1]); });
+    handle.addEventListener("keydown", function (e) {
+      var by = e.shiftKey ? STEP * 5 : STEP, dx = 0, dy = 0;
+      if (e.key === "ArrowLeft") { dx = -by; }
+      else if (e.key === "ArrowRight") { dx = by; }
+      else if (e.key === "ArrowUp") { dy = -by; }
+      else if (e.key === "ArrowDown") { dy = by; }
+      else if (e.key === "Enter") { e.preventDefault(); apply(); return; }
+      else { return; }
+      e.preventDefault();
+      var west = corner[0].indexOf("w") >= 0, north = corner[0].indexOf("n") >= 0;
+      resize(corner[0], clamp((west ? cur[0] : cur[2]) + dx),
+             clamp((north ? cur[1] : cur[3]) + dy));
+    });
+  });
+  ["n", "e", "s", "w"].forEach(function (side) {
+    var edge = document.createElement("span");
+    edge.className = "me " + side;
+    box.appendChild(edge);
+    drag(edge, function (pt, start, from) {
+      moveTo(from[0] + pt[0] - start[0], from[1] + pt[1] - start[1]);
+    });
+  });
 })();
 </script>"""
 
