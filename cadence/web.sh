@@ -18,6 +18,10 @@ done
 
 mkdir -p site/img
 
+# Serve a real catalog from the first request: site/ is not committed, and the
+# loop's own build is several minutes behind a crawl.
+python3 -m givemesomegoodnews.build_site || true
+
 (
   # First pass: about text, taglines and support links. All three skip what
   # they already have, so a restart is cheap.
