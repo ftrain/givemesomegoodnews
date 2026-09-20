@@ -5,6 +5,8 @@ why the type and spacing are decided once, here, and why the four small
 scripts live here too — each is an enhancement the page works without.
 """
 
+import hashlib
+from functools import lru_cache
 from html import escape as esc
 
 from . import config
@@ -46,9 +48,15 @@ MENU_SUBJECTS = []
 MENU_FEEDS = []
 
 
-def stylesheet(prefix=""):
-    """One small stylesheet. Type does the work; there is almost no chrome."""
-    return f"""<style>
+# One small stylesheet. Type does the work; there is almost no chrome.
+#
+# It used to be written into the head of every page. That is one round trip
+# saved on a first visit and nine kilobytes spent on every page after it,
+# eleven megabytes across a build, and — the reason it moved — a rule that
+# cannot be changed without rewriting all 2,500 pages. As a file with its
+# own hash in its name it is fetched once, cached for good, and a change to
+# it is a new name rather than a rebuild.
+CSS = """
 @font-face{{font-family:Plex;src:url({prefix}fonts/ibm-plex-sans.woff2) format('woff2');
 font-weight:100 700;font-display:swap}}
 @font-face{{font-family:PlexMono;src:url({prefix}fonts/ibm-plex-mono.woff2) format('woff2');
@@ -349,7 +357,43 @@ margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}}
 .panel>nav:first-of-type a{{font-size:1.05rem;font-weight:600}}
 .panel ul{{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:.3rem .9rem}}
 .panel li{{margin:0}}
-</style>"""
+"""
+
+
+def stylesheet_text(prefix=""):
+    """The stylesheet itself. The prefix reaches the fonts from a page."""
+    return CSS.format(prefix=prefix)
+
+
+@lru_cache(maxsize=1)
+def stylesheet_name():
+    """style.<hash>.css — the name changes when a rule does.
+
+    Which is what makes it safe to tell a reader's browser to keep the file
+    for ever: a changed stylesheet is a different file, under a different
+    name, and the pages that want it ask for it by that name.
+    """
+    digest = hashlib.sha1(stylesheet_text().encode("utf-8")).hexdigest()
+    return f"style.{digest[:10]}.css"
+
+
+def stylesheet_link(prefix=""):
+    """How a page asks for the stylesheet.
+
+    No prefix inside the file: it sits at the root of the site, and a
+    url() in it resolves against itself rather than against whatever page
+    is doing the asking, so fonts/ is right from every directory.
+    """
+    return f'<link rel="stylesheet" href="{prefix}{stylesheet_name()}">'
+
+
+def stylesheet(prefix=""):
+    """The stylesheet in the page, for the one page that has to carry it.
+
+    The single-file edition is meant to survive being saved on its own, and
+    a page that links a stylesheet it no longer has is not that.
+    """
+    return f"<style>{stylesheet_text(prefix)}</style>"
 
 
 def menu(prefix="", site_name=""):
@@ -442,7 +486,8 @@ def share_card(title, description):
 
 
 def page(title, body, prefix="", nav_html=None, scripts="", description="",
-         feed_href="feed.xml", feed_title=None, current_topic=None):
+         feed_href="feed.xml", feed_title=None, current_topic=None,
+         inline_css=False):
     # A page with nothing more particular to say describes itself the way
     # the site does, rather than going out with no description at all.
     description = description or config.SITE_DESCRIPTION
@@ -458,7 +503,7 @@ def page(title, body, prefix="", nav_html=None, scripts="", description="",
 <link rel="icon" href="{prefix}favicon.svg" type="image/svg+xml">
 <link rel="alternate" type="application/rss+xml"
  title="{esc(feed_title or config.SITE_NAME)}" href="{prefix}{feed_href}">
-{stylesheet(prefix)}
+{stylesheet(prefix) if inline_css else stylesheet_link(prefix)}
 </head>
 <body>
 <a class="skip" href="#main">Skip to the stories</a>

@@ -447,6 +447,17 @@ class Handler(BaseHTTPRequestHandler):
         if not wants_rss and parsed.path.rstrip("/") not in ("/search", ""):
             self.send_error(404)
             return
+        # /search/ was answered as though it were /search, and everything a
+        # page asks for by a relative name — the stylesheet, the favicon, the
+        # menu, a card's picture — was then looked for under /search/. One
+        # canonical path, and the answer to the other is the way to it.
+        if len(parsed.path) > 1 and parsed.path.endswith("/"):
+            self.send_response(301)
+            self.send_header("Location", parsed.path.rstrip("/")
+                             + (f"?{parsed.query}" if parsed.query else ""))
+            self.send_header("Content-Length", "0")
+            self.end_headers()
+            return
         params = parse_qs(parsed.query)
         query = (params.get("q") or [""])[0][:200]
         tags = [t[:40] for t in params.get("tag", [])][:6]

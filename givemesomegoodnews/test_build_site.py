@@ -18,7 +18,8 @@ from unittest import mock
 
 from PIL import Image
 
-from . import cards, config, images, links, mapbox, migrate_images, pages, prose, prune
+from . import cards, config, fetch_feeds, images, links, mapbox, migrate_images
+from . import pages, prose, prune
 from . import share_card, shell, syndicate
 from . import reporters as rp
 from . import searchd
@@ -997,3 +998,71 @@ class SearchByArea(unittest.TestCase):
     def test_the_rss_for_a_search_is_the_same_search(self):
         self.assertIn("box=100%2C100%2C500%2C500",
                       searchd.feed_link("library", [], "", "", box=(100, 100, 500, 500)))
+
+
+class StylesheetAsAFile(unittest.TestCase):
+    """The stylesheet stopped being written into every page."""
+
+    def test_a_page_links_the_stylesheet_and_does_not_carry_it(self):
+        html = shell.page("A page", "<p>x</p>")
+        self.assertIn(f'<link rel="stylesheet" href="{shell.stylesheet_name()}">', html)
+        self.assertNotIn("<style>", html)
+
+    def test_a_page_in_a_subdirectory_reaches_it(self):
+        self.assertIn(f'href="../{shell.stylesheet_name()}"',
+                      shell.page("A page", "<p>x</p>", prefix="../"))
+
+    def test_the_name_changes_when_a_rule_does(self):
+        before = shell.stylesheet_name()
+        self.assertRegex(before, r"^style\.[0-9a-f]{10}\.css$")
+        # Braces are doubled: the stylesheet is a format template, and the
+        # prefix that reaches the fonts is what it is a template for.
+        with mock.patch.object(shell, "CSS", shell.CSS + "\n.something{{color:red}}"):
+            shell.stylesheet_name.cache_clear()
+            self.assertNotEqual(shell.stylesheet_name(), before)
+        shell.stylesheet_name.cache_clear()
+        self.assertEqual(shell.stylesheet_name(), before)
+
+    def test_the_file_reaches_the_fonts_from_the_root(self):
+        # It is served from /, so its own url() needs no prefix — and must
+        # not have one, or a page in a subdirectory would ask for ../fonts.
+        css = shell.stylesheet_text()
+        self.assertIn("url(fonts/ibm-plex-sans.woff2)", css)
+        self.assertNotIn("../fonts/", css)
+
+    def test_the_single_file_edition_still_carries_its_own(self):
+        # It is meant to be saved and read on its own.
+        html = shell.page("A page", "<p>x</p>", inline_css=True)
+        self.assertIn("<style>", html)
+        self.assertNotIn('rel="stylesheet"', html)
+        source = (config.ROOT / "givemesomegoodnews" / "build_site.py").read_text()
+        self.assertIn("inline_css=True", source)
+
+    def test_the_build_writes_it_before_the_pages_that_ask_for_it(self):
+        source = (config.ROOT / "givemesomegoodnews" / "build_site.py").read_text()
+        self.assertIn("(site / stylesheet_name()).write_text(stylesheet_text())", source)
+        self.assertLess(source.index("stylesheet_name()).write_text"),
+                        source.index('(site / "catalog.html")'))
+
+    def test_the_hashed_name_is_kept_for_a_year(self):
+        vhost = (config.ROOT / "ops" / "exe" / "nginx-gmsgn.conf").read_text()
+        rule = re.search(r'location ~ "\^/style[^{]*\{(.*?)\n    \}', vhost, re.S).group(1)
+        self.assertIn("max-age=31536000, immutable", rule)
+
+
+class SearchPaths(unittest.TestCase):
+    def test_a_trailing_slash_is_a_redirect_not_a_page(self):
+        # It used to be answered as a page, and every relative name on that
+        # page — the stylesheet most visibly — was then looked for under
+        # /search/.
+        handler = searchd.Handler.__new__(searchd.Handler)
+        handler.path = "/search/?q=library"
+        sent = {}
+        handler.send_response = lambda code: sent.__setitem__("code", code)
+        handler.send_header = lambda k, v: sent.__setitem__(k, v)
+        handler.end_headers = lambda: None
+        handler.send_error = lambda code: sent.__setitem__("error", code)
+        handler.do_GET()
+        self.assertEqual(sent["code"], 301)
+        self.assertEqual(sent["Location"], "/search?q=library")
+        self.assertNotIn("error", sent)

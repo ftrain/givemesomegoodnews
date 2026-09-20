@@ -29,7 +29,8 @@ from .pages import (ONEPAGE_ARTICLES, group_orgs_by_state, render_about,
                     render_big_stories, render_catalog_index, render_feeds_page,
                     render_institutions, render_map, render_org_list,
                     render_org_page, render_story_links, write_text_edition)
-from .shell import FEED_SCRIPT, MENU_FEEDS, MENU_SUBJECTS, page, search_form
+from .shell import (FEED_SCRIPT, MENU_FEEDS, MENU_SUBJECTS, page, search_form,
+                    stylesheet_name, stylesheet_text)
 from .tags import TAG_GROUPS, tag_slug
 from .topics import (load_topics, render_home_topics, render_trending, set_topics,
                      topic_intro)
@@ -394,6 +395,12 @@ def main():
     share = config.ASSETS_DIR / config.SHARE_IMAGE
     if share.is_file():
         shutil.copyfile(share, site / config.SHARE_IMAGE)
+    # The stylesheet, under a name that carries its hash. Written before any
+    # page, because every page asks for it by that name. The one it replaces
+    # is left where it is: a page already open in somebody's browser is
+    # still asking for the old name, and the nightly prune takes it away a
+    # week later along with every other page no build writes any more.
+    (site / stylesheet_name()).write_text(stylesheet_text())
 
     with connect() as conn, conn.cursor() as cur:
         orgs = load_orgs(cur)
@@ -586,7 +593,11 @@ def main():
             f'<a href="#feed">Feed</a>\n<a href="#catalog">Catalog</a>\n'
             f'<a href="#map">Map</a>\n<a href="#connections">Big stories</a>'
         )
-        (site / "onepage.html").write_text(page(config.SITE_NAME, onepage, nav_html=onepage_nav))
+        # The one page that carries its own stylesheet: it is meant to be
+        # saved and read on its own, and a link to a file it has not got is
+        # not self-contained.
+        (site / "onepage.html").write_text(page(config.SITE_NAME, onepage,
+                                                nav_html=onepage_nav, inline_css=True))
 
         # --- RSS, one per subject plus the whole feed --------------------
         site_url = config.SITE_URL.rstrip("/")
