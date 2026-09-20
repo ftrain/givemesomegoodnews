@@ -269,18 +269,18 @@ def state_identity(a, prefix=""):
 
     A flag is recognised before it is read, which is the whole job at the
     top of the rail, and at 48px it carries that on its own. The state is
-    still named twice in text for anyone not seeing the picture — the
-    flag's alt is the state's full name, and the region line below the
-    locator says where in it — so nothing is lost with images off.
+    still named in text for anyone not seeing the picture — the flag's alt
+    is the state's full name, and the region line below the locator says
+    where in it — so nothing is lost with images off.
 
     An outlet with no state, or one whose beat is the country, has no state
-    to fly. It gets the national marker instead of a flag that would be the
-    wrong answer. A code with no flag on disk gets nothing at all rather
-    than an empty line: the region line below already answers the question.
+    to fly, and a code with no flag on disk has none either. Both get
+    nothing rather than a marker reading National above a region line that
+    is about to say National again: one statement of where, not two.
     """
     code = (a.get("state") or "").upper()
     if not code or (a.get("coverage_type") or "") == "national":
-        return '<p class="ident"><span class="marker">National</span></p>'
+        return ""
     name = REGION_NAMES.get(code)
     box = flag_box(code) if name else None
     img = ""
@@ -340,21 +340,63 @@ def locator_map(a):
             f'd="{fit.path}"/>{mark}</svg>')
 
 
-def region_name(a):
-    """The area the locator shades, in words, so it survives images off."""
-    state_name = REGION_NAMES.get((a.get("state") or "").upper())
+def region_parts(a):
+    """The area the locator shades, as the pieces it is named in.
+
+    Each piece is its words and the search that offers more from there, so
+    the line under the map is both the answer to "where is this newsroom"
+    and the way to the rest of that place. A piece with nowhere to send
+    anyone is still named; it just isn't a link.
+    """
+    code = (a.get("state") or "").upper()
+    state_name = REGION_NAMES.get(code)
+    state_href = f"/search?state={quote(code)}" if state_name else None
     coverage = a.get("coverage")
-    if (a.get("coverage_type") or "") in WIDE_COVERAGE:
-        return coverage or state_name or "National"
+    coverage_type = a.get("coverage_type") or ""
+    if coverage_type in WIDE_COVERAGE:
+        if coverage_type == "national":
+            return [(coverage or "National", "/search?national=1")]
+        return [(coverage or state_name or "National", state_href)]
     city = a.get("city")
     precision = (a.get("geo_precision") or "").lower()
     if not city or precision == "state":
-        return coverage or state_name
+        text = coverage or state_name
+        return [(text, state_href)] if text else []
     if state_name and state_name.startswith(city):
-        return state_name  # the district, whose city and state are one name
+        return [(state_name, state_href)]  # the district: city and state are one name
     # A county-level geocode places the newsroom near its city, not in it.
     where = city if precision != "county" or city.endswith("County") else f"{city} area"
-    return f"{where}, {state_name}" if state_name else where
+    # The search is for the city itself either way; "area" is a hedge about
+    # where the newsroom sits, not a different place to look in.
+    city_href = "/search?" + urlencode(
+        {"place": city, **({"state": code} if code else {})})
+    parts = [(where, city_href)]
+    if state_name:
+        parts.append((state_name, state_href))
+    return parts
+
+
+def region_name(a):
+    """The area the locator shades, in words, so it survives images off."""
+    return ", ".join(text for text, _ in region_parts(a))
+
+
+def region_line(a):
+    """Where the newsroom is, once, under the map that draws the same thing.
+
+    The card used to open with this as a row of lozenges as well — the state
+    and the city as tags above the headline, the flag, the map, and then
+    these words: a card saying where it was four times over. The words stay,
+    because they are what survives images off and what names the shape above
+    them, and they take the lozenges' links with them.
+    """
+    parts = region_parts(a)
+    if not parts:
+        return ""
+    line = ", ".join(
+        f'<a href="{esc(href)}">{esc(text)}</a>' if href else esc(text)
+        for text, href in parts)
+    return f'<p class="region">{line}</p>'
 
 
 # Four weeks. Long enough that a weekly paper reads as a rate rather than
@@ -458,41 +500,19 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
         column.append(card_topics(a, prefix))
     column.append(state_identity(a, prefix if mode != "onepage" else ""))
     column.append(locator_map(a))
-    region = region_name(a)
-    if region:
-        column.append(f'<p class="region">{esc(region)}</p>')
+    column.append(region_line(a))
     column.append(tag_links(a, prefix if mode != "onepage" else "", cap=RAIL_TAG_CAP))
     column.append(cadence_line(a))
     column.append(support_link(a))
     out.append(f'<aside class="tagcol">{"".join(column)}</aside>')
 
-    # 2. where it is; then, in the order a reader wants them, when it ran
-    #    and who ran it.
+    # 2. when it ran. With no date from the newsroom the only date we have is
+    #    the day we picked the story up, which is a different claim and is
+    #    labelled as one rather than passed off as publication.
     published = a["published_at"]
     moment = published or a["fetched_at"]
     dateline = local_dateline(moment, a.get("state"), a.get("timezone"))
     pub_time = local_time(moment, a.get("state"), a.get("timezone"))
-    where = a.get("beat") or a.get("city")
-    state_name = STATE_NAMES.get((a.get("state") or "").upper())
-    national = (a.get("coverage_type") or "") == "national"
-
-    # Place is a pair of tags: the state gives you everything from that
-    # state, the region narrows it to that city or beat.
-    bits = []
-    if national:
-        bits.append('<a class="lozenge place" href="/search?national=1">National</a>')
-    elif state_name:
-        bits.append(f'<a class="lozenge place" href="/search?state={quote(a["state"])}">'
-                    f'{esc(state_name)}</a>')
-    if where:
-        query = urlencode({"place": where, **({"state": a["state"]} if a.get("state") else {})})
-        bits.append(f'<a class="lozenge place" href="/search?{query}">{esc(where)}</a>')
-    if bits:
-        out.append(f'<p class="places">{"".join(bits)}</p>')
-
-    # 3. when. With no date from the newsroom the only date we have is the
-    #    day we picked the story up, which is a different claim and is
-    #    labelled as one rather than passed off as publication.
     if dateline:
         stamp = (f'<time datetime="{moment.astimezone(timezone.utc).isoformat()}" '
                  f'data-pub="{esc(pub_time)}">{esc(dateline)}</time>')
@@ -502,17 +522,17 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
             out.append(f'<p class="whenwhere nodate">'
                        f'<span class="collected">Collected by this site</span> {stamp}</p>')
 
-    # 4. who published it. The publication name is itself the marker:
+    # 3. who published it. The publication name is itself the marker:
     #    opening it gives the newsroom in its own words without leaving the
     #    feed. Their site is the first link inside, so it is still one tap
     #    away, and the newsroom page is the one after it.
     out.append(disclosure(f'<strong>{esc(a["org_name"])}</strong>',
                           org_profile_panel(a, mode, prefix), "source"))
 
-    # 5. headline
+    # 4. headline
     out.append(f'<h2><a href="{esc(a["url"])}">{esc(tighten(a["title"]))}</a></h2>')
 
-    # 6. byline. It opens the same way the masthead above it does — but only
+    # 5. byline. It opens the same way the masthead above it does — but only
     #    where there is a person behind it. A byline the site cannot resolve
     #    stays the plain line of text it has always been, rather than
     #    becoming a marker that opens onto nothing.
@@ -522,7 +542,7 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
                               reporter_panel(a), "byline")
                    if who else f'<p class="byline">By {esc(credit(a["author"]))}</p>')
 
-    # 7. the photo
+    # 6. the photo
     if a.get("image_file") and a["image_file"] not in skip_images:
         # image_w/image_h are only missing on rows crawled before those
         # columns existed; the .shot img:not([width]) CSS rule reserves an
@@ -546,7 +566,7 @@ def render_feed_item(cur, a, mode="site", prefix="", with_related=True, skip_ima
             f'</figure>'
         )
 
-    # 8. the text, with Read more running on from the end of it
+    # 7. the text, with Read more running on from the end of it
     summary = esc(tighten(clip_summary(a["summary"]))) if a.get("summary") else ""
     more = (f'<a class="lozenge more" href="{esc(a["url"])}">Read more '
             f'<span aria-hidden="true">&rarr;</span></a>')

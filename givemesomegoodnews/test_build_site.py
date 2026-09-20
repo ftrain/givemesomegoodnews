@@ -219,10 +219,43 @@ class AboutOpening(unittest.TestCase):
     def test_disclosure_adds_no_script(self):
         self.assertNotIn("<script", card())
 
-    def test_disclosure_opens_after_the_places_row_not_before_it(self):
+    def test_disclosure_opens_between_the_date_and_the_headline(self):
         html = card()
-        self.assertLess(html.index('class="places"'), html.index('class="disc source"'))
+        self.assertLess(html.index('class="whenwhere"'), html.index('class="disc source"'))
         self.assertLess(html.index('class="disc source"'), html.index("<h2>"))
+
+
+class PlaceOnTheCard(unittest.TestCase):
+    def test_the_card_names_its_place_once_and_in_the_rail(self):
+        # It used to name it four times: the state and the city as lozenges
+        # above the headline, then the flag, the map and these words.
+        html = card()
+        self.assertNotIn('class="places"', html)
+        self.assertNotIn("lozenge place", html)
+        region = re.search(r'<p class="region">(.*?)</p>', html, re.S).group(1)
+        self.assertIn("Rutland", region)
+        self.assertIn("Vermont", region)
+
+    def test_the_region_line_carries_the_searches_the_lozenges_had(self):
+        region = re.search(r'<p class="region">(.*?)</p>', card(), re.S).group(1)
+        self.assertIn('href="/search?place=Rutland&amp;state=VT"', region)
+        self.assertIn('href="/search?state=VT"', region)
+
+    def test_a_national_outlet_is_not_told_twice_that_it_is_national(self):
+        # No flag to fly and no marker in its place either: the region line
+        # is the one statement of where, and it is the link as well.
+        html = card(coverage_type="national", coverage=None, state=None, city=None)
+        self.assertNotIn('class="ident"', html)
+        region = re.search(r'<p class="region">(.*?)</p>', html, re.S).group(1)
+        self.assertIn('href="/search?national=1">National</a>', region)
+        self.assertEqual(html.count("National"), 1)
+
+    def test_the_words_are_the_same_words_the_locator_had(self):
+        # region_name is what the line says with the links taken off; the
+        # text edition and anything else reading it get the old string.
+        self.assertEqual(cards.region_name(article()), "Rutland, Vermont")
+        self.assertEqual(cards.region_name(article(geo_precision="county")),
+                         "Rutland area, Vermont")
 
 
 class ImageCacheLayout(unittest.TestCase):

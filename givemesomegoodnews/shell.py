@@ -178,10 +178,6 @@ display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}}
    the page. */
 .ident{{display:flex;align-items:center;gap:.35rem;margin:0}}
 .flag{{flex:none;border:1px solid var(--rule);background:var(--bg)}}
-/* An outlet whose beat is the country has no state to fly. The marker takes
-   the line rather than leaving a flag-shaped hole in it. */
-.ident .marker{{font:600 .72rem/1 PlexMono,ui-monospace,monospace;
-letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}}
 /* Where the newsroom is: the state's outline with one mark on it, and the
    same answer in words underneath for anyone not seeing the picture. */
 .locator{{display:block;margin:.1rem 0}}
@@ -191,6 +187,15 @@ letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}}
 .locator .here{{fill:var(--link);stroke:var(--bg);stroke-width:.7}}
 .region{{font:400 .72rem/1.35 PlexMono,ui-monospace,monospace;color:var(--dim);
 margin:0;max-width:100%;text-align:right;overflow-wrap:break-word}}
+/* This line is now the card's only statement of place, and its two halves
+   are the searches for that city and that state. They stay the colour of
+   the caption rather than turning the rail red — a rule under the words is
+   enough to say they are links, and the red is kept for the hover and for
+   the ask at the foot of the column. */
+.region a{{color:inherit;text-decoration:underline;
+text-decoration-color:var(--rule);text-underline-offset:.15em}}
+.region a:hover,.region a:focus{{color:var(--link);
+text-decoration-color:currentColor}}
 /* How often they publish, in words. Same quiet caption voice as the region
    line above it, italic so it reads as a note about the newsroom rather
    than another piece of its address. Both are omitted outright where the
@@ -198,8 +203,6 @@ margin:0;max-width:100%;text-align:right;overflow-wrap:break-word}}
 .cadence{{font:italic 400 .72rem/1.35 PlexMono,ui-monospace,monospace;
 color:var(--dim);margin:0;max-width:100%;text-align:right;
 overflow-wrap:break-word}}
-.places{{display:flex;flex-wrap:wrap;gap:.35rem;margin:0 0 .4rem}}
-.lozenge.place{{margin:0}}
 .lozenge.give{{border-color:var(--link);color:var(--link);font-weight:600}}
 .lozenge.give:hover,.lozenge.give:focus{{background:var(--link);color:var(--bg)}}
 /* The ask closes the rail, so it gets a little air above it rather than
