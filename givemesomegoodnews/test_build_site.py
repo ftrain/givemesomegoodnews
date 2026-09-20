@@ -396,12 +396,21 @@ class DisclosureBehaviour(unittest.TestCase):
 
     def test_the_summary_keeps_its_own_display(self):
         # Overriding display on a <summary> is what costs it its disclosure
-        # semantics; the flex row lives on a span inside it instead.
+        # semantics; what the marker needs of its own hangs on a span inside.
         css = shell.stylesheet()
         rule = re.search(r"\n\.disc>summary\{(.*?)\}", css, re.S).group(1)
         self.assertNotIn("display:", rule)
-        self.assertIn(".disc-line{display:inline-flex", css)
         self.assertIn('<span class="disc-line">', self.cards())
+
+    def test_the_summary_line_reads_as_text_beside_the_tag_column(self):
+        # Name and cue laid out together as a box — an inline-flex, say — are
+        # one atomic inline box, and a box wider than what the floated tag
+        # column leaves of the line goes below the float whole, carrying the
+        # headline and the story down with it. They have to break like prose.
+        css = shell.stylesheet()
+        self.assertIsNone(re.search(r"\n\.disc-line\{", css))
+        self.assertIn(".disc-cue{display:inline-block;vertical-align:baseline;"
+                      "margin-left:.4rem", css)
 
     def test_the_marker_carries_a_visible_focus_ring(self):
         css = shell.stylesheet()

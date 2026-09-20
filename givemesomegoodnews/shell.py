@@ -228,17 +228,24 @@ margin:0 0 .8rem}}
    profile behind it sits on exactly the rhythm one without a profile does.
    A <summary> keeps its own display:list-item. Overriding it is what costs
    the element its disclosure semantics in some browsers — the marker would
-   stop announcing expanded and collapsed — so the row of name and cue is
-   laid out by a span inside the summary instead of by the summary itself. */
+   stop announcing expanded and collapsed — so anything the marker needs of
+   its own hangs on a span inside the summary rather than on the summary. */
 .disc>summary{{cursor:pointer;list-style:none;color:var(--fg)}}
 .disc>summary::-webkit-details-marker{{display:none}}
-.disc-line{{display:inline-flex;flex-wrap:wrap;align-items:baseline;gap:.4rem}}
 .disc>summary:hover,.disc>summary:focus{{color:var(--link)}}
 /* The summary spans the column, the marker does not: put the focus ring
    around what a keyboard reader is actually pointing at. */
 .disc>summary:focus-visible{{outline:none}}
 .disc>summary:focus-visible .disc-line{{outline:3px solid var(--link);outline-offset:3px}}
-.disc-cue{{font:400 .68rem/1 PlexMono,ui-monospace,monospace;color:var(--dim);
+/* The name and the cue are a run of inline text rather than a row laid out
+   as a box: laying them out together — an inline-flex, say — makes one
+   atomic inline box, and a box too wide for what the tag column leaves of
+   the line is set below the float entire, which stranded the whole story,
+   headline and all, under the rail on a phone. Inline, the line breaks
+   between the name and the cue and the card goes on flowing beside the
+   column, so the space before the cue is this margin and not a gap. */
+.disc-cue{{display:inline-block;vertical-align:baseline;margin-left:.4rem;
+font:400 .68rem/1 PlexMono,ui-monospace,monospace;color:var(--dim);
 border:1px solid var(--rule);border-radius:1rem;padding:.24rem .45rem;
 white-space:nowrap;text-transform:uppercase;letter-spacing:.05em}}
 /* The caret is drawn rather than written: a glyph in the content of a
