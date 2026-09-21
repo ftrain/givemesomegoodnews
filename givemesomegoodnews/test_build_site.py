@@ -1049,6 +1049,25 @@ class StylesheetAsAFile(unittest.TestCase):
         rule = re.search(r'location ~ "\^/style[^{]*\{(.*?)\n    \}', vhost, re.S).group(1)
         self.assertIn("max-age=31536000, immutable", rule)
 
+    def test_the_policy_lets_a_page_load_it(self):
+        # It was served all along — 200, text/css — and applied by nobody:
+        # under default-src 'none' a linked stylesheet needs style-src 'self',
+        # and the policy named only 'unsafe-inline', from when the CSS was in
+        # the head of every page.
+        snippet = (config.ROOT / "ops" / "exe" / "nginx-gmsgn-security.conf").read_text()
+        policy = re.search(r'Content-Security-Policy "([^"]*)"', snippet).group(1)
+        style = re.search(r"style-src ([^;]*)", policy).group(1)
+        self.assertIn("'self'", style)
+        # The one-page edition still carries its own <style>.
+        self.assertIn("'unsafe-inline'", style)
+
+    def test_both_vhosts_include_the_policy_from_here(self):
+        # It was the box's file, so the commit that moved the stylesheet out
+        # of the pages could not see the policy that then blocked it.
+        for name in ("nginx-gmsgn.conf", "nginx-gmsgn-staging.conf"):
+            vhost = (config.ROOT / "ops" / "exe" / name).read_text()
+            self.assertIn("include snippets/gmsgn-security.conf;", vhost)
+
 
 class SearchPaths(unittest.TestCase):
     def test_a_trailing_slash_is_a_redirect_not_a_page(self):
