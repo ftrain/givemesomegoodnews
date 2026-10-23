@@ -110,12 +110,15 @@ def ask_jev(cur, limit, dry):
             title = next(t for i, t, _ in rows if i == article_id)
             print(f"  {p:.2f} {subject or '-':<12} {title[:80]}")
             continue
-        cur.execute(
-            "UPDATE articles SET subject = coalesce(%s, subject), "
-            "subject_source = CASE WHEN %s IS NULL THEN subject_source ELSE 'jev' END, "
-            "subject_judged_at = now() WHERE id = %s",
-            (subject, subject, article_id),
-        )
+        if subject:
+            cur.execute(
+                "UPDATE articles SET subject = %s, subject_source = 'jev', "
+                "subject_judged_at = now() WHERE id = %s",
+                (subject, article_id),
+            )
+        else:
+            cur.execute("UPDATE articles SET subject_judged_at = now() WHERE id = %s",
+                        (article_id,))
     n = sum(assigned.values()) + declined
     print(f"jev: {sum(assigned.values())} tagged, {declined} left untagged"
           f"{' (dry run)' if dry else ''}; {tokens} input tokens"
