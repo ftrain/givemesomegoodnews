@@ -148,8 +148,8 @@ cannot read it.
 
 Every article is tagged with one of eleven subjects — News, Politics,
 Education, Health, Environment, Housing, Business, Arts, Sports, Food,
-Opinion — in three layers, most trustworthy first. No language model is
-involved.
+Opinion — in four layers, most trustworthy first. The first three involve
+no model; the fourth asks one.
 
 1. **declared** — the publisher's own RSS categories, mapped through a
    whitelist in `givemesomegoodnews/subjects.py`. About four in five entries
@@ -169,6 +169,15 @@ sports stories is dense in the vocabulary sports stories actually use.
 Matching against the bare *word* "Sports" would not work at all — it is one
 hashed bucket that most sports articles never contain. Thresholds are
 `MIN_SUBJECT_SIM`, `MIN_SUBJECT_MARGIN`, and `MIN_SUBJECT_SEEDS`.
+4. **jev** — what the vectors leave blank (about a quarter of the archive)
+   goes to [Jev](https://docs.typesafe.ai), TypeSafe's System One model, as
+   one typed question per story: which of the eleven subjects, or none of
+   them. It returns a probability for each option and writes nothing; the
+   subject is taken only at `MIN_JEV_P` (0.6) or more, and obituaries,
+   calendars and the like come back as none. Each story is asked about
+   once (`subject_judged_at`), newest first, at most `JEV_LIMIT` (600) a
+   build; a story costs about 750 input tokens (measured: 736). Without `TYPESAFE_API_KEY`
+   the layer is skipped and the story stays untagged.
 
 ### Search
 

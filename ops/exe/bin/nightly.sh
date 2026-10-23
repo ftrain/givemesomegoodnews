@@ -8,6 +8,12 @@ set -uo pipefail
 export PATH=/srv/givemesomegoodnews/venv/bin:/usr/bin:/bin
 export PY=/srv/givemesomegoodnews/venv/bin/python3
 export DATABASE_URL=postgresql:///givemesomegoodnews
+# TYPESAFE_API_KEY, for the subjects the vectors cannot place.
+if [ -r /srv/givemesomegoodnews/.env ]; then
+	set -a
+	. /srv/givemesomegoodnews/.env
+	set +a
+fi
 export CRAWL_WORKERS=20
 cd /srv/givemesomegoodnews/app
 make feeds

@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS articles (
     image_h         INT,
     categories      TEXT[] DEFAULT '{}',  -- the publisher's own RSS categories, verbatim
     subject         TEXT,            -- our taxonomy; see givemesomegoodnews/subjects.py
-    subject_source  TEXT,            -- declared | url | vector
+    subject_source  TEXT,            -- declared | url | vector | jev
     -- 384 dims matches the default local hashing embedder; see givemesomegoodnews/embedder.py
     -- for how to swap in a model-based embedder (requires re-embedding).
     embedding       vector(384)
@@ -216,3 +216,9 @@ CREATE TABLE IF NOT EXISTS trending_topics (
     article_ids     INT[] NOT NULL,
     PRIMARY KEY (snapshot_id, rank)
 );
+
+-- Layer 4 of the subjects: when Jev was asked about a story the first three
+-- layers left blank, whatever it answered. Asked once, never twice.
+ALTER TABLE articles ADD COLUMN IF NOT EXISTS subject_judged_at TIMESTAMPTZ;
+CREATE INDEX IF NOT EXISTS articles_unjudged_idx ON articles (published_at DESC)
+    WHERE subject IS NULL AND subject_judged_at IS NULL;

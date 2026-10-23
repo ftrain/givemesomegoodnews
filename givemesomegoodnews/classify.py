@@ -1,8 +1,11 @@
-"""Spread subject tags to articles no publisher labeled, using the vectors.
+"""Spread subject tags to articles no publisher labeled: by vector, then by Jev.
 
 Layers 1 and 2 (publisher categories, URL paths — see
 :mod:`givemesomegoodnews.subjects`) label most articles with no guesswork.
-This handles the remainder.
+This handles the remainder, in two more layers: the vectors first, and then,
+for what they leave blank and only when TYPESAFE_API_KEY is set, Jev (see
+:mod:`givemesomegoodnews.jev`), newest stories first, a bounded number per
+run so a build never waits on the model for long.
 
 The method is nearest-prototype: average the embeddings of every
 confidently-labeled article in a subject into one centroid, then give each
@@ -22,6 +25,7 @@ import os
 import sys
 from collections import Counter, defaultdict
 
+from . import jev
 from .db import connect
 from .subjects import SUBJECTS
 
@@ -32,6 +36,10 @@ MIN_SIM = float(os.environ.get("MIN_SUBJECT_SIM", "0.10"))
 MIN_MARGIN = float(os.environ.get("MIN_SUBJECT_MARGIN", "0.02"))
 # Below this many labeled examples a centroid is too noisy to trust.
 MIN_SEEDS = int(os.environ.get("MIN_SUBJECT_SEEDS", "12"))
+# Stories asked of Jev in one run (--jev-limit overrides). A day brings a few
+# hundred the vectors cannot place; the build runs every fifteen minutes.
+JEV_LIMIT = int(os.environ.get("JEV_LIMIT", "600"))
+JEV_WORKERS = int(os.environ.get("JEV_WORKERS", "8"))
 
 
 def _parse(vec):
@@ -67,6 +75,53 @@ def build_centroids(cur):
         if counts[subject] >= MIN_SEEDS:
             centroids[subject] = _normalize([x / counts[subject] for x in acc])
     return centroids, counts
+
+
+def _arg(name, default):
+    if name in sys.argv:
+        return int(sys.argv[sys.argv.index(name) + 1])
+    return default
+
+
+def ask_jev(cur, limit, dry):
+    """Layer 4. Every story asked about is stamped subject_judged_at whether
+    or not a subject was taken, so no story is paid for twice."""
+    api_key = os.environ.get("TYPESAFE_API_KEY", "").strip()
+    if not api_key or "--no-jev" in sys.argv or limit <= 0:
+        return
+    cur.execute(
+        "SELECT id, title, summary FROM articles "
+        "WHERE subject IS NULL AND subject_judged_at IS NULL "
+        "ORDER BY published_at DESC NULLS LAST, id DESC LIMIT %s",
+        (limit,),
+    )
+    rows = cur.fetchall()
+    if not rows:
+        return
+    print(f"\njev: asking about {len(rows)} stories the vectors left blank")
+    assigned, declined, tokens = Counter(), 0, 0
+    for article_id, subject, p, used in jev.judge(rows, api_key, workers=JEV_WORKERS):
+        tokens += used
+        if subject:
+            assigned[subject] += 1
+        else:
+            declined += 1
+        if dry:
+            title = next(t for i, t, _ in rows if i == article_id)
+            print(f"  {p:.2f} {subject or '-':<12} {title[:80]}")
+            continue
+        cur.execute(
+            "UPDATE articles SET subject = coalesce(%s, subject), "
+            "subject_source = CASE WHEN %s IS NULL THEN subject_source ELSE 'jev' END, "
+            "subject_judged_at = now() WHERE id = %s",
+            (subject, subject, article_id),
+        )
+    n = sum(assigned.values()) + declined
+    print(f"jev: {sum(assigned.values())} tagged, {declined} left untagged"
+          f"{' (dry run)' if dry else ''}; {tokens} input tokens"
+          f"{f', {tokens / n:.0f} a story' if n else ''}")
+    for subject, k in assigned.most_common():
+        print(f"  {subject:<12} {k:5d}")
 
 
 def main():
@@ -120,6 +175,8 @@ def main():
               f"{ambiguous} too ambiguous, {far} below sim {MIN_SIM}")
         for subject, n in assigned.most_common():
             print(f"  {subject:<12} {n:5d}")
+
+        ask_jev(cur, _arg("--jev-limit", JEV_LIMIT), dry)
 
         cur.execute(
             "SELECT coalesce(subject, '(untagged)'), coalesce(subject_source, '-'), count(*) "

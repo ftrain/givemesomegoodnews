@@ -384,8 +384,9 @@ page; they are still in the archive and still searchable.</p>
 <p>Each newsroom's own RSS feed is read every three hours. Headlines,
 summaries and pictures come from those feeds and link back to the original.
 Subjects are assigned from the publisher's own categories, then from URL
-paths, then by nearest neighbour over article embeddings — no language model
-is involved anywhere. Pictures are downloaded and served from here rather
+paths, then by nearest neighbour over article embeddings; the stories those
+leave blank are put to Jev, a small model that answers one typed question
+(which of eleven subjects, or none) and writes nothing. Pictures are downloaded and served from here rather
 than hotlinked, so a publisher's server is hit once per image instead of
 once per reader.</p>
 
