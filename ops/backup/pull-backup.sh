@@ -36,7 +36,14 @@
 #   - The generated site. Every page is rebuilt from the database in minutes.
 #   - fetch_log, which is crawl bookkeeping, not the archive.
 #
-# Restoring is described in RESTORE.md, written beside the backups.
+# Restoring is described in RESTORE.md, kept in the repository beside this
+# script and copied here every night: once beside the backups (the current
+# procedure) and once into the night it came with.
+#
+# After the VM is rebuilt — as it was on 23 October 2026 — it has a new ssh
+# host key, and ssh in batch mode refuses a changed key rather than asking.
+# The pull then fails at its first step, saying so. Forget the old key on
+# this machine (ssh-keygen -R <HOST>) and run the pull once by hand.
 #
 # Nothing here ever deletes. One consequence: the picture cache moved into
 # subdirectories on 17 September 2026, so a copy pulled before that holds both
@@ -71,6 +78,25 @@ say() { printf '%s  %s\n' "$(date -u +%H:%M:%SZ)" "$*"; }
 mkdir -p "$night" "$DEST/img"
 
 say "backing up $DB on $HOST to $DEST"
+
+# 0. Can the box be reached at all? Every later step would fail the same
+#    way, and the two usual reasons deserve a sentence rather than a stack
+#    of ssh errors: the key is not where cron can find it, or the VM was
+#    rebuilt and its host key changed.
+if ! "${SSH[@]}" "$HOST" true 2>"$night/.ssh_err"; then
+	say "cannot reach $HOST:"
+	sed 's/^/  /' "$night/.ssh_err"
+	if grep -q 'REMOTE HOST IDENTIFICATION HAS CHANGED\|Host key verification failed' "$night/.ssh_err"; then
+		say "the VM's host key has changed — it was rebuilt, or something is"
+		say "wrong. If it was rebuilt: ssh-keygen -R $HOST, then run this again."
+	else
+		say "(cron has no agent: SSH_KEY=$SSH_KEY must be readable here and"
+		say " known to the VM)"
+	fi
+	rm -rf "$night"
+	exit 1
+fi
+rm -f "$night/.ssh_err"
 
 # 1. Everything except the two big tables' rows: schema, every index
 #    definition, the catalog, the filters, the trending snapshots. Small.
@@ -185,52 +211,18 @@ if [ "$KEEP_ENV" = 1 ]; then
 	"${SSH[@]}" "$HOST" "sudo cat /srv/givemesomegoodnews/.env" >"$DEST/secrets/env-$stamp"
 fi
 
-# Written once, never overwritten: a restore should read what was true when
-# the backup it is restoring was taken.
-[ -f "$DEST/RESTORE.md" ] || cat >"$DEST/RESTORE.md" <<'DOC'
-# Restoring givemesomegood.news
-
-Each directory under `db/` is one night, and stands alone. `img/` is the
-picture cache, shared by all of them: it only ever grows.
-
-Everything below assumes the repository (github.com/ftrain/givemesomegoodnews)
-and a Postgres 16 with pgvector.
-
-1. Make the database and its tables. schema.sql creates every table and index.
-
-       createdb givemesomegoodnews
-       psql -d givemesomegoodnews -f schema.sql
-
-2. Drop the vector index before loading. Building it row by row during a bulk
-   load is what makes a restore take hours instead of minutes.
-
-       psql -d givemesomegoodnews -c 'drop index if exists articles_embedding_idx'
-
-3. Load the small tables — the catalog, the filters, the trending snapshots.
-
-       pg_restore --data-only --disable-triggers -d givemesomegoodnews \
-           db/<night>/schema-and-tables.dump
-
-4. Load the archive. The CSV carries its own header, and articles.columns says
-   the same thing.
-
-       zstd -dc db/<night>/articles.csv.zst | psql -d givemesomegoodnews \
-           -c "\copy articles($(cat db/<night>/articles.columns)) from stdin with (format csv, header true)"
-
-5. Put the embeddings back and rebuild the vector index. The embedder is
-   deterministic, so this recreates exactly what was there.
-
-       DATABASE_URL=postgresql:///givemesomegoodnews python3 -m givemesomegoodnews.embed --all
-       psql -d givemesomegoodnews -f schema.sql
-
-6. Put the pictures where the site looks for them, and rebuild.
-
-       rsync -a img/ <checkout>/site/img/
-       make build
-
-To check a backup without restoring over anything, do all of it against a
-database called something else and run `make serve`.
-DOC
+# The restore procedure, from the repository as deployed: beside the backups
+# as the current one, and in the night as the one that fits it. A night from
+# before a change to the procedure keeps the older text, which is the one
+# that applies to it. If the box has no copy (an older commit), what is
+# already here stands.
+if "${SSH[@]}" "$HOST" "cat $APP_DIR/ops/backup/RESTORE.md" >"$night/RESTORE.md" 2>/dev/null \
+	&& [ -s "$night/RESTORE.md" ]; then
+	cp "$night/RESTORE.md" "$DEST/RESTORE.md"
+else
+	rm -f "$night/RESTORE.md"
+	say "  the box has no ops/backup/RESTORE.md; the copy here is unchanged"
+fi
 
 mv "$night" "$DEST/db/$stamp"
 

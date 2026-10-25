@@ -300,9 +300,14 @@ deliberately left out, which is most of the weight:
 - **Indexes.** No `pg_dump` ever holds index data, only the statements that
   rebuild them, and `schema.sql` is already those statements.
 
-Restoring is `RESTORE.md`, written beside the backups: schema, load, re-embed,
-rebuild the index. A full restore of 101,120 articles takes about ten seconds
-plus the re-embedding.
+Restoring is `ops/backup/RESTORE.md`, which the pull also copies beside the
+backups: schema, load, re-embed, rebuild the index, then `--backfill` the
+days since from the feeds. A full restore of 101,280 articles takes about ten
+seconds plus the re-embedding; it was done for real when the VM was erased on
+23 October 2026 (`ops/exe/README.md` has the fresh-VM recipe that goes with
+it). The pull checks first that the VM can be reached, and says why not when
+it cannot — after a rebuild, the VM's ssh host key has changed, and the
+machine that pulls has to forget the old one.
 
 Nightly full dumps rather than incremental ones, and that is measured, not
 assumed: this database writes about 989 MB of WAL a day (the vector index
